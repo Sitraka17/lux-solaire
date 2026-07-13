@@ -120,11 +120,12 @@ def build(frames, wdate):
 
 SITE = "https://lux-solaire.vercel.app"
 
-# ─────────────────────────── i18n (EN par défaut, FR sur /fr) ──────────────
-# Deux dictionnaires FR→EN : i18n_en.json (texte statique du HTML) et
-# i18n_js.json (chaînes construites en JS). Le HTML anglais s'obtient par
-# remplacement « plus longue clé d'abord » ; les libellés d'affichage des
-# DONNÉES (mois, trimestres, virgule décimale) sont traduits séparément.
+# ──────────────── i18n (EN par défaut, FR sur /fr, LB sur /lb) ─────────────
+# Deux dictionnaires par langue cible : i18n_en.json / i18n_lb.json (texte
+# statique du HTML) et i18n_js.json / i18n_lb_js.json (chaînes construites en
+# JS). Le HTML traduit s'obtient par remplacement « plus longue clé d'abord » ;
+# les libellés d'affichage des DONNÉES (mois, trimestres — et pour l'anglais
+# seulement la virgule décimale) sont traduits séparément.
 MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July",
              "August", "September", "October", "November", "December"]
 _FR2EN_MONTH = {fr: MONTHS_EN[i] for i, fr in enumerate(MONTHS_FR)}
@@ -133,15 +134,32 @@ _MONTH_RE = re.compile(r"\b(" + "|".join(MONTHS_FR) + r")\b")
 # reste un mot entier (géré par _MONTH_RE), donc exclu de la table d'abréviations
 _ABBR = {(MONTHS_FR[i][:4] + "."): MONTHS_EN[i][:3] for i in range(12) if i != 4}
 
+# Lëtzebuergesch : mêmes mécanismes, mais les conventions numériques FRANÇAISES
+# sont conservées (virgule décimale, espace des milliers, locale fr-FR).
+MONTHS_LB = ["Januar", "Februar", "Mäerz", "Abrëll", "Mee", "Juni", "Juli",
+             "August", "September", "Oktober", "November", "Dezember"]
+_FR2LB_MONTH = {fr: MONTHS_LB[i] for i, fr in enumerate(MONTHS_FR)}
+_ABBR_LB_SHORT = ["Jan.", "Feb.", "Mäe.", "Abr.", "Mee", "Jun.", "Jul.",
+                  "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
+_ABBR_LB = {(MONTHS_FR[i][:4] + "."): _ABBR_LB_SHORT[i] for i in range(12) if i != 4}
+# date-jour luxembourgeoise : ordinal avec point — « 6 Juli » → « 6. Juli »
+# (« 1er juillet » FR → « 1er Juli » → « 1. Juli ») ; s'applique après la
+# substitution des mois, sur noms complets et abréviations.
+_LB_ORD_RE = re.compile(
+    r"\b(\d{1,2})(?:er)?\s(?=(?:" +
+    "|".join(sorted(map(re.escape, set(MONTHS_LB) | set(_ABBR_LB_SHORT)),
+                    key=len, reverse=True)) + r"))")
 
-def _load_i18n():
-    d = json.loads((ROOT / "scripts" / "i18n_en.json").read_text())
-    d.update(json.loads((ROOT / "scripts" / "i18n_js.json").read_text()))
+
+def _load_i18n(static_name, js_name):
+    d = json.loads((ROOT / "scripts" / static_name).read_text())
+    d.update(json.loads((ROOT / "scripts" / js_name).read_text()))
     pairs = sorted(d.items(), key=lambda kv: -len(kv[0]))   # plus longue d'abord
     return d, pairs
 
 
-I18N, I18N_PAIRS = _load_i18n()
+I18N, I18N_PAIRS = _load_i18n("i18n_en.json", "i18n_js.json")
+I18N_LB, I18N_LB_PAIRS = _load_i18n("i18n_lb.json", "i18n_lb_js.json")
 
 
 def _tr_str(s):
@@ -156,13 +174,25 @@ def _tr_str(s):
     return s
 
 
-def translate_data(obj):
+def _tr_str_lb(s):
+    """Variante luxembourgeoise : trimestre T→Q, abréviations et noms de mois,
+    puis ordinal du jour (« 6 Juli » → « 6. Juli »). Les formats numériques
+    français (virgule décimale, espace des milliers) sont CONSERVÉS."""
+    s = re.sub(r"(\d{4}) T(\d)", r"\1 Q\2", s)               # « 2025 T1 » → « 2025 Q1 »
+    for fr, lb in _ABBR_LB.items():                          # « juil. » → « Jul. »
+        s = s.replace(fr, lb)
+    s = _MONTH_RE.sub(lambda m: _FR2LB_MONTH[m.group(1)], s)  # « juillet » → « Juli »
+    s = _LB_ORD_RE.sub(r"\1. ", s)                           # « 6 Juli » → « 6. Juli »
+    return s
+
+
+def translate_data(obj, tr=_tr_str):
     if isinstance(obj, dict):
-        return {k: translate_data(v) for k, v in obj.items()}
+        return {k: translate_data(v, tr) for k, v in obj.items()}
     if isinstance(obj, list):
-        return [translate_data(v) for v in obj]
+        return [translate_data(v, tr) for v in obj]
     if isinstance(obj, str):
-        return _tr_str(obj)
+        return tr(obj)
     return obj
 
 
@@ -176,33 +206,60 @@ def to_en(html):
                 .replace(".replace('.',',')", ""))
 
 
-def main():
-    frames, wdate = fetch_resources()
-    data = build(frames, wdate)
-    (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
-    # endpoint public : la source reste en FR ; variante EN pour réutilisation
+def to_lb(html):
+    """HTML luxembourgeois : dictionnaire seul (plus longue clé d'abord). Les
+    littéraux JS liés aux nombres (locale fr-FR, virgule décimale) restent
+    intacts : le Lëtzebuergesch garde les conventions numériques françaises."""
+    for fr, lb in I18N_LB_PAIRS:
+        if fr in html:
+            html = html.replace(fr, lb)
+    return html
+
+
+LANG_PATHS = (("en", "/"), ("fr", "/fr"), ("lb", "/lb"))
+
+
+def render_all(data):
+    """Écrit les JSON dérivés (EN, LB) et les trois pages depuis le blob FR."""
+    # endpoint public : la source reste en FR ; variantes EN + LB pour réutilisation
     data_en = translate_data(data)
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
+    data_lb = translate_data(data, _tr_str_lb)
+    (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
     tpl = (ROOT / "template.html").read_text()
 
     def render(d, lang):
         blob = json.dumps(d, ensure_ascii=False)
-        canonical = SITE + ("/" if lang == "en" else "/fr")
-        toggle = ('<a href="/" class="cur">EN</a><a href="/fr">FR</a>'
-                  if lang == "en" else
-                  '<a href="/">EN</a><a href="/fr" class="cur">FR</a>')
+        canonical = SITE + dict(LANG_PATHS)[lang]
+        toggle = "".join(
+            '<a href="{}"{}>{}</a>'.format(
+                path, ' class="cur"' if code == lang else '', code.upper())
+            for code, path in LANG_PATHS)
         html = (tpl.replace("/*__DATA__*/", blob)
                    .replace("__DATE__", d["meta"]["date"])
                    .replace("__LANG__", lang)
                    .replace("__CANONICAL__", canonical)
                    .replace("<!--LANGTOGGLE-->", toggle))
-        return to_en(html) if lang == "en" else html
+        if lang == "en":
+            return to_en(html)
+        if lang == "lb":
+            return to_lb(html)
+        return html
 
     (ROOT / "index.html").write_text(render(data_en, "en"))    # EN par défaut
-    (ROOT / "fr").mkdir(exist_ok=True)
-    (ROOT / "fr" / "index.html").write_text(render(data, "fr"))
-    print(f"index.html (EN) + fr/index.html rebuilt — PV {data['meta']['pv_mw']} MW "
-          f"au {data['meta']['date']} / as of {data_en['meta']['date']}")
+    for lang, d in (("fr", data), ("lb", data_lb)):
+        (ROOT / lang).mkdir(exist_ok=True)
+        (ROOT / lang / "index.html").write_text(render(d, lang))
+    print(f"index.html (EN) + fr/index.html + lb/index.html rebuilt — "
+          f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
+          f"as of {data_en['meta']['date']} / Stand {data_lb['meta']['date']}")
+
+
+def main():
+    frames, wdate = fetch_resources()
+    data = build(frames, wdate)
+    (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
+    render_all(data)
 
 
 if __name__ == "__main__":
