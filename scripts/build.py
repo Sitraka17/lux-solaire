@@ -118,15 +118,91 @@ def build(frames, wdate):
     }
 
 
+SITE = "https://lux-solaire.vercel.app"
+
+# ─────────────────────────── i18n (EN par défaut, FR sur /fr) ──────────────
+# Deux dictionnaires FR→EN : i18n_en.json (texte statique du HTML) et
+# i18n_js.json (chaînes construites en JS). Le HTML anglais s'obtient par
+# remplacement « plus longue clé d'abord » ; les libellés d'affichage des
+# DONNÉES (mois, trimestres, virgule décimale) sont traduits séparément.
+MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July",
+             "August", "September", "October", "November", "December"]
+_FR2EN_MONTH = {fr: MONTHS_EN[i] for i, fr in enumerate(MONTHS_FR)}
+_MONTH_RE = re.compile(r"\b(" + "|".join(MONTHS_FR) + r")\b")
+# abréviations produites par fetch_resources : MONTHS_FR[m-1][:4] + "." — mai
+# reste un mot entier (géré par _MONTH_RE), donc exclu de la table d'abréviations
+_ABBR = {(MONTHS_FR[i][:4] + "."): MONTHS_EN[i][:3] for i in range(12) if i != 4}
+
+
+def _load_i18n():
+    d = json.loads((ROOT / "scripts" / "i18n_en.json").read_text())
+    d.update(json.loads((ROOT / "scripts" / "i18n_js.json").read_text()))
+    pairs = sorted(d.items(), key=lambda kv: -len(kv[0]))   # plus longue d'abord
+    return d, pairs
+
+
+I18N, I18N_PAIRS = _load_i18n()
+
+
+def _tr_str(s):
+    """Traduit un libellé-donnée d'affichage : trimestre FR (T→Q), abréviations
+    et noms de mois, virgule décimale française → point. Inoffensif sur les noms
+    propres (communes, cantons : ni chiffres, ni mois) → laissés intacts."""
+    s = re.sub(r"(\d{4}) T(\d)", r"\1 Q\2", s)               # « 2025 T1 » → « 2025 Q1 »
+    for fr, en in _ABBR.items():                             # « juil. » → « Jul »
+        s = s.replace(fr, en)
+    s = _MONTH_RE.sub(lambda m: _FR2EN_MONTH[m.group(1)], s)  # « juillet » → « July »
+    s = re.sub(r"(?<=\d),(?=\d)", ".", s)                    # « 0,5 » → « 0.5 »
+    return s
+
+
+def translate_data(obj):
+    if isinstance(obj, dict):
+        return {k: translate_data(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [translate_data(v) for v in obj]
+    if isinstance(obj, str):
+        return _tr_str(obj)
+    return obj
+
+
+def to_en(html):
+    """HTML anglais : dictionnaire (plus longue clé d'abord), puis bascule des
+    littéraux JS couplés à la langue (locale des nombres, virgule décimale)."""
+    for fr, en in I18N_PAIRS:
+        if fr in html:
+            html = html.replace(fr, en)
+    return (html.replace("'fr-FR'", "'en-US'")
+                .replace(".replace('.',',')", ""))
+
+
 def main():
     frames, wdate = fetch_resources()
     data = build(frames, wdate)
     (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
+    # endpoint public : la source reste en FR ; variante EN pour réutilisation
+    data_en = translate_data(data)
+    (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     tpl = (ROOT / "template.html").read_text()
-    out = tpl.replace("/*__DATA__*/", json.dumps(data, ensure_ascii=False)) \
-             .replace("__DATE__", data["meta"]["date"])
-    (ROOT / "index.html").write_text(out)
-    print(f"index.html rebuilt — PV {data['meta']['pv_mw']} MW au {data['meta']['date']}")
+
+    def render(d, lang):
+        blob = json.dumps(d, ensure_ascii=False)
+        canonical = SITE + ("/" if lang == "en" else "/fr")
+        toggle = ('<a href="/" class="cur">EN</a><a href="/fr">FR</a>'
+                  if lang == "en" else
+                  '<a href="/">EN</a><a href="/fr" class="cur">FR</a>')
+        html = (tpl.replace("/*__DATA__*/", blob)
+                   .replace("__DATE__", d["meta"]["date"])
+                   .replace("__LANG__", lang)
+                   .replace("__CANONICAL__", canonical)
+                   .replace("<!--LANGTOGGLE-->", toggle))
+        return to_en(html) if lang == "en" else html
+
+    (ROOT / "index.html").write_text(render(data_en, "en"))    # EN par défaut
+    (ROOT / "fr").mkdir(exist_ok=True)
+    (ROOT / "fr" / "index.html").write_text(render(data, "fr"))
+    print(f"index.html (EN) + fr/index.html rebuilt — PV {data['meta']['pv_mw']} MW "
+          f"au {data['meta']['date']} / as of {data_en['meta']['date']}")
 
 
 if __name__ == "__main__":

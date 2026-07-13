@@ -1,0 +1,10 @@
+{
+"name:'Photovoltaïque'": "name:'Solar PV'",
+"name:'Éolien'": "name:'Wind'",
+"name:'Biomasse'": "name:'Biomass'",
+"name:'Cogénération'": "name:'Cogeneration'",
+"name:'Hydroélectrique'": "name:'Hydro'",
+"name:'Biogaz'": "name:'Biogas'",
+"Capacité installée par filière, T1 2025 à aujourd'hui": "Installed capacity by technology, Q1 2025 to today",
+"' communes'": "' municipalities'"
+}
