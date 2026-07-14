@@ -233,7 +233,8 @@ def render_all(data):
         canonical = SITE + dict(LANG_PATHS)[lang]
         toggle = "".join(
             '<a href="{}"{}>{}</a>'.format(
-                path, ' class="cur"' if code == lang else '', code.upper())
+                path, ' class="cur"' if code == lang else '',
+                {"lb": "LU"}.get(code, code.upper()))  # étiquette LU (code ISO reste lb)
             for code, path in LANG_PATHS)
         html = (tpl.replace("/*__DATA__*/", blob)
                    .replace("__DATE__", d["meta"]["date"])
