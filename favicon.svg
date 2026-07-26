@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Monogramme « S » — l'initiale, en rouge Luxembourg sur zinc, avec le
+       curseur clignotant du hero réduit à une graine (le point rouge du logo). -->
+  <rect width="32" height="32" rx="7" fill="#09090b"/>
+  <path
+    d="M21.5 10.2C21.5 7.4 11.2 6.8 11.2 11.6C11.2 15.4 21 15.2 21 19.4C21 24.4 10.5 24 10.5 20.8"
+    fill="none"
+    stroke="#f04f63"
+    stroke-width="3.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

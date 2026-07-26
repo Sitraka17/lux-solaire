@@ -231,10 +231,25 @@ def render_all(data):
     def render(d, lang):
         blob = json.dumps(d, ensure_ascii=False)
         canonical = SITE + dict(LANG_PATHS)[lang]
+        F_GB = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+                '<rect width="60" height="44" fill="#012169"/>'
+                '<path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/>'
+                '<path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/>'
+                '<path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/>'
+                '<path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>')
+        F_FR = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+                '<rect width="20" height="44" fill="#0055A4"/>'
+                '<rect x="20" width="20" height="44" fill="#fff"/>'
+                '<rect x="40" width="20" height="44" fill="#EF4135"/></svg>')
+        F_LU = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+                '<rect width="60" height="15" fill="#EF3340"/>'
+                '<rect y="15" width="60" height="14" fill="#fff"/>'
+                '<rect y="29" width="60" height="15" fill="#00A2E1"/></svg>')
+        _FLAG = {"en": F_GB, "fr": F_FR, "lb": F_LU}
         toggle = "".join(
-            '<a href="{}"{}>{}</a>'.format(
-                path, ' class="cur"' if code == lang else '',
-                {"lb": "LU"}.get(code, code.upper()))  # étiquette LU (code ISO reste lb)
+            '<a href="{}"{}>{}{}</a>'.format(
+                path, ' class="cur"' if code == lang else '', _FLAG[code],
+                {"lb": "LU"}.get(code, code.upper()))
             for code, path in LANG_PATHS)
         html = (tpl.replace("/*__DATA__*/", blob)
                    .replace("__DATE__", d["meta"]["date"])
