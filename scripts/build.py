@@ -219,6 +219,41 @@ def to_lb(html):
 LANG_PATHS = (("en", "/"), ("fr", "/fr"), ("lb", "/lb"))
 
 
+def make_og(data):
+    # og:image 1200x630 - capacite PV du Luxembourg, chiffres vivants (best-effort, saute sans casser le build)
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        f = "/System/Library/Fonts/Helvetica.ttc"
+        try:
+            serif = ImageFont.truetype("/System/Library/Fonts/Supplemental/Georgia.ttf", 64)
+        except OSError:
+            serif = ImageFont.truetype(f, 64)
+        big = ImageFont.truetype(f, 120); mid = ImageFont.truetype(f, 40); small = ImageFont.truetype(f, 30)
+        img = Image.new("RGB", (1200, 630), "#F4F5F1"); dr = ImageDraw.Draw(img)
+        dr.rectangle([0, 0, 1200, 12], fill="#C77F00")
+        dr.text((80, 66), "LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", font=small, fill="#8A5600")
+        def fit(txt, font, max_w=1040):
+            while dr.textlength(txt, font=font) > max_w and font.size > 30:
+                font = font.font_variant(size=font.size - 2)
+            return font
+        l1 = "Le photovoltaïque luxembourgeois,"; l2 = "commune par commune"
+        s = fit(l1, serif)
+        dr.text((80, 136), l1, font=s, fill="#1D2734")
+        dr.text((80, 136 + s.size + 18), l2, font=fit(l2, serif), fill="#C77F00")
+        mw = str(data["meta"]["pv_mw"]).replace(".", ",")
+        dr.text((80, 330), mw + " MW", font=big, fill="#C77F00")
+        w = dr.textlength(mw + " MW", font=big)
+        dr.text((80 + w + 34, 400), "de puissance PV raccordée", font=mid, fill="#5A6472")
+        n = format(data["meta"]["pv_n"], ",").replace(",", " ")
+        sub = n + " installations photovoltaïques · capacité installée, pas énergie"
+        dr.text((80, 480), sub, font=fit(sub, mid), fill="#5A6472")
+        dr.text((80, 556), "lux-solaire.vercel.app · Leneda / data.public.lu (CC0) · FR · EN · LU", font=small, fill="#6B7380")
+        img.save(ROOT / "og.png")
+        return True
+    except Exception:
+        return False
+
+
 def render_all(data):
     """Écrit les JSON dérivés (EN, LB) et les trois pages depuis le blob FR."""
     # endpoint public : la source reste en FR ; variantes EN + LB pour réutilisation
@@ -226,6 +261,7 @@ def render_all(data):
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
+    make_og(data)
     tpl = (ROOT / "template.html").read_text()
 
     def render(d, lang):
