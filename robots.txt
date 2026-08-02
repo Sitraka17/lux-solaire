@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lux-solaire.vercel.app/sitemap.xml

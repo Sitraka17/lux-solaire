@@ -249,6 +249,20 @@ def prose_numbers(d, lang):
     }
 
 
+def write_seo():
+    """robots.txt + sitemap.xml (les trois langues : /, /fr et /lb)."""
+    today = date.today().isoformat()
+    (ROOT / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
+    sm = ['<?xml version="1.0" encoding="UTF-8"?>',
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for u in ("/", "/fr", "/lb"):
+        sm.append(f"<url><loc>{SITE}{u}</loc><lastmod>{today}</lastmod>"
+                  f"<changefreq>monthly</changefreq></url>")
+    sm.append("</urlset>")
+    (ROOT / "sitemap.xml").write_text("\n".join(sm))
+
+
 def make_og(data):
     # og:image 1200x630 - capacite PV du Luxembourg, chiffres vivants (best-effort, saute sans casser le build)
     try:
@@ -291,6 +305,7 @@ def render_all(data):
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
+    write_seo()
     make_og(data)
     tpl = (ROOT / "template.html").read_text()
 
