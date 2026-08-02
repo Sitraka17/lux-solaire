@@ -246,6 +246,9 @@ def prose_numbers(d, lang):
         "__NGROWTHPCT__": str(_jsround((s[-1]["pv_count"] / s[0]["pv_count"] - 1) * 100)),
         # encadré Rosport-Mompach : plus forte croissance en volume, en kW
         "__TOPGROWTHKW__": _thousands(_jsround(max(c["g"] for c in d["communes"])), lang),
+        # « paradoxe résidentiel » : installations comptées une à une dans le
+        # fichier not-grouped, c.-à-d. l'effectif de l'histogramme des tailles
+        "__NGCOUNT__": _thousands(sum(x["count"] for x in d["sizes"]), lang),
     }
 
 
