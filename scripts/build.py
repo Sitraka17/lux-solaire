@@ -9,6 +9,7 @@ Deps:   pandas, requests
 """
 import io
 import json
+import math
 import re
 import sys
 from datetime import date
@@ -219,6 +220,35 @@ def to_lb(html):
 LANG_PATHS = (("en", "/"), ("fr", "/fr"), ("lb", "/lb"))
 
 
+def _jsround(x):
+    """Arrondi de Math.round côté JS (moitié vers +∞) : la prose et les KPI
+    calculés dans le navigateur ne peuvent pas diverger d'une unité."""
+    return math.floor(x + 0.5)
+
+
+def _thousands(n, lang):
+    """Séparateur de milliers de toLocaleString : virgule en anglais, espace
+    en FR/LB."""
+    s = format(int(n), ",")
+    return s if lang == "en" else s.replace(",", " ")
+
+
+def prose_numbers(d, lang):
+    """Chiffres cités dans la prose de template.html, dérivés des mêmes données
+    et arrondis comme les KPI équivalents rendus en JS (#k-growth, barre « Top 10
+    — croissance PV »). Substitués APRÈS to_en/to_lb : les jetons traversent les
+    dictionnaires i18n, dont les clés et les valeurs les contiennent."""
+    s = d["series"]
+    return {
+        # standfirst : croissance de la capacité PV depuis le premier relevé
+        "__PVGROWTHPCT__": str(_jsround((s[-1]["pv"] / s[0]["pv"] - 1) * 100)),
+        # sous-titre du KPI « Installations PV » : croissance du nombre d'installations
+        "__NGROWTHPCT__": str(_jsround((s[-1]["pv_count"] / s[0]["pv_count"] - 1) * 100)),
+        # encadré Rosport-Mompach : plus forte croissance en volume, en kW
+        "__TOPGROWTHKW__": _thousands(_jsround(max(c["g"] for c in d["communes"])), lang),
+    }
+
+
 def make_og(data):
     # og:image 1200x630 - capacite PV du Luxembourg, chiffres vivants (best-effort, saute sans casser le build)
     try:
@@ -293,9 +323,11 @@ def render_all(data):
                    .replace("__CANONICAL__", canonical)
                    .replace("<!--LANGTOGGLE-->", toggle))
         if lang == "en":
-            return to_en(html)
-        if lang == "lb":
-            return to_lb(html)
+            html = to_en(html)
+        elif lang == "lb":
+            html = to_lb(html)
+        for token, value in prose_numbers(d, lang).items():
+            html = html.replace(token, value)
         return html
 
     (ROOT / "index.html").write_text(render(data_en, "en"))    # EN par défaut
