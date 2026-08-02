@@ -157,7 +157,7 @@
 <div class="wrap">
 <div class="seriesbar">
   <span class="sb-label">Open-data series · Luxembourg</span>
-  <nav aria-label="The dashboard series"><a class="cur" aria-current="page" href="https://lux-solaire.vercel.app">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget-lu.vercel.app" target="_blank" rel="noopener">budget-lu</a></nav>
+  <nav aria-label="The dashboard series"><a class="cur" aria-current="page" href="https://lux-solaire.vercel.app">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget-lu.vercel.app" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></nav>
   <span class="langtoggle"><a href="/" class="cur"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN</a><a href="/fr"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR</a><a href="/lb"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LU</a></span>
 </div>
 <header>
@@ -292,7 +292,17 @@
   <h3>Method & source</h3>
   <p>Data: the <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">“Electricity generation in Luxembourg”</a> dataset published by Leneda on data.public.lu (CC0 licence) — quarterly readings Q1 2025 → Q1 2026 and the weekly reading of 27 July 2026 (municipality, canton and per-installation files).</p>
   <p>The figures describe <strong>installed capacity</strong> (kW connected) of the decentralised generation fleet, not the energy produced (kWh): the real share of PV in delivered electricity depends on sunshine and load factors. “Δ 15 months” compares the current reading with Q1 2025. In the per-municipality table, only photovoltaic capacity is broken out; the “Total kW” column aggregates all technologies.</p>
-  <p style="margin:10px 0 0;font-size:14px"><strong>&rarr; Advisory data &amp; IT, agenda et tous mes travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></strong></p>
+  <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>The open-data series · Sitraka Forler</div>
+    <p style="margin:9px 0 0">This dashboard is part of a series of reuses of Luxembourg public data:
+      <strong>lux-solaire</strong> ·
+      <a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a> ·
+      <a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a> ·
+      <a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a> ·
+      <a href="https://budget-lu.vercel.app" target="_blank" rel="noopener">budget-lu</a> ·
+      <a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a>.</p>
+    <p style="margin:10px 0 0;font-size:14px"><strong>&rarr; Data &amp; IT advisory, agenda and all my work: <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></strong></p>
+  </div>
   <p>Analyse &amp; visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> &middot; pandas + SVG natif, sans biblioth&egrave;que &middot; <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> &middot; <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a> &middot; juillet 2026.</p>
 </footer>
 </div>
