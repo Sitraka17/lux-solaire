@@ -12,7 +12,7 @@ import json
 import math
 import re
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -106,6 +106,29 @@ def build(frames, wdate):
     sizes = [{"bin": str(i), "count": int(r["count"]), "mw": round(r["cap"] / 1000, 1)}
              for i, r in hist.iterrows()]
 
+    # ---- rythme sur 12 mois + année du cap national de 1 GW ----
+    # Méthode « + X MW sur 12 mois » : on compare le dernier relevé TRIMESTRIEL
+    # au relevé du même trimestre un an plus tôt (écart exact de 4 trimestres,
+    # indépendant du jour de relevé dans le trimestre). Tant que moins de
+    # 5 trimestres sont publiés, on annualise la pente moyenne disponible.
+    q_rows = [r for r in series if re.match(r"^\d{4} T\d$", r["label"])]
+    if len(q_rows) >= 5:
+        growth12 = q_rows[-1]["pv"] - q_rows[-5]["pv"]
+    else:
+        growth12 = (q_rows[-1]["pv"] - q_rows[0]["pv"]) / max(len(q_rows) - 1, 1) * 4
+    growth12 = round(growth12, 1)
+    # Méthode « ~AAAA » : année de franchissement des 1 000 MW PV nationaux si
+    # le rythme des 12 derniers mois se maintient. Projection linéaire naïve
+    # depuis le dernier relevé (hebdomadaire) : (1000 - PV actuel) / rythme,
+    # convertie en jours calendaires. None si le rythme est nul ou négatif.
+    pv_now = series[-1]["pv"]
+    if pv_now >= 1000:
+        gw_year = wdate.year
+    elif growth12 > 0:
+        gw_year = (wdate + timedelta(days=round((1000 - pv_now) / growth12 * 365.25))).year
+    else:
+        gw_year = None
+
     return {
         "series": series,
         "communes": communes,
@@ -114,6 +137,8 @@ def build(frames, wdate):
             "pv_mw": round(latest["Installation photovoltaïque Performance [kW]"].sum() / 1000, 1),
             "total_mw": round(latest["total_kw"].sum() / 1000, 1),
             "pv_n": int(latest["Installation photovoltaïque Producteur [#]"].sum()),
+            "growth12_mw": growth12,
+            "gw_year": gw_year,
             "date": f"{wdate.day}{'er' if wdate.day == 1 else ''} {MONTHS_FR[wdate.month - 1]} {wdate.year}",
         },
     }
@@ -337,6 +362,7 @@ def render_all(data):
             for code, path in LANG_PATHS)
         html = (tpl.replace("/*__DATA__*/", blob)
                    .replace("__DATE__", d["meta"]["date"])
+                   .replace("__ISODATE__", date.today().isoformat())
                    .replace("__LANG__", lang)
                    .replace("__CANONICAL__", canonical)
                    .replace("<!--LANGTOGGLE-->", toggle))

@@ -12,6 +12,13 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://lux-solaire.vercel.app/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Article","@id":"__CANONICAL__#article","headline":"Le photovoltaïque au Luxembourg, commune par commune : capacité installée, croissance et mix par filière","inLanguage":"__LANG__","url":"__CANONICAL__","dateModified":"__ISODATE__","author":{"@id":"https://sitraka.lu/#person"},"publisher":{"@id":"https://sitraka.lu/#person"},"isBasedOn":["https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"],"about":["Solar power","Photovoltaics","Luxembourg","Open data"],"license":"https://creativecommons.org/licenses/by/4.0/"},
+ {"@type":"Dataset","@id":"__CANONICAL__#dataset","name":"lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois","description":"Capacité PV par commune, croissance trimestrielle, mix par filière et histogramme des tailles, recalculés depuis les relevés Leneda publiés sur data.public.lu.","url":"__CANONICAL__","license":"https://creativecommons.org/licenses/by/4.0/","creator":{"@id":"https://sitraka.lu/#person"},"isBasedOn":["https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"],"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://lux-solaire.vercel.app/data/data.json"}],"spatialCoverage":"Luxembourg","temporalCoverage":"2025/2026"},
+ {"@type":"Person","@id":"https://sitraka.lu/#person","name":"Sitraka Forler","url":"https://sitraka.lu","sameAs":["https://www.linkedin.com/in/sitraka-matthieu-forler","https://github.com/Sitraka17"]}
+]}
+</script>
 <link rel="alternate" hreflang="en" href="https://lux-solaire.vercel.app/">
 <link rel="alternate" hreflang="fr" href="https://lux-solaire.vercel.app/fr">
 <link rel="alternate" hreflang="lb" href="https://lux-solaire.vercel.app/lb">
@@ -56,7 +63,8 @@
   .badge b{color:var(--ink);font-weight:600}
 
   /* ---------- KPI band ---------- */
-  .kpis{margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));border:1px solid var(--line);background:var(--line);gap:1px}
+  .kpis{margin-top:36px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);background:var(--line);gap:1px}
+  .kpi-note{margin-top:10px;font-size:12.5px;color:var(--ink-3);max-width:82ch}
   .kpi{background:var(--card);padding:20px 22px 18px}
   .kpi.hero{background:var(--ink);color:#fff}
   .kpi .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
@@ -192,7 +200,18 @@
     <div class="val" id="k-share">—</div>
     <div class="sub">sur <span id="k-tot">—</span> MW toutes filières</div>
   </div>
+  <div class="kpi">
+    <div class="lbl">Rythme sur 12 mois</div>
+    <div class="val" id="k-g12">—</div>
+    <div class="sub">dernier relevé trimestriel vs un an plus tôt</div>
+  </div>
+  <div class="kpi">
+    <div class="lbl">Cap national du 1 GW</div>
+    <div class="val" id="k-gw">—</div>
+    <div class="sub">année du gigawatt à ce rythme (projection naïve)</div>
+  </div>
 </div>
+<p class="kpi-note">Rappel : capacité installée ne veut pas dire énergie produite, et l'année du 1 GW n'est qu'une projection linéaire naïve du rythme des 12 derniers mois.</p>
 
 <section>
   <div class="sec-head">
@@ -333,6 +352,8 @@ document.getElementById('k-share').textContent = fmt1(last.pv/totLast*100)+' %';
 document.getElementById('k-tot').textContent = fmt(Math.round(totLast));
 const totFirst = TECHS.reduce((a,t)=>a+first[t.k],0);
 document.getElementById('growth-total').textContent = Math.round(totLast-totFirst);
+document.getElementById('k-g12').textContent = '+'+fmt(Math.round(D.meta.growth12_mw))+' MW';
+document.getElementById('k-gw').textContent = D.meta.gw_year ? '~'+D.meta.gw_year : '—';
 
 /* ---- stacked area (SVG) ---- */
 (function(){
