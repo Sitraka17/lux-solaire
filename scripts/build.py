@@ -144,7 +144,7 @@ def build(frames, wdate):
     }
 
 
-SITE = "https://lux-solaire.vercel.app"
+SITE = "https://solaire.sitraka.lu"
 
 # ──────────────── i18n (EN par défaut, FR sur /fr, LB sur /lb) ─────────────
 # Deux dictionnaires par langue cible : i18n_en.json / i18n_lb.json (texte
@@ -319,7 +319,7 @@ def make_og(data):
         n = format(data["meta"]["pv_n"], ",").replace(",", " ")
         sub = n + " installations photovoltaïques · capacité installée, pas énergie"
         dr.text((80, 480), sub, font=fit(sub, mid), fill="#5A6472")
-        dr.text((80, 556), "lux-solaire.vercel.app · Leneda / data.public.lu (CC0) · FR · EN · LU", font=small, fill="#6B7380")
+        dr.text((80, 556), "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · FR · EN · LU", font=small, fill="#6B7380")
         img.save(ROOT / "og.png")
         return True
     except Exception:

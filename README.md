@@ -4,7 +4,7 @@
 données ouvertes de [Leneda](https://leneda.eu) publiées sur
 [data.public.lu](https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/).
 
-🌐 **Live** : [lux-solaire.vercel.app](https://lux-solaire.vercel.app) ·
+🌐 **Live** : [solaire.sitraka.lu](https://solaire.sitraka.lu) ·
 💻 **Code** : [github.com/Sitraka17/lux-solaire](https://github.com/Sitraka17/lux-solaire)
 
 Le portail Open data luxembourgeois posait la question : *« Quelle est la part
