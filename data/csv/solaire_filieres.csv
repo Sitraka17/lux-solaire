@@ -1,0 +1,7 @@
+﻿reading,reading_kind,pv_mw,wind_mw,hydro_mw,chp_mw,biomass_mw,biogas_mw,pv_installations,source_url
+2025-Q1,quarterly,593.76,213.74,33.95,73.13,96.6,9.79,25398,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2025-Q2,quarterly,648.69,213.74,33.95,73.13,96.6,9.83,28261,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2025-Q3,quarterly,698.37,226.46,33.95,72.49,96.6,9.19,30646,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2025-Q4,quarterly,745.38,230.72,34.04,72.49,96.6,9.91,33250,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-Q1,quarterly,769.26,230.72,34.04,60.27,96.6,9.77,34847,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-09-14,weekly,805.6,240.63,34.04,58.24,96.6,9.34,37340,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/

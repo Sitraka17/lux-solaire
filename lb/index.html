@@ -186,6 +186,29 @@
   @media(prefers-reduced-motion:no-preference){
     .hbars .fl,.pair .b{transition:width .6s ease}
   }
+  /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
+  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
+    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:10px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  .rt h2{font-size:18px;margin:0 0 14px}
+  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
+  .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
+  .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+  .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
+  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:999px;background:none;text-decoration:none;cursor:pointer}
+  .rt-row a:hover,.rt button:hover{border-color:var(--rt-accent)}
+  .rt :focus-visible,.rt-a:focus-visible{outline:2px solid var(--rt-accent);outline-offset:2px}
+  .rt [hidden]{display:none}
+  .rt-cite{white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--rt-mono);border-left:2px solid var(--rt-line);padding:2px 0 2px 10px;margin:0 0 8px;max-height:14em;overflow:auto}
+  .rt summary{cursor:pointer;font-size:13px;color:var(--rt-muted)}
+  .rt-dl{list-style:none;margin:0;padding:0;font-size:13px}.rt-dl li{margin:0 0 6px}
+  .rt-dl small{color:var(--rt-muted);font-weight:400}
+  .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
+  .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
+  @media (hover:none){.rt-a{opacity:.8}}
+  section[id]{scroll-margin-top:72px}
+  @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
@@ -245,7 +268,7 @@
 </div>
 <p class="kpi-note">Als Rappel: installéiert Kapazitéit heescht net produzéiert Energie; d'PNEC-Zuel ass d'Zil aus dem nationale Plang, keng Projektioun vun dësem Dashboard.</p>
 
-<section>
+<section id="trajectoire">
   <div class="sec-head">
     <h2>National Entwécklung: de PV vergréissert den Ofstand</h2>
     <span class="sec-note">MW installéiert · Q1 2025 → haut</span>
@@ -280,7 +303,7 @@
   </div>
 </section>
 
-<section>
+<section id="mix">
   <div class="grid-2">
     <div>
       <div class="sec-head"><h2>Mix vun de Filièren</h2><span class="sec-note">Relevé vum 14. September 2026</span></div>
@@ -309,7 +332,7 @@
   </div>
 </section>
 
-<section>
+<section id="classements">
   <div class="grid-2">
     <div>
       <div class="sec-head"><h2>Top 15: PV-Kapazitéit</h2><span class="sec-note">kW installéiert</span></div>
@@ -345,7 +368,7 @@
   </div>
 </section>
 
-<section>
+<section id="paradoxe">
   <div class="sec-head">
     <h2>De Paradox vun de Wunnhaiser</h2>
     <span class="sec-note">37 339 PV-Installatiounen eng fir eng erfaasst</span>
@@ -364,7 +387,7 @@
   </div>
 </section>
 
-<section>
+<section id="communes">
   <div class="sec-head">
     <h2>Déi 100 Gemengen</h2>
     <span class="sec-note">op eng Kolonn klicke fir ze zortéieren</span>
@@ -392,8 +415,56 @@
   </div>
 </section>
 
+<aside class="rt" id="rt" aria-labelledby="rt-h"
+  data-rt-version="2026-09-14"
+  data-l-copied="Link kopéiert"
+  data-l-cite-copied="Zitat kopéiert"
+  data-l-manual="Kopéiert dësen Text:"
+  data-l-anchor="Link op dës Sektioun kopéieren"
+  data-l-version="Versioun vum"
+  data-l-accessed="ofgeruff den"
+  data-l-sep="; "
+  data-l-err-subject="Feeler gemellt"
+  data-l-err-page="Säit:"
+  data-l-err-section="Sektioun:"
+  data-l-err-what="Wat net stëmmt:"
+  data-l-err-source="Proposéiert Quell oder Korrektur (Link):">
+  <h2 id="rt-h">Deelen, zitéieren, eroflueden</h2>
+  <div class="rt-grid">
+    <div>
+      <h3>Deelen</h3>
+      <p class="rt-row">
+        <a id="rt-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsolaire.sitraka.lu%2Flb" target="_blank" rel="noopener">Op LinkedIn deelen</a>
+        <a id="rt-x" href="https://x.com/intent/tweet?url=https%3A%2F%2Fsolaire.sitraka.lu%2Flb" target="_blank" rel="noopener">Op X deelen</a>
+        <button type="button" id="rt-copy">Link kopéieren</button>
+        <button type="button" id="rt-native" hidden>Deelen…</button>
+      </p>
+    </div>
+    <div>
+      <h3>Dës Säit zitéieren</h3>
+      <pre class="rt-cite" id="rt-cite-txt">https://solaire.sitraka.lu/lb</pre>
+      <p class="rt-row"><button type="button" id="rt-copy-txt">Zitat kopéieren</button></p>
+      <details class="rt-bib"><summary>BibTeX</summary>
+        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <p class="rt-row"><button type="button" id="rt-copy-bib">BibTeX kopéieren</button></p>
+      </details>
+    </div>
+    <div>
+      <h3>D'Donnéeën eroflueden</h3>
+      <ul class="rt-dl"><li><a href="/data/csv/solaire_communes.csv" download>PV-Kapazitéit pro Gemeng (100 Gemengen)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_cantons.csv" download>PV-Kapazitéit pro Kanton (12 Kantonen)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_filieres.csv" download>Installéiert Kapazitéit pro Filière a Relevé</a> <small>CSV</small></li><li><a href="/data/csv/solaire_tailles.csv" download>PV-Installatiounen no Gréisstklass</a> <small>CSV</small></li><li><a href="/data/data.lb.json" download>All d'Donnéeë vun dëser Säit (JSON)</a> <small>JSON</small></li></ul>
+      <p class="rt-note">Lizenz a Quellen: kuckt d'<a href="#methode">Method</a>.</p>
+    </div>
+    <div>
+      <h3>Kontakt</h3>
+      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20https%3A%2F%2Fsolaire.sitraka.lu%2Flb">E Feeler mellen</a></p>
+      <p class="rt-note">Auteur: <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
+    </div>
+  </div>
+  <p class="rt-sr" id="rt-live" aria-live="polite"></p>
+</aside>
+
 <footer>
-  <h3>Method a Quell</h3>
+  <h3 id="methode">Method a Quell</h3>
   <p>Donnéeën: den Dataset <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« D'Produktioun vun elektrescher Energie zu Lëtzebuerg »</a>, dee Leneda op data.public.lu publizéiert (Licence CC0): Quartalsrelevéen Q1 2025 → Q1 2026 an de wëchentleche Relevé vum 14. September 2026 (Fichiere pro Gemeng, Kanton an Installatioun).</p>
   <p>D'Zuele beschreiwen d'<strong>installéiert Kapazitéit</strong> (ugeschlosse kW) vum dezentrale Produktiounspark, net déi produzéiert Energie (kWh): de reellen Undeel vum PV am geliwwerte Stroum hänkt vun der Sonn a vun de Laaschtfacteuren of. « Δ kW zanter Q1 2025 » vergläicht den aktuelle Relevé mam éischte publizéierte Quartalsrelevé. An der Tabell pro Gemeng ass nëmmen d'Photovoltaik-Kapazitéit opgeschlësselt; d'Kolonn « Total kW » faasst all Filièren zesummen.</p>
   <p>Populatioun: Registre national des personnes physiques (RNPP) vum 1. Juli 2026, 693 913 Awunner, CC0-Dataset op data.public.lu; dëse Verwaltungsregister ënnerscheet sech vun der offizieller Populatiounsschätzung vum STATEC. « W/Aw. » = PV-kW × 1 000 / Populatioun; « Diecher » = PV-Installatioune vun 30 kW oder manner.</p>
@@ -570,3 +641,4 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   render();
 })();
 </script>
+<script defer src="/rt.js"></script>

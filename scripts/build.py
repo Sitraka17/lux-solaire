@@ -14,6 +14,7 @@ Garde-fous (le build ÉCHOUE plutôt que de publier une prose fausse) :
   - les encadrés dérivés (plus forte hausse, quatre plus grandes centrales)
     sont recalculés et vérifiés contre les données à chaque build.
 """
+import csv
 import hashlib
 import io
 import json
@@ -23,6 +24,7 @@ import re
 import statistics
 import sys
 import unicodedata
+import urllib.parse
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -32,6 +34,16 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 DATASET_API = "https://data.public.lu/api/1/datasets/la-production-denergie-electrique-au-luxembourg/"
+DATASET_URL = "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"
+RNPP_URL = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-"
+            "population-par-commune-population-per-municipality/")
+LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/"   # données dérivées (la source Leneda est CC0)
+KIT_VERSION = "2026-09-14"   # à incrémenter quand le pipeline de rendu change (exports, JSON-LD)
+
+# classes de taille de l'histogramme (bornes fermées à droite : « 30 kW ou moins »)
+BIN_EDGES = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, None]
+BIN_LABELS = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
+              "0,5–1 MW", "1–5 MW", ">5 MW"]
 
 TECHS = ["Biogaz", "Biomasse", "Cogénération", "Eolienne",
          "Installation hydroélectrique", "Installation photovoltaïque"]
@@ -222,10 +234,8 @@ def build(frames, wdate, ng, pop, pop_date):
     pop_total = sum(c["pop"] for c in communes)
 
     # ---- histogramme des tailles ----
-    bins = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, 1e9]
-    bin_labels = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
-                  "0,5–1 MW", "1–5 MW", ">5 MW"]
-    cut = pd.cut(pv_inst["p"], bins=bins, labels=bin_labels)   # bornes fermées à droite : « 30 kW ou moins »
+    bins = [e if e is not None else 1e9 for e in BIN_EDGES]
+    cut = pd.cut(pv_inst["p"], bins=bins, labels=BIN_LABELS)   # bornes fermées à droite : « 30 kW ou moins »
     hist = pv_inst.groupby(cut, observed=True).agg(count=("p", "size"), cap=("p", "sum"))
     sizes = [{"bin": str(i), "count": int(r["count"]), "mw": round(r["cap"] / 1000, 1)}
              for i, r in hist.iterrows()]
@@ -682,6 +692,130 @@ def check_claims(data):
     assert top["g"] == max(c["g"] for c in data["communes"])
 
 
+# ──────────────── date de contenu honnête ───────────────────────────────────
+STATE = ROOT / "scripts" / "build_state.json"
+
+
+def content_date(lang, parts):
+    """Date du dernier build qui a CHANGÉ la page de cette langue : empreinte
+    du gabarit, du dictionnaire, des données, de rt.js et de la version du
+    pipeline, mémorisée dans scripts/build_state.json (commité, jamais servi).
+    Une seule valeur pour lastmod, dateModified et la version citée."""
+    h = hashlib.sha256("\x00".join(parts).encode("utf-8")).hexdigest()
+    st = json.loads(STATE.read_text()) if STATE.exists() else {}
+    if st.get(lang, {}).get("hash") != h:
+        st[lang] = {"hash": h, "date": date.today().isoformat()}
+        STATE.write_text(json.dumps(st, indent=1, sort_keys=True) + "\n")
+    return st[lang]["date"]
+
+
+# ──────────────── exports CSV publics + manifeste ───────────────────────────
+# Titres par langue = configuration du kit (pas des clés de dictionnaire).
+CSV_TITLES = {
+    "solaire_communes": {"fr": "Capacité PV par commune (100 communes)",
+                         "en": "PV capacity by municipality (100 municipalities)",
+                         "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)"},
+    "solaire_cantons": {"fr": "Capacité PV par canton (12 cantons)",
+                        "en": "PV capacity by canton (12 cantons)",
+                        "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)"},
+    "solaire_filieres": {"fr": "Capacité installée par filière et par relevé",
+                         "en": "Installed capacity by technology and reading",
+                         "lb": "Installéiert Kapazitéit pro Filière a Relevé"},
+    "solaire_tailles": {"fr": "Installations PV par classe de taille",
+                        "en": "PV installations by size class",
+                        "lb": "PV-Installatiounen no Gréisstklass"},
+}
+JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
+              "lb": "All d'Donnéeë vun dëser Säit (JSON)"}
+CSV_NOTES = {
+    "solaire_communes": {"fr": "Relevé hebdomadaire Leneda par commune ; population RNPP (somme des quatre colonnes mineurs/majeurs).",
+                         "en": "Leneda weekly reading by municipality; RNPP population (sum of the four minors/adults columns).",
+                         "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger)."},
+    "solaire_cantons": {"fr": "Agrégé à partir des communes.", "en": "Aggregated from the municipalities.", "lb": "Aus de Gemengen zesummegerechent."},
+    "solaire_filieres": {"fr": "Une ligne par relevé : fichiers trimestriels (reading_kind=quarterly) et relevé hebdomadaire courant (weekly), deux extraits Leneda distincts.",
+                         "en": "One row per reading: quarterly files (reading_kind=quarterly) and the current weekly reading (weekly), two separate Leneda extracts.",
+                         "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten."},
+    "solaire_tailles": {"fr": "Fichier hebdomadaire par installation ; bornes fermées à droite (kw_max inclus).",
+                        "en": "Weekly per-installation file; right-closed bins (kw_max included).",
+                        "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff)."},
+}
+
+
+def _period(label):
+    """« 2025 T1 » → « 2025-Q1 » ; autre libellé (hebdo) → chaîne vide."""
+    m = re.match(r"^(\d{4}) T(\d)$", label)
+    return f"{m.group(1)}-Q{m.group(2)}" if m else ""
+
+
+def exports(d):
+    """Tables CSV dérivées du blob FR (mêmes valeurs que la page). En-têtes en
+    snake_case anglais, STABLES une fois publiés ; décimale point ; dates ISO."""
+    m, P = d["meta"], d["population"]
+    q_labels = [r["label"] for r in d["series"] if _period(r["label"])]
+    first_q = _period(q_labels[0])
+    bin_bounds = {lbl: (BIN_EDGES[i], BIN_EDGES[i + 1]) for i, lbl in enumerate(BIN_LABELS)}
+    return [
+        {"slug": "solaire_communes", "source": DATASET_URL,
+         "headers": ["reading_date", "lau2", "commune", "canton", "pv_kw", "pv_installations", "pv_share_pct",
+                     "pv_delta_kw_since_first_reading", "first_reading", "total_kw", "wind_kw", "hydro_kw", "chp_kw",
+                     "bio_kw", "population", "population_date", "population_source_url", "w_per_inhabitant",
+                     "installations_per_1000", "rooftops_le30kw_per_1000"],
+         "rows": [[m["date_iso"], c["lau2"], c["c"], c["k"], c["pv"], c["n"], c["share"], c["g"], first_q, c["tot"],
+                   c["wind"], c["hydro"], c["chp"], c["bio"], c["pop"], P["date_iso"], RNPP_URL, c["wpc"], c["ipk"], c["rpk"]]
+                  for c in d["communes"]]},
+        {"slug": "solaire_cantons", "source": DATASET_URL,
+         "headers": ["reading_date", "canton", "pv_kw", "pv_installations", "total_kw", "pv_share_pct", "population",
+                     "population_date", "population_source_url", "w_per_inhabitant", "installations_per_1000"],
+         "rows": [[m["date_iso"], k["k"], k["pv"], k["n"], k["tot"], k["share"], k["pop"], P["date_iso"], RNPP_URL,
+                   k["wpc"], k["ipk"]] for k in d["cantons"]]},
+        {"slug": "solaire_filieres", "source": DATASET_URL,
+         "headers": ["reading", "reading_kind", "pv_mw", "wind_mw", "hydro_mw", "chp_mw", "biomass_mw", "biogas_mw",
+                     "pv_installations"],
+         "rows": [[_period(r["label"]) or m["date_iso"], "quarterly" if _period(r["label"]) else "weekly",
+                   r["pv"], r["wind"], r["hydro"], r["chp"], r["biomass"], r["biogas"], r["pv_count"]]
+                  for r in d["series"]]},
+        {"slug": "solaire_tailles", "source": DATASET_URL,
+         "headers": ["reading_date", "size_class", "kw_min_excl", "kw_max_incl", "pv_installations", "capacity_mw"],
+         "rows": [[m["date_iso"], s["bin"].replace("–", "-").replace(",", ".") + ("" if "MW" in s["bin"] else " kW"),
+                   bin_bounds[s["bin"]][0], bin_bounds[s["bin"]][1], s["count"], s["mw"]] for s in d["sizes"]]},
+    ]
+
+
+def write_exports(tables, cdate):
+    """data/csv/<slug>.csv (UTF-8 avec BOM, virgule, colonne source_url) et
+    data/manifest.json, qui alimente la liste de téléchargements et le JSON-LD."""
+    out = ROOT / "data" / "csv"
+    out.mkdir(parents=True, exist_ok=True)
+    files = []
+    for t in tables:
+        p = out / f"{t['slug']}.csv"
+        with open(p, "w", encoding="utf-8-sig", newline="") as fh:
+            w = csv.writer(fh)
+            w.writerow(t["headers"] + ["source_url"])
+            for r in t["rows"]:
+                w.writerow([("" if v is None else v) for v in r] + [t["source"]])
+        files.append({"path": f"/data/csv/{t['slug']}.csv", "format": "text/csv", "rows": len(t["rows"]),
+                      "title": CSV_TITLES[t["slug"]], "source": t["source"], "notes": CSV_NOTES[t["slug"]]})
+    for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("lb", "data.lb.json")):
+        files.append({"path": f"/data/{name}", "format": "application/json", "rows": 0, "lang": lang,
+                      "title": JSON_TITLE, "source": DATASET_URL, "notes": {}})
+    manifest = {"site": "lux-solaire", "content_date": cdate, "license": LICENSE_URL,
+                "sources": [DATASET_URL, RNPP_URL], "files": files}
+    (ROOT / "data" / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
+    return manifest
+
+
+def rt_downloads(manifest, lang):
+    """Liste <li> de la boîte à outils : les CSV et le JSON de la locale."""
+    items = []
+    for f in manifest["files"]:
+        if f.get("lang") and f["lang"] != lang:
+            continue
+        kind = "CSV" if f["format"] == "text/csv" else "JSON"
+        items.append(f'<li><a href="{f["path"]}" download>{f["title"][lang]}</a> <small>{kind}</small></li>')
+    return "".join(items)
+
+
 def write_seo():
     """robots.txt + sitemap.xml (les trois langues : /, /fr et /lb)."""
     today = date.today().isoformat()
@@ -791,6 +925,15 @@ def render_all(data):
     check_dicts(tpl)
     if "—" in tpl:
         sys.exit("template.html contient un tiret cadratin (U+2014)")
+    # date de contenu par langue, puis exports (le manifeste porte la plus récente)
+    rt_js = (ROOT / "rt.js").read_text()
+    dict_txt = {"fr": "",
+                "en": (ROOT / "scripts" / "i18n_en.json").read_text() + (ROOT / "scripts" / "i18n_js.json").read_text(),
+                "lb": (ROOT / "scripts" / "i18n_lb.json").read_text() + (ROOT / "scripts" / "i18n_lb_js.json").read_text()}
+    blobs = {"fr": data, "en": data_en, "lb": data_lb}
+    cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
+                                        rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
+    manifest = write_exports(exports(data), max(cdates.values()))
 
     def render(d, lang):
         blob = json.dumps(d, ensure_ascii=False)
@@ -821,6 +964,8 @@ def render_all(data):
         html = (tpl.replace("/*__DATA__*/", blob)
                    .replace("__ISODATE__", date.today().isoformat())
                    .replace("__LANG__", lang)
+                   .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
+                   .replace("__CONTENT_DATE__", cdates[lang])
                    .replace("__CANONICAL__", canonical)
                    .replace("__OGIMAGE__", OG_FILES[lang])
                    .replace("<!--OGLOCALE-->", og_locale)
@@ -839,6 +984,7 @@ def render_all(data):
             if marker not in html:
                 sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
             html = html.replace(marker, frag)
+        html = html.replace("<!--RT_DOWNLOADS-->", rt_downloads(manifest, lang))
         check_output(html, lang, dct)
         return html
 

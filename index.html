@@ -186,6 +186,29 @@
   @media(prefers-reduced-motion:no-preference){
     .hbars .fl,.pair .b{transition:width .6s ease}
   }
+  /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
+  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
+    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:10px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  .rt h2{font-size:18px;margin:0 0 14px}
+  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
+  .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
+  .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+  .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
+  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:999px;background:none;text-decoration:none;cursor:pointer}
+  .rt-row a:hover,.rt button:hover{border-color:var(--rt-accent)}
+  .rt :focus-visible,.rt-a:focus-visible{outline:2px solid var(--rt-accent);outline-offset:2px}
+  .rt [hidden]{display:none}
+  .rt-cite{white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--rt-mono);border-left:2px solid var(--rt-line);padding:2px 0 2px 10px;margin:0 0 8px;max-height:14em;overflow:auto}
+  .rt summary{cursor:pointer;font-size:13px;color:var(--rt-muted)}
+  .rt-dl{list-style:none;margin:0;padding:0;font-size:13px}.rt-dl li{margin:0 0 6px}
+  .rt-dl small{color:var(--rt-muted);font-weight:400}
+  .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
+  .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
+  @media (hover:none){.rt-a{opacity:.8}}
+  section[id]{scroll-margin-top:72px}
+  @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
@@ -245,7 +268,7 @@
 </div>
 <p class="kpi-note">Reminder: installed capacity does not mean energy produced; the PNEC figure is the target written into the national plan, not a projection by this dashboard.</p>
 
-<section>
+<section id="trajectoire">
   <div class="sec-head">
     <h2>National trajectory: PV pulls ahead</h2>
     <span class="sec-note">MW installed · Q1 2025 → today</span>
@@ -280,7 +303,7 @@
   </div>
 </section>
 
-<section>
+<section id="mix">
   <div class="grid-2">
     <div>
       <div class="sec-head"><h2>Technology mix</h2><span class="sec-note">reading of 14 September 2026</span></div>
@@ -309,7 +332,7 @@
   </div>
 </section>
 
-<section>
+<section id="classements">
   <div class="grid-2">
     <div>
       <div class="sec-head"><h2>Top 15: PV capacity</h2><span class="sec-note">kW installed</span></div>
@@ -345,7 +368,7 @@
   </div>
 </section>
 
-<section>
+<section id="paradoxe">
   <div class="sec-head">
     <h2>The residential paradox</h2>
     <span class="sec-note">37,339 PV installations counted one by one</span>
@@ -364,7 +387,7 @@
   </div>
 </section>
 
-<section>
+<section id="communes">
   <div class="sec-head">
     <h2>The 100 municipalities</h2>
     <span class="sec-note">click a header to sort</span>
@@ -392,8 +415,56 @@
   </div>
 </section>
 
+<aside class="rt" id="rt" aria-labelledby="rt-h"
+  data-rt-version="2026-09-14"
+  data-l-copied="Link copied"
+  data-l-cite-copied="Citation copied"
+  data-l-manual="Copy this text:"
+  data-l-anchor="Copy the link to this section"
+  data-l-version="version of"
+  data-l-accessed="accessed"
+  data-l-sep="; "
+  data-l-err-subject="Error report"
+  data-l-err-page="Page:"
+  data-l-err-section="Section:"
+  data-l-err-what="What looks wrong:"
+  data-l-err-source="Suggested source or correction (link):">
+  <h2 id="rt-h">Share, cite, download</h2>
+  <div class="rt-grid">
+    <div>
+      <h3>Share</h3>
+      <p class="rt-row">
+        <a id="rt-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsolaire.sitraka.lu%2F" target="_blank" rel="noopener">Share on LinkedIn</a>
+        <a id="rt-x" href="https://x.com/intent/tweet?url=https%3A%2F%2Fsolaire.sitraka.lu%2F" target="_blank" rel="noopener">Share on X</a>
+        <button type="button" id="rt-copy">Copy the link</button>
+        <button type="button" id="rt-native" hidden>Share…</button>
+      </p>
+    </div>
+    <div>
+      <h3>Cite this page</h3>
+      <pre class="rt-cite" id="rt-cite-txt">https://solaire.sitraka.lu/</pre>
+      <p class="rt-row"><button type="button" id="rt-copy-txt">Copy the citation</button></p>
+      <details class="rt-bib"><summary>BibTeX</summary>
+        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <p class="rt-row"><button type="button" id="rt-copy-bib">Copy the BibTeX</button></p>
+      </details>
+    </div>
+    <div>
+      <h3>Download the data</h3>
+      <ul class="rt-dl"><li><a href="/data/csv/solaire_communes.csv" download>PV capacity by municipality (100 municipalities)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_cantons.csv" download>PV capacity by canton (12 cantons)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_filieres.csv" download>Installed capacity by technology and reading</a> <small>CSV</small></li><li><a href="/data/csv/solaire_tailles.csv" download>PV installations by size class</a> <small>CSV</small></li><li><a href="/data/data.en.json" download>All the data on this page (JSON)</a> <small>JSON</small></li></ul>
+      <p class="rt-note">Licence and sources: see the <a href="#methode">method</a>.</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20https%3A%2F%2Fsolaire.sitraka.lu%2F">Report an error</a></p>
+      <p class="rt-note">Author: <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
+    </div>
+  </div>
+  <p class="rt-sr" id="rt-live" aria-live="polite"></p>
+</aside>
+
 <footer>
-  <h3>Method & source</h3>
+  <h3 id="methode">Method & source</h3>
   <p>Data: the <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">“Electricity generation in Luxembourg”</a> dataset published by Leneda on data.public.lu (CC0 licence): quarterly readings Q1 2025 → Q1 2026 and the weekly reading of 14 September 2026 (municipality, canton and per-installation files).</p>
   <p>The figures describe <strong>installed capacity</strong> (kW connected) of the decentralised generation fleet, not the energy produced (kWh): the real share of PV in delivered electricity depends on sunshine and load factors. “Δ kW since Q1 2025” compares the current reading with the first published quarterly reading. In the per-municipality table, only photovoltaic capacity is broken out; the “Total kW” column aggregates all technologies.</p>
   <p>Population: National Register of Natural Persons (RNPP) as of 1er July 2026, 693,913 residents, CC0 dataset on data.public.lu; this administrative register differs from STATEC's official population estimate. “W/inh.” = PV kW × 1,000 / population; “rooftops” = PV installations of 30 kW or less.</p>
@@ -570,3 +641,4 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   render();
 })();
 </script>
+<script defer src="/rt.js"></script>
