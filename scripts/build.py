@@ -2,17 +2,28 @@
 """Rebuild the Lux-Solaire dashboard from the latest Leneda open data.
 
 Downloads the quarterly + weekly CSVs from data.public.lu, recomputes the
-aggregates, and injects them into template.html -> index.html.
+aggregates, and injects them into template.html -> index.html (EN), fr/ and lb/.
 
 Usage:  python3 scripts/build.py
-Deps:   pandas, requests
+Deps:   pandas, requests (pillow optional, for og.png)
+
+Garde-fous (le build ÉCHOUE plutôt que de publier une prose fausse) :
+  - toute clé des dictionnaires i18n doit exister dans template.html ;
+  - après traduction, aucune clé traduite ne doit subsister dans la page ;
+  - aucun jeton __XXX__ ni tiret cadratin (U+2014) dans les pages produites ;
+  - les encadrés dérivés (plus forte hausse, quatre plus grandes centrales)
+    sont recalculés et vérifiés contre les données à chaque build.
 """
+import hashlib
 import io
 import json
 import math
+import os
 import re
+import statistics
 import sys
 from datetime import date, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
 import pandas as pd
@@ -26,61 +37,90 @@ TECHS = ["Biogaz", "Biomasse", "Cogénération", "Eolienne",
 SHORT = {"Biogaz": "biogas", "Biomasse": "biomass", "Cogénération": "chp",
          "Eolienne": "wind", "Installation hydroélectrique": "hydro",
          "Installation photovoltaïque": "pv"}
+PV = "Installation photovoltaïque"
 
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
 
 
+def _get(url, timeout=60):
+    """Téléchargement brut (bytes). Avec LUX_SOLAIRE_CACHE=1, les réponses sont
+    mises en cache dans .cache/ (ignoré par git et par Vercel) pour itérer sur
+    le gabarit sans re-télécharger ; le build normal et le cron n'en font rien."""
+    if os.environ.get("LUX_SOLAIRE_CACHE") == "1":
+        cache = ROOT / ".cache"
+        cache.mkdir(exist_ok=True)
+        f = cache / hashlib.sha1(url.encode()).hexdigest()
+        if f.exists():
+            return f.read_bytes()
+        content = requests.get(url, timeout=timeout).content
+        f.write_bytes(content)
+        return content
+    return requests.get(url, timeout=timeout).content
+
+
+def _label_fr(d):
+    """Libellé court d'un relevé hebdomadaire : « 14 sept. 2026 ». Règle
+    typographique française : mars, mai, juin et août ne s'abrègent pas."""
+    m = MONTHS_FR[d.month - 1]
+    return f"{d.day} {m if len(m) <= 4 else m[:4] + '.'} {d.year}"
+
+
 def fetch_resources():
-    """Return {label: dataframe} for quarterly commune files + weekly commune file."""
-    meta = requests.get(DATASET_API, timeout=30).json()
-    quarterly, weekly = {}, None
+    """Return ({label: dataframe} quarterly commune files + weekly commune file,
+    weekly date, weekly not-grouped dataframe). The weekly resource retained is
+    the most recent by date in its title (not the last one in list order)."""
+    meta = json.loads(_get(DATASET_API, timeout=30))
+    quarterly, weekly, ng = {}, [], []
     for r in meta["resources"]:
         title = r["title"]
         m = re.match(r"open-data-power-generation-q(\d)-(\d{4})\.csv", title)
         if m:
             q, y = m.group(1), m.group(2)
             quarterly[f"{y} T{q}"] = r["url"]
-        elif re.match(r"open-data-power-generation-weekly-.*-commune\.csv", title):
-            m2 = re.search(r"(\d{4})-(\d{2})-(\d{2})", title)
-            weekly = (date(*map(int, m2.groups())), r["url"])
+            continue
+        m2 = re.search(r"weekly-(\d{4})-(\d{2})-(\d{2})-(commune|not-grouped)\.csv$", title)
+        if m2:
+            d = date(*map(int, m2.groups()[:3]))
+            (weekly if m2.group(4) == "commune" else ng).append((d, r["url"]))
     frames = {}
     for label in sorted(quarterly):
-        frames[label] = pd.read_csv(io.BytesIO(requests.get(quarterly[label], timeout=30).content))
-    if weekly is None:
-        sys.exit("no weekly commune file found in dataset")
-    wdate, wurl = weekly
-    wlabel = f"{wdate.day} {MONTHS_FR[wdate.month - 1][:4]}. {wdate.year}" if wdate.month != 5 \
-        else f"{wdate.day} mai {wdate.year}"
-    frames[wlabel] = pd.read_csv(io.BytesIO(requests.get(wurl, timeout=30).content))
-    return frames, wdate
+        frames[label] = pd.read_csv(io.BytesIO(_get(quarterly[label], timeout=30)))
+    if not weekly or not ng:
+        sys.exit("no weekly commune / not-grouped file found in dataset")
+    wdate, wurl = max(weekly)
+    ngdate, ngurl = max(ng)
+    if ngdate != wdate:
+        print(f"attention : fichier par installation daté du {ngdate}, commune du {wdate}")
+    frames[_label_fr(wdate)] = pd.read_csv(io.BytesIO(_get(wurl, timeout=30)))
+    ngdf = pd.read_csv(io.BytesIO(_get(ngurl, timeout=60)))
+    return frames, wdate, ngdf
 
 
-def build(frames, wdate):
+def build(frames, wdate, ng):
     labels = list(frames)
     series = []
     for label, df in frames.items():
         row = {"label": label}
         for t in TECHS:
             row[SHORT[t]] = round(pd.to_numeric(df[t + " Performance [kW]"]).sum() / 1000, 2)
-        row["pv_count"] = int(pd.to_numeric(df["Installation photovoltaïque Producteur [#]"]).sum())
+        row["pv_count"] = int(pd.to_numeric(df[PV + " Producteur [#]"]).sum())
         series.append(row)
 
     latest, first = frames[labels[-1]].copy(), frames[labels[0]]
-    for df in (latest,):
-        for t in TECHS:
-            df[t + " Performance [kW]"] = pd.to_numeric(df[t + " Performance [kW]"])
+    for t in TECHS:
+        latest[t + " Performance [kW]"] = pd.to_numeric(latest[t + " Performance [kW]"])
     latest["total_kw"] = sum(latest[t + " Performance [kW]"] for t in TECHS)
-    pv0 = first.set_index("LAU2")["Installation photovoltaïque Performance [kW]"]
+    pv0 = first.set_index("LAU2")[PV + " Performance [kW]"]
 
     communes = []
     for _, r in latest.iterrows():
-        pv = r["Installation photovoltaïque Performance [kW]"]
+        pv = r[PV + " Performance [kW]"]
         base = float(pv0.get(r["LAU2"], 0))
         communes.append({
-            "c": r["Commune"], "k": r["Canton"],
+            "c": r["Commune"], "k": r["Canton"], "lau2": int(r["LAU2"]),
             "pv": round(pv, 1),
-            "n": int(r["Installation photovoltaïque Producteur [#]"]),
+            "n": int(r[PV + " Producteur [#]"]),
             "tot": round(r["total_kw"], 1),
             "share": round(pv / r["total_kw"] * 100, 1) if r["total_kw"] > 0 else 0,
             "g": round(pv - base, 1),
@@ -92,35 +132,28 @@ def build(frames, wdate):
         })
     communes.sort(key=lambda x: -x["pv"])
 
-    # size histogram needs the not-grouped weekly file
-    meta = requests.get(DATASET_API, timeout=30).json()
-    ng_url = next(r["url"] for r in meta["resources"] if "not-grouped" in r["title"])
-    ng = pd.read_csv(io.BytesIO(requests.get(ng_url, timeout=60).content))
+    # ---- histogramme des tailles : fichier hebdomadaire par installation ----
+    ng = ng.copy()
     ng["p"] = pd.to_numeric(ng["Puissance installée [kW]"])
-    pv_inst = ng[ng["Type d'installation"] == "Installation photovoltaïque"]
+    pv_inst = ng[ng["Type d'installation"] == PV]
     bins = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, 1e9]
     bin_labels = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
                   "0,5–1 MW", "1–5 MW", ">5 MW"]
-    cut = pd.cut(pv_inst["p"], bins=bins, labels=bin_labels)
+    cut = pd.cut(pv_inst["p"], bins=bins, labels=bin_labels)   # bornes fermées à droite : « 30 kW ou moins »
     hist = pv_inst.groupby(cut, observed=True).agg(count=("p", "size"), cap=("p", "sum"))
     sizes = [{"bin": str(i), "count": int(r["count"]), "mw": round(r["cap"] / 1000, 1)}
              for i, r in hist.iterrows()]
+    # les quatre plus grandes installations PV recensées (encadré dérivé)
+    top_records = [{"c": r["Commune"], "kw": round(float(r["p"]), 1)}
+                   for _, r in pv_inst.sort_values("p", ascending=False).head(4).iterrows()]
 
-    # ---- rythme sur 12 mois + année du cap national de 1 GW ----
-    # Méthode « + X MW sur 12 mois » : on compare le dernier relevé TRIMESTRIEL
-    # au relevé du même trimestre un an plus tôt (écart exact de 4 trimestres,
-    # indépendant du jour de relevé dans le trimestre). Tant que moins de
-    # 5 trimestres sont publiés, on annualise la pente moyenne disponible.
+    # ---- rythme sur 12 mois (ancien KPI, conservé dans data.json pour les réutilisateurs) ----
     q_rows = [r for r in series if re.match(r"^\d{4} T\d$", r["label"])]
     if len(q_rows) >= 5:
         growth12 = q_rows[-1]["pv"] - q_rows[-5]["pv"]
     else:
         growth12 = (q_rows[-1]["pv"] - q_rows[0]["pv"]) / max(len(q_rows) - 1, 1) * 4
     growth12 = round(growth12, 1)
-    # Méthode « ~AAAA » : année de franchissement des 1 000 MW PV nationaux si
-    # le rythme des 12 derniers mois se maintient. Projection linéaire naïve
-    # depuis le dernier relevé (hebdomadaire) : (1000 - PV actuel) / rythme,
-    # convertie en jours calendaires. None si le rythme est nul ou négatif.
     pv_now = series[-1]["pv"]
     if pv_now >= 1000:
         gw_year = wdate.year
@@ -129,17 +162,22 @@ def build(frames, wdate):
     else:
         gw_year = None
 
+    shares = [c["share"] for c in communes]
     return {
         "series": series,
         "communes": communes,
         "sizes": sizes,
         "meta": {
-            "pv_mw": round(latest["Installation photovoltaïque Performance [kW]"].sum() / 1000, 1),
+            "pv_mw": round(latest[PV + " Performance [kW]"].sum() / 1000, 1),
             "total_mw": round(latest["total_kw"].sum() / 1000, 1),
-            "pv_n": int(latest["Installation photovoltaïque Producteur [#]"].sum()),
+            "pv_n": int(latest[PV + " Producteur [#]"].sum()),
             "growth12_mw": growth12,
             "gw_year": gw_year,
             "date": f"{wdate.day}{'er' if wdate.day == 1 else ''} {MONTHS_FR[wdate.month - 1]} {wdate.year}",
+            "date_iso": wdate.isoformat(),
+            "median_share": round(statistics.median(shares), 1),
+            "full_pv_communes": sum(1 for s in shares if s >= 100),
+            "top_records": top_records,
         },
     }
 
@@ -150,15 +188,15 @@ SITE = "https://solaire.sitraka.lu"
 # Deux dictionnaires par langue cible : i18n_en.json / i18n_lb.json (texte
 # statique du HTML) et i18n_js.json / i18n_lb_js.json (chaînes construites en
 # JS). Le HTML traduit s'obtient par remplacement « plus longue clé d'abord » ;
-# les libellés d'affichage des DONNÉES (mois, trimestres — et pour l'anglais
-# seulement la virgule décimale) sont traduits séparément.
+# les libellés d'affichage des DONNÉES (mois, trimestres et, pour l'anglais
+# seulement, la virgule décimale) sont traduits séparément.
 MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July",
              "August", "September", "October", "November", "December"]
 _FR2EN_MONTH = {fr: MONTHS_EN[i] for i, fr in enumerate(MONTHS_FR)}
 _MONTH_RE = re.compile(r"\b(" + "|".join(MONTHS_FR) + r")\b")
-# abréviations produites par fetch_resources : MONTHS_FR[m-1][:4] + "." — mai
-# reste un mot entier (géré par _MONTH_RE), donc exclu de la table d'abréviations
-_ABBR = {(MONTHS_FR[i][:4] + "."): MONTHS_EN[i][:3] for i in range(12) if i != 4}
+# abréviations produites par _label_fr : MONTHS_FR[m-1][:4] + "." pour les mois
+# de plus de 4 lettres ; mars, mai, juin et août restent entiers (gérés par _MONTH_RE)
+_ABBR = {(MONTHS_FR[i][:4] + "."): MONTHS_EN[i][:3] for i in range(12) if len(MONTHS_FR[i]) > 4}
 
 # Lëtzebuergesch : mêmes mécanismes, mais les conventions numériques FRANÇAISES
 # sont conservées (virgule décimale, espace des milliers, locale fr-FR).
@@ -167,8 +205,8 @@ MONTHS_LB = ["Januar", "Februar", "Mäerz", "Abrëll", "Mee", "Juni", "Juli",
 _FR2LB_MONTH = {fr: MONTHS_LB[i] for i, fr in enumerate(MONTHS_FR)}
 _ABBR_LB_SHORT = ["Jan.", "Feb.", "Mäe.", "Abr.", "Mee", "Jun.", "Jul.",
                   "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
-_ABBR_LB = {(MONTHS_FR[i][:4] + "."): _ABBR_LB_SHORT[i] for i in range(12) if i != 4}
-# date-jour luxembourgeoise : ordinal avec point — « 6 Juli » → « 6. Juli »
+_ABBR_LB = {(MONTHS_FR[i][:4] + "."): _ABBR_LB_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+# date-jour luxembourgeoise : ordinal avec point : « 6 Juli » → « 6. Juli »
 # (« 1er juillet » FR → « 1er Juli » → « 1. Juli ») ; s'applique après la
 # substitution des mois, sur noms complets et abréviations.
 _LB_ORD_RE = re.compile(
@@ -179,13 +217,36 @@ _LB_ORD_RE = re.compile(
 
 def _load_i18n(static_name, js_name):
     d = json.loads((ROOT / "scripts" / static_name).read_text())
-    d.update(json.loads((ROOT / "scripts" / js_name).read_text()))
+    js = json.loads((ROOT / "scripts" / js_name).read_text())
+    dup = set(d) & set(js)
+    if dup:
+        sys.exit(f"{static_name}/{js_name} : clés en double {sorted(dup)}")
+    d.update(js)
     pairs = sorted(d.items(), key=lambda kv: -len(kv[0]))   # plus longue d'abord
     return d, pairs
 
 
 I18N, I18N_PAIRS = _load_i18n("i18n_en.json", "i18n_js.json")
 I18N_LB, I18N_LB_PAIRS = _load_i18n("i18n_lb.json", "i18n_lb_js.json")
+
+
+def check_dicts(tpl):
+    """Garde d'intégrité i18n, AVANT toute édition du gabarit : chaque clé des
+    quatre dictionnaires doit exister dans template.html (une clé morte = une
+    phrase qui reste silencieusement en français), et EN/LB doivent couvrir
+    exactement le même jeu de clés."""
+    problems = []
+    for name, dct in (("EN", I18N), ("LB", I18N_LB)):
+        dead = [k for k in dct if k not in tpl]
+        if dead:
+            problems.append(f"clés {name} absentes du gabarit ({len(dead)}) :\n  " +
+                            "\n  ".join(repr(k[:90]) for k in dead))
+    only_en, only_lb = set(I18N) - set(I18N_LB), set(I18N_LB) - set(I18N)
+    if only_en or only_lb:
+        problems.append(f"parité EN/LB : {len(only_en)} clés EN sans LB, {len(only_lb)} clés LB sans EN :\n  "
+                        + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_lb)))
+    if problems:
+        sys.exit("i18n : " + "\n".join(problems))
 
 
 def _tr_str(s):
@@ -258,23 +319,91 @@ def _thousands(n, lang):
     return s if lang == "en" else s.replace(",", " ")
 
 
+def _dec1(x, lang):
+    """Un chiffre après la virgule, arrondi comme toLocaleString (moitié vers le
+    haut sur la représentation décimale courte) ; point en anglais, virgule
+    en FR/LB ; milliers séparés comme _thousands."""
+    q = Decimal(repr(float(x))).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    whole, frac = str(abs(q)).split(".")
+    sign = "-" if q < 0 else ""
+    return sign + _thousands(int(whole), lang) + ("." if lang == "en" else ",") + frac
+
+
+def _signed1(x, lang):
+    return ("+" if x > 0 else "") + _dec1(x, lang)
+
+
+def _q_label(label):
+    """« 2025 T1 » (donnée) → « T1 2025 » (prose) ; idem « 2025 Q1 » → « Q1 2025 »."""
+    return re.sub(r"^(\d{4}) ([TQ]\d)$", r"\2 \1", label)
+
+
 def prose_numbers(d, lang):
     """Chiffres cités dans la prose de template.html, dérivés des mêmes données
     et arrondis comme les KPI équivalents rendus en JS (#k-growth, barre « Top 10
-    — croissance PV »). Substitués APRÈS to_en/to_lb : les jetons traversent les
-    dictionnaires i18n, dont les clés et les valeurs les contiennent."""
+    croissance PV »). Substitués APRÈS to_en/to_lb : les jetons traversent les
+    dictionnaires i18n, dont les clés et les valeurs les contiennent. `d` est
+    le blob DÉJÀ traduit de la langue cible (libellés de relevés, date)."""
     s = d["series"]
+    first, last = s[0], s[-1]
+    keys = ("pv", "wind", "hydro", "chp", "biomass", "biogas")
+    tot_first, tot_last = sum(first[k] for k in keys), sum(last[k] for k in keys)
+    top = max(d["communes"], key=lambda c: c["g"])
+    small = [x for x in d["sizes"] if "MW" not in x["bin"] and x["bin"] != "30–100" and x["bin"] != "100–500"]
+    big = [x for x in d["sizes"] if "MW" in x["bin"]]
+    n_all, mw_all = sum(x["count"] for x in d["sizes"]), sum(x["mw"] for x in d["sizes"])
+    q_labels = [r["label"] for r in s if re.match(r"^\d{4} [TQ]\d$", r["label"])]
     return {
+        "__DATE__": d["meta"]["date"],
+        "__YEAR__": d["meta"]["date_iso"][:4],
+        "__PVMW__": _dec1(d["meta"]["pv_mw"], lang),
+        "__PVN__": _thousands(d["meta"]["pv_n"], lang),
+        "__PVSHARE__": _dec1(last["pv"] / tot_last * 100, lang),
+        "__TOTMW__": _thousands(_jsround(tot_last), lang),
         # standfirst : croissance de la capacité PV depuis le premier relevé
-        "__PVGROWTHPCT__": str(_jsround((s[-1]["pv"] / s[0]["pv"] - 1) * 100)),
+        "__PVGROWTHPCT__": str(_jsround((last["pv"] / first["pv"] - 1) * 100)),
         # sous-titre du KPI « Installations PV » : croissance du nombre d'installations
-        "__NGROWTHPCT__": str(_jsround((s[-1]["pv_count"] / s[0]["pv_count"] - 1) * 100)),
-        # encadré Rosport-Mompach : plus forte croissance en volume, en kW
-        "__TOPGROWTHKW__": _thousands(_jsround(max(c["g"] for c in d["communes"])), lang),
+        "__NGROWTHPCT__": str(_jsround((last["pv_count"] / first["pv_count"] - 1) * 100)),
+        # premier et dernier relevés trimestriels publiés (« T1 2025 » / « Q1 2025 »)
+        "__FIRSTQ__": _q_label(q_labels[0]),
+        "__LASTQ__": _q_label(q_labels[-1]),
+        "__NREADINGS__": str(len(s)),
+        # trajectoire : MW nets ajoutés toutes filières, part du PV, autres filières
+        "__GROWTHTOTAL__": str(_jsround(tot_last - tot_first)),
+        "__PVGROWTHSHARE__": str(_jsround((last["pv"] - first["pv"]) / (tot_last - tot_first) * 100)),
+        "__WINDDELTA__": _signed1(last["wind"] - first["wind"], lang),
+        "__CHPDELTA__": _signed1(last["chp"] - first["chp"], lang),
+        "__RESTDELTA__": _signed1(sum(last[k] - first[k] for k in ("hydro", "biomass", "biogas")), lang),
+        # encadrés « trois signaux » : tout est dérivé, aucun nom de commune en dur
+        "__FULLPVCOUNT__": str(d["meta"]["full_pv_communes"]),
+        "__MEDSHARE__": _dec1(d["meta"]["median_share"], lang),
+        "__TOPGROWTHKW__": _thousands(_jsround(top["g"]), lang),
+        "__TOPGROWTHCOMMUNE__": top["c"],
+        "__TOPGROWTHPCT__": str(_jsround(top["gp"])),
+        "__TOP4NAMES__": ", ".join(r["c"] for r in d["meta"]["top_records"]),
         # « paradoxe résidentiel » : installations comptées une à une dans le
         # fichier not-grouped, c.-à-d. l'effectif de l'histogramme des tailles
-        "__NGCOUNT__": _thousands(sum(x["count"] for x in d["sizes"]), lang),
+        "__NGCOUNT__": _thousands(n_all, lang),
+        "__SMALLSHARE_N__": str(_jsround(sum(x["count"] for x in small) / n_all * 100)),
+        "__SMALLSHARE_CAP__": str(_jsround(sum(x["mw"] for x in small) / mw_all * 100)),
+        "__BIGN__": str(sum(x["count"] for x in big)),
+        "__BIGMW__": _thousands(_jsround(sum(x["mw"] for x in big)), lang),
     }
+
+
+def check_claims(data):
+    """Les encadrés dérivés restent vrais par construction ; on vérifie quand même
+    que la forme du texte (« 4 × ≈5 MW », « plafonnent juste sous les 5 MW »)
+    correspond encore aux données, sinon le build s'arrête."""
+    top4 = data["meta"]["top_records"]
+    if len(top4) != 4 or not all(4500 <= r["kw"] <= 5000 for r in top4):
+        sys.exit(f"encadré « 4 × ≈5 MW » : les quatre plus grandes installations ne sont plus toutes "
+                 f"entre 4,5 et 5 MW : {top4}. Adapter template.html avant de publier.")
+    small = [x for x in data["sizes"] if x["bin"] in ("0–5", "5–10", "10–15", "15–30")]
+    if len(small) != 4:
+        sys.exit("histogramme des tailles : les quatre classes ≤ 30 kW attendues manquent")
+    top = max(data["communes"], key=lambda c: c["g"])
+    assert top["g"] == max(c["g"] for c in data["communes"])
 
 
 def write_seo():
@@ -291,39 +420,85 @@ def write_seo():
     (ROOT / "sitemap.xml").write_text("\n".join(sm))
 
 
-def make_og(data):
-    # og:image 1200x630 - capacite PV du Luxembourg, chiffres vivants (best-effort, saute sans casser le build)
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-        f = "/System/Library/Fonts/Helvetica.ttc"
+OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png"}
+OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU"}
+_OG_TEXT = {
+    "fr": ("LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", "Le photovoltaïque luxembourgeois,", "commune par commune",
+           "de puissance PV raccordée", "installations photovoltaïques · capacité installée, pas énergie",
+           "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · FR · EN · LU"),
+    "en": ("LUX-SOLAIRE · SOLAR PV · OPEN DATA", "Solar PV in Luxembourg,", "municipality by municipality",
+           "of PV capacity connected", "PV installations · installed capacity, not energy",
+           "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · EN · FR · LU"),
+    "lb": ("LUX-SOLAIRE · PHOTOVOLTAIK · OPEN DATA", "D'Photovoltaik zu Lëtzebuerg,", "Gemeng fir Gemeng",
+           "PV-Leeschtung um Netz", "PV-Installatiounen · installéiert Kapazitéit, net Energie",
+           "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · LU · FR · EN"),
+}
+# macOS en local ; DejaVu sur le runner Linux de la GitHub Action (même repli qu'index-lu)
+_FONT_SANS = ("/System/Library/Fonts/Helvetica.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "DejaVuSans.ttf")
+_FONT_SERIF = ("/System/Library/Fonts/Supplemental/Georgia.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+               "DejaVuSerif.ttf") + _FONT_SANS
+
+
+def _font(candidates, size):
+    from PIL import ImageFont
+    for f in candidates:
         try:
-            serif = ImageFont.truetype("/System/Library/Fonts/Supplemental/Georgia.ttf", 64)
+            return ImageFont.truetype(f, size)
         except OSError:
-            serif = ImageFont.truetype(f, 64)
-        big = ImageFont.truetype(f, 120); mid = ImageFont.truetype(f, 40); small = ImageFont.truetype(f, 30)
+            continue
+    raise OSError(f"aucune police trouvée parmi {candidates}")
+
+
+def make_og(data, lang):
+    """og:image 1200x630 par langue : capacité PV vivante, libellés traduits.
+    Best-effort : un échec est signalé sur stderr mais ne casse pas le build."""
+    try:
+        from PIL import Image, ImageDraw
+        eyebrow, l1, l2, mw_label, n_label, foot = _OG_TEXT[lang]
+        serif = _font(_FONT_SERIF, 64)
+        big, mid, small = _font(_FONT_SANS, 120), _font(_FONT_SANS, 40), _font(_FONT_SANS, 30)
         img = Image.new("RGB", (1200, 630), "#F4F5F1"); dr = ImageDraw.Draw(img)
         dr.rectangle([0, 0, 1200, 12], fill="#C77F00")
-        dr.text((80, 66), "LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", font=small, fill="#8A5600")
+        dr.text((80, 66), eyebrow, font=small, fill="#8A5600")
         def fit(txt, font, max_w=1040):
             while dr.textlength(txt, font=font) > max_w and font.size > 30:
                 font = font.font_variant(size=font.size - 2)
             return font
-        l1 = "Le photovoltaïque luxembourgeois,"; l2 = "commune par commune"
         s = fit(l1, serif)
         dr.text((80, 136), l1, font=s, fill="#1D2734")
         dr.text((80, 136 + s.size + 18), l2, font=fit(l2, serif), fill="#C77F00")
-        mw = str(data["meta"]["pv_mw"]).replace(".", ",")
+        mw = _dec1(data["meta"]["pv_mw"], lang)
         dr.text((80, 330), mw + " MW", font=big, fill="#C77F00")
         w = dr.textlength(mw + " MW", font=big)
-        dr.text((80 + w + 34, 400), "de puissance PV raccordée", font=mid, fill="#5A6472")
-        n = format(data["meta"]["pv_n"], ",").replace(",", " ")
-        sub = n + " installations photovoltaïques · capacité installée, pas énergie"
+        dr.text((80 + w + 34, 400), mw_label, font=mid, fill="#5A6472")
+        sub = _thousands(data["meta"]["pv_n"], lang) + " " + n_label
         dr.text((80, 480), sub, font=fit(sub, mid), fill="#5A6472")
-        dr.text((80, 556), "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · FR · EN · LU", font=small, fill="#6B7380")
-        img.save(ROOT / "og.png")
+        dr.text((80, 556), foot, font=small, fill="#6B7380")
+        img.save(ROOT / OG_FILES[lang])
         return True
-    except Exception:
+    except Exception as e:  # noqa: BLE001
+        print(f"attention : {OG_FILES[lang]} non régénéré ({e.__class__.__name__}: {e})", file=sys.stderr)
         return False
+
+
+_TOKEN_RE = re.compile(r"__[A-Z0-9_]+__")
+
+
+def check_output(html, lang, dct):
+    """Après rendu : aucun jeton oublié, aucun tiret cadratin, aucune clé
+    traduite encore présente (les clés dont la traduction est identique, comme
+    « Canton », sont ignorées). Comparaison PAR CLÉ, pas sur le texte rendu."""
+    left = sorted(set(_TOKEN_RE.findall(html)))
+    if left:
+        sys.exit(f"{lang} : jetons non substitués {left}")
+    if "—" in html:
+        i = html.index("—")
+        sys.exit(f"{lang} : tiret cadratin (U+2014) dans la page rendue, vers : {html[max(0, i-60):i+40]!r}")
+    if dct:
+        leaks = [k for k, v in dct.items() if v != k and k in html]
+        if leaks:
+            sys.exit(f"{lang} : {len(leaks)} clés non traduites subsistent :\n  " +
+                     "\n  ".join(repr(k[:90]) for k in leaks))
 
 
 def render_all(data):
@@ -334,8 +509,12 @@ def render_all(data):
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
     write_seo()
-    make_og(data)
+    for lang in ("fr", "en", "lb"):
+        make_og(data, lang)
     tpl = (ROOT / "template.html").read_text()
+    check_dicts(tpl)
+    if "—" in tpl:
+        sys.exit("template.html contient un tiret cadratin (U+2014)")
 
     def render(d, lang):
         blob = json.dumps(d, ensure_ascii=False)
@@ -360,32 +539,41 @@ def render_all(data):
                 path, ' class="cur"' if code == lang else '', _FLAG[code],
                 {"lb": "LU"}.get(code, code.upper()))
             for code, path in LANG_PATHS)
+        og_locale = f'<meta property="og:locale" content="{OG_LOCALE[lang]}">' + "".join(
+            f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
+            for c, _ in LANG_PATHS if c != lang)
         html = (tpl.replace("/*__DATA__*/", blob)
-                   .replace("__DATE__", d["meta"]["date"])
                    .replace("__ISODATE__", date.today().isoformat())
                    .replace("__LANG__", lang)
                    .replace("__CANONICAL__", canonical)
+                   .replace("__OGIMAGE__", OG_FILES[lang])
+                   .replace("<!--OGLOCALE-->", og_locale)
                    .replace("<!--LANGTOGGLE-->", toggle))
+        dct = None
         if lang == "en":
-            html = to_en(html)
+            html, dct = to_en(html), I18N
         elif lang == "lb":
-            html = to_lb(html)
+            html, dct = to_lb(html), I18N_LB
+        # jetons de prose (dont __DATE__) : APRÈS traduction, pour que les clés
+        # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
             html = html.replace(token, value)
+        check_output(html, lang, dct)
         return html
 
     (ROOT / "index.html").write_text(render(data_en, "en"))    # EN par défaut
     for lang, d in (("fr", data), ("lb", data_lb)):
         (ROOT / lang).mkdir(exist_ok=True)
         (ROOT / lang / "index.html").write_text(render(d, lang))
-    print(f"index.html (EN) + fr/index.html + lb/index.html rebuilt — "
+    print(f"index.html (EN) + fr/index.html + lb/index.html rebuilt : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
           f"as of {data_en['meta']['date']} / Stand {data_lb['meta']['date']}")
 
 
 def main():
-    frames, wdate = fetch_resources()
-    data = build(frames, wdate)
+    frames, wdate, ng = fetch_resources()
+    data = build(frames, wdate, ng)
+    check_claims(data)
     (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
     render_all(data)
 

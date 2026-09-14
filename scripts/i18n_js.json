@@ -5,6 +5,6 @@
 "name:'Cogénération'": "name:'Cogeneration'",
 "name:'Hydroélectrique'": "name:'Hydro'",
 "name:'Biogaz'": "name:'Biogas'",
-"Capacité installée par filière, T1 2025 à aujourd'hui": "Installed capacity by technology, Q1 2025 to today",
-"' communes'": "' municipalities'"
+"' communes'": "' municipalities'",
+"Capacité installée par filière, ${first.label} à aujourd'hui": "Installed capacity by technology, ${first.label} to today"
 }

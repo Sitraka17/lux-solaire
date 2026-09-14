@@ -3,15 +3,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>Solaire Luxembourg — tableau de bord Leneda</title>
+<title>Photovoltaïque au Luxembourg : capacité par commune (__YEAR__)</title>
+<meta name="description" content="Photovoltaïque au Luxembourg : __PVMW__ MW raccordés au __DATE__, __PVN__ installations. Capacité, croissance et part du solaire par commune (Leneda).">
 <link rel="canonical" href="__CANONICAL__">
 <meta property="og:url" content="__CANONICAL__">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://solaire.sitraka.lu/og.png">
+<meta property="og:site_name" content="Lux-Solaire">
+<meta property="og:title" content="Le photovoltaïque au Luxembourg, commune par commune">
+<meta property="og:description" content="Photovoltaïque au Luxembourg : __PVMW__ MW raccordés au __DATE__, __PVN__ installations. Capacité, croissance et part du solaire par commune (Leneda).">
+<!--OGLOCALE-->
+<meta property="og:image" content="https://solaire.sitraka.lu/__OGIMAGE__">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://solaire.sitraka.lu/og.png">
+<meta name="twitter:title" content="Le photovoltaïque au Luxembourg, commune par commune">
+<meta name="twitter:description" content="Photovoltaïque au Luxembourg : __PVMW__ MW raccordés au __DATE__, __PVN__ installations. Capacité, croissance et part du solaire par commune (Leneda).">
+<meta name="twitter:image" content="https://solaire.sitraka.lu/__OGIMAGE__">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
  {"@type":"Article","@id":"__CANONICAL__#article","headline":"Le photovoltaïque au Luxembourg, commune par commune : capacité installée, croissance et mix par filière","inLanguage":"__LANG__","url":"__CANONICAL__","dateModified":"__ISODATE__","author":{"@id":"https://sitraka.lu/#person"},"publisher":{"@id":"https://sitraka.lu/#person"},"isBasedOn":["https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"],"about":["Solar power","Photovoltaics","Luxembourg","Open data"],"license":"https://creativecommons.org/licenses/by/4.0/"},
@@ -39,7 +46,7 @@
   .wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
 
   /* ---------- header ---------- */
-  /* series bar (top, prominent) — homogénéise la série open-data */
+  /* series bar (top, prominent) : homogénéise la série open-data */
   .seriesbar{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:12px 8px 12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 1px 2px rgba(20,25,35,.06);margin-bottom:36px}
   .seriesbar .sb-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:650;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
   .seriesbar .sb-label::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
@@ -167,12 +174,12 @@
 <div class="wrap">
 <div class="seriesbar">
   <span class="sb-label">Série open-data · Luxembourg</span>
-  <nav aria-label="La série de tableaux de bord"><a class="cur" aria-current="page" href="https://solaire.sitraka.lu">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></nav>
+  <nav aria-label="La série de tableaux de bord"><a class="cur" aria-current="page" href="https://solaire.sitraka.lu">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a><span class="arw" aria-hidden="true">→</span><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></nav>
   <span class="langtoggle"><!--LANGTOGGLE--></span>
 </div>
 <header>
-  <h1>Le <span class="sun">solaire</span> domine le parc de production décentralisé</h1>
-  <p class="standfirst">Le parc photovoltaïque luxembourgeois vient de franchir les <strong>800 mégawatts</strong> : +__PVGROWTHPCT__ % en quinze mois. Ce tableau de bord répond à la question posée par le portail Open Data — <em>quelle est la part du photovoltaïque par commune ?</em> — à partir des données de production décentralisée publiées par Leneda.</p>
+  <h1>Le <span class="sun">photovoltaïque</span> au Luxembourg, commune par commune</h1>
+  <p class="standfirst"><strong>__PVMW__ MW</strong> de photovoltaïque raccordés au __DATE__, soit +__PVGROWTHPCT__ % depuis le relevé __FIRSTQ__ : le solaire pèse <strong>__PVSHARE__ %</strong> de la capacité de production décentralisée. Le portail Open Data demandait <em>la part du photovoltaïque dans la production électrique par commune</em> ; les fichiers Leneda donnant la capacité raccordée et non l'énergie produite, ce tableau de bord mesure la part du PV dans la <strong>capacité installée</strong>, commune par commune.</p>
   <div class="badges">
     <span class="badge">Données au <b>__DATE__</b></span>
     <span class="badge">Source <b>Leneda</b> · data.public.lu</span>
@@ -184,32 +191,32 @@
 <div class="kpis">
   <div class="kpi hero">
     <div class="lbl">Photovoltaïque installé</div>
-    <div class="val" id="k-pv">—</div>
+    <div class="val" id="k-pv">__PVMW__ MW</div>
     <div class="sub">capacité raccordée au réseau</div>
   </div>
   <div class="kpi">
     <div class="lbl">Croissance PV</div>
-    <div class="val" id="k-growth">—</div>
-    <div class="sub">depuis le 1<sup>er</sup> trimestre 2025</div>
+    <div class="val" id="k-growth">+__PVGROWTHPCT__ %</div>
+    <div class="sub">depuis le relevé __FIRSTQ__</div>
   </div>
   <div class="kpi">
     <div class="lbl">Installations PV</div>
-    <div class="val" id="k-n">—</div>
-    <div class="sub">raccordées au réseau · +__NGROWTHPCT__ % en 15 mois</div>
+    <div class="val" id="k-n">__PVN__</div>
+    <div class="sub">raccordées au réseau · +__NGROWTHPCT__ % depuis __FIRSTQ__</div>
   </div>
   <div class="kpi">
     <div class="lbl">Part du parc décentralisé</div>
-    <div class="val" id="k-share">—</div>
-    <div class="sub">sur <span id="k-tot">—</span> MW toutes filières</div>
+    <div class="val" id="k-share">__PVSHARE__ %</div>
+    <div class="sub">sur <span id="k-tot">__TOTMW__</span> MW toutes filières</div>
   </div>
   <div class="kpi">
     <div class="lbl">Rythme sur 12 mois</div>
-    <div class="val" id="k-g12">—</div>
+    <div class="val" id="k-g12">…</div>
     <div class="sub">dernier relevé trimestriel vs un an plus tôt</div>
   </div>
   <div class="kpi">
     <div class="lbl">Cap national du 1 GW</div>
-    <div class="val" id="k-gw">—</div>
+    <div class="val" id="k-gw">…</div>
     <div class="sub">année du gigawatt à ce rythme (projection naïve)</div>
   </div>
 </div>
@@ -218,9 +225,9 @@
 <section>
   <div class="sec-head">
     <h2>Trajectoire nationale : le PV creuse l'écart</h2>
-    <span class="sec-note">MW installés · T1 2025 → aujourd'hui</span>
+    <span class="sec-note">MW installés · __FIRSTQ__ → aujourd'hui</span>
   </div>
-  <p class="lede">Capacité installée cumulée par filière sur les six relevés publiés. Le photovoltaïque explique l'essentiel des <span id="growth-total">—</span> MW ajoutés au parc ; l'éolien progresse, la cogénération recule, l'hydroélectricité et la biomasse sont stables.</p>
+  <p class="lede">Capacité installée cumulée par filière sur les __NREADINGS__ relevés publiés. Le photovoltaïque explique <strong>__PVGROWTHSHARE__ %</strong> des <span id="growth-total">__GROWTHTOTAL__</span> MW nets ajoutés au parc depuis __FIRSTQ__ (éolien __WINDDELTA__ MW, cogénération __CHPDELTA__ MW, hydroélectricité, biomasse et biogaz __RESTDELTA__ MW ensemble).</p>
   <div class="card">
     <div class="svgwrap" id="area"></div>
     <div class="legend" id="area-legend"></div>
@@ -240,16 +247,16 @@
       <div class="sec-head"><h2>Trois signaux dans les données</h2></div>
       <div class="card callouts" style="display:grid">
         <div class="co">
-          <div class="big">24 communes</div>
-          <p>tirent — à l'arrondi près — <strong>toute leur capacité décentralisée du photovoltaïque</strong>. La part médiane du PV par commune atteint <strong>93,4 %</strong>.</p>
+          <div class="big">__FULLPVCOUNT__ communes</div>
+          <p>tirent, à l'arrondi près, <strong>toute leur capacité décentralisée du photovoltaïque</strong>. La part médiane du PV par commune atteint <strong>__MEDSHARE__ %</strong>.</p>
         </div>
         <div class="co">
-          <div class="big">10,6 MW</div>
-          <p>La plus grande centrale PV du pays, à <strong>Rosport-Mompach</strong> — commune qui signe aussi la plus forte croissance en volume : +__TOPGROWTHKW__ kW en 15 mois.</p>
+          <div class="big">+__TOPGROWTHKW__ kW</div>
+          <p>plus forte hausse de capacité PV depuis le relevé __FIRSTQ__, à <strong>__TOPGROWTHCOMMUNE__</strong> (+__TOPGROWTHPCT__ %).</p>
         </div>
         <div class="co">
           <div class="big">4 × ≈5 MW</div>
-          <p>Quatre centrales plafonnent juste sous les 5 MW (Junglinster, Differdange, Käerjeng, Sanem) — vraisemblablement la trace d'un <strong>seuil d'appel d'offres</strong>.</p>
+          <p>Les quatre plus grandes installations PV recensées plafonnent juste sous les 5 MW (__TOP4NAMES__), vraisemblablement la trace d'un <strong>seuil d'appel d'offres</strong>.</p>
         </div>
       </div>
     </div>
@@ -259,11 +266,11 @@
 <section>
   <div class="grid-2">
     <div>
-      <div class="sec-head"><h2>Top 15 — capacité PV</h2><span class="sec-note">kW installés</span></div>
+      <div class="sec-head"><h2>Top 15 : capacité PV</h2><span class="sec-note">kW installés</span></div>
       <div class="card"><div class="hbars" id="top-pv"></div></div>
     </div>
     <div>
-      <div class="sec-head"><h2>Top 10 — croissance PV</h2><span class="sec-note">kW ajoutés depuis T1 2025</span></div>
+      <div class="sec-head"><h2>Top 10 : croissance PV</h2><span class="sec-note">kW ajoutés depuis __FIRSTQ__</span></div>
       <div class="card"><div class="hbars" id="top-growth"></div></div>
     </div>
   </div>
@@ -274,7 +281,7 @@
     <h2>Le paradoxe résidentiel</h2>
     <span class="sec-note">__NGCOUNT__ installations PV recensées une à une</span>
   </div>
-  <p class="lede"><strong>96 % des installations font moins de 30 kW</strong> — pour l'essentiel des toitures résidentielles — mais elles ne représentent que <strong>54 % de la capacité</strong>. À l'autre extrémité, 128 centrales de plus de 0,5 MW concentrent à elles seules 181 MW.</p>
+  <p class="lede"><strong>__SMALLSHARE_N__ % des installations font 30 kW ou moins</strong>, pour l'essentiel des toitures résidentielles, mais elles ne représentent que <strong>__SMALLSHARE_CAP__ % de la capacité</strong>. À l'autre extrémité, __BIGN__ installations de plus de 0,5 MW concentrent à elles seules __BIGMW__ MW.</p>
   <div class="card">
     <div class="pkey">
       <span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
@@ -301,7 +308,7 @@
         <th data-k="pv">PV kW</th>
         <th data-k="n">Install.</th>
         <th data-k="share">Part PV</th>
-        <th data-k="g">Δ 15 mois kW</th>
+        <th data-k="g">Δ kW depuis __FIRSTQ__</th>
         <th data-k="tot">Total kW</th>
       </tr></thead>
       <tbody></tbody>
@@ -311,8 +318,8 @@
 
 <footer>
   <h3>Méthode & source</h3>
-  <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) — relevés trimestriels T1 2025 → T1 2026 et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
-  <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ 15 mois » compare le relevé courant au 1<sup>er</sup> trimestre 2025. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
+  <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
+  <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
   <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
     <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :
@@ -321,10 +328,11 @@
       <a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a> ·
       <a href="https://index.sitraka.lu" target="_blank" rel="noopener">Index.lu</a> ·
       <a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a> ·
-      <a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a>.</p>
-    <p style="margin:10px 0 0;font-size:14px"><strong>&rarr; Advisory data &amp; IT, agenda et tous mes travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></strong></p>
+      <a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a> ·
+      <a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a>.</p>
+    <p style="margin:10px 0 0;font-size:14px">Agenda, newsletter et autres travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
   </div>
-  <p>Analyse &amp; visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> &middot; pandas + SVG natif, sans biblioth&egrave;que &middot; <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> &middot; <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a> &middot; juillet 2026.</p>
+  <p>Analyse et visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + SVG natif, sans bibliothèque · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
 </footer>
 </div>
 
@@ -355,7 +363,7 @@ document.getElementById('k-tot').textContent = fmt(Math.round(totLast));
 const totFirst = TECHS.reduce((a,t)=>a+first[t.k],0);
 document.getElementById('growth-total').textContent = Math.round(totLast-totFirst);
 document.getElementById('k-g12').textContent = '+'+fmt(Math.round(D.meta.growth12_mw))+' MW';
-document.getElementById('k-gw').textContent = D.meta.gw_year ? '~'+D.meta.gw_year : '—';
+document.getElementById('k-gw').textContent = D.meta.gw_year ? '~'+D.meta.gw_year : '…';
 
 /* ---- stacked area (SVG) ---- */
 (function(){
@@ -389,7 +397,7 @@ document.getElementById('k-gw').textContent = D.meta.gw_year ? '~'+D.meta.gw_yea
     g+=`<text x="${x(i)}" y="${H-10}" text-anchor="${i===0?'start':i===stacks.length-1?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${s.label}</text>`;
   });
   document.getElementById('area').innerHTML =
-    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Capacité installée par filière, T1 2025 à aujourd'hui">${g}</svg>`;
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Capacité installée par filière, ${first.label} à aujourd'hui">${g}</svg>`;
   document.getElementById('area-legend').innerHTML =
     [...TECHS].map(t=>`<span><span class="sw" style="background:${t.c}"></span>${t.name} <b style="font-family:var(--mono);font-size:11.5px">${fmt1(last[t.k])} MW</b></span>`).join('');
 })();
