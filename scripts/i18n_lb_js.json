@@ -6,5 +6,7 @@
 "name:'Hydroélectrique'": "name:'Waasserkraaft'",
 "name:'Biogaz'": "name:'Biogas'",
 "' communes'": "' Gemengen'",
-"Capacité installée par filière, ${first.label} à aujourd'hui": "Installéiert Kapazitéit pro Filière, ${first.label} bis haut"
+"Capacité installée par filière, ${first.label} à aujourd'hui": "Installéiert Kapazitéit pro Filière, ${first.label} bis haut",
+"'hebdo vs trim.'": "'Woch vs Quartal'",
+"' inst.'": "' Inst.'"
 }

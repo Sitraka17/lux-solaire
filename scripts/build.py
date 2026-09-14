@@ -22,7 +22,7 @@ import os
 import re
 import statistics
 import sys
-from datetime import date, timedelta
+from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
@@ -41,6 +41,31 @@ PV = "Installation photovoltaïque"
 
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
+
+# ──────────────── repères officiels (constantes à rafraîchir chaque année) ────
+# Chaque bloc porte son URL et sa date de publication ; les dates sont rendues
+# sur la page. Chiffres relus dans les documents sources le 14/09/2026.
+SOURCES = {
+    "ilr": {
+        # ILR, « Chiffres-clés 2025 : données statistiques nationales, marché de
+        # l'électricité » (CC BY 4.0). Sommaire exécutif + tableaux 3.1/3.2.
+        "url": "https://www.ilr.lu/wp-content/uploads/statistiques/ilr-stat-30062026-Chiffres-cles-electricite-2025.pdf",
+        "year": 2025, "published": "2026",
+        "pv_mw": 746, "pv_mw_delta": 197, "pv_mw_pct": 35.8,
+        "pv_n": 33304, "pv_n_delta": 10694, "pv_n_pct": 47.3,
+        "pv_gwh": 627, "wind_gwh": 467, "prod_gwh": 1826, "cons_gwh": 6529,
+        "self_gwh": 444, "self_pct": 7,
+    },
+    "pnec": {
+        # Plan national intégré en matière d'énergie et de climat 2021-2030,
+        # mise à jour de juillet 2024, tableau 8 « Puissance installée des
+        # installations MW », p. 44 : ligne Photovoltaïque.
+        "url": "https://gouvernement.lu/dam-assets/documents/dossier/pnec/2024-pnec-mise-jour.pdf",
+        "published": "2024-07", "table": "tableau 8, p. 44",
+        "pv_mw": {2021: 277, 2022: 351, 2023: 433, 2024: 533, 2025: 644,
+                  2026: 756, 2027: 867, 2028: 989, 2029: 1111, 2030: 1236},
+    },
+}
 
 
 def _get(url, timeout=60):
@@ -154,25 +179,36 @@ def build(frames, wdate, ng):
     else:
         growth12 = (q_rows[-1]["pv"] - q_rows[0]["pv"]) / max(len(q_rows) - 1, 1) * 4
     growth12 = round(growth12, 1)
-    pv_now = series[-1]["pv"]
-    if pv_now >= 1000:
-        gw_year = wdate.year
-    elif growth12 > 0:
-        gw_year = (wdate + timedelta(days=round((1000 - pv_now) / growth12 * 365.25))).year
-    else:
-        gw_year = None
+    # (l'« année du 1 GW », projection linéaire naïve, a été retirée le 14/09/2026)
+
+    # ---- ajouts nets entre relevés consécutifs (section « rythme ») ----
+    additions = [{"from": a["label"], "to": b["label"],
+                  "pv_mw": round(b["pv"] - a["pv"], 1), "pv_n": b["pv_count"] - a["pv_count"],
+                  "kind": "quarterly" if re.match(r"^\d{4} T\d$", b["label"]) else "weekly"}
+                 for a, b in zip(series, series[1:])]
+    # ---- depuis la fin de l'année précédente : relevé hebdo vs relevé T4 ----
+    base_year = wdate.year - 1
+    base = next((r for r in q_rows if r["label"] == f"{base_year} T4"), None) \
+        or next((r for r in reversed(q_rows) if int(r["label"][:4]) <= base_year), q_rows[0])
+    since = {"base": base["label"], "pv_mw": round(series[-1]["pv"] - base["pv"], 1),
+             "pv_n": series[-1]["pv_count"] - base["pv_count"]}
+    # relevé Leneda de la même échéance que les chiffres annuels de l'ILR (fin d'année)
+    ilr_q = next((r for r in q_rows if r["label"] == f"{SOURCES['ilr']['year']} T4"), None)
 
     shares = [c["share"] for c in communes]
     return {
         "series": series,
         "communes": communes,
         "sizes": sizes,
+        "additions": additions,
+        "refs": {"ilr": SOURCES["ilr"], "pnec": SOURCES["pnec"],
+                 "leneda_ilr_year_end": {"label": ilr_q["label"], "pv_mw": ilr_q["pv"], "pv_n": ilr_q["pv_count"]} if ilr_q else None},
         "meta": {
             "pv_mw": round(latest[PV + " Performance [kW]"].sum() / 1000, 1),
             "total_mw": round(latest["total_kw"].sum() / 1000, 1),
             "pv_n": int(latest[PV + " Producteur [#]"].sum()),
             "growth12_mw": growth12,
-            "gw_year": gw_year,
+            "since_year_end": since,
             "date": f"{wdate.day}{'er' if wdate.day == 1 else ''} {MONTHS_FR[wdate.month - 1]} {wdate.year}",
             "date_iso": wdate.isoformat(),
             "median_share": round(statistics.median(shares), 1),
@@ -388,6 +424,50 @@ def prose_numbers(d, lang):
         "__SMALLSHARE_CAP__": str(_jsround(sum(x["mw"] for x in small) / mw_all * 100)),
         "__BIGN__": str(sum(x["count"] for x in big)),
         "__BIGMW__": _thousands(_jsround(sum(x["mw"] for x in big)), lang),
+        **official_numbers(d, lang),
+    }
+
+
+def official_numbers(d, lang):
+    """Jetons de la section « rythme » et de l'encadré « repères officiels » :
+    KPI « depuis fin N-1 », chiffres ILR et trajectoire PNEC (constantes
+    datées de SOURCES), relevé Leneda de même échéance, ratios calculés."""
+    ilr, pnec = d["refs"]["ilr"], d["refs"]["pnec"]
+    since = d["meta"]["since_year_end"]
+    q4 = d["refs"]["leneda_ilr_year_end"] or {"label": "", "pv_mw": 0, "pv_n": 0}
+    years = sorted(int(y) for y in pnec["pv_mw"])
+    shown = [y for y in years if y >= ilr["year"]]
+    return {
+        "__BASEYEAR__": since["base"][:4],
+        "__BASEQ__": _q_label(since["base"]),
+        "__SINCE_MW__": _dec1(since["pv_mw"], lang),
+        "__SINCE_N__": _thousands(since["pv_n"], lang),
+        "__ILR_URL__": ilr["url"],
+        "__ILR_YEAR__": str(ilr["year"]),
+        "__ILR_PUB__": ilr["published"],
+        "__ILR_PVMW__": str(ilr["pv_mw"]),
+        "__ILR_PVDELTA__": str(ilr["pv_mw_delta"]),
+        "__ILR_PVPCT__": _dec1(ilr["pv_mw_pct"], lang),
+        "__ILR_N__": _thousands(ilr["pv_n"], lang),
+        "__ILR_NDELTA__": _thousands(ilr["pv_n_delta"], lang),
+        "__ILR_NPCT__": _dec1(ilr["pv_n_pct"], lang),
+        "__ILR_PVGWH__": str(ilr["pv_gwh"]),
+        "__ILR_WINDGWH__": str(ilr["wind_gwh"]),
+        "__ILR_PRODGWH__": _thousands(ilr["prod_gwh"], lang),
+        "__ILR_CONSGWH__": _thousands(ilr["cons_gwh"], lang),
+        "__ILR_SELFGWH__": str(ilr["self_gwh"]),
+        "__ILR_SELFPCT__": str(ilr["self_pct"]),
+        # ratios calculés ici (étiquetés comme tels sur la page)
+        "__PVPRODSHARE__": _dec1(ilr["pv_gwh"] / ilr["prod_gwh"] * 100, lang),
+        "__PVCONSSHARE__": _dec1(ilr["pv_gwh"] / ilr["cons_gwh"] * 100, lang),
+        "__LENEDA_YEQ__": _q_label(q4["label"]),
+        "__LENEDA_YEMW__": _dec1(q4["pv_mw"], lang),
+        "__LENEDA_YEN__": _thousands(q4["pv_n"], lang),
+        "__PNEC_URL__": pnec["url"],
+        "__PNEC2030__": _thousands(pnec["pv_mw"][max(years)], lang),
+        "__PNEC_LASTYEAR__": str(max(years)),
+        "__PNEC_HEAD__": "".join(f'<th scope="col">{y}</th>' for y in shown),
+        "__PNEC_ROW__": "".join(f"<td>{_thousands(pnec['pv_mw'][y], lang)}</td>" for y in shown),
     }
 
 
