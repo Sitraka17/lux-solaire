@@ -36,11 +36,19 @@ Une seule page statique, zéro dépendance front (SVG + JS vanille, données
 inlinées). Reconstruire avec les dernières données :
 
 ```bash
-pip install pandas requests
-python3 scripts/build.py   # régénère data/data.json et index.html
+pip install pandas requests pillow
+python3 scripts/build.py   # régénère data/, index.html, fr/, lb/, og*.png, sitemap.xml
 ```
 
-Déploiement : n'importe quel hébergeur statique (`vercel --prod`).
+Le build s'arrête (exit 1) si un garde-fou échoue : clé i18n morte ou non
+traduite, jeton `__XXX__` oublié, tiret cadratin, encadré dérivé qui ne
+correspond plus aux données. `LUX_SOLAIRE_CACHE=1` met les téléchargements en
+cache dans `.cache/` pour itérer sur le gabarit.
+
+Une GitHub Action (`.github/workflows/rebuild.yml`) reconstruit le lundi à
+06:00 UTC, après le dépôt hebdomadaire de Leneda, et ne commite que si
+`data/data.json` a changé. Le déploiement reste manuel, depuis la racine du
+repo : `vercel deploy --prod --yes`.
 
 ## Crédits
 

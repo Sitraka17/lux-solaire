@@ -1,0 +1,36 @@
+name: rebuild-weekly
+
+# Leneda dépose ses fichiers hebdomadaires sur data.public.lu le lundi vers
+# 02:00 UTC (ex. resources/…/20260914-020016/…weekly-2026-09-14-commune.csv).
+# On reconstruit le lundi à 06:00 UTC + déclenchement manuel possible.
+# Le build s'arrête de lui-même (exit 1) si un garde-fou de scripts/build.py
+# échoue : rien n'est alors commité.
+# Le déploiement Vercel reste manuel (`vercel deploy --prod --yes` depuis la
+# racine du repo), comme sur le reste de la série. Voir README.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get install -y fonts-dejavu-core
+      - run: pip install pandas requests pillow
+      - run: python3 scripts/build.py
+      - name: Commit si les données ont changé
+        run: |
+          git config user.name "lux-solaire-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet -- data/data.json || git commit -am "rebuild: relevé Leneda du $(python3 -c 'import json;print(json.load(open("data/data.json"))["meta"]["date_iso"])')"
+          git push
