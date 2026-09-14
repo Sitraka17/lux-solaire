@@ -34,8 +34,11 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
-    --paper:#F4F5F1; --card:#FFFFFF; --ink:#1D2734; --ink-2:#5A6472; --ink-3:#6B7380;
+    --paper:#F4F5F1; --card:#FFFFFF; --ink:#1D2734; --ink-2:#5A6472; --ink-3:#5F6773;
     --line:#DCDDD5; --amber:#EE9B05; --amber-deep:#C77F00; --amber-soft:#FBEED3;
+    /* ambre lisible : #C77F00 ne passe pas le contraste AA en texte (2,97:1 sur --paper) ;
+       #8A5600 (5,6:1) pour le texte courant, #A86A00 (4,1:1) pour le grand titre */
+    --amber-text:#8A5600; --amber-h1:#A86A00;
     --wind:#4A90A4; --hydro:#2C6E91; --bio:#6B8F3D; --chp:#948D7B; --biogas:#8FA855;
     --display:"Avenir Next","Futura","Segoe UI",system-ui,sans-serif;
     --body:system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -48,23 +51,23 @@
   /* ---------- header ---------- */
   /* series bar (top, prominent) : homogénéise la série open-data */
   .seriesbar{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:12px 8px 12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 1px 2px rgba(20,25,35,.06);margin-bottom:36px}
-  .seriesbar .sb-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:650;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .seriesbar .sb-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:650;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
   .seriesbar .sb-label::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
   .seriesbar nav{display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin-left:auto}
   .seriesbar a{font-family:var(--body);font-size:12.5px;font-weight:600;color:var(--ink-2);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s;white-space:nowrap}
-  .seriesbar a:hover{color:var(--amber-deep);border-color:var(--line);background:var(--paper)}
-  .seriesbar a.cur{color:var(--amber-deep);background:var(--amber-soft);border-color:var(--amber)}
+  .seriesbar a:hover{color:var(--amber-text);border-color:var(--line);background:var(--paper)}
+  .seriesbar a.cur{color:var(--amber-text);background:var(--amber-soft);border-color:var(--amber)}
   .seriesbar .arw{color:var(--ink-3);opacity:.55;font-size:12px}
   .seriesbar .langtoggle{display:inline-flex;gap:2px;align-items:center;font-family:var(--mono);font-size:11px;font-weight:650;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--paper)}
   .seriesbar .langtoggle a{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;color:var(--ink-3);text-decoration:none;letter-spacing:.05em;border:none}
   .seriesbar .langtoggle svg{display:block;border-radius:2px}
-  .seriesbar .langtoggle a:hover{background:var(--amber-soft);color:var(--amber-deep)}
+  .seriesbar .langtoggle a:hover{background:var(--amber-soft);color:var(--amber-text)}
   .seriesbar .langtoggle a.cur{background:#8A5600;color:#fff}
   @media(max-width:640px){.seriesbar{border-radius:14px}.seriesbar nav{margin-left:0;width:100%}.seriesbar .arw{display:none}.seriesbar .langtoggle{margin-left:auto}}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-deep);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .eyebrow::before{content:"";width:26px;height:2px;background:var(--amber)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.015em;margin:0 0 0;text-wrap:balance;max-width:20ch}
-  h1 .sun{color:var(--amber-deep)}
+  h1 .sun{color:var(--amber-h1)}
   .standfirst{margin-top:16px;max-width:62ch;font-size:16.5px;color:var(--ink-2)}
   .standfirst strong{color:var(--ink)}
   .badges{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
@@ -155,8 +158,15 @@
   thead th{position:sticky;top:0;background:var(--ink);color:#fff;text-align:right;padding:10px 14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;cursor:pointer;user-select:none;white-space:nowrap}
   thead th:first-child,thead th:nth-child(2){text-align:left}
   thead th:hover{background:#2A3648}
-  thead th:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
+  /* le contrôle de tri est un vrai <button> dans le <th> (sémantique de tableau conservée) */
+  thead th button{all:unset;cursor:pointer;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
+  thead th button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   thead th .arr{color:var(--amber)}
+  .tlabel{font-size:13.5px;color:var(--ink-2)}
+  details.alt{margin-top:12px;font-size:13px}
+  details.alt summary{cursor:pointer;color:var(--ink-3);font-family:var(--mono);font-size:12px}
+  details.alt table.mini{margin-top:8px;width:100%}
+  details.alt table.mini th[scope=row]{text-align:left;font-weight:500}
   tbody td{padding:8px 14px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
   tbody td:first-child{font-family:var(--body);font-size:13.5px;color:var(--ink);text-align:left;font-weight:500}
   tbody td:nth-child(2){font-family:var(--body);text-align:left;color:var(--ink-3);font-size:12.5px}
@@ -170,7 +180,7 @@
   footer{margin-top:56px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-2)}
   footer h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
   footer p{max-width:75ch;margin:0 0 10px}
-  footer a{color:var(--amber-deep)}
+  footer a{color:var(--amber-text)}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:620px}
   @media(prefers-reduced-motion:no-preference){
@@ -244,6 +254,10 @@
   <div class="card">
     <div class="svgwrap" id="area"></div>
     <div class="legend" id="area-legend"></div>
+    <details class="alt">
+      <summary>Données du graphique</summary>
+      <table class="mini"><thead><tr><th scope="col">Relevé</th><!--PRE_AREA_HEAD--></tr></thead><tbody><!--PRE_AREA_ROWS--></tbody></table>
+    </details>
   </div>
 </section>
 
@@ -254,7 +268,7 @@
   </div>
   <p class="lede">Ajouts nets de capacité photovoltaïque entre relevés Leneda consécutifs. Les barres trimestrielles comparent deux fichiers trimestriels ; la dernière compare le relevé hebdomadaire du __DATE__ au dernier relevé trimestriel publié (__LASTQ__), soit deux extraits Leneda distincts.</p>
   <div class="grid-2">
-    <div class="card"><div class="hbars" id="additions"></div></div>
+    <div class="card"><div class="hbars" id="additions"><!--PRE_ADDITIONS--></div></div>
     <div class="card refs">
       <h3>Quelle part de l'électricité vient du solaire ?</h3>
       <p>Capacité (MW) et production (GWh) sont deux mesures différentes. D'après l'ILR (<a href="__ILR_URL__" target="_blank" rel="noopener">Chiffres-clés __ILR_YEAR__ du marché de l'électricité</a>, publication __ILR_PUB__), le photovoltaïque a produit <strong>__ILR_PVGWH__ GWh</strong> en __ILR_YEAR__, devant l'éolien (__ILR_WINDGWH__ GWh), pour une production nationale de __ILR_PRODGWH__ GWh et une consommation nationale brute de __ILR_CONSGWH__ GWh ; __ILR_SELFGWH__ GWh ont été autoconsommés ou partagés (__ILR_SELFPCT__ % de la consommation finale). Calcul lux-solaire à partir de ces chiffres : le PV pèse <strong>__PVPRODSHARE__ %</strong> de la production nationale et <strong>__PVCONSSHARE__ %</strong> de la consommation brute.</p>
@@ -271,8 +285,8 @@
     <div>
       <div class="sec-head"><h2>Mix des filières</h2><span class="sec-note">relevé du __DATE__</span></div>
       <div class="card">
-        <div class="mixbar" id="mixbar"></div>
-        <div class="mixlist" id="mixlist"></div>
+        <div class="mixbar" id="mixbar"><!--PRE_MIXBAR--></div>
+        <div class="mixlist" id="mixlist"><!--PRE_MIXLIST--></div>
       </div>
     </div>
     <div>
@@ -299,11 +313,11 @@
   <div class="grid-2">
     <div>
       <div class="sec-head"><h2>Top 15 : capacité PV</h2><span class="sec-note">kW installés</span></div>
-      <div class="card"><div class="hbars" id="top-pv"></div></div>
+      <div class="card"><div class="hbars" id="top-pv"><!--PRE_TOP_PV--></div></div>
     </div>
     <div>
       <div class="sec-head"><h2>Top 10 : croissance PV</h2><span class="sec-note">kW ajoutés depuis __FIRSTQ__</span></div>
-      <div class="card"><div class="hbars" id="top-growth"></div></div>
+      <div class="card"><div class="hbars" id="top-growth"><!--PRE_TOP_GROWTH--></div></div>
     </div>
   </div>
 </section>
@@ -317,14 +331,14 @@
   <div class="grid-2">
     <div>
       <div class="sec-head"><h3 class="h2like">Top 10 : W par habitant</h3><span class="sec-note">toitures (≤ 30 kW) pour 1 000 hab. en second</span></div>
-      <div class="card"><div class="hbars" id="top-wpc"></div></div>
+      <div class="card"><div class="hbars" id="top-wpc"><!--PRE_TOP_WPC--></div></div>
     </div>
     <div>
       <div class="sec-head"><h3 class="h2like">Les 12 cantons</h3><span class="sec-note">triés par W/hab.</span></div>
       <div class="tblwrap">
         <table class="cantons" id="cantons">
           <thead><tr><th>Canton</th><th>PV kW</th><th>Install.</th><th>Population</th><th>W/hab.</th><th>Inst./1 000 hab.</th></tr></thead>
-          <tbody></tbody>
+          <tbody><!--PRE_CANTONS--></tbody>
         </table>
       </div>
     </div>
@@ -342,7 +356,11 @@
       <span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
       <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
     </div>
-    <div class="pair" id="paradox"></div>
+    <div class="pair" id="paradox"><!--PRE_PARADOX--></div>
+    <details class="alt">
+      <summary>Données du graphique</summary>
+      <table class="mini"><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody><!--PRE_PARADOX_ROWS--></tbody></table>
+    </details>
   </div>
 </section>
 
@@ -352,23 +370,24 @@
     <span class="sec-note">cliquer sur un en-tête pour trier</span>
   </div>
   <div class="toolbar">
-    <input type="search" id="q" placeholder="Filtrer par commune ou canton…" aria-label="Filtrer les communes">
-    <span class="count" id="cnt"></span>
+    <label for="q" class="tlabel">Filtrer les communes</label>
+    <input type="search" id="q" placeholder="Filtrer par commune ou canton…">
+    <span class="count" id="cnt" aria-live="polite"></span>
   </div>
   <div class="tblwrap">
     <table id="tbl">
       <thead><tr>
-        <th data-k="c" data-s="str">Commune</th>
-        <th data-k="k" data-s="str">Canton</th>
-        <th data-k="pv">PV kW</th>
-        <th data-k="n">Install.</th>
-        <th data-k="share">Part PV</th>
-        <th data-k="g">Δ kW depuis __FIRSTQ__</th>
-        <th data-k="tot">Total kW</th>
-        <th data-k="wpc">W/hab.</th>
-        <th data-k="ipk">Inst./1 000 hab.</th>
+        <th data-k="c" data-s="str" aria-sort="none"><button type="button">Commune</button></th>
+        <th data-k="k" data-s="str" aria-sort="none"><button type="button">Canton</button></th>
+        <th data-k="pv" aria-sort="descending"><button type="button">PV kW</button> <span class="arr" aria-hidden="true">▼</span></th>
+        <th data-k="n" aria-sort="none"><button type="button">Install.</button></th>
+        <th data-k="share" aria-sort="none"><button type="button">Part PV</button></th>
+        <th data-k="g" aria-sort="none"><button type="button">Δ kW depuis __FIRSTQ__</button></th>
+        <th data-k="tot" aria-sort="none"><button type="button">Total kW</button></th>
+        <th data-k="wpc" aria-sort="none"><button type="button">W/hab.</button></th>
+        <th data-k="ipk" aria-sort="none"><button type="button">Inst./1 000 hab.</button></th>
       </tr></thead>
-      <tbody></tbody>
+      <tbody><!--PRE_ROWS--></tbody>
     </table>
   </div>
 </section>
@@ -379,7 +398,7 @@
   <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
   <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
   <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
-    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
     <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :
       <strong>lux-solaire</strong> ·
       <a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a> ·
@@ -433,7 +452,7 @@ document.getElementById('growth-total').textContent = Math.round(totLast-totFirs
   // gridlines
   for(let v=0;v<=maxY;v+=200){
     g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?'#B9BCB2':'#E7E8E1'}" stroke-width="1"/>`;
-    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#6B7380" font-family="ui-monospace,Menlo,monospace">${v}</text>`;
+    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${v}</text>`;
   }
   order.forEach(k=>{
     const t=TECHS.find(t=>t.k===k);
@@ -459,24 +478,22 @@ document.getElementById('growth-total').textContent = Math.round(totLast-totFirs
 })();
 
 /* ---- mix ---- */
+/* Les blocs ci-dessous sont PRÉRENDUS par build.py (même balisage) pour les
+   robots et sans JS ; le JS les remplace (innerHTML) sans les dupliquer. */
 (function(){
   const bar=document.getElementById('mixbar'), list=document.getElementById('mixlist');
-  TECHS.forEach(t=>{
-    const pct=last[t.k]/totLast*100;
-    bar.insertAdjacentHTML('beforeend',`<div style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`);
-    list.insertAdjacentHTML('beforeend',`<div class="mixrow"><span class="sw" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`);
-  });
+  bar.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
+    return `<div style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`;}).join('');
+  list.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
+    return `<div class="mixrow"><span class="sw" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`;}).join('');
 })();
 
 /* ---- top bars ---- */
 function hbars(el, rows, max, val, sub){
-  const host=document.getElementById(el);
-  rows.forEach(r=>{
-    host.insertAdjacentHTML('beforeend',
+  document.getElementById(el).innerHTML=rows.map(r=>
       `<div class="nm">${r.c} <small>· ${r.k}</small></div>
        <div class="tr"><div class="fl" style="width:${val(r)/max*100}%"></div></div>
-       <div class="vv">${sub(r)}</div>`);
-  });
+       <div class="vv">${sub(r)}</div>`).join('');
 }
 const top15=D.communes.slice(0,15);
 hbars('top-pv', top15, top15[0].pv, r=>r.pv, r=>`<b>${fmt(Math.round(r.pv))}</b> · ${fmt1(r.share)} %`);
@@ -500,22 +517,20 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 
 /* ---- paradox ---- */
 (function(){
-  const host=document.getElementById('paradox');
   const nTot=D.sizes.reduce((a,s)=>a+s.count,0), cTot=D.sizes.reduce((a,s)=>a+s.mw,0);
-  D.sizes.forEach(s=>{
+  document.getElementById('paradox').innerHTML=D.sizes.map(s=>{
     const pn=s.count/nTot*100, pc=s.mw/cTot*100;
-    host.insertAdjacentHTML('beforeend',
-      `<div class="bin">${s.bin}${s.bin.includes('MW')?'':' kW'}</div>
+    return `<div class="bin">${s.bin}${s.bin.includes('MW')?'':' kW'}</div>
        <div class="duo">
          <div class="b cnt" style="width:${Math.max(pn,0.4)}%"><i>${pn<1?pn.toFixed(1).replace('.',','):Math.round(pn)} % · ${fmt(s.count)} inst.</i></div>
          <div class="b cap" style="width:${Math.max(pc,0.4)}%"><i>${pc<1?pc.toFixed(1).replace('.',','):Math.round(pc)} % · ${fmt1(s.mw)} MW</i></div>
-       </div>`);
-  });
+       </div>`;}).join('');
 })();
 
 /* ---- table ---- */
 (function(){
   const tbody=document.querySelector('#tbl tbody'), q=document.getElementById('q'), cnt=document.getElementById('cnt');
+  const ths=[...document.querySelectorAll('#tbl thead th')];
   let sortK='pv', dir=-1, rows=[...D.communes];
   function render(){
     const f=q.value.trim().toLowerCase();
@@ -524,7 +539,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       const va=a[sortK],vb=b[sortK];
       return (typeof va==='string'? va.localeCompare(vb,'fr') : (va===null?-1:vb===null?1:va-vb))*dir;
     });
-    tbody.innerHTML=vis.map(r=>`<tr>
+    tbody.innerHTML=vis.map(r=>`<tr id="c-${r.lau2}">
       <td>${r.c}</td><td>${r.k}</td>
       <td>${fmt(Math.round(r.pv))}</td>
       <td>${fmt(r.n)}</td>
@@ -535,20 +550,21 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       <td>${fmt1(r.ipk)}</td>
     </tr>`).join('');
     cnt.textContent=vis.length+' / '+rows.length+' communes';
-    document.querySelectorAll('#tbl thead th').forEach(th=>{
-      const base=th.textContent.replace(/ [▲▼]$/,'');
-      th.innerHTML=base+(th.dataset.k===sortK?` <span class="arr" aria-hidden="true">${dir<0?'▼':'▲'}</span>`:'');
-      th.setAttribute('aria-sort', th.dataset.k===sortK?(dir<0?'descending':'ascending'):'none');
+    ths.forEach(th=>{
+      const on=th.dataset.k===sortK;
+      th.setAttribute('aria-sort', on?(dir<0?'descending':'ascending'):'none');
+      let arr=th.querySelector('.arr');
+      if(on){
+        if(!arr){arr=document.createElement('span');arr.className='arr';arr.setAttribute('aria-hidden','true');th.append(' ',arr);}
+        arr.textContent=dir<0?'▼':'▲';
+      } else if(arr){arr.remove();}
     });
   }
-  document.querySelectorAll('#tbl thead th').forEach(th=>{
-    th.tabIndex=0;
-    th.setAttribute('role','button');
-    const go=()=>{const k=th.dataset.k;
+  ths.forEach(th=>{
+    // le <button> du <th> porte le focus clavier ; le clic sur la cellule entière trie aussi
+    th.addEventListener('click',()=>{const k=th.dataset.k;
       if(sortK===k) dir*=-1; else {sortK=k; dir=th.dataset.s==='str'?1:-1;}
-      render();};
-    th.addEventListener('click',go);
-    th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+      render();});
   });
   q.addEventListener('input',render);
   render();

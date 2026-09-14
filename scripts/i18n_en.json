@@ -26,10 +26,8 @@
 "cliquer sur un en-tête pour trier": "click a header to sort",
 "Filtrer par commune ou canton…": "Filter by municipality or canton…",
 "Filtrer les communes": "Filter municipalities",
-">Commune</th>": ">Municipality</th>",
 ">Canton</th>": ">Canton</th>",
 ">Install.</th>": ">Inst.</th>",
-">Part PV</th>": ">PV share</th>",
 "Méthode & source": "Method & source",
 " (fichiers commune, canton et par installation).": " (municipality, canton and per-installation files).",
 "<title>Photovoltaïque au Luxembourg : capacité par commune (__YEAR__)</title>": "<title>Solar PV in Luxembourg: capacity by municipality (__YEAR__)</title>",
@@ -80,5 +78,14 @@
 ">Population</th>": ">Population</th>",
 ">W/hab.</th>": ">W/inh.</th>",
 ">Inst./1 000 hab.</th>": ">Inst./1,000 inh.</th>",
-"Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.": "Population: National Register of Natural Persons (RNPP) as of __POPDATE__, __POPTOTAL__ residents, CC0 dataset on data.public.lu; this administrative register differs from STATEC's official population estimate. “W/inh.” = PV kW × 1,000 / population; “rooftops” = PV installations of 30 kW or less."
+"Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.": "Population: National Register of Natural Persons (RNPP) as of __POPDATE__, __POPTOTAL__ residents, CC0 dataset on data.public.lu; this administrative register differs from STATEC's official population estimate. “W/inh.” = PV kW × 1,000 / population; “rooftops” = PV installations of 30 kW or less.",
+">Commune</button>": ">Municipality</th>",
+">Part PV</button>": ">PV share</th>",
+">Canton</button>": ">Canton</button>",
+">Install.</button>": ">Inst.</button>",
+">W/hab.</button>": ">W/inh.</button>",
+">Inst./1 000 hab.</button>": ">Inst./1,000 inh.</button>",
+"Données du graphique": "Chart data",
+">Relevé</th>": ">Reading</th>",
+">Taille (kW)</th>": ">Size (kW)</th>"
 }

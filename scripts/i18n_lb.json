@@ -26,10 +26,8 @@
 "cliquer sur un en-tête pour trier": "op eng Kolonn klicke fir ze zortéieren",
 "Filtrer par commune ou canton…": "No Gemeng oder Kanton filteren…",
 "Filtrer les communes": "Gemenge filteren",
-">Commune</th>": ">Gemeng</th>",
 ">Canton</th>": ">Kanton</th>",
 ">Install.</th>": ">Install.</th>",
-">Part PV</th>": ">PV-Undeel</th>",
 "Méthode & source": "Method a Quell",
 " (fichiers commune, canton et par installation).": " (Fichiere pro Gemeng, Kanton an Installatioun).",
 "<title>Photovoltaïque au Luxembourg : capacité par commune (__YEAR__)</title>": "<title>Photovoltaik zu Lëtzebuerg: Kapazitéit pro Gemeng (__YEAR__)</title>",
@@ -80,5 +78,14 @@
 ">Population</th>": ">Populatioun</th>",
 ">W/hab.</th>": ">W/Aw.</th>",
 ">Inst./1 000 hab.</th>": ">Inst./1 000 Aw.</th>",
-"Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.": "Populatioun: Registre national des personnes physiques (RNPP) vum __POPDATE__, __POPTOTAL__ Awunner, CC0-Dataset op data.public.lu; dëse Verwaltungsregister ënnerscheet sech vun der offizieller Populatiounsschätzung vum STATEC. « W/Aw. » = PV-kW × 1 000 / Populatioun; « Diecher » = PV-Installatioune vun 30 kW oder manner."
+"Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.": "Populatioun: Registre national des personnes physiques (RNPP) vum __POPDATE__, __POPTOTAL__ Awunner, CC0-Dataset op data.public.lu; dëse Verwaltungsregister ënnerscheet sech vun der offizieller Populatiounsschätzung vum STATEC. « W/Aw. » = PV-kW × 1 000 / Populatioun; « Diecher » = PV-Installatioune vun 30 kW oder manner.",
+">Commune</button>": ">Gemeng</th>",
+">Part PV</button>": ">PV-Undeel</th>",
+">Canton</button>": ">Kanton</button>",
+">Install.</button>": ">Install.</button>",
+">W/hab.</button>": ">W/Aw.</button>",
+">Inst./1 000 hab.</button>": ">Inst./1 000 Aw.</button>",
+"Données du graphique": "Donnéeë vun der Grafik",
+">Relevé</th>": ">Relevé</th>",
+">Taille (kW)</th>": ">Gréisst (kW)</th>"
 }

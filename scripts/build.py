@@ -565,6 +565,108 @@ def official_numbers(d, lang):
     }
 
 
+# ──────────────── pré-rendu statique (robots, aperçus de liens, sans JS) ─────
+# Même balisage que le JS du gabarit, qui remplace ces blocs par innerHTML sans
+# les dupliquer. Injecté APRÈS traduction : tout y est déjà localisé.
+TECH_ORDER = [("pv", "Photovoltaïque", "--amber"), ("wind", "Éolien", "--wind"),
+              ("biomass", "Biomasse", "--bio"), ("chp", "Cogénération", "--chp"),
+              ("hydro", "Hydroélectrique", "--hydro"), ("biogas", "Biogaz", "--biogas")]
+
+
+def _js_lit(lang, fr_literal):
+    """Un littéral JS du gabarit (quotes comprises) dans la langue cible, via
+    i18n_js.json / i18n_lb_js.json : « ' inst.' » → « inst.» ;
+    « name:'Éolien' » → « Wind ». Python et JS restent ainsi en phase."""
+    dct = {"en": I18N, "lb": I18N_LB}.get(lang, {})
+    v = dct.get(fr_literal, fr_literal)
+    return v.split("'", 1)[1].rsplit("'", 1)[0]
+
+
+def _pct_label(p, lang):
+    """Étiquette du graphique « paradoxe » : une décimale sous 1 %, comme le JS."""
+    if p < 1:
+        s = f"{p:.1f}"
+        return s if lang == "en" else s.replace(".", ",")
+    return str(_jsround(p))
+
+
+def prerender(d, lang):
+    """Fragments HTML statiques (marqueur → HTML) pour les KPI-listes, les
+    classements, les cantons, le paradoxe, les tableaux de données des
+    graphiques et les 100 lignes de la table des communes."""
+    T = lambda n: _thousands(n, lang)          # noqa: E731
+    D1 = lambda x: _dec1(x, lang)              # noqa: E731
+    sign = lambda x: "+" if x > 0 else ""      # noqa: E731
+    last = d["series"][-1]
+    names = {k: _js_lit(lang, f"name:'{fr}'") for k, fr, _ in TECH_ORDER}
+    tot = sum(last[k] for k, _, _ in TECH_ORDER)
+
+    def hb(rows, val, sub, mx):
+        return "".join(
+            f'<div class="nm">{r["c"]} <small>· {r["k"]}</small></div>'
+            f'<div class="tr"><div class="fl" style="width:{val(r) / mx * 100}%"></div></div>'
+            f'<div class="vv">{sub(r)}</div>' for r in rows)
+
+    top15 = d["communes"][:15]
+    topg = sorted(d["communes"], key=lambda c: -c["g"])[:10]
+    topw = sorted(d["communes"], key=lambda c: -c["wpc"])[:10]
+    lbl_w, lbl_r = _js_lit(lang, "' W/hab.'"), _js_lit(lang, "' toitures/1 000'")
+    lbl_i, lbl_week = _js_lit(lang, "' inst.'"), _js_lit(lang, "'hebdo vs trim.'")
+    A = d["additions"]
+    amax = max(a["pv_mw"] for a in A)
+    n_all = sum(s["count"] for s in d["sizes"])
+    mw_all = sum(s["mw"] for s in d["sizes"])
+
+    def paradox_row(s):
+        pn, pc = s["count"] / n_all * 100, s["mw"] / mw_all * 100
+        unit = "" if "MW" in s["bin"] else " kW"
+        return (f'<div class="bin">{s["bin"]}{unit}</div><div class="duo">'
+                f'<div class="b cnt" style="width:{max(pn, 0.4)}%"><i>{_pct_label(pn, lang)} % · {T(s["count"])} inst.</i></div>'
+                f'<div class="b cap" style="width:{max(pc, 0.4)}%"><i>{_pct_label(pc, lang)} % · {D1(s["mw"])} MW</i></div></div>')
+
+    def paradox_table_row(s):
+        pn, pc = s["count"] / n_all * 100, s["mw"] / mw_all * 100
+        unit = "" if "MW" in s["bin"] else " kW"
+        return (f'<tr><th scope="row">{s["bin"]}{unit}</th><td>{T(s["count"])}</td><td>{D1(pn)} %</td>'
+                f'<td>{D1(s["mw"])}</td><td>{D1(pc)} %</td></tr>')
+
+    return {
+        "<!--PRE_MIXBAR-->": "".join(
+            f'<div style="width:{last[k] / tot * 100}%;background:var({css})" title="{names[k]} {D1(last[k] / tot * 100)} %"></div>'
+            for k, _, css in TECH_ORDER),
+        "<!--PRE_MIXLIST-->": "".join(
+            f'<div class="mixrow"><span class="sw" style="background:var({css})"></span>{names[k]}'
+            f'<span class="vv"><b>{D1(last[k] / tot * 100)} %</b> · {D1(last[k])} MW</span></div>'
+            for k, _, css in TECH_ORDER),
+        "<!--PRE_TOP_PV-->": hb(top15, lambda r: r["pv"],
+                                lambda r: f'<b>{T(_jsround(r["pv"]))}</b> · {D1(r["share"])} %', top15[0]["pv"]),
+        "<!--PRE_TOP_GROWTH-->": hb(topg, lambda r: r["g"],
+                                    lambda r: f'<b>+{T(_jsround(r["g"]))}</b> · +{_jsround(r["gp"] or 0)} %', topg[0]["g"]),
+        "<!--PRE_TOP_WPC-->": hb(topw, lambda r: r["wpc"],
+                                 lambda r: f'<b>{T(r["wpc"])}</b>{lbl_w} · {D1(r["rpk"])}{lbl_r}', topw[0]["wpc"]),
+        "<!--PRE_CANTONS-->": "".join(
+            f'<tr><td>{k["k"]}</td><td>{T(_jsround(k["pv"]))}</td><td>{T(k["n"])}</td><td>{T(k["pop"])}</td>'
+            f'<td>{T(k["wpc"])}</td><td>{D1(k["ipk"])}</td></tr>' for k in d["cantons"]),
+        "<!--PRE_ADDITIONS-->": "".join(
+            f'<div class="nm">{a["from"]} → {a["to"]}{" <small>· " + lbl_week + "</small>" if a["kind"] == "weekly" else ""}</div>'
+            f'<div class="tr"><div class="fl" style="width:{max(a["pv_mw"], 0) / amax * 100}%"></div></div>'
+            f'<div class="vv"><b>{sign(a["pv_mw"])}{D1(a["pv_mw"])} MW</b> · {sign(a["pv_n"])}{T(a["pv_n"])}{lbl_i}</div>'
+            for a in A),
+        "<!--PRE_PARADOX-->": "".join(paradox_row(s) for s in d["sizes"]),
+        "<!--PRE_PARADOX_ROWS-->": "".join(paradox_table_row(s) for s in d["sizes"]),
+        "<!--PRE_AREA_HEAD-->": "".join(f'<th scope="col">{names[k]}</th>' for k, _, _ in TECH_ORDER),
+        "<!--PRE_AREA_ROWS-->": "".join(
+            f'<tr><th scope="row">{r["label"]}</th>' + "".join(f'<td>{D1(r[k])}</td>' for k, _, _ in TECH_ORDER) + "</tr>"
+            for r in d["series"]),
+        "<!--PRE_ROWS-->": "".join(
+            f'<tr id="c-{r["lau2"]}"><td>{r["c"]}</td><td>{r["k"]}</td><td>{T(_jsround(r["pv"]))}</td><td>{T(r["n"])}</td>'
+            f'<td><span class="sharecell"><span class="minitr"><i style="width:{r["share"]}%"></i></span>{D1(r["share"])} %</span></td>'
+            f'<td class="{"pos" if r["g"] > 0 else ""}">{sign(r["g"])}{T(_jsround(r["g"]))}</td>'
+            f'<td>{T(_jsround(r["tot"]))}</td><td>{T(r["wpc"])}</td><td>{D1(r["ipk"])}</td></tr>'
+            for r in d["communes"]),
+    }
+
+
 def check_claims(data):
     """Les encadrés dérivés restent vrais par construction ; on vérifie quand même
     que la forme du texte (« 4 × ≈5 MW », « plafonnent juste sous les 5 MW »)
@@ -732,6 +834,11 @@ def render_all(data):
         # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
             html = html.replace(token, value)
+        # fragments prérendus (déjà localisés) : après traduction et jetons
+        for marker, frag in prerender(d, lang).items():
+            if marker not in html:
+                sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
+            html = html.replace(marker, frag)
         check_output(html, lang, dct)
         return html
 
