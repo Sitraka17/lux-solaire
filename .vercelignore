@@ -1,3 +1,10 @@
 # La racine du repo EST le répertoire servi : tout fichier non exclu ici devient
 # publiquement lisible. Le README documente le repo GitHub, pas le site.
 README.md
+CONTEXT.md
+STRATEGY.md
+scripts/
+template.html
+.github/
+.claude/
+*.pdf
