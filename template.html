@@ -147,7 +147,11 @@
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .tblwrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:4px;background:var(--card)}
-  table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+  table{border-collapse:collapse;width:100%;min-width:900px;font-size:13.5px}
+  table.cantons{min-width:520px}
+  table.cantons thead th{cursor:default}
+  table.cantons tbody td:nth-child(2){font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right}
+  .h2like{font-family:var(--display);font-size:21px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance}
   thead th{position:sticky;top:0;background:var(--ink);color:#fff;text-align:right;padding:10px 14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;cursor:pointer;user-select:none;white-space:nowrap}
   thead th:first-child,thead th:nth-child(2){text-align:left}
   thead th:hover{background:#2A3648}
@@ -304,6 +308,29 @@
   </div>
 </section>
 
+<section id="par-habitant">
+  <div class="sec-head">
+    <h2>Quelles communes ont le plus de photovoltaïque par habitant ?</h2>
+    <span class="sec-note">population RNPP au __POPDATE__</span>
+  </div>
+  <p class="lede">Rapportée à la population, la capacité PV inverse les classements : __NATWPC__ W par habitant à l'échelle nationale (médiane communale __MEDWPC__ W/hab.), __TOPWPC__ W/hab. à <strong>__TOPWPC_COMMUNE__</strong> contre __LOWWPC__ à __LOWWPC_COMMUNE__. Les grandes centrales gonflent les petites communes : à __TOPWPC_COMMUNE__, __TOPWPC_MW__ MW proviennent de __TOPWPC_N__ installations seulement. La colonne « toitures » compte les installations de 30 kW ou moins pour 1 000 habitants.</p>
+  <div class="grid-2">
+    <div>
+      <div class="sec-head"><h3 class="h2like">Top 10 : W par habitant</h3><span class="sec-note">toitures (≤ 30 kW) pour 1 000 hab. en second</span></div>
+      <div class="card"><div class="hbars" id="top-wpc"></div></div>
+    </div>
+    <div>
+      <div class="sec-head"><h3 class="h2like">Les 12 cantons</h3><span class="sec-note">triés par W/hab.</span></div>
+      <div class="tblwrap">
+        <table class="cantons" id="cantons">
+          <thead><tr><th>Canton</th><th>PV kW</th><th>Install.</th><th>Population</th><th>W/hab.</th><th>Inst./1 000 hab.</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="sec-head">
     <h2>Le paradoxe résidentiel</h2>
@@ -338,6 +365,8 @@
         <th data-k="share">Part PV</th>
         <th data-k="g">Δ kW depuis __FIRSTQ__</th>
         <th data-k="tot">Total kW</th>
+        <th data-k="wpc">W/hab.</th>
+        <th data-k="ipk">Inst./1 000 hab.</th>
       </tr></thead>
       <tbody></tbody>
     </table>
@@ -348,6 +377,7 @@
   <h3>Méthode & source</h3>
   <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
   <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
+  <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
   <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
     <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :
@@ -453,6 +483,12 @@ hbars('top-pv', top15, top15[0].pv, r=>r.pv, r=>`<b>${fmt(Math.round(r.pv))}</b>
 const topG=[...D.communes].sort((a,b)=>b.g-a.g).slice(0,10);
 hbars('top-growth', topG, topG[0].g, r=>r.g, r=>`<b>+${fmt(Math.round(r.g))}</b> · +${Math.round(r.gp)} %`);
 
+/* ---- par habitant (RNPP) ---- */
+const topW=[...D.communes].sort((a,b)=>b.wpc-a.wpc).slice(0,10);
+hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<b>${fmt(r.wpc)}</b>${' W/hab.'} · ${fmt1(r.rpk)}${' toitures/1 000'}`);
+document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
+  `<tr><td>${k.k}</td><td>${fmt(Math.round(k.pv))}</td><td>${fmt(k.n)}</td><td>${fmt(k.pop)}</td><td>${fmt(k.wpc)}</td><td>${fmt1(k.ipk)}</td></tr>`).join('');
+
 /* ---- ajouts entre relevés consécutifs ---- */
 (function(){
   const host=document.getElementById('additions'), A=D.additions, max=Math.max(...A.map(a=>a.pv_mw));
@@ -495,15 +531,17 @@ hbars('top-growth', topG, topG[0].g, r=>r.g, r=>`<b>+${fmt(Math.round(r.g))}</b>
       <td><span class="sharecell"><span class="minitr"><i style="width:${r.share}%"></i></span>${fmt1(r.share)} %</span></td>
       <td class="${r.g>0?'pos':''}">${r.g>0?'+':''}${fmt(Math.round(r.g))}</td>
       <td>${fmt(Math.round(r.tot))}</td>
+      <td>${fmt(r.wpc)}</td>
+      <td>${fmt1(r.ipk)}</td>
     </tr>`).join('');
     cnt.textContent=vis.length+' / '+rows.length+' communes';
-    document.querySelectorAll('thead th').forEach(th=>{
+    document.querySelectorAll('#tbl thead th').forEach(th=>{
       const base=th.textContent.replace(/ [▲▼]$/,'');
       th.innerHTML=base+(th.dataset.k===sortK?` <span class="arr" aria-hidden="true">${dir<0?'▼':'▲'}</span>`:'');
       th.setAttribute('aria-sort', th.dataset.k===sortK?(dir<0?'descending':'ascending'):'none');
     });
   }
-  document.querySelectorAll('thead th').forEach(th=>{
+  document.querySelectorAll('#tbl thead th').forEach(th=>{
     th.tabIndex=0;
     th.setAttribute('role','button');
     const go=()=>{const k=th.dataset.k;

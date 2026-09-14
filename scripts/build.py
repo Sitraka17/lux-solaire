@@ -22,6 +22,7 @@ import os
 import re
 import statistics
 import sys
+import unicodedata
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -122,7 +123,39 @@ def fetch_resources():
     return frames, wdate, ngdf
 
 
-def build(frames, wdate, ng):
+RNPP_API = ("https://data.public.lu/api/1/datasets/registre-national-des-personnes-physiques-rnpp-"
+            "population-par-commune-population-per-municipality/")
+
+
+def _norm_name(s):
+    """Clé de jointure sur le nom de commune : sans accents, minuscules, alnum."""
+    s = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]", "", s.lower())
+
+
+def fetch_population():
+    """Population par commune du Registre national des personnes physiques
+    (RNPP, CC0) : fichier CSV le plus récent (date dans le titre, jj-mm-aaaa).
+    Le fichier n'a pas de colonne total : population = somme des 4 colonnes
+    mineurs/majeurs par sexe. Le COMMUNE_CODE n'est pas le LAU2 : jointure
+    sur le nom normalisé. Retourne ({nom normalisé: population}, date)."""
+    meta = json.loads(_get(RNPP_API, timeout=30))
+    best = None
+    for r in meta["resources"]:
+        m = re.match(r"(\d{1,2})-(\d{1,2})-(\d{4})-rnrpp-population-commune\.csv$", r["title"])
+        if m:
+            d = date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+            if best is None or d > best[0]:
+                best = (d, r["url"])
+    if best is None:
+        sys.exit("RNPP : aucun fichier CSV de population par commune trouvé")
+    df = pd.read_csv(io.BytesIO(_get(best[1], timeout=30)), encoding="latin-1")
+    cols = ["FEMMES_MINEURES", "HOMMES_MINEURS", "FEMMES_MAJEURES", "HOMMES_MAJEURS"]
+    df["pop"] = df[cols].sum(axis=1)
+    return {_norm_name(n): int(p) for n, p in zip(df["COMMUNE_NOM"], df["pop"])}, best[0]
+
+
+def build(frames, wdate, ng, pop, pop_date):
     labels = list(frames)
     series = []
     for label, df in frames.items():
@@ -138,14 +171,25 @@ def build(frames, wdate, ng):
     latest["total_kw"] = sum(latest[t + " Performance [kW]"] for t in TECHS)
     pv0 = first.set_index("LAU2")[PV + " Performance [kW]"]
 
-    communes = []
+    # ---- fichier hebdomadaire par installation : tailles + toitures par commune ----
+    ng = ng.copy()
+    ng["p"] = pd.to_numeric(ng["Puissance installée [kW]"])
+    pv_inst = ng[ng["Type d'installation"] == PV]
+    small_by_lau2 = pv_inst[pv_inst["p"] <= 30].groupby("LAU2").size()   # toitures : 30 kW ou moins
+
+    communes, unmatched = [], []
     for _, r in latest.iterrows():
         pv = r[PV + " Performance [kW]"]
         base = float(pv0.get(r["LAU2"], 0))
+        n = int(r[PV + " Producteur [#]"])
+        p = pop.get(_norm_name(r["Commune"]))
+        if p is None:
+            unmatched.append(r["Commune"])
+            p = 0
         communes.append({
             "c": r["Commune"], "k": r["Canton"], "lau2": int(r["LAU2"]),
             "pv": round(pv, 1),
-            "n": int(r[PV + " Producteur [#]"]),
+            "n": n,
             "tot": round(r["total_kw"], 1),
             "share": round(pv / r["total_kw"] * 100, 1) if r["total_kw"] > 0 else 0,
             "g": round(pv - base, 1),
@@ -154,13 +198,30 @@ def build(frames, wdate, ng):
             "hydro": round(r["Installation hydroélectrique Performance [kW]"], 1),
             "chp": round(r["Cogénération Performance [kW]"], 1),
             "bio": round(r["Biogaz Performance [kW]"] + r["Biomasse Performance [kW]"], 1),
+            # par habitant (RNPP) : W/hab., installations PV et toitures (≤ 30 kW) pour 1 000 hab.
+            "pop": p,
+            "wpc": round(pv * 1000 / p) if p else None,
+            "ipk": round(n / p * 1000, 1) if p else None,
+            "rpk": round(int(small_by_lau2.get(int(r["LAU2"]), 0)) / p * 1000, 1) if p else None,
         })
+    if unmatched:
+        sys.exit(f"RNPP : {len(unmatched)} communes Leneda sans population : {unmatched}")
     communes.sort(key=lambda x: -x["pv"])
 
-    # ---- histogramme des tailles : fichier hebdomadaire par installation ----
-    ng = ng.copy()
-    ng["p"] = pd.to_numeric(ng["Puissance installée [kW]"])
-    pv_inst = ng[ng["Type d'installation"] == PV]
+    # ---- cantons : agrégés depuis les communes (capacité, installations, population) ----
+    cantons = {}
+    for c in communes:
+        k = cantons.setdefault(c["k"], {"k": c["k"], "pv": 0.0, "n": 0, "pop": 0, "tot": 0.0})
+        k["pv"] += c["pv"]; k["n"] += c["n"]; k["pop"] += c["pop"]; k["tot"] += c["tot"]
+    cantons = sorted(cantons.values(), key=lambda k: -k["pv"] * 1000 / k["pop"])
+    for k in cantons:
+        k["pv"], k["tot"] = round(k["pv"], 1), round(k["tot"], 1)
+        k["wpc"] = round(k["pv"] * 1000 / k["pop"])
+        k["ipk"] = round(k["n"] / k["pop"] * 1000, 1)
+        k["share"] = round(k["pv"] / k["tot"] * 100, 1) if k["tot"] else 0
+    pop_total = sum(c["pop"] for c in communes)
+
+    # ---- histogramme des tailles ----
     bins = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, 1e9]
     bin_labels = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
                   "0,5–1 MW", "1–5 MW", ">5 MW"]
@@ -196,11 +257,21 @@ def build(frames, wdate, ng):
     ilr_q = next((r for r in q_rows if r["label"] == f"{SOURCES['ilr']['year']} T4"), None)
 
     shares = [c["share"] for c in communes]
+    pv_kw_total = float(latest[PV + " Performance [kW]"].sum())
     return {
         "series": series,
         "communes": communes,
+        "cantons": cantons,
         "sizes": sizes,
         "additions": additions,
+        "population": {
+            "source": RNPP_API, "date_iso": pop_date.isoformat(),
+            "date": f"{pop_date.day}{'er' if pop_date.day == 1 else ''} {MONTHS_FR[pop_date.month - 1]} {pop_date.year}",
+            "total": pop_total,
+            "wpc": round(pv_kw_total * 1000 / pop_total),
+            "ipk": round(series[-1]["pv_count"] / pop_total * 1000, 1),
+            "median_wpc": round(statistics.median(c["wpc"] for c in communes)),
+        },
         "refs": {"ilr": SOURCES["ilr"], "pnec": SOURCES["pnec"],
                  "leneda_ilr_year_end": {"label": ilr_q["label"], "pv_mw": ilr_q["pv"], "pv_n": ilr_q["pv_count"]} if ilr_q else None},
         "meta": {
@@ -425,6 +496,29 @@ def prose_numbers(d, lang):
         "__BIGN__": str(sum(x["count"] for x in big)),
         "__BIGMW__": _thousands(_jsround(sum(x["mw"] for x in big)), lang),
         **official_numbers(d, lang),
+        **population_numbers(d, lang),
+    }
+
+
+def population_numbers(d, lang):
+    """Jetons de la section « par habitant » (RNPP)."""
+    P = d["population"]
+    top = max(d["communes"], key=lambda c: c["wpc"])
+    low = min(d["communes"], key=lambda c: c["wpc"])
+    return {
+        "__POPDATE__": P["date"],
+        "__POPTOTAL__": _thousands(P["total"], lang),
+        "__NATWPC__": _thousands(P["wpc"], lang),
+        "__NATIPK__": _dec1(P["ipk"], lang),
+        "__MEDWPC__": _thousands(P["median_wpc"], lang),
+        "__TOPWPC_COMMUNE__": top["c"],
+        "__TOPWPC__": _thousands(top["wpc"], lang),
+        "__TOPWPC_MW__": _dec1(top["pv"] / 1000, lang),
+        "__TOPWPC_N__": _thousands(top["n"], lang),
+        "__TOPWPC_RPK__": _dec1(top["rpk"], lang),
+        "__LOWWPC_COMMUNE__": low["c"],
+        "__LOWWPC__": _thousands(low["wpc"], lang),
+        "__LOWWPC_IPK__": _dec1(low["ipk"], lang),
     }
 
 
@@ -652,7 +746,8 @@ def render_all(data):
 
 def main():
     frames, wdate, ng = fetch_resources()
-    data = build(frames, wdate, ng)
+    pop, pop_date = fetch_population()
+    data = build(frames, wdate, ng, pop, pop_date)
     check_claims(data)
     (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
     render_all(data)

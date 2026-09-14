@@ -8,5 +8,7 @@
 "' communes'": "' municipalities'",
 "Capacité installée par filière, ${first.label} à aujourd'hui": "Installed capacity by technology, ${first.label} to today",
 "'hebdo vs trim.'": "'weekly vs quarterly'",
-"' inst.'": "' inst.'"
+"' inst.'": "' inst.'",
+"' W/hab.'": "' W/inh.'",
+"' toitures/1 000'": "' rooftops/1,000'"
 }
