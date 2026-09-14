@@ -10,9 +10,6 @@
 "Croissance PV": "PV growth",
 "Installations PV": "PV installations",
 "Part du parc décentralisé": "Share of decentralised fleet",
-"Le photovoltaïque au Luxembourg, commune par commune : capacité installée, croissance et mix par filière": "Solar PV in Luxembourg, municipality by municipality: installed capacity, growth and technology mix",
-"lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois": "lux-solaire: indicators derived from Luxembourg's solar PV fleet",
-"Capacité PV par commune, croissance trimestrielle, mix par filière et histogramme des tailles, recalculés depuis les relevés Leneda publiés sur data.public.lu.": "PV capacity by municipality, quarterly growth, technology mix and size histogram, recomputed from the Leneda readings published on data.public.lu.",
 "Trajectoire nationale : le PV creuse l'écart": "National trajectory: PV pulls ahead",
 "Mix des filières": "Technology mix",
 "relevé du ": "reading of ",
@@ -113,5 +110,6 @@
 "data-l-err-page=\"Page :\"": "data-l-err-page=\"Page:\"",
 "data-l-err-section=\"Section :\"": "data-l-err-section=\"Section:\"",
 "data-l-err-what=\"Ce qui semble inexact :\"": "data-l-err-what=\"What looks wrong:\"",
-"data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Suggested source or correction (link):\""
+"data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Suggested source or correction (link):\"",
+"Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.": "The data derived on this page (tables, CSV and JSON) are published under the <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> licence; the Leneda and RNPP source files remain under CC0."
 }

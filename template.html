@@ -19,13 +19,7 @@
 <meta name="twitter:title" content="Le photovoltaïque au Luxembourg, commune par commune">
 <meta name="twitter:description" content="Photovoltaïque au Luxembourg : __PVMW__ MW raccordés au __DATE__, __PVN__ installations. Capacité, croissance et part du solaire par commune (Leneda).">
 <meta name="twitter:image" content="https://solaire.sitraka.lu/__OGIMAGE__">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[
- {"@type":"Article","@id":"__CANONICAL__#article","headline":"Le photovoltaïque au Luxembourg, commune par commune : capacité installée, croissance et mix par filière","inLanguage":"__LANG__","url":"__CANONICAL__","dateModified":"__ISODATE__","author":{"@id":"https://sitraka.lu/#person"},"publisher":{"@id":"https://sitraka.lu/#person"},"isBasedOn":["https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"],"about":["Solar power","Photovoltaics","Luxembourg","Open data"],"license":"https://creativecommons.org/licenses/by/4.0/"},
- {"@type":"Dataset","@id":"__CANONICAL__#dataset","name":"lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois","description":"Capacité PV par commune, croissance trimestrielle, mix par filière et histogramme des tailles, recalculés depuis les relevés Leneda publiés sur data.public.lu.","url":"__CANONICAL__","license":"https://creativecommons.org/licenses/by/4.0/","creator":{"@id":"https://sitraka.lu/#person"},"isBasedOn":["https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"],"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://solaire.sitraka.lu/data/data.json"}],"spatialCoverage":"Luxembourg","temporalCoverage":"2025/2026"},
- {"@type":"Person","@id":"https://sitraka.lu/#person","name":"Sitraka Forler","url":"https://sitraka.lu","sameAs":["https://www.linkedin.com/in/sitraka-matthieu-forler","https://github.com/Sitraka17"]}
-]}
-</script>
+<!--JSONLD-->
 <link rel="alternate" hreflang="en" href="https://solaire.sitraka.lu/">
 <link rel="alternate" hreflang="fr" href="https://solaire.sitraka.lu/fr">
 <link rel="alternate" hreflang="lb" href="https://solaire.sitraka.lu/lb">
@@ -468,6 +462,7 @@
   <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
   <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
   <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
+  <p>Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.</p>
   <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
     <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :

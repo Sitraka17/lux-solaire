@@ -16,6 +16,7 @@ Garde-fous (le build ÉCHOUE plutôt que de publier une prose fausse) :
 """
 import csv
 import hashlib
+import html as html_mod
 import io
 import json
 import math
@@ -816,18 +817,100 @@ def rt_downloads(manifest, lang):
     return "".join(items)
 
 
-def write_seo():
-    """robots.txt + sitemap.xml (les trois langues : /, /fr et /lb)."""
-    today = date.today().isoformat()
+def write_seo(cdates):
+    """robots.txt + sitemap.xml : les trois langues avec leurs alternates
+    hreflang (identiques aux <link rel=alternate> des pages) et un lastmod
+    honnête = date de contenu de chaque locale, jamais l'horloge du build."""
     (ROOT / "robots.txt").write_text(
         f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
-    sm = ['<?xml version="1.0" encoding="UTF-8"?>',
-          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for u in ("/", "/fr", "/lb"):
-        sm.append(f"<url><loc>{SITE}{u}</loc><lastmod>{today}</lastmod>"
-                  f"<changefreq>monthly</changefreq></url>")
-    sm.append("</urlset>")
-    (ROOT / "sitemap.xml").write_text("\n".join(sm))
+    alts = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{SITE}{p}"/>' for c, p in LANG_PATHS)
+    alts += f'<xhtml:link rel="alternate" hreflang="x-default" href="{SITE}/"/>'
+    rows = [f"<url><loc>{SITE}{p}</loc><lastmod>{cdates[c]}</lastmod>{alts}</url>" for c, p in LANG_PATHS]
+    (ROOT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+        + "\n".join(rows) + "\n</urlset>\n")
+
+
+# ──────────────── JSON-LD (un seul @graph, construit APRÈS traduction) ──────
+PUBLISHED = "2026-07-06"   # premier commit du site (680114d)
+PERSON = {"@type": "Person", "@id": "https://sitraka.lu/#person", "name": "Sitraka Forler",
+          "url": "https://sitraka.lu/",
+          "sameAs": ["https://www.linkedin.com/in/sitraka-matthieu-forler/", "https://github.com/Sitraka17"]}
+LUXEMBOURG = {"@type": "Place", "name": "Luxembourg", "sameAs": "https://www.wikidata.org/wiki/Q32"}
+DATASET = {
+    "name": {"fr": "lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois",
+             "en": "lux-solaire: indicators derived from Luxembourg's solar PV fleet",
+             "lb": "lux-solaire: Indicateuren ofgeleet vum lëtzebuergesche Photovoltaik-Park"},
+    "description": {
+        "fr": "Capacité photovoltaïque installée par commune et par canton, W par habitant (population RNPP), "
+              "ajouts nets entre relevés, mix par filière et histogramme des tailles d'installation, recalculés "
+              "à chaque relevé depuis les fichiers Leneda publiés sur data.public.lu (CC0). Données dérivées "
+              "sous licence CC BY 4.0, téléchargeables en CSV et JSON.",
+        "en": "Installed solar PV capacity by municipality and canton, W per inhabitant (RNPP population), "
+              "net additions between readings, technology mix and installation-size histogram, recomputed at "
+              "each reading from the Leneda files published on data.public.lu (CC0). Derived data under "
+              "CC BY 4.0, downloadable as CSV and JSON.",
+        "lb": "Installéiert PV-Kapazitéit pro Gemeng a Kanton, W pro Awunner (RNPP-Populatioun), Netto-Zouwuess "
+              "tëscht de Relevéen, Mix vun de Filièren an Histogramm vun de Gréissten, bei all Relevé nei "
+              "berechent aus de Leneda-Fichieren op data.public.lu (CC0). Ofgeleet Donnéeën ënner CC BY 4.0, "
+              "als CSV a JSON erofzelueden."},
+    "keywords": {"fr": ["photovoltaïque", "Luxembourg", "communes", "capacité installée", "open data", "Leneda"],
+                 "en": ["solar PV", "Luxembourg", "municipalities", "installed capacity", "open data", "Leneda"],
+                 "lb": ["Photovoltaik", "Lëtzebuerg", "Gemengen", "installéiert Kapazitéit", "Open Data", "Leneda"]},
+    "variables": {"fr": ["capacité photovoltaïque installée (kW)", "nombre d'installations photovoltaïques",
+                         "part du photovoltaïque dans la capacité décentralisée (%)",
+                         "variation de capacité depuis le premier relevé trimestriel (kW)",
+                         "puissance photovoltaïque par habitant (W)", "installations photovoltaïques pour 1 000 habitants"],
+                  "en": ["installed solar PV capacity (kW)", "number of PV installations",
+                         "PV share of decentralised capacity (%)", "capacity change since the first quarterly reading (kW)",
+                         "PV capacity per inhabitant (W)", "PV installations per 1,000 inhabitants"],
+                  "lb": ["installéiert PV-Kapazitéit (kW)", "Zuel vun de PV-Installatiounen",
+                         "Undeel vum PV un der dezentraler Kapazitéit (%)", "Ännerung vun der Kapazitéit zanter dem éischte Quartalsrelevé (kW)",
+                         "PV-Leeschtung pro Awunner (W)", "PV-Installatioune pro 1 000 Awunner"]},
+}
+
+
+def _grab(pattern, s):
+    m = re.search(pattern, s, re.S)
+    return html_mod.unescape(re.sub(r"<[^>]+>", "", m.group(1))).strip() if m else ""
+
+
+def jsonld(final_html, lang, canonical, cdate, manifest, d):
+    """WebSite + WebPage + Article + Dataset + Person. Titre, description et
+    headline sont RELUS dans la page traduite (aucune dérive possible) ;
+    seuls nom, description, mots-clés et variables du Dataset viennent de
+    DATASET. Dates honnêtes : première mise en ligne + date de contenu."""
+    title = _grab(r"<title>(.*?)</title>", final_html)
+    desc = _grab(r'<meta\s+name="description"\s+content="([^"]*)"', final_html)
+    h1 = _grab(r"<h1[^>]*>(.*?)</h1>", final_html)
+    og = _grab(r'<meta\s+property="og:image"\s+content="([^"]*)"', final_html)
+    q_labels = [r["label"] for r in d["series"] if re.match(r"^\d{4} [TQ]\d$", r["label"])]
+    y, q = q_labels[0][:4], int(q_labels[0][-1])
+    temporal = f"{y}-{q * 3:02d}/{d['meta']['date_iso']}"        # fin du 1er trimestre relevé → relevé hebdo
+    graph = [
+        {"@type": "WebSite", "@id": SITE + "/#website", "url": SITE + "/", "name": "Lux-Solaire",
+         "inLanguage": [c for c, _ in LANG_PATHS], "publisher": {"@id": PERSON["@id"]}},
+        {"@type": "WebPage", "@id": canonical + "#webpage", "url": canonical, "name": title, "description": desc,
+         "inLanguage": lang, "isPartOf": {"@id": SITE + "/#website"},
+         "primaryImageOfPage": {"@type": "ImageObject", "url": og},
+         "datePublished": PUBLISHED, "dateModified": cdate, "about": {"@id": SITE + "/#dataset"}},
+        {"@type": "Article", "@id": canonical + "#article", "mainEntityOfPage": {"@id": canonical + "#webpage"},
+         "headline": h1[:110], "description": desc, "inLanguage": lang, "image": og,
+         "datePublished": PUBLISHED, "dateModified": cdate,
+         "author": {"@id": PERSON["@id"]}, "publisher": {"@id": PERSON["@id"]},
+         "isBasedOn": [DATASET_URL, RNPP_URL, SOURCES["ilr"]["url"], SOURCES["pnec"]["url"]], "license": LICENSE_URL},
+        {"@type": "Dataset", "@id": SITE + "/#dataset", "url": SITE + "/", "identifier": SITE + "/",
+         "name": DATASET["name"][lang], "description": DATASET["description"][lang], "keywords": DATASET["keywords"][lang],
+         "license": LICENSE_URL, "isAccessibleForFree": True, "creator": {"@id": PERSON["@id"]},
+         "isBasedOn": [DATASET_URL, RNPP_URL], "temporalCoverage": temporal, "spatialCoverage": LUXEMBOURG,
+         "dateModified": cdate, "version": cdate, "variableMeasured": DATASET["variables"][lang],
+         "distribution": [{"@type": "DataDownload", "name": f["title"][lang], "encodingFormat": f["format"],
+                           "contentUrl": SITE + f["path"]} for f in manifest["files"]]},
+        PERSON,
+    ]
+    payload = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
+    return '<script type="application/ld+json">' + payload.replace("<", "\\u003c") + "</script>"
 
 
 OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png"}
@@ -918,7 +1001,6 @@ def render_all(data):
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
-    write_seo()
     for lang in ("fr", "en", "lb"):
         make_og(data, lang)
     tpl = (ROOT / "template.html").read_text()
@@ -934,6 +1016,7 @@ def render_all(data):
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                         rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
     manifest = write_exports(exports(data), max(cdates.values()))
+    write_seo(cdates)
 
     def render(d, lang):
         blob = json.dumps(d, ensure_ascii=False)
@@ -962,7 +1045,6 @@ def render_all(data):
             f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
             for c, _ in LANG_PATHS if c != lang)
         html = (tpl.replace("/*__DATA__*/", blob)
-                   .replace("__ISODATE__", date.today().isoformat())
                    .replace("__LANG__", lang)
                    .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
                    .replace("__CONTENT_DATE__", cdates[lang])
@@ -985,6 +1067,10 @@ def render_all(data):
                 sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
             html = html.replace(marker, frag)
         html = html.replace("<!--RT_DOWNLOADS-->", rt_downloads(manifest, lang))
+        # JSON-LD en dernier : il relit le <title>, la description et le <h1> traduits
+        if "<!--JSONLD-->" not in html:
+            sys.exit(f"{lang} : marqueur <!--JSONLD--> absent du gabarit")
+        html = html.replace("<!--JSONLD-->", jsonld(html, lang, canonical, cdates[lang], manifest, d))
         check_output(html, lang, dct)
         return html
 

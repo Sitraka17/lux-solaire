@@ -10,9 +10,6 @@
 "Croissance PV": "PV-Wuesstem",
 "Installations PV": "PV-Installatiounen",
 "Part du parc décentralisé": "Undeel um dezentrale Park",
-"Le photovoltaïque au Luxembourg, commune par commune : capacité installée, croissance et mix par filière": "D'Photovoltaik zu Lëtzebuerg, Gemeng fir Gemeng: installéiert Kapazitéit, Wuesstem a Mix vun de Filièren",
-"lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois": "lux-solaire: Indicateuren ofgeleet vum lëtzebuergesche Photovoltaik-Park",
-"Capacité PV par commune, croissance trimestrielle, mix par filière et histogramme des tailles, recalculés depuis les relevés Leneda publiés sur data.public.lu.": "PV-Kapazitéit pro Gemeng, Wuesstem pro Quartal, Mix vun de Filièren an Histogramm vun de Gréissten, nei berechent aus de Leneda-Relevéen op data.public.lu.",
 "Trajectoire nationale : le PV creuse l'écart": "National Entwécklung: de PV vergréissert den Ofstand",
 "Mix des filières": "Mix vun de Filièren",
 "relevé du ": "Relevé vum ",
@@ -113,5 +110,6 @@
 "data-l-err-page=\"Page :\"": "data-l-err-page=\"Säit:\"",
 "data-l-err-section=\"Section :\"": "data-l-err-section=\"Sektioun:\"",
 "data-l-err-what=\"Ce qui semble inexact :\"": "data-l-err-what=\"Wat net stëmmt:\"",
-"data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Proposéiert Quell oder Korrektur (Link):\""
+"data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Proposéiert Quell oder Korrektur (Link):\"",
+"Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.": "D'Donnéeën, déi op dëser Säit ofgeleet sinn (Tabellen, CSV a JSON), stinn ënner der Lizenz <a href=\"https://creativecommons.org/licenses/by/4.0/deed.de\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; d'Quellfichiere vu Leneda a vum RNPP bleiwen ënner CC0."
 }
