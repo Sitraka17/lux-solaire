@@ -1,9 +1,9 @@
 ﻿reading_date,size_class,kw_min_excl,kw_max_incl,pv_installations,capacity_mw,source_url
-2026-10-05,0-5 kW,0,5,2975,11.6,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,5-10 kW,5,10,15092,119.7,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,10-15 kW,10,15,9426,114.5,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,15-30 kW,15,30,8795,200.2,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,30-100 kW,30,100,613,37.9,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,100-500 kW,100,500,695,158.5,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,0.5-1 MW,500,1000,78,55.9,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
-2026-10-05,1-5 MW,1000,5000,54,119.5,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,0-5 kW,0,5,2976,11.7,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,5-10 kW,5,10,15150,120.1,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,10-15 kW,10,15,9477,115.1,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,15-30 kW,15,30,8813,200.6,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,30-100 kW,30,100,613,37.9,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,100-500 kW,100,500,696,158.6,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,0.5-1 MW,500,1000,78,55.9,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-12,1-5 MW,1000,5000,55,121.1,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
