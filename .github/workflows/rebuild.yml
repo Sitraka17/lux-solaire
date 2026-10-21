@@ -5,8 +5,9 @@ name: rebuild-weekly
 # On reconstruit le lundi à 06:00 UTC + déclenchement manuel possible.
 # Le build s'arrête de lui-même (exit 1) si un garde-fou de scripts/build.py
 # échoue : rien n'est alors commité.
-# Le déploiement Vercel reste manuel (`vercel deploy --prod --yes` depuis la
-# racine du repo), comme sur le reste de la série. Voir README.
+# Le site est servi par Cloudflare Pages (solaire.sitraka.lu) : après le commit,
+# on déploie un dist/ qui honore .vercelignore (notes internes jamais publiées).
+# ⚠️ wrangler 3.x obligatoire pour Pages (4.x convertit en Workers assets).
 
 on:
   schedule:
@@ -34,3 +35,19 @@ jobs:
           git add -A
           git diff --cached --quiet -- data/data.json || git commit -am "rebuild: relevé Leneda du $(python3 -c 'import json;print(json.load(open("data/data.json"))["meta"]["date_iso"])')"
           git push
+      - name: Déploiement Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          rm -rf /tmp/dist && mkdir -p /tmp/dist
+          args=(-a --exclude=.git --exclude=.gitignore --exclude=.vercel --exclude=.vercelignore
+                --exclude=__pycache__ --exclude=.cache --exclude=node_modules --exclude=.DS_Store
+                --exclude=.wrangler)
+          while IFS= read -r line; do
+            line="${line%%#*}"; line="${line// /}"
+            [ -n "$line" ] && args+=(--exclude="$line")
+          done < .vercelignore
+          rsync "${args[@]}" ./ /tmp/dist/
+          test -f /tmp/dist/index.html
+          npx --yes wrangler@3 pages deploy /tmp/dist --project-name=lux-solaire --branch=main --commit-dirty=true
