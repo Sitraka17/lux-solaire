@@ -25,7 +25,7 @@
 "bcostHint:' €/kWh utile.',": "bcostHint:' € pro notzbar kWh.',",
 "thP:'Puissance', thBonus:'Klimabonus', thBonusKwc:'par kWc', thTariff10:'Tarif garanti ≤ 10 kW', thTariff30:'10 à 30 kW', thFirst:'1re injection',": "thP:'Leeschtung', thBonus:'Klimabonus', thBonusKwc:'pro kWp', thTariff10:'Garantéierten Tarif ≤ 10 kW', thTariff30:'10 bis 30 kW', thFirst:'1. Aspeisung',",
 "aidNote:'Lecture : 6 kWc commandés en 2027 reçoivent 5 742 € de Klimabonus, ou un tarif garanti de 12,9 c€/kWh pendant 15 ans, pas les deux.',": "aidNote:'Liesbeispill: 6 kWp, déi 2027 fir d\\'éischt aspeisen, kréien 5 742 € Klimabonus oder e garantéierten Tarif vun 12,9 c€/kWh iwwer 15 Joer, net béid.',",
-"gridAz:['Sud','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Est / Ouest 90°'], gridTilt:'Inclinaison',": "gridAz:['Süden','SSO / SSW 30°','SO / SW 45°','OSO / WSW 60°','Osten / Westen 90°'], gridTilt:'Neigung',",
+"gridAz:['Sud','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Est / Ouest 90°'], gridTilt:'Inclinaison',": "gridAz:['Südden','SSO / SSW 30°','SO / SW 45°','OSO / WSW 60°','Osten / Westen 90°'], gridTilt:'Neigung',",
 "+' %/an'": "+' %/Joer'",
 "const pct = n => Math.round(n)+' %';": "const pct = n => Math.round(n)+' %';",
 "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';": "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';",
