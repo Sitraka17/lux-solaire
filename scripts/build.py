@@ -39,7 +39,7 @@ DATASET_URL = "https://data.public.lu/fr/datasets/la-production-denergie-electri
 RNPP_URL = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-"
             "population-par-commune-population-per-municipality/")
 LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/"   # données dérivées (la source Leneda est CC0)
-KIT_VERSION = "2026-09-14"   # à incrémenter quand le pipeline de rendu change (exports, JSON-LD)
+KIT_VERSION = "2026-10-23"   # à incrémenter quand le pipeline de rendu change (exports, JSON-LD)
 
 # classes de taille de l'histogramme (bornes fermées à droite : « 30 kW ou moins »)
 BIN_EDGES = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, None]
@@ -333,26 +333,33 @@ _LB_ORD_RE = re.compile(
                     key=len, reverse=True)) + r"))")
 
 
-def _load_i18n(static_name, js_name):
-    d = json.loads((ROOT / "scripts" / static_name).read_text())
-    js = json.loads((ROOT / "scripts" / js_name).read_text())
-    dup = set(d) & set(js)
-    if dup:
-        sys.exit(f"{static_name}/{js_name} : clés en double {sorted(dup)}")
-    d.update(js)
+def _load_i18n(*names):
+    """Fusionne plusieurs dictionnaires (texte HTML du tableau de bord, littéraux
+    JS, puis les mêmes pour la page simulateur) ; une clé en double est une
+    erreur de build."""
+    d = {}
+    for name in names:
+        part = json.loads((ROOT / "scripts" / name).read_text())
+        dup = set(d) & set(part)
+        if dup:
+            sys.exit(f"{name} : clés en double avec un dictionnaire précédent {sorted(dup)[:5]}")
+        d.update(part)
     pairs = sorted(d.items(), key=lambda kv: -len(kv[0]))   # plus longue d'abord
     return d, pairs
 
 
-I18N, I18N_PAIRS = _load_i18n("i18n_en.json", "i18n_js.json")
-I18N_LB, I18N_LB_PAIRS = _load_i18n("i18n_lb.json", "i18n_lb_js.json")
+I18N_FILES = {"en": ("i18n_en.json", "i18n_js.json", "i18n_sim_en.json", "i18n_sim_js.json"),
+              "lb": ("i18n_lb.json", "i18n_lb_js.json", "i18n_sim_lb.json", "i18n_sim_lb_js.json")}
+I18N, I18N_PAIRS = _load_i18n(*I18N_FILES["en"])
+I18N_LB, I18N_LB_PAIRS = _load_i18n(*I18N_FILES["lb"])
 
 
 def check_dicts(tpl):
-    """Garde d'intégrité i18n, AVANT toute édition du gabarit : chaque clé des
-    quatre dictionnaires doit exister dans template.html (une clé morte = une
-    phrase qui reste silencieusement en français), et EN/LB doivent couvrir
-    exactement le même jeu de clés."""
+    """Garde d'intégrité i18n, AVANT toute édition des gabarits : chaque clé des
+    dictionnaires doit exister dans l'un des gabarits (`tpl` = concaténation de
+    template.html et template_simulateur.html ; une clé morte = une phrase qui
+    reste silencieusement en français), et EN/LB doivent couvrir exactement le
+    même jeu de clés."""
     problems = []
     for name, dct in (("EN", I18N), ("LB", I18N_LB)):
         dead = [k for k in dct if k not in tpl]
@@ -421,7 +428,9 @@ def to_lb(html):
     return html
 
 
-LANG_PATHS = (("en", "/"), ("fr", "/fr"), ("lb", "/lb"))
+LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
+# page simulateur (template_simulateur.html) : mêmes langues, chemins propres
+SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("lb", "/lb/rechner/"))
 
 
 def _jsround(x):
@@ -817,15 +826,18 @@ def rt_downloads(manifest, lang):
     return "".join(items)
 
 
-def write_seo(cdates):
-    """robots.txt + sitemap.xml : les trois langues avec leurs alternates
-    hreflang (identiques aux <link rel=alternate> des pages) et un lastmod
-    honnête = date de contenu de chaque locale, jamais l'horloge du build."""
+def write_seo(groups):
+    """robots.txt + sitemap.xml : chaque page dans ses trois langues avec ses
+    alternates hreflang (identiques aux <link rel=alternate> des pages) et un
+    lastmod honnête = date de contenu de chaque locale, jamais l'horloge du
+    build. `groups` = [(chemins par langue, dates par langue), ...]."""
     (ROOT / "robots.txt").write_text(
         f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
-    alts = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{SITE}{p}"/>' for c, p in LANG_PATHS)
-    alts += f'<xhtml:link rel="alternate" hreflang="x-default" href="{SITE}/"/>'
-    rows = [f"<url><loc>{SITE}{p}</loc><lastmod>{cdates[c]}</lastmod>{alts}</url>" for c, p in LANG_PATHS]
+    rows = []
+    for paths, cdates in groups:
+        alts = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{SITE}{p}"/>' for c, p in paths)
+        alts += f'<xhtml:link rel="alternate" hreflang="x-default" href="{SITE}{dict(paths)["en"]}"/>'
+        rows += [f"<url><loc>{SITE}{p}</loc><lastmod>{cdates[c]}</lastmod>{alts}</url>" for c, p in paths]
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
@@ -994,64 +1006,171 @@ def check_output(html, lang, dct):
                      "\n  ".join(repr(k[:90]) for k in leaks))
 
 
+# ──────────────── page simulateur : JSON-LD, og:image ──────────────────────
+SIM_PUBLISHED = "2026-10-23"   # première mise en ligne du simulateur
+OG_SIM_FILES = {"fr": "og.sim.png", "en": "og.sim.en.png", "lb": "og.sim.lb.png"}
+_OG_SIM_TEXT = {
+    "fr": ("LUX-SOLAIRE · SIMULATEUR GRATUIT · SANS INSCRIPTION", "Panneaux solaires au Luxembourg :",
+           "est-ce rentable chez vous ?", "par kWc et par an, plein sud à 35° (PVGIS)",
+           "Production · Klimabonus 2026 · tarif garanti · retour sur investissement",
+           "solaire.sitraka.lu/fr/simulateur/ · FR · EN · LU"),
+    "en": ("LUX-SOLAIRE · FREE CALCULATOR · NO SIGN-UP", "Solar panels in Luxembourg:",
+           "are they worth it for your home?", "per kWp per year, due south at 35° (PVGIS)",
+           "Yield · Klimabonus 2026 · guaranteed tariff · payback time",
+           "solaire.sitraka.lu/simulator/ · EN · FR · LU"),
+    "lb": ("LUX-SOLAIRE · GRATIS RECHNER · OUNI UMELDUNG", "Solaranlag zu Lëtzebuerg:",
+           "rentéiert et sech bei Iech?", "pro kWp a pro Joer, Südden, 35° (PVGIS)",
+           "Produktioun · Klimabonus 2026 · garantéierten Tarif · Amortisatioun",
+           "solaire.sitraka.lu/lb/rechner/ · LU · FR · EN"),
+}
+
+
+def make_og_sim(pv, lang):
+    """og:image du simulateur : productible de référence PVGIS en grand."""
+    try:
+        from PIL import Image, ImageDraw
+        eyebrow, l1, l2, kwc_label, mid_label, foot = _OG_SIM_TEXT[lang]
+        serif = _font(_FONT_SERIF, 64)
+        big, mid, small = _font(_FONT_SANS, 120), _font(_FONT_SANS, 36), _font(_FONT_SANS, 30)
+        img = Image.new("RGB", (1200, 630), "#F4F5F1"); dr = ImageDraw.Draw(img)
+        dr.rectangle([0, 0, 1200, 12], fill="#C77F00")
+        dr.text((80, 66), eyebrow, font=small, fill="#8A5600")
+        def fit(txt, font, max_w=1040):
+            while dr.textlength(txt, font=font) > max_w and font.size > 30:
+                font = font.font_variant(size=font.size - 2)
+            return font
+        s = fit(l1, serif)
+        dr.text((80, 136), l1, font=s, fill="#1D2734")
+        dr.text((80, 136 + s.size + 18), l2, font=fit(l2, serif), fill="#C77F00")
+        ref = _thousands(pv["grid"]["0:35"], lang) + " kWh"
+        dr.text((80, 296), ref, font=big, fill="#C77F00")
+        dr.text((80, 428), kwc_label, font=fit(kwc_label, mid), fill="#5A6472")
+        dr.text((80, 486), mid_label, font=fit(mid_label, small), fill="#5A6472")
+        dr.text((80, 556), foot, font=small, fill="#6B7380")
+        img.save(ROOT / OG_SIM_FILES[lang])
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"attention : {OG_SIM_FILES[lang]} non régénéré ({e.__class__.__name__}: {e})", file=sys.stderr)
+        return False
+
+
+def _text(s):
+    return html_mod.unescape(re.sub(r"<[^>]+>", "", s)).strip()
+
+
+def jsonld_sim(final_html, lang, canonical, cdate, pv):
+    """WebSite + WebPage + BreadcrumbList + WebApplication + FAQPage + Person.
+    Titre, description, fil d'Ariane et questions/réponses sont RELUS dans la
+    page traduite (la FAQ affichée et la FAQ structurée ne peuvent pas diverger)."""
+    title = _grab(r"<title>(.*?)</title>", final_html)
+    desc = _grab(r'<meta\s+name="description"\s+content="([^"]*)"', final_html)
+    og = _grab(r'<meta\s+property="og:image"\s+content="([^"]*)"', final_html)
+    m = re.search(r'<p class="crumbs"><a href="([^"]*)">(.*?)</a> › (.*?)</p>', final_html, re.S)
+    home_path, home_name, here = m.group(1), _text(m.group(2)), _text(m.group(3))
+    faq_sec = re.search(r'<section id="faq".*?</section>', final_html, re.S).group(0)
+    qa = re.findall(r"<summary>(.*?)</summary>\s*<p>(.*?)</p>", faq_sec, re.S)
+    if len(qa) < 5:
+        sys.exit(f"{lang} : FAQ du simulateur incomplète ({len(qa)} questions)")
+    graph = [
+        {"@type": "WebSite", "@id": SITE + "/#website", "url": SITE + "/", "name": "Lux-Solaire",
+         "inLanguage": [c for c, _ in LANG_PATHS], "publisher": {"@id": PERSON["@id"]}},
+        {"@type": "WebPage", "@id": canonical + "#webpage", "url": canonical, "name": title, "description": desc,
+         "inLanguage": lang, "isPartOf": {"@id": SITE + "/#website"},
+         "primaryImageOfPage": {"@type": "ImageObject", "url": og},
+         "breadcrumb": {"@id": canonical + "#breadcrumb"},
+         "datePublished": SIM_PUBLISHED, "dateModified": cdate, "mainEntity": {"@id": canonical + "#app"}},
+        {"@type": "BreadcrumbList", "@id": canonical + "#breadcrumb", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": home_name, "item": SITE + home_path},
+            {"@type": "ListItem", "position": 2, "name": here, "item": canonical}]},
+        {"@type": "WebApplication", "@id": canonical + "#app", "name": title, "url": canonical, "description": desc,
+         "applicationCategory": "FinanceApplication", "operatingSystem": "Web browser",
+         "browserRequirements": "Requires JavaScript", "isAccessibleForFree": True,
+         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+         "inLanguage": lang, "image": og, "datePublished": SIM_PUBLISHED, "dateModified": cdate,
+         "author": {"@id": PERSON["@id"]}, "publisher": {"@id": PERSON["@id"]},
+         "areaServed": LUXEMBOURG,
+         "isBasedOn": [pv["url"], "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
+                       "https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo", DATASET_URL]},
+        {"@type": "FAQPage", "@id": canonical + "#faq", "mainEntity": [
+            {"@type": "Question", "name": _text(q), "acceptedAnswer": {"@type": "Answer", "text": _text(a)}} for q, a in qa]},
+        PERSON,
+    ]
+    payload = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
+    return '<script type="application/ld+json">' + payload.replace("<", "\\u003c") + "</script>"
+
+
 def render_all(data):
-    """Écrit les JSON dérivés (EN, LB) et les trois pages depuis le blob FR."""
+    """Écrit les JSON dérivés (EN, LB) et les six pages (tableau de bord et
+    simulateur, trois langues chacun) depuis le blob FR."""
     # endpoint public : la source reste en FR ; variantes EN + LB pour réutilisation
     data_en = translate_data(data)
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
+    pv = json.loads((ROOT / "data" / "pvgis.json").read_text())
     for lang in ("fr", "en", "lb"):
         make_og(data, lang)
+        make_og_sim(pv, lang)
     tpl = (ROOT / "template.html").read_text()
-    check_dicts(tpl)
-    if "—" in tpl:
-        sys.exit("template.html contient un tiret cadratin (U+2014)")
-    # date de contenu par langue, puis exports (le manifeste porte la plus récente)
+    tpl_sim = (ROOT / "template_simulateur.html").read_text()
+    check_dicts(tpl + "\n" + tpl_sim)
+    for name, t in (("template.html", tpl), ("template_simulateur.html", tpl_sim)):
+        if "—" in t:
+            sys.exit(f"{name} contient un tiret cadratin (U+2014)")
+    # date de contenu par page et par langue, puis exports (le manifeste porte la plus récente)
     rt_js = (ROOT / "rt.js").read_text()
-    dict_txt = {"fr": "",
-                "en": (ROOT / "scripts" / "i18n_en.json").read_text() + (ROOT / "scripts" / "i18n_js.json").read_text(),
-                "lb": (ROOT / "scripts" / "i18n_lb.json").read_text() + (ROOT / "scripts" / "i18n_lb_js.json").read_text()}
+    dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
+                            for lang, names in I18N_FILES.items()}}
     blobs = {"fr": data, "en": data_en, "lb": data_lb}
+    pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                         rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
+    cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, dict_txt[lang], pv_txt,
+                                                     json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
+                                                                ensure_ascii=False, sort_keys=True),
+                                                     rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
     manifest = write_exports(exports(data), max(cdates.values()))
-    write_seo(cdates)
+    write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)])
 
-    def render(d, lang):
-        blob = json.dumps(d, ensure_ascii=False)
-        canonical = SITE + dict(LANG_PATHS)[lang]
-        F_GB = ('<svg width="15" height="11" viewBox="0 0 60 44">'
-                '<rect width="60" height="44" fill="#012169"/>'
-                '<path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/>'
-                '<path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/>'
-                '<path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/>'
-                '<path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>')
-        F_FR = ('<svg width="15" height="11" viewBox="0 0 60 44">'
-                '<rect width="20" height="44" fill="#0055A4"/>'
-                '<rect x="20" width="20" height="44" fill="#fff"/>'
-                '<rect x="40" width="20" height="44" fill="#EF4135"/></svg>')
-        F_LU = ('<svg width="15" height="11" viewBox="0 0 60 44">'
-                '<rect width="60" height="15" fill="#EF3340"/>'
-                '<rect y="15" width="60" height="14" fill="#fff"/>'
-                '<rect y="29" width="60" height="15" fill="#00A2E1"/></svg>')
-        _FLAG = {"en": F_GB, "fr": F_FR, "lb": F_LU}
+    F_GB = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+            '<rect width="60" height="44" fill="#012169"/>'
+            '<path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/>'
+            '<path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/>'
+            '<path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/>'
+            '<path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>')
+    F_FR = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+            '<rect width="20" height="44" fill="#0055A4"/>'
+            '<rect x="20" width="20" height="44" fill="#fff"/>'
+            '<rect x="40" width="20" height="44" fill="#EF4135"/></svg>')
+    F_LU = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+            '<rect width="60" height="15" fill="#EF3340"/>'
+            '<rect y="15" width="60" height="14" fill="#fff"/>'
+            '<rect y="29" width="60" height="15" fill="#00A2E1"/></svg>')
+    _FLAG = {"en": F_GB, "fr": F_FR, "lb": F_LU}
+
+    def render(d, lang, sim):
+        t, paths = (tpl_sim, SIM_PATHS) if sim else (tpl, LANG_PATHS)
+        canonical = SITE + dict(paths)[lang]
+        cdate = (cdates_sim if sim else cdates)[lang]
+        # le simulateur n'embarque que le nécessaire (relevé et cantons), pas les 100 communes
+        blob = json.dumps({"meta": d["meta"], "cantons": d["cantons"]} if sim else d, ensure_ascii=False)
         toggle = "".join(
             '<a href="{}"{}>{}{}</a>'.format(
                 path, ' class="cur"' if code == lang else '', _FLAG[code],
                 {"lb": "LU"}.get(code, code.upper()))
-            for code, path in LANG_PATHS)
+            for code, path in paths)
         og_locale = f'<meta property="og:locale" content="{OG_LOCALE[lang]}">' + "".join(
             f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
             for c, _ in LANG_PATHS if c != lang)
-        html = (tpl.replace("/*__DATA__*/", blob)
-                   .replace("__LANG__", lang)
-                   .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
-                   .replace("__CONTENT_DATE__", cdates[lang])
-                   .replace("__CANONICAL__", canonical)
-                   .replace("__OGIMAGE__", OG_FILES[lang])
-                   .replace("<!--OGLOCALE-->", og_locale)
-                   .replace("<!--LANGTOGGLE-->", toggle))
+        html = (t.replace("/*__DATA__*/", blob)
+                 .replace("/*__PVGIS__*/", json.dumps(pv, ensure_ascii=False))
+                 .replace("__LANG__", lang)
+                 .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
+                 .replace("__CONTENT_DATE__", cdate)
+                 .replace("__CANONICAL__", canonical)
+                 .replace("__OGIMAGE__", (OG_SIM_FILES if sim else OG_FILES)[lang])
+                 .replace("<!--OGLOCALE-->", og_locale)
+                 .replace("<!--LANGTOGGLE-->", toggle))
         dct = None
         if lang == "en":
             html, dct = to_en(html), I18N
@@ -1062,23 +1181,28 @@ def render_all(data):
         for token, value in prose_numbers(d, lang).items():
             html = html.replace(token, value)
         # fragments prérendus (déjà localisés) : après traduction et jetons
-        for marker, frag in prerender(d, lang).items():
-            if marker not in html:
-                sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
-            html = html.replace(marker, frag)
+        if not sim:
+            for marker, frag in prerender(d, lang).items():
+                if marker not in html:
+                    sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
+                html = html.replace(marker, frag)
         html = html.replace("<!--RT_DOWNLOADS-->", rt_downloads(manifest, lang))
         # JSON-LD en dernier : il relit le <title>, la description et le <h1> traduits
         if "<!--JSONLD-->" not in html:
             sys.exit(f"{lang} : marqueur <!--JSONLD--> absent du gabarit")
-        html = html.replace("<!--JSONLD-->", jsonld(html, lang, canonical, cdates[lang], manifest, d))
+        ld = jsonld_sim(html, lang, canonical, cdate, pv) if sim else jsonld(html, lang, canonical, cdate, manifest, d)
+        html = html.replace("<!--JSONLD-->", ld)
+        if "<!--" in html and re.search(r"<!--(PRE_|RT_|JSONLD|OGLOCALE|LANGTOGGLE)", html):
+            sys.exit(f"{lang} : marqueur de gabarit non substitué")
         check_output(html, lang, dct)
         return html
 
-    (ROOT / "index.html").write_text(render(data_en, "en"))    # EN par défaut
-    for lang, d in (("fr", data), ("lb", data_lb)):
-        (ROOT / lang).mkdir(exist_ok=True)
-        (ROOT / lang / "index.html").write_text(render(d, lang))
-    print(f"index.html (EN) + fr/index.html + lb/index.html rebuilt : "
+    for sim, paths in ((False, LANG_PATHS), (True, SIM_PATHS)):
+        for lang, path in paths:
+            out = ROOT / path.strip("/") / "index.html" if path.strip("/") else ROOT / "index.html"
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(render(blobs[lang], lang, sim))
+    print(f"6 pages rebuilt (tableau de bord + simulateur × en/fr/lb) : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
           f"as of {data_en['meta']['date']} / Stand {data_lb['meta']['date']}")
 

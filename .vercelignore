@@ -5,6 +5,7 @@ CONTEXT.md
 STRATEGY.md
 scripts/
 template.html
+template_simulateur.html
 .github/
 .claude/
 *.pdf

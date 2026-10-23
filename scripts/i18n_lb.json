@@ -112,5 +112,10 @@
 "data-l-err-what=\"Ce qui semble inexact :\"": "data-l-err-what=\"Wat net stëmmt:\"",
 "data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Proposéiert Quell oder Korrektur (Link):\"",
 "Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.": "D'Donnéeën, déi op dëser Säit ofgeleet sinn (Tabellen, CSV a JSON), stinn ënner der Lizenz <a href=\"https://creativecommons.org/licenses/by/4.0/deed.de\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; d'Quellfichiere vu Leneda a vum RNPP bleiwen ënner CC0.",
-"Du même auteur, pour la pause : <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).": "Vum selwechten Auteur, fir d'Paus: <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, d'Spill vum Frontalier (65 Stied, en Aarbechtswee vum Dag)."
+"Du même auteur, pour la pause : <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).": "Vum selwechten Auteur, fir d'Paus: <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, d'Spill vum Frontalier (65 Stied, en Aarbechtswee vum Dag).",
+"Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden=\"true\">→</span>": "An op Ärem Daach? Rechner: Produktioun, Klimabonus 2026, Amortisatiounsdauer <span aria-hidden=\"true\">→</span>",
+"Et sur votre toit ? Deux outils pour le savoir": "An op Ärem Daach? Zwee Tools, fir et erauszefannen",
+"Combien produirait une installation chez vous, ce qu'elle rapporterait avec le Klimabonus 2026 ou le tarif d'injection garanti, et en combien d'années elle est remboursée : productible PVGIS, aides guichet.lu, tarifs ILR, hypothèses modifiables.": "Wéi vill eng Installatioun bei Iech produzéiere géif, wat se mam Klimabonus 2026 oder mam garantéierten Aspeistarif abréngt, an a wéi vill Joer se amortiséiert ass: PVGIS-Ertrag, Hëllefe vu guichet.lu, ILR-Tariffer, upassbar Hypothesen.",
+"Ouvrir le simulateur <span aria-hidden=\"true\">→</span>": "De Rechner opmaachen <span aria-hidden=\"true\">→</span>",
+"href=\"/fr/simulateur/\"": "href=\"/lb/rechner/\""
 }

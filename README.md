@@ -21,6 +21,24 @@ de bord y répond, commune par commune.
   représentent que 54 % de la capacité
 - **Table interactive** des 100 communes (tri + filtre)
 
+## Simulateur : « est-ce rentable chez vous ? »
+
+Deux outils gratuits, calculés dans le navigateur, sur `/fr/simulateur/`,
+`/simulator/` et `/lb/rechner/` :
+
+- **Outil 1** : production et gains annuels d'une installation (puissance,
+  orientation, inclinaison, canton, consommation, batterie) ;
+- **Outil 2** : retour sur investissement et gain net sur 25 ans, option A
+  (Klimabonus 2026, surplus au prix de marché) contre option B (tarif
+  d'injection garanti 15 ans, sans aide).
+
+Sources : productible PVGIS SARAH3 (JRC) via `scripts/fetch_pvgis.py` →
+`data/pvgis.json` (à relancer rarement, le climat ne bouge pas chaque semaine) ;
+formules du Klimabonus (guichet.lu, régime 2026) et du tarif d'injection
+(RGD modifié du 1er août 2014, art. 17ter) ; tarifs réseau et taxes ILR au
+1er août 2026. Gabarit `template_simulateur.html`, dictionnaires
+`scripts/i18n_sim_*.json`, mêmes garde-fous que la page principale.
+
 ## Données
 
 | Source | Licence | Mise à jour |
@@ -37,7 +55,7 @@ inlinées). Reconstruire avec les dernières données :
 
 ```bash
 pip install pandas requests pillow
-python3 scripts/build.py   # régénère data/, index.html, fr/, lb/, og*.png, sitemap.xml
+python3 scripts/build.py   # régénère data/, les 6 pages (tableau de bord + simulateur × en/fr/lb), og*.png, sitemap.xml
 ```
 
 Le build s'arrête (exit 1) si un garde-fou échoue : clé i18n morte ou non

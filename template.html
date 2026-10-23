@@ -21,8 +21,8 @@
 <meta name="twitter:image" content="https://solaire.sitraka.lu/__OGIMAGE__">
 <!--JSONLD-->
 <link rel="alternate" hreflang="en" href="https://solaire.sitraka.lu/">
-<link rel="alternate" hreflang="fr" href="https://solaire.sitraka.lu/fr">
-<link rel="alternate" hreflang="lb" href="https://solaire.sitraka.lu/lb">
+<link rel="alternate" hreflang="fr" href="https://solaire.sitraka.lu/fr/">
+<link rel="alternate" hreflang="lb" href="https://solaire.sitraka.lu/lb/">
 <link rel="alternate" hreflang="x-default" href="https://solaire.sitraka.lu/">
 <!-- Vercel Web Analytics (sans cookie, pas de bandeau RGPD) : a activer aussi dans le dashboard Vercel du projet -->
 <script defer src="/_vercel/insights/script.js"></script>
@@ -67,6 +67,15 @@
   .badges{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
   .badge{font-family:var(--mono);font-size:11px;padding:5px 10px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink-2)}
   .badge b{color:var(--ink);font-weight:600}
+  .cta-row{margin:18px 0 0}
+  .cta{display:inline-flex;align-items:center;gap:8px;font:600 13.5px var(--body);color:#fff;background:var(--ink);padding:9px 14px;border-radius:3px;text-decoration:none}
+  .cta:hover{background:#2A3648}
+  .cta span{color:var(--amber)}
+  .teaser{margin-top:46px;display:grid;grid-template-columns:1fr auto;gap:18px 28px;align-items:center;padding:22px 24px;border:1px solid var(--line);border-left:4px solid var(--amber);background:var(--card);border-radius:0 4px 4px 0}
+  .teaser h2{font-size:19px}
+  .teaser p{margin:6px 0 0;font-size:14px;color:var(--ink-2);max-width:66ch}
+  @media(max-width:700px){.teaser{grid-template-columns:1fr}}
+  @media print{.cta-row,.teaser{display:none}}
 
   /* ---------- KPI band ---------- */
   .kpis{margin-top:36px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);background:var(--line);gap:1px}
@@ -226,6 +235,7 @@
     <span class="badge">Licence <b>CC0</b></span>
     <span class="badge"><b>100</b> communes · <b>6</b> filières</span>
   </div>
+  <p class="cta-row"><a class="cta" href="/fr/simulateur/">Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden="true">→</span></a></p>
 </header>
 
 <div class="kpis">
@@ -380,6 +390,14 @@
     </details>
   </div>
 </section>
+
+<aside class="teaser" aria-labelledby="teaser-h">
+  <div>
+    <h2 id="teaser-h">Et sur votre toit ? Deux outils pour le savoir</h2>
+    <p>Combien produirait une installation chez vous, ce qu'elle rapporterait avec le Klimabonus 2026 ou le tarif d'injection garanti, et en combien d'années elle est remboursée : productible PVGIS, aides guichet.lu, tarifs ILR, hypothèses modifiables.</p>
+  </div>
+  <a class="cta" href="/fr/simulateur/">Ouvrir le simulateur <span aria-hidden="true">→</span></a>
+</aside>
 
 <section id="communes">
   <div class="sec-head">

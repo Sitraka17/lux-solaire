@@ -112,5 +112,10 @@
 "data-l-err-what=\"Ce qui semble inexact :\"": "data-l-err-what=\"What looks wrong:\"",
 "data-l-err-source=\"Source ou correction proposée (lien) :\"": "data-l-err-source=\"Suggested source or correction (link):\"",
 "Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.": "The data derived on this page (tables, CSV and JSON) are published under the <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a> licence; the Leneda and RNPP source files remain under CC0.",
-"Du même auteur, pour la pause : <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).": "From the same author, for your break: <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, the cross-border commuter game (65 cities, a daily course)."
+"Du même auteur, pour la pause : <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).": "From the same author, for your break: <a href=\"https://ratrace.sitraka.lu/\">Rat Race</a>, the cross-border commuter game (65 cities, a daily course).",
+"Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden=\"true\">→</span>": "And on your roof? Calculator: yield, Klimabonus 2026, payback time <span aria-hidden=\"true\">→</span>",
+"Et sur votre toit ? Deux outils pour le savoir": "And on your roof? Two tools to find out",
+"Combien produirait une installation chez vous, ce qu'elle rapporterait avec le Klimabonus 2026 ou le tarif d'injection garanti, et en combien d'années elle est remboursée : productible PVGIS, aides guichet.lu, tarifs ILR, hypothèses modifiables.": "How much a system would produce at your home, what it would earn with the 2026 Klimabonus or the guaranteed feed-in tariff, and how many years until it pays for itself: PVGIS yield, guichet.lu subsidies, ILR tariffs, adjustable assumptions.",
+"Ouvrir le simulateur <span aria-hidden=\"true\">→</span>": "Open the calculator <span aria-hidden=\"true\">→</span>",
+"href=\"/fr/simulateur/\"": "href=\"/simulator/\""
 }
