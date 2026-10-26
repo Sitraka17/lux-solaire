@@ -1,6 +1,6 @@
 {
  "site": "lux-solaire",
- "content_date": "2026-10-23",
+ "content_date": "2026-10-26",
  "license": "https://creativecommons.org/licenses/by/4.0/",
  "sources": [
   "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
@@ -14,13 +14,15 @@
    "title": {
     "fr": "Capacité PV par commune (100 communes)",
     "en": "PV capacity by municipality (100 municipalities)",
-    "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)"
+    "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)",
+    "de": "PV-Leistung je Gemeinde (100 Gemeinden)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {
     "fr": "Relevé hebdomadaire Leneda par commune ; population RNPP (somme des quatre colonnes mineurs/majeurs).",
     "en": "Leneda weekly reading by municipality; RNPP population (sum of the four minors/adults columns).",
-    "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger)."
+    "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger).",
+    "de": "Wöchentliche Leneda-Erhebung je Gemeinde; RNPP-Bevölkerung (Summe der vier Spalten Minderjährige/Volljährige)."
    }
   },
   {
@@ -30,13 +32,15 @@
    "title": {
     "fr": "Capacité PV par canton (12 cantons)",
     "en": "PV capacity by canton (12 cantons)",
-    "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)"
+    "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)",
+    "de": "PV-Leistung je Kanton (12 Kantone)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {
     "fr": "Agrégé à partir des communes.",
     "en": "Aggregated from the municipalities.",
-    "lb": "Aus de Gemengen zesummegerechent."
+    "lb": "Aus de Gemengen zesummegerechent.",
+    "de": "Aus den Gemeinden aggregiert."
    }
   },
   {
@@ -46,13 +50,15 @@
    "title": {
     "fr": "Capacité installée par filière et par relevé",
     "en": "Installed capacity by technology and reading",
-    "lb": "Installéiert Kapazitéit pro Filière a Relevé"
+    "lb": "Installéiert Kapazitéit pro Filière a Relevé",
+    "de": "Installierte Leistung je Technologie und Erhebung"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {
     "fr": "Une ligne par relevé : fichiers trimestriels (reading_kind=quarterly) et relevé hebdomadaire courant (weekly), deux extraits Leneda distincts.",
     "en": "One row per reading: quarterly files (reading_kind=quarterly) and the current weekly reading (weekly), two separate Leneda extracts.",
-    "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten."
+    "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten.",
+    "de": "Eine Zeile je Erhebung: Quartalsdateien (reading_kind=quarterly) und aktuelle Wochenerhebung (weekly), zwei verschiedene Leneda-Auszüge."
    }
   },
   {
@@ -62,13 +68,15 @@
    "title": {
     "fr": "Installations PV par classe de taille",
     "en": "PV installations by size class",
-    "lb": "PV-Installatiounen no Gréisstklass"
+    "lb": "PV-Installatiounen no Gréisstklass",
+    "de": "PV-Anlagen nach Größenklasse"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {
     "fr": "Fichier hebdomadaire par installation ; bornes fermées à droite (kw_max inclus).",
     "en": "Weekly per-installation file; right-closed bins (kw_max included).",
-    "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff)."
+    "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff).",
+    "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen)."
    }
   },
   {
@@ -79,7 +87,8 @@
    "title": {
     "fr": "Toutes les données de la page (JSON)",
     "en": "All the data on this page (JSON)",
-    "lb": "All d'Donnéeë vun dëser Säit (JSON)"
+    "lb": "All d'Donnéeë vun dëser Säit (JSON)",
+    "de": "Alle Daten dieser Seite (JSON)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {}
@@ -92,7 +101,22 @@
    "title": {
     "fr": "Toutes les données de la page (JSON)",
     "en": "All the data on this page (JSON)",
-    "lb": "All d'Donnéeë vun dëser Säit (JSON)"
+    "lb": "All d'Donnéeë vun dëser Säit (JSON)",
+    "de": "Alle Daten dieser Seite (JSON)"
+   },
+   "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
+   "notes": {}
+  },
+  {
+   "path": "/data/data.de.json",
+   "format": "application/json",
+   "rows": 0,
+   "lang": "de",
+   "title": {
+    "fr": "Toutes les données de la page (JSON)",
+    "en": "All the data on this page (JSON)",
+    "lb": "All d'Donnéeë vun dëser Säit (JSON)",
+    "de": "Alle Daten dieser Seite (JSON)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {}
@@ -105,7 +129,8 @@
    "title": {
     "fr": "Toutes les données de la page (JSON)",
     "en": "All the data on this page (JSON)",
-    "lb": "All d'Donnéeë vun dëser Säit (JSON)"
+    "lb": "All d'Donnéeë vun dëser Säit (JSON)",
+    "de": "Alle Daten dieser Seite (JSON)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {}

@@ -332,6 +332,23 @@ _LB_ORD_RE = re.compile(
     "|".join(sorted(map(re.escape, set(MONTHS_LB) | set(_ABBR_LB_SHORT)),
                     key=len, reverse=True)) + r"))")
 
+# Allemand (/de) : mêmes mécanismes ; public = frontaliers et propriétaires
+# allemands. Comme pour le lëtzebuergesch, les conventions numériques
+# FRANÇAISES sont CONSERVÉES (virgule décimale, groupement par espace,
+# locale fr-FR : conforme DIN 5008 et au style du STATEC).
+MONTHS_DE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
+             "August", "September", "Oktober", "November", "Dezember"]
+_FR2DE_MONTH = {fr: MONTHS_DE[i] for i, fr in enumerate(MONTHS_FR)}
+_ABBR_DE_SHORT = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli",
+                  "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
+_ABBR_DE = {(MONTHS_FR[i][:4] + "."): _ABBR_DE_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+# date-jour allemande : ordinal avec point : « 6 Juli » → « 6. Juli »
+# (« 1er juillet » FR → « 1er Juli » → « 1. Juli »), après substitution des mois.
+_DE_ORD_RE = re.compile(
+    r"\b(\d{1,2})(?:er)?\s(?=(?:" +
+    "|".join(sorted(map(re.escape, set(MONTHS_DE) | set(_ABBR_DE_SHORT)),
+                    key=len, reverse=True)) + r"))")
+
 
 def _load_i18n(*names):
     """Fusionne plusieurs dictionnaires (texte HTML du tableau de bord, littéraux
@@ -349,27 +366,31 @@ def _load_i18n(*names):
 
 
 I18N_FILES = {"en": ("i18n_en.json", "i18n_js.json", "i18n_sim_en.json", "i18n_sim_js.json"),
-              "lb": ("i18n_lb.json", "i18n_lb_js.json", "i18n_sim_lb.json", "i18n_sim_lb_js.json")}
+              "lb": ("i18n_lb.json", "i18n_lb_js.json", "i18n_sim_lb.json", "i18n_sim_lb_js.json"),
+              "de": ("i18n_de.json", "i18n_de_js.json", "i18n_sim_de.json", "i18n_sim_de_js.json")}
 I18N, I18N_PAIRS = _load_i18n(*I18N_FILES["en"])
 I18N_LB, I18N_LB_PAIRS = _load_i18n(*I18N_FILES["lb"])
+I18N_DE, I18N_DE_PAIRS = _load_i18n(*I18N_FILES["de"])
 
 
 def check_dicts(tpl):
     """Garde d'intégrité i18n, AVANT toute édition des gabarits : chaque clé des
     dictionnaires doit exister dans l'un des gabarits (`tpl` = concaténation de
     template.html et template_simulateur.html ; une clé morte = une phrase qui
-    reste silencieusement en français), et EN/LB doivent couvrir exactement le
-    même jeu de clés."""
+    reste silencieusement en français), et EN/LB/DE doivent couvrir exactement
+    le même jeu de clés."""
     problems = []
-    for name, dct in (("EN", I18N), ("LB", I18N_LB)):
+    for name, dct in (("EN", I18N), ("LB", I18N_LB), ("DE", I18N_DE)):
         dead = [k for k in dct if k not in tpl]
         if dead:
             problems.append(f"clés {name} absentes du gabarit ({len(dead)}) :\n  " +
                             "\n  ".join(repr(k[:90]) for k in dead))
-    only_en, only_lb = set(I18N) - set(I18N_LB), set(I18N_LB) - set(I18N)
-    if only_en or only_lb:
-        problems.append(f"parité EN/LB : {len(only_en)} clés EN sans LB, {len(only_lb)} clés LB sans EN :\n  "
-                        + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_lb)))
+    for other_name, other in (("LB", I18N_LB), ("DE", I18N_DE)):
+        only_en, only_x = set(I18N) - set(other), set(other) - set(I18N)
+        if only_en or only_x:
+            problems.append(f"parité EN/{other_name} : {len(only_en)} clés EN sans {other_name}, "
+                            f"{len(only_x)} clés {other_name} sans EN :\n  "
+                            + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_x)))
     if problems:
         sys.exit("i18n : " + "\n".join(problems))
 
@@ -396,6 +417,17 @@ def _tr_str_lb(s):
     s = _MONTH_RE.sub(lambda m: _FR2LB_MONTH[m.group(1)], s)  # « juillet » → « Juli »
     s = _LB_ORD_RE.sub(r"\1. ", s)                           # « 6 Juli » → « 6. Juli »
     return s
+
+
+def _tr_str_de(s):
+    """Variante allemande : trimestre T→Q, abréviations et noms de mois,
+    puis ordinal du jour (« 6 Juli » → « 6. Juli »). Les formats numériques
+    français (virgule décimale, espace des milliers) sont CONSERVÉS (DIN 5008)."""
+    s = re.sub(r"(\d{4}) T(\d)", r"\1 Q\2", s)               # « 2025 T1 » → « 2025 Q1 »
+    for fr, de in _ABBR_DE.items():                          # « juil. » → « Juli »
+        s = s.replace(fr, de)
+    s = _MONTH_RE.sub(lambda m: _FR2DE_MONTH[m.group(1)], s)  # « juillet » → « Juli »
+    return _DE_ORD_RE.sub(r"\1. ", s)                        # « 6 Juli » → « 6. Juli »
 
 
 def translate_data(obj, tr=_tr_str):
@@ -428,9 +460,19 @@ def to_lb(html):
     return html
 
 
-LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
+def to_de(html):
+    """HTML allemand : même mécanique que to_lb. Les littéraux JS liés aux
+    nombres (locale 'fr-FR', virgule décimale) restent intacts : l'allemand
+    garde les conventions numériques françaises (cf. commentaire MONTHS_DE)."""
+    for fr, de in I18N_DE_PAIRS:
+        if fr in html:
+            html = html.replace(fr, de)
+    return html
+
+
+LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
 # page simulateur (template_simulateur.html) : mêmes langues, chemins propres
-SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("lb", "/lb/rechner/"))
+SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechner/"), ("lb", "/lb/rechner/"))
 
 
 def _jsround(x):
@@ -597,7 +639,7 @@ def _js_lit(lang, fr_literal):
     """Un littéral JS du gabarit (quotes comprises) dans la langue cible, via
     i18n_js.json / i18n_lb_js.json : « ' inst.' » → « inst.» ;
     « name:'Éolien' » → « Wind ». Python et JS restent ainsi en phase."""
-    dct = {"en": I18N, "lb": I18N_LB}.get(lang, {})
+    dct = {"en": I18N, "lb": I18N_LB, "de": I18N_DE}.get(lang, {})
     v = dct.get(fr_literal, fr_literal)
     return v.split("'", 1)[1].rsplit("'", 1)[0]
 
@@ -724,30 +766,38 @@ def content_date(lang, parts):
 CSV_TITLES = {
     "solaire_communes": {"fr": "Capacité PV par commune (100 communes)",
                          "en": "PV capacity by municipality (100 municipalities)",
-                         "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)"},
+                         "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)",
+                         "de": "PV-Leistung je Gemeinde (100 Gemeinden)"},
     "solaire_cantons": {"fr": "Capacité PV par canton (12 cantons)",
                         "en": "PV capacity by canton (12 cantons)",
-                        "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)"},
+                        "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)",
+                        "de": "PV-Leistung je Kanton (12 Kantone)"},
     "solaire_filieres": {"fr": "Capacité installée par filière et par relevé",
                          "en": "Installed capacity by technology and reading",
-                         "lb": "Installéiert Kapazitéit pro Filière a Relevé"},
+                         "lb": "Installéiert Kapazitéit pro Filière a Relevé",
+                         "de": "Installierte Leistung je Technologie und Erhebung"},
     "solaire_tailles": {"fr": "Installations PV par classe de taille",
                         "en": "PV installations by size class",
-                        "lb": "PV-Installatiounen no Gréisstklass"},
+                        "lb": "PV-Installatiounen no Gréisstklass",
+                        "de": "PV-Anlagen nach Größenklasse"},
 }
 JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
-              "lb": "All d'Donnéeë vun dëser Säit (JSON)"}
+              "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)"}
 CSV_NOTES = {
     "solaire_communes": {"fr": "Relevé hebdomadaire Leneda par commune ; population RNPP (somme des quatre colonnes mineurs/majeurs).",
                          "en": "Leneda weekly reading by municipality; RNPP population (sum of the four minors/adults columns).",
-                         "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger)."},
-    "solaire_cantons": {"fr": "Agrégé à partir des communes.", "en": "Aggregated from the municipalities.", "lb": "Aus de Gemengen zesummegerechent."},
+                         "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger).",
+                         "de": "Wöchentliche Leneda-Erhebung je Gemeinde; RNPP-Bevölkerung (Summe der vier Spalten Minderjährige/Volljährige)."},
+    "solaire_cantons": {"fr": "Agrégé à partir des communes.", "en": "Aggregated from the municipalities.", "lb": "Aus de Gemengen zesummegerechent.",
+                        "de": "Aus den Gemeinden aggregiert."},
     "solaire_filieres": {"fr": "Une ligne par relevé : fichiers trimestriels (reading_kind=quarterly) et relevé hebdomadaire courant (weekly), deux extraits Leneda distincts.",
                          "en": "One row per reading: quarterly files (reading_kind=quarterly) and the current weekly reading (weekly), two separate Leneda extracts.",
-                         "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten."},
+                         "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten.",
+                         "de": "Eine Zeile je Erhebung: Quartalsdateien (reading_kind=quarterly) und aktuelle Wochenerhebung (weekly), zwei verschiedene Leneda-Auszüge."},
     "solaire_tailles": {"fr": "Fichier hebdomadaire par installation ; bornes fermées à droite (kw_max inclus).",
                         "en": "Weekly per-installation file; right-closed bins (kw_max included).",
-                        "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff)."},
+                        "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff).",
+                        "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen)."},
 }
 
 
@@ -806,7 +856,7 @@ def write_exports(tables, cdate):
                 w.writerow([("" if v is None else v) for v in r] + [t["source"]])
         files.append({"path": f"/data/csv/{t['slug']}.csv", "format": "text/csv", "rows": len(t["rows"]),
                       "title": CSV_TITLES[t["slug"]], "source": t["source"], "notes": CSV_NOTES[t["slug"]]})
-    for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("lb", "data.lb.json")):
+    for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("de", "data.de.json"), ("lb", "data.lb.json")):
         files.append({"path": f"/data/{name}", "format": "application/json", "rows": 0, "lang": lang,
                       "title": JSON_TITLE, "source": DATASET_URL, "notes": {}})
     manifest = {"site": "lux-solaire", "content_date": cdate, "license": LICENSE_URL,
@@ -853,7 +903,8 @@ LUXEMBOURG = {"@type": "Place", "name": "Luxembourg", "sameAs": "https://www.wik
 DATASET = {
     "name": {"fr": "lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois",
              "en": "lux-solaire: indicators derived from Luxembourg's solar PV fleet",
-             "lb": "lux-solaire: Indicateuren ofgeleet vum lëtzebuergesche Photovoltaik-Park"},
+             "lb": "lux-solaire: Indicateuren ofgeleet vum lëtzebuergesche Photovoltaik-Park",
+             "de": "lux-solaire: Kennzahlen aus dem luxemburgischen Photovoltaik-Park"},
     "description": {
         "fr": "Capacité photovoltaïque installée par commune et par canton, W par habitant (population RNPP), "
               "ajouts nets entre relevés, mix par filière et histogramme des tailles d'installation, recalculés "
@@ -866,10 +917,15 @@ DATASET = {
         "lb": "Installéiert PV-Kapazitéit pro Gemeng a Kanton, W pro Awunner (RNPP-Populatioun), Netto-Zouwuess "
               "tëscht de Relevéen, Mix vun de Filièren an Histogramm vun de Gréissten, bei all Relevé nei "
               "berechent aus de Leneda-Fichieren op data.public.lu (CC0). Ofgeleet Donnéeën ënner CC BY 4.0, "
-              "als CSV a JSON erofzelueden."},
+              "als CSV a JSON erofzelueden.",
+        "de": "Installierte Photovoltaik-Leistung je Gemeinde und Kanton, W pro Einwohner (RNPP-Bevölkerung), "
+              "Netto-Zubau zwischen den Erhebungen, Technologie-Mix und Histogramm der Anlagengrößen, bei jeder "
+              "Erhebung neu berechnet aus den Leneda-Dateien auf data.public.lu (CC0). Abgeleitete Daten unter "
+              "CC BY 4.0, als CSV und JSON herunterladbar."},
     "keywords": {"fr": ["photovoltaïque", "Luxembourg", "communes", "capacité installée", "open data", "Leneda"],
                  "en": ["solar PV", "Luxembourg", "municipalities", "installed capacity", "open data", "Leneda"],
-                 "lb": ["Photovoltaik", "Lëtzebuerg", "Gemengen", "installéiert Kapazitéit", "Open Data", "Leneda"]},
+                 "lb": ["Photovoltaik", "Lëtzebuerg", "Gemengen", "installéiert Kapazitéit", "Open Data", "Leneda"],
+                 "de": ["Photovoltaik", "Luxemburg", "Gemeinden", "installierte Leistung", "Open Data", "Leneda"]},
     "variables": {"fr": ["capacité photovoltaïque installée (kW)", "nombre d'installations photovoltaïques",
                          "part du photovoltaïque dans la capacité décentralisée (%)",
                          "variation de capacité depuis le premier relevé trimestriel (kW)",
@@ -879,7 +935,10 @@ DATASET = {
                          "PV capacity per inhabitant (W)", "PV installations per 1,000 inhabitants"],
                   "lb": ["installéiert PV-Kapazitéit (kW)", "Zuel vun de PV-Installatiounen",
                          "Undeel vum PV un der dezentraler Kapazitéit (%)", "Ännerung vun der Kapazitéit zanter dem éischte Quartalsrelevé (kW)",
-                         "PV-Leeschtung pro Awunner (W)", "PV-Installatioune pro 1 000 Awunner"]},
+                         "PV-Leeschtung pro Awunner (W)", "PV-Installatioune pro 1 000 Awunner"],
+                  "de": ["installierte Photovoltaik-Leistung (kW)", "Zahl der PV-Anlagen",
+                         "PV-Anteil an der dezentralen Leistung (%)", "Leistungsänderung seit der ersten Quartalserhebung (kW)",
+                         "PV-Leistung pro Einwohner (W)", "PV-Anlagen je 1 000 Einwohner"]},
 }
 
 
@@ -925,8 +984,8 @@ def jsonld(final_html, lang, canonical, cdate, manifest, d):
     return '<script type="application/ld+json">' + payload.replace("<", "\\u003c") + "</script>"
 
 
-OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png"}
-OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU"}
+OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png", "de": "og.de.png"}
+OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE"}
 _OG_TEXT = {
     "fr": ("LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", "Le photovoltaïque luxembourgeois,", "commune par commune",
            "de puissance PV raccordée", "installations photovoltaïques · capacité installée, pas énergie",
@@ -937,6 +996,9 @@ _OG_TEXT = {
     "lb": ("LUX-SOLAIRE · PHOTOVOLTAIK · OPEN DATA", "D'Photovoltaik zu Lëtzebuerg,", "Gemeng fir Gemeng",
            "PV-Leeschtung um Netz", "PV-Installatiounen · installéiert Kapazitéit, net Energie",
            "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · LU · FR · EN"),
+    "de": ("LUX-SOLAIRE · PHOTOVOLTAIK · OPEN DATA", "Photovoltaik in Luxemburg,", "Gemeinde für Gemeinde",
+           "angeschlossene PV-Leistung", "PV-Anlagen · installierte Leistung, nicht Energie",
+           "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · DE · FR · EN · LU"),
 }
 # macOS en local ; DejaVu sur le runner Linux de la GitHub Action (même repli qu'index-lu)
 _FONT_SANS = ("/System/Library/Fonts/Helvetica.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "DejaVuSans.ttf")
@@ -1008,7 +1070,7 @@ def check_output(html, lang, dct):
 
 # ──────────────── page simulateur : JSON-LD, og:image ──────────────────────
 SIM_PUBLISHED = "2026-10-23"   # première mise en ligne du simulateur
-OG_SIM_FILES = {"fr": "og.sim.png", "en": "og.sim.en.png", "lb": "og.sim.lb.png"}
+OG_SIM_FILES = {"fr": "og.sim.png", "en": "og.sim.en.png", "lb": "og.sim.lb.png", "de": "og.sim.de.png"}
 _OG_SIM_TEXT = {
     "fr": ("LUX-SOLAIRE · SIMULATEUR GRATUIT · SANS INSCRIPTION", "Panneaux solaires au Luxembourg :",
            "est-ce rentable chez vous ?", "par kWc et par an, plein sud à 35° (PVGIS)",
@@ -1022,6 +1084,10 @@ _OG_SIM_TEXT = {
            "rentéiert et sech bei Iech?", "pro kWp a pro Joer, Südden, 35° (PVGIS)",
            "Produktioun · Klimabonus 2026 · garantéierten Tarif · Amortisatioun",
            "solaire.sitraka.lu/lb/rechner/ · LU · FR · EN"),
+    "de": ("LUX-SOLAIRE · GRATIS-RECHNER · OHNE ANMELDUNG", "Solaranlagen in Luxemburg:",
+           "lohnt es sich bei Ihnen?", "pro kWp und Jahr, Südausrichtung, 35° (PVGIS)",
+           "Ertrag · Klimabonus 2026 · garantierter Tarif · Amortisation",
+           "solaire.sitraka.lu/de/rechner/ · DE · FR · EN · LU"),
 }
 
 
@@ -1100,15 +1166,17 @@ def jsonld_sim(final_html, lang, canonical, cdate, pv):
 
 
 def render_all(data):
-    """Écrit les JSON dérivés (EN, LB) et les six pages (tableau de bord et
-    simulateur, trois langues chacun) depuis le blob FR."""
+    """Écrit les JSON dérivés (EN, DE, LB) et les huit pages (tableau de bord
+    et simulateur, quatre langues chacun) depuis le blob FR."""
     # endpoint public : la source reste en FR ; variantes EN + LB pour réutilisation
     data_en = translate_data(data)
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
+    data_de = translate_data(data, _tr_str_de)
+    (ROOT / "data" / "data.de.json").write_text(json.dumps(data_de, ensure_ascii=False))
     pv = json.loads((ROOT / "data" / "pvgis.json").read_text())
-    for lang in ("fr", "en", "lb"):
+    for lang in ("fr", "en", "de", "lb"):
         make_og(data, lang)
         make_og_sim(pv, lang)
     tpl = (ROOT / "template.html").read_text()
@@ -1121,14 +1189,14 @@ def render_all(data):
     rt_js = (ROOT / "rt.js").read_text()
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
-    blobs = {"fr": data, "en": data_en, "lb": data_lb}
+    blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                        rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
+                                        rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
     cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
-                                                     rt_js, KIT_VERSION]) for lang in ("fr", "en", "lb")}
+                                                     rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
     manifest = write_exports(exports(data), max(cdates.values()))
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)])
 
@@ -1146,7 +1214,11 @@ def render_all(data):
             '<rect width="60" height="15" fill="#EF3340"/>'
             '<rect y="15" width="60" height="14" fill="#fff"/>'
             '<rect y="29" width="60" height="15" fill="#00A2E1"/></svg>')
-    _FLAG = {"en": F_GB, "fr": F_FR, "lb": F_LU}
+    F_DE = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+            '<rect width="60" height="15" fill="#000"/>'
+            '<rect y="15" width="60" height="14" fill="#DD0000"/>'
+            '<rect y="29" width="60" height="15" fill="#FFCE00"/></svg>')
+    _FLAG = {"en": F_GB, "fr": F_FR, "de": F_DE, "lb": F_LU}
 
     def render(d, lang, sim):
         t, paths = (tpl_sim, SIM_PATHS) if sim else (tpl, LANG_PATHS)
@@ -1176,6 +1248,8 @@ def render_all(data):
             html, dct = to_en(html), I18N
         elif lang == "lb":
             html, dct = to_lb(html), I18N_LB
+        elif lang == "de":
+            html, dct = to_de(html), I18N_DE
         # jetons de prose (dont __DATE__) : APRÈS traduction, pour que les clés
         # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
@@ -1202,9 +1276,10 @@ def render_all(data):
             out = ROOT / path.strip("/") / "index.html" if path.strip("/") else ROOT / "index.html"
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(render(blobs[lang], lang, sim))
-    print(f"6 pages rebuilt (tableau de bord + simulateur × en/fr/lb) : "
+    print(f"8 pages rebuilt (tableau de bord + simulateur × en/fr/de/lb) : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
-          f"as of {data_en['meta']['date']} / Stand {data_lb['meta']['date']}")
+          f"as of {data_en['meta']['date']} / Stand (DE) {data_de['meta']['date']} / "
+          f"Stand (LB) {data_lb['meta']['date']}")
 
 
 def main():

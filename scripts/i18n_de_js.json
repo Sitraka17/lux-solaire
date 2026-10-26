@@ -1,0 +1,14 @@
+{
+"name:'Photovoltaïque'": "name:'Photovoltaik'",
+"name:'Éolien'": "name:'Windkraft'",
+"name:'Biomasse'": "name:'Biomasse'",
+"name:'Cogénération'": "name:'KWK'",
+"name:'Hydroélectrique'": "name:'Wasserkraft'",
+"name:'Biogaz'": "name:'Biogas'",
+"' communes'": "' Gemeinden'",
+"Capacité installée par filière, ${first.label} à aujourd'hui": "Installierte Leistung nach Technologie, ${first.label} bis heute",
+"'hebdo vs trim.'": "'Woche vs. Quartal'",
+"' inst.'": "' Anl.'",
+"' W/hab.'": "' W/Einw.'",
+"' toitures/1 000'": "' Dächer/1 000'"
+}
