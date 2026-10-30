@@ -151,6 +151,10 @@
   /* ---------- table ---------- */
   .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .toolbar input{font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink);width:min(280px,100%)}
+  .toolbar select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink);max-width:100%}
+  .toolbar select:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+  .pctool{padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .pctool .count{font-family:inherit;font-size:14px;color:var(--ink)}
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .tblwrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:4px;background:var(--card)}
@@ -380,6 +384,11 @@
   </div>
   <p class="lede"><strong>__SMALLSHARE_N__ % des installations font 30 kW ou moins</strong>, pour l'essentiel des toitures résidentielles, mais elles ne représentent que <strong>__SMALLSHARE_CAP__ % de la capacité</strong>. À l'autre extrémité, __BIGN__ installations de plus de 0,5 MW concentrent à elles seules __BIGMW__ MW.</p>
   <div class="card">
+    <div class="toolbar pctool">
+      <label for="pc" class="tlabel">Voir une commune</label>
+      <select id="pc"><option value="">Tout le Luxembourg</option></select>
+      <span class="count" id="pc-sum" aria-live="polite"></span>
+    </div>
     <div class="pkey">
       <span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
       <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
@@ -387,7 +396,7 @@
     <div class="pair" id="paradox"><!--PRE_PARADOX--></div>
     <details class="alt">
       <summary>Données du graphique</summary>
-      <table class="mini"><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody><!--PRE_PARADOX_ROWS--></tbody></table>
+      <table class="mini"><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody id="paradox-rows"><!--PRE_PARADOX_ROWS--></tbody></table>
     </details>
   </div>
 </section>
@@ -602,16 +611,42 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
      <div class="vv"><b>${a.pv_mw>0?'+':''}${fmt1(a.pv_mw)} MW</b> · ${a.pv_n>0?'+':''}${fmt(a.pv_n)}${' inst.'}</div>`).join('');
 })();
 
-/* ---- paradox ---- */
+/* ---- paradox (national, ou une commune via ?commune=) ---- */
 (function(){
-  const nTot=D.sizes.reduce((a,s)=>a+s.count,0), cTot=D.sizes.reduce((a,s)=>a+s.mw,0);
-  document.getElementById('paradox').innerHTML=D.sizes.map(s=>{
-    const pn=s.count/nTot*100, pc=s.mw/cTot*100;
-    return `<div class="bin">${s.bin}${s.bin.includes('MW')?'':' kW'}</div>
+  const sel=document.getElementById('pc'), sum=document.getElementById('pc-sum');
+  const slug=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const byName=[...D.communes].sort((a,b)=>a.c.localeCompare(b.c,'fr'));
+  sel.insertAdjacentHTML('beforeend',byName.map(c=>`<option value="${slug(c.c)}">${c.c}</option>`).join(''));
+  const pct=x=>x<1?x.toFixed(1).replace('.',','):Math.round(x);
+  function draw(c){
+    const rows=D.sizes.map((s,i)=>c?{bin:s.bin,count:D.sizes_c[c.lau2][i][0],mw:D.sizes_c[c.lau2][i][1]/1000}:s);
+    const nTot=rows.reduce((a,s)=>a+s.count,0)||1, cTot=rows.reduce((a,s)=>a+s.mw,0)||1;
+    const unit=s=>s.bin.includes('MW')?'':' kW';
+    document.getElementById('paradox').innerHTML=rows.map(s=>{
+      const pn=s.count/nTot*100, pc=s.mw/cTot*100;
+      return `<div class="bin">${s.bin}${unit(s)}</div>
        <div class="duo">
-         <div class="b cnt" style="width:${Math.max(pn,0.4)}%"><i>${pn<1?pn.toFixed(1).replace('.',','):Math.round(pn)} % · ${fmt(s.count)} inst.</i></div>
-         <div class="b cap" style="width:${Math.max(pc,0.4)}%"><i>${pc<1?pc.toFixed(1).replace('.',','):Math.round(pc)} % · ${fmt1(s.mw)} MW</i></div>
+         <div class="b cnt" style="width:${Math.max(pn,0.4)}%"><i>${pct(pn)} % · ${fmt(s.count)}${' inst.'}</i></div>
+         <div class="b cap" style="width:${Math.max(pc,0.4)}%"><i>${pct(pc)} % · ${c&&s.mw<1&&s.mw>0?fmt(Math.round(s.mw*1000))+' kW':fmt1(s.mw)+' MW'}</i></div>
        </div>`;}).join('');
+    document.getElementById('paradox-rows').innerHTML=rows.map(s=>
+      `<tr><th scope="row">${s.bin}${unit(s)}</th><td>${fmt(s.count)}</td><td>${fmt1(s.count/nTot*100)} %</td><td>${fmt1(s.mw)}</td><td>${fmt1(s.mw/cTot*100)} %</td></tr>`).join('');
+    if(c){
+      const sm=rows.slice(0,4), sn=sm.reduce((a,s)=>a+s.count,0)/nTot*100, sc=sm.reduce((a,s)=>a+s.mw,0)/cTot*100;
+      sum.textContent=`${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW ; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`;
+    } else sum.textContent='';
+  }
+  function apply(v, push){
+    const c=byName.find(x=>slug(x.c)===v)||null;
+    sel.value=c?v:'';
+    draw(c);
+    if(push){const u=new URL(location.href); if(c) u.searchParams.set('commune',v); else u.searchParams.delete('commune');
+      u.hash='paradoxe'; history.replaceState(null,'',u);}
+  }
+  sel.addEventListener('change',()=>apply(sel.value,true));
+  const q0=new URLSearchParams(location.search).get('commune');
+  apply(q0?slug(q0):'',false);
+  if(q0&&sel.value) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
 })();
 
 /* ---- table ---- */

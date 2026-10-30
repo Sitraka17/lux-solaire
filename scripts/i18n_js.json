@@ -10,5 +10,6 @@
 "'hebdo vs trim.'": "'weekly vs quarterly'",
 "' inst.'": "' inst.'",
 "' W/hab.'": "' W/inh.'",
-"' toitures/1 000'": "' rooftops/1,000'"
+"' toitures/1 000'": "' rooftops/1,000'",
+"${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW ; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.": "${c.c}: ${fmt(nTot)} installations, ${fmt1(cTot)} MW; ${Math.round(sn)}% are 30 kW or less, for ${Math.round(sc)}% of capacity."
 }

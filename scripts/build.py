@@ -240,6 +240,14 @@ def build(frames, wdate, ng, pop, pop_date):
     hist = pv_inst.groupby(cut, observed=True).agg(count=("p", "size"), cap=("p", "sum"))
     sizes = [{"bin": str(i), "count": int(r["count"]), "mw": round(r["cap"] / 1000, 1)}
              for i, r in hist.iterrows()]
+    # même histogramme commune par commune (clé LAU2), aligné sur les classes de `sizes`
+    by_c = pv_inst.groupby([pv_inst["LAU2"], cut], observed=False)["p"].agg(["size", "sum"])
+    sizes_c = {}
+    for c in communes:
+        sub = by_c.loc[c["lau2"]] if c["lau2"] in by_c.index.get_level_values(0) else None
+        sizes_c[str(c["lau2"])] = [[int(sub.loc[s["bin"], "size"]) if sub is not None else 0,
+                                    round(float(sub.loc[s["bin"], "sum"]), 1) if sub is not None else 0.0]
+                                   for s in sizes]
     # les quatre plus grandes installations PV recensées (encadré dérivé)
     top_records = [{"c": r["Commune"], "kw": round(float(r["p"]), 1)}
                    for _, r in pv_inst.sort_values("p", ascending=False).head(4).iterrows()]
@@ -274,6 +282,7 @@ def build(frames, wdate, ng, pop, pop_date):
         "communes": communes,
         "cantons": cantons,
         "sizes": sizes,
+        "sizes_c": sizes_c,
         "additions": additions,
         "population": {
             "source": RNPP_API, "date_iso": pop_date.isoformat(),
@@ -780,6 +789,10 @@ CSV_TITLES = {
                         "en": "PV installations by size class",
                         "lb": "PV-Installatiounen no Gréisstklass",
                         "de": "PV-Anlagen nach Größenklasse"},
+    "solaire_communes_tailles": {"fr": "Installations PV par commune et par classe de taille",
+                                 "en": "PV installations by municipality and size class",
+                                 "lb": "PV-Installatiounen pro Gemeng an no Gréisstklass",
+                                 "de": "PV-Anlagen je Gemeinde und Größenklasse"},
 }
 JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
               "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)"}
@@ -798,6 +811,10 @@ CSV_NOTES = {
                         "en": "Weekly per-installation file; right-closed bins (kw_max included).",
                         "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff).",
                         "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen)."},
+    "solaire_communes_tailles": {"fr": "Fichier hebdomadaire par installation, regroupé par commune (LAU2) ; bornes fermées à droite (kw_max inclus) ; capacité en kW.",
+                                 "en": "Weekly per-installation file, grouped by municipality (LAU2); right-closed bins (kw_max included); capacity in kW.",
+                                 "lb": "Wëchentleche Fichier pro Installatioun, pro Gemeng (LAU2) gruppéiert; Klasse riets zou (kw_max abegraff); Kapazitéit a kW.",
+                                 "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW."},
 }
 
 
@@ -838,6 +855,14 @@ def exports(d):
          "headers": ["reading_date", "size_class", "kw_min_excl", "kw_max_incl", "pv_installations", "capacity_mw"],
          "rows": [[m["date_iso"], s["bin"].replace("–", "-").replace(",", ".") + ("" if "MW" in s["bin"] else " kW"),
                    bin_bounds[s["bin"]][0], bin_bounds[s["bin"]][1], s["count"], s["mw"]] for s in d["sizes"]]},
+        {"slug": "solaire_communes_tailles", "source": DATASET_URL,
+         "headers": ["reading_date", "lau2", "commune", "canton", "size_class", "kw_min_excl", "kw_max_incl",
+                     "pv_installations", "capacity_kw"],
+         "rows": [[m["date_iso"], c["lau2"], c["c"], c["k"],
+                   s["bin"].replace("–", "-").replace(",", ".") + ("" if "MW" in s["bin"] else " kW"),
+                   bin_bounds[s["bin"]][0], bin_bounds[s["bin"]][1], n, kw]
+                  for c in sorted(d["communes"], key=lambda c: c["c"])
+                  for s, (n, kw) in zip(d["sizes"], d["sizes_c"][str(c["lau2"])])]},
     ]
 
 

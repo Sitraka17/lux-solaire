@@ -10,5 +10,6 @@
 "'hebdo vs trim.'": "'Woch vs Quartal'",
 "' inst.'": "' Inst.'",
 "' W/hab.'": "' W/Aw.'",
-"' toitures/1 000'": "' Diecher/1 000'"
+"' toitures/1 000'": "' Diecher/1 000'",
+"${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW ; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.": "${c.c}: ${fmt(nTot)} Installatiounen, ${fmt1(cTot)} MW; ${Math.round(sn)} % hunn 30 kW oder manner, fir ${Math.round(sc)} % vun der Kapazitéit."
 }

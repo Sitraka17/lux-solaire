@@ -70,3 +70,19 @@ Cloudflare Pages, projet `lux-solaire`, domaine solaire.sitraka.lu.
 (wrangler 3.x OBLIGATOIRE, 4.x convertit en Workers assets) ; `<dist>` =
 copie rsync de la racine qui honore `.vercelignore` (cf.
 `.github/workflows/rebuild.yml`, qui fait la même chose chaque lundi).
+
+## Vue par commune des tailles d'installation (30/10/2026)
+
+Demande de la Ville de Differdange (service Travaux neufs) : répartition des
+installations PV par classe de taille, commune par commune.
+
+- `build()` calcule `sizes_c` : `{LAU2: [[installations, kW], ...]}`, aligné
+  sur les classes de `sizes` (fichier hebdomadaire `not-grouped`, une ligne par
+  installation). Somme des communes = total national (vérifié : 38 065).
+- Section « paradoxe » : sélecteur `#pc` (« Voir une commune »), qui redessine
+  le graphique et le tableau « Données du graphique », et écrit
+  `?commune=<slug>#paradoxe` dans l'adresse. Le slug = nom sans accents, en
+  minuscules, tirets (`esch-sur-alzette`). Lien partageable :
+  `https://solaire.sitraka.lu/fr/?commune=differdange`.
+- Le prérendu (robots, sans JS) reste national ; seul le JS affiche une commune.
+- Export `data/csv/solaire_communes_tailles.csv` (800 lignes, capacité en kW).

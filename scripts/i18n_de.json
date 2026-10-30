@@ -117,5 +117,7 @@
 "Et sur votre toit ? Deux outils pour le savoir": "Und auf Ihrem Dach? Zwei Werkzeuge geben die Antwort",
 "Combien produirait une installation chez vous, ce qu'elle rapporterait avec le Klimabonus 2026 ou le tarif d'injection garanti, et en combien d'années elle est remboursée : productible PVGIS, aides guichet.lu, tarifs ILR, hypothèses modifiables.": "Wie viel eine Anlage bei Ihnen erzeugen würde, was sie mit dem Klimabonus 2026 oder dem garantierten Einspeisetarif einbringt und in wie vielen Jahren sie sich bezahlt macht: PVGIS-Ertrag, Beihilfen laut guichet.lu, ILR-Tarife, anpassbare Annahmen.",
 "Ouvrir le simulateur <span aria-hidden=\"true\">→</span>": "Zum Rechner <span aria-hidden=\"true\">→</span>",
-"href=\"/fr/simulateur/\"": "href=\"/de/rechner/\""
+"href=\"/fr/simulateur/\"": "href=\"/de/rechner/\"",
+">Voir une commune</label>": ">Gemeinde anzeigen</label>",
+">Tout le Luxembourg</option>": ">Ganz Luxemburg</option>"
 }

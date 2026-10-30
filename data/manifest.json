@@ -1,6 +1,6 @@
 {
  "site": "lux-solaire",
- "content_date": "2026-10-26",
+ "content_date": "2026-10-30",
  "license": "https://creativecommons.org/licenses/by/4.0/",
  "sources": [
   "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
@@ -77,6 +77,24 @@
     "en": "Weekly per-installation file; right-closed bins (kw_max included).",
     "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff).",
     "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen)."
+   }
+  },
+  {
+   "path": "/data/csv/solaire_communes_tailles.csv",
+   "format": "text/csv",
+   "rows": 800,
+   "title": {
+    "fr": "Installations PV par commune et par classe de taille",
+    "en": "PV installations by municipality and size class",
+    "lb": "PV-Installatiounen pro Gemeng an no Gréisstklass",
+    "de": "PV-Anlagen je Gemeinde und Größenklasse"
+   },
+   "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
+   "notes": {
+    "fr": "Fichier hebdomadaire par installation, regroupé par commune (LAU2) ; bornes fermées à droite (kw_max inclus) ; capacité en kW.",
+    "en": "Weekly per-installation file, grouped by municipality (LAU2); right-closed bins (kw_max included); capacity in kW.",
+    "lb": "Wëchentleche Fichier pro Installatioun, pro Gemeng (LAU2) gruppéiert; Klasse riets zou (kw_max abegraff); Kapazitéit a kW.",
+    "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW."
    }
   },
   {
