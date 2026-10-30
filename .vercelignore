@@ -10,3 +10,5 @@ template_simulateur.html
 .claude/
 *.pdf
 archive/
+functions/
+wrangler.toml

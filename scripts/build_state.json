@@ -1,27 +1,43 @@
 {
+ "communes_de": {
+  "date": "2026-10-30",
+  "hash": "8653d1787e83db93979970466fb5cbfc1f56986ec52ac74b40dec95d33997ee5"
+ },
+ "communes_en": {
+  "date": "2026-10-30",
+  "hash": "edfe950e0960a963aa4359af00dc72064c67c93aaa5c2c9b20559d66a66464e9"
+ },
+ "communes_fr": {
+  "date": "2026-10-30",
+  "hash": "79284a81279a6f833acc6f7d27603244978e259d1021798f596be88b33a6135e"
+ },
+ "communes_lb": {
+  "date": "2026-10-30",
+  "hash": "8653d1787e83db93979970466fb5cbfc1f56986ec52ac74b40dec95d33997ee5"
+ },
  "de": {
   "date": "2026-10-30",
-  "hash": "0d8f2f872675ed94556630c4cf9494e8cf60f68188591877583ecbd1a9a641f6"
+  "hash": "15d14c55c8be560fe4a26fecca9baa3eba2d56027814b1faab0499e9daad8ea9"
  },
  "en": {
   "date": "2026-10-30",
-  "hash": "70b1cc1e947d0d4949cbedc9f28daf0037f06002320b471c9fbc08484bcddc05"
+  "hash": "9732d37b5f0cea738d5e43dff2e219c1f83461a663fd444d54100a4a73dd82e9"
  },
  "fr": {
   "date": "2026-10-30",
-  "hash": "0681fb098534220ca200bd5fa712a0df6aab71f4b41d629f96fc35bd6e9ed0af"
+  "hash": "d0c071399b564c95171b05da6bd799a241967cede851593574fd3486ac5a6ffe"
  },
  "lb": {
   "date": "2026-10-30",
-  "hash": "9dc58274c60ba0619afe804d672fa61c583e473a639293d91a493f79131cd945"
+  "hash": "f91ac7bf0ca5d7a3e9c81f42cfcd753fa5c7f1aab60c16070c61515808b1460a"
  },
  "sim_de": {
   "date": "2026-10-30",
-  "hash": "339ec1d5670d2293751aa093b76331ccd7428a5fdc643fcecbaae555f3f52187"
+  "hash": "5f48f1134d98fddfb07f5129b60f34dd17bcede45fb25270e838e25ce01d69e2"
  },
  "sim_en": {
   "date": "2026-10-30",
-  "hash": "7dbd8309c668237059eadd29517b75f545b5de45469175a9771f68cbfcc00e5d"
+  "hash": "041e4caf1d7436ecbea769142a03a43a7fd3d0604f3ea19e34de472526d20a4d"
  },
  "sim_fr": {
   "date": "2026-10-30",
@@ -29,6 +45,6 @@
  },
  "sim_lb": {
   "date": "2026-10-30",
-  "hash": "d4ed44bbef8db89cfd9efe4fd90f1284b71da3d3d1fa6ba86bb5951be7d77d52"
+  "hash": "749aaf07cea30bb9f7fc1e4c5de8fe489a5edc34beba03ae76c34870dba938a6"
  }
 }

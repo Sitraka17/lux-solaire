@@ -158,6 +158,9 @@
   .pctool{padding-bottom:12px;border-bottom:1px solid var(--line)}
   .pcsum{flex-basis:100%;margin:2px 0 0;font-size:14px;color:var(--ink)}
   .pcsum b{font-weight:600}
+  .pcsum a,.lede a{color:var(--amber-text)}
+  a.cl{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+  a.cl:hover{color:var(--amber-text);border-color:var(--amber)}
   .kbnote{font-size:13px;line-height:1.55;color:var(--ink-2);margin:14px 0 0;padding-top:10px;border-top:1px solid var(--line)}
   .b.cnt i em{font-style:normal}
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
@@ -422,6 +425,7 @@
     <h2>Les 100 communes</h2>
     <span class="sec-note">cliquer sur un en-tête pour trier</span>
   </div>
+  <p class="lede">Chaque commune a sa page : cliquez sur son nom dans le tableau. <a href="__FORPATH__">Vous travaillez pour une commune ?</a></p>
   <div class="toolbar">
     <label for="q" class="tlabel">Filtrer les communes</label>
     <input type="search" id="q" placeholder="Filtrer par commune ou canton…">
@@ -499,6 +503,7 @@
   <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
   <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
   <p>Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.</p>
+  <p>Mesure d'audience sans cookie : Cloudflare Web Analytics et des compteurs de clics anonymes (aucune adresse IP ni identifiant enregistrés).</p>
   <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
     <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :
@@ -521,6 +526,7 @@
 const D = /*__DATA__*/;
 
 const fmt = n => n.toLocaleString('fr-FR');
+const slugC = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fmt1 = n => n.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
@@ -646,6 +652,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       `<tr><th scope="row">${s.bin}${unit(s)}</th><td>${fmt(s.count)}</td><td>${fmt1(s.count/nTot*100)} %</td><td>${fmt1(s.mw)}</td><td>${fmt1(s.mw/cTot*100)} %</td></tr>`).join('');
     const small=kb?1:4, sn=rows.slice(0,small).reduce((a,s)=>a+s.count,0)/nTot*100, sc=rows.slice(0,small).reduce((a,s)=>a+s.mw,0)/cTot*100;
     let t=c?`<b>${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`:'';
+    if(c) t+=` <a href="__CPATH__${slug(c.c)}/">${'Page de la commune'} →</a>`;
     if(h) t+=(t?' ':'')+`Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).`;
     sum.innerHTML=t;
     note.hidden=!kb;
@@ -659,8 +666,8 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       if(kb) u.searchParams.set('classes','aides'); else u.searchParams.delete('classes');
       u.hash='paradoxe'; history.replaceState(null,'',u);}
   }
-  sel.addEventListener('change',()=>apply(sel.value,grp.value,true));
-  grp.addEventListener('change',()=>apply(sel.value,grp.value,true));
+  sel.addEventListener('change',()=>{apply(sel.value,grp.value,true); window.solEv&&solEv('commune',sel.value||'lux');});
+  grp.addEventListener('change',()=>{apply(sel.value,grp.value,true); window.solEv&&solEv('classes',grp.value||'detail');});
   const P=new URLSearchParams(location.search), q0=P.get('commune');
   apply(q0?slug(q0):'',P.get('classes')||'',false);
   if((q0&&sel.value)||P.get('classes')) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
@@ -679,7 +686,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       return (typeof va==='string'? va.localeCompare(vb,'fr') : (va===null?-1:vb===null?1:va-vb))*dir;
     });
     tbody.innerHTML=vis.map(r=>`<tr id="c-${r.lau2}">
-      <td>${r.c}</td><td>${r.k}</td>
+      <td><a class="cl" href="__CPATH__${slugC(r.c)}/">${r.c}</a></td><td>${r.k}</td>
       <td>${fmt(Math.round(r.pv))}</td>
       <td>${fmt(r.n)}</td>
       <td><span class="sharecell"><span class="minitr"><i style="width:${r.share}%"></i></span>${fmt1(r.share)} %</span></td>
@@ -710,3 +717,4 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 })();
 </script>
 <script defer src="/rt.js"></script>
+<script defer src="/ev.js"></script>

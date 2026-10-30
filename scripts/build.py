@@ -555,6 +555,9 @@ def to_de(html):
     return html
 
 
+from communes import CPATH, FORPATH, slug as _slug   # noqa: E402  (pages communales)
+
+
 LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
 # page simulateur (template_simulateur.html) : mêmes langues, chemins propres
 SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechner/"), ("lb", "/lb/rechner/"))
@@ -806,7 +809,7 @@ def prerender(d, lang):
             f'<tr><th scope="row">{r["label"]}</th>' + "".join(f'<td>{D1(r[k])}</td>' for k, _, _ in TECH_ORDER) + "</tr>"
             for r in d["series"]),
         "<!--PRE_ROWS-->": "".join(
-            f'<tr id="c-{r["lau2"]}"><td>{r["c"]}</td><td>{r["k"]}</td><td>{T(_jsround(r["pv"]))}</td><td>{T(r["n"])}</td>'
+            f'<tr id="c-{r["lau2"]}"><td><a class="cl" href="{CPATH[lang]}{_slug(r["c"])}/">{r["c"]}</a></td><td>{r["k"]}</td><td>{T(_jsround(r["pv"]))}</td><td>{T(r["n"])}</td>'
             f'<td><span class="sharecell"><span class="minitr"><i style="width:{r["share"]}%"></i></span>{D1(r["share"])} %</span></td>'
             f'<td class="{"pos" if r["g"] > 0 else ""}">{sign(r["g"])}{T(_jsround(r["g"]))}</td>'
             f'<td>{T(_jsround(r["tot"]))}</td><td>{T(r["wpc"])}</td><td>{D1(r["ipk"])}</td></tr>'
@@ -1359,7 +1362,9 @@ def render_all(data):
                  .replace("__CANONICAL__", canonical)
                  .replace("__OGIMAGE__", (OG_SIM_FILES if sim else OG_FILES)[lang])
                  .replace("<!--OGLOCALE-->", og_locale)
-                 .replace("<!--LANGTOGGLE-->", toggle))
+                 .replace("<!--LANGTOGGLE-->", toggle)
+                 .replace("__CPATH__", CPATH[lang])
+                 .replace("__FORPATH__", FORPATH[lang]))
         dct = None
         if lang == "en":
             html, dct = to_en(html), I18N
@@ -1393,6 +1398,14 @@ def render_all(data):
             out = ROOT / path.strip("/") / "index.html" if path.strip("/") else ROOT / "index.html"
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(render(blobs[lang], lang, sim))
+    # pages par commune et « Pour les communes » (reprennent le style des pages rendues)
+    import communes
+    csrc = (ROOT / "scripts" / "communes.py").read_text()
+    cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
+                                                        KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
+    groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG)
+    write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)] + groups_c)
+    print(f"{len(groups_c) * 4} pages communales et « pour les communes » écrites")
     print(f"8 pages rebuilt (tableau de bord + simulateur × en/fr/de/lb) : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
           f"as of {data_en['meta']['date']} / Stand (DE) {data_de['meta']['date']} / "

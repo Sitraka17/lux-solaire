@@ -105,3 +105,24 @@ installations PV par classe de taille, commune par commune.
   ancienne copie de moins de 92 jours ; affichée dans la phrase de résumé et
   entre parenthèses sur les barres. Variation NETTE : une installation
   agrandie change de classe (−1 dans l'une, +1 dans l'autre).
+
+## Pages par commune, page « Pour les communes », compteur d'événements, 404 (30/10/2026)
+
+- **`scripts/communes.py`** (appelé à la fin de `render_all`) : 100 communes × 4 langues
+  (`/municipality/<slug>/`, `/fr/commune/`, `/de/gemeinde/`, `/lb/gemeng/`) + page
+  « Pour les communes » (`/for-municipalities/`, `/fr/pour-les-communes/`, `/de/fuer-gemeinden/`,
+  `/lb/fir-gemengen/`). Textes par langue DANS ce module (pas dans les dictionnaires des gabarits).
+  Le style et la barre de série sont repris des pages déjà rendues. Contenu : 6 KPI avec rangs,
+  tailles (barres + variation depuis l'archive), tranches Klimabonus Gemengen, comparaison canton
+  et communes de taille comparable, liens, commune précédente/suivante. Sitemap : 412 URL.
+  Le slug (`communes.slug`) est le même qu'en JS (NFD, minuscules, tirets).
+- Tableau de bord : noms de communes cliquables (`__CPATH__`), lien « Page de la commune » dans
+  le résumé du sélecteur, lien vers « Pour les communes » sous « Les 100 communes ».
+- **Compteur sans cookie** : `ev.js` (client, sendBeacon) → Pages Function `functions/e.js` →
+  D1 `lux-solaire-events` (id 6c890a2d-8a1a-40f5-b870-b1573f6e8f53), binding `DB` posé sur le
+  projet Pages via l'API (pas de wrangler.toml). Table `ev(day, type, lang, page, target, ref, n)`,
+  totaux par jour, aucune IP ni identifiant. Types : dl (fichier), commune, classes, copy, contact,
+  sim, page (clic vers une page communale), land (arrivée depuis un autre site : hôte du référent).
+  `functions/` est exclu du dist (.vercelignore) mais compilé par `wrangler pages deploy` lancé
+  depuis la racine du dépôt. Rapport : `scripts/events_report.sh`.
+- **404.html** : vraie page 404 (Cloudflare Pages ne sert plus la page EN pour une URL inconnue).
