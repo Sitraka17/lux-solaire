@@ -43,6 +43,12 @@ KIT_VERSION = "2026-10-23"   # à incrémenter quand le pipeline de rendu change
 
 # classes de taille de l'histogramme (bornes fermées à droite : « 30 kW ou moins »)
 BIN_EDGES = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, None]
+# tranches du « Klimabonus Gemengen » (aides aux communes, barème 2025, révisé chaque année) :
+# moins de 30 kWc = Klimabonus Wunnen (particuliers) ; 30-200 ; 200-500 ; 0,5-5 MWc
+KB_EDGES = [0, 30, 200, 500, 5000, None]
+KB_LABELS = ["0–30", "30–200", "200–500", "0,5–5 MW", "> 5 MW"]
+ARCHIVE = ROOT / "archive"   # copies hebdomadaires du fichier par installation (Leneda n'en garde qu'une)
+ARCHIVE_WINDOW = 92          # comparaison avec la plus ancienne copie de moins de 92 jours
 BIN_LABELS = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
               "0,5–1 MW", "1–5 MW", ">5 MW"]
 
@@ -168,7 +174,45 @@ def fetch_population():
     return {_norm_name(n): int(p) for n, p in zip(df["COMMUNE_NOM"], df["pop"])}, best[0]
 
 
-def build(frames, wdate, ng, pop, pop_date):
+def archive_snapshot(ng, wdate):
+    """Garde une copie datée du fichier par installation : Leneda le remplace
+    chaque semaine, sans historique public."""
+    ARCHIVE.mkdir(exist_ok=True)
+    out = ARCHIVE / f"leneda-not-grouped-{wdate.isoformat()}.csv.gz"
+    if not out.exists():
+        ng.to_csv(out, index=False, compression={"method": "gzip", "mtime": 0})
+
+
+def load_baseline(wdate):
+    """Plus ancienne copie archivée de moins de ARCHIVE_WINDOW jours (ou None)."""
+    cands = []
+    for f in ARCHIVE.glob("leneda-not-grouped-*.csv.gz"):
+        d = date.fromisoformat(f.name[len("leneda-not-grouped-"):][:10])
+        if 0 < (wdate - d).days <= ARCHIVE_WINDOW:
+            cands.append((d, f))
+    if not cands:
+        return None, None
+    d, f = min(cands)
+    return d, pd.read_csv(f)
+
+
+def _pv_rows(ng):
+    out = ng[ng["Type d'installation"] == PV].copy()
+    out["p"] = pd.to_numeric(out["Puissance installée [kW]"])
+    return out
+
+
+def _grid(inst, edges, labels):
+    """(national, {LAU2: ...}) : [[installations, kW], ...] par classe, dans l'ordre de `labels`."""
+    cut = pd.cut(inst["p"], bins=[e if e is not None else 1e9 for e in edges], labels=labels)
+    nat = inst.groupby(cut, observed=False)["p"].agg(["size", "sum"])
+    g = inst.groupby([inst["LAU2"], cut], observed=False)["p"].agg(["size", "sum"])
+    per = {int(k): [[int(g.loc[(k, l), "size"]), float(g.loc[(k, l), "sum"])] for l in labels]
+           for k in set(g.index.get_level_values(0))}
+    return [[int(nat.loc[l, "size"]), float(nat.loc[l, "sum"])] for l in labels], per
+
+
+def build(frames, wdate, ng, pop, pop_date, baseline=(None, None)):
     labels = list(frames)
     series = []
     for label, df in frames.items():
@@ -248,6 +292,36 @@ def build(frames, wdate, ng, pop, pop_date):
         sizes_c[str(c["lau2"])] = [[int(sub.loc[s["bin"], "size"]) if sub is not None else 0,
                                     round(float(sub.loc[s["bin"], "sum"]), 1) if sub is not None else 0.0]
                                    for s in sizes]
+    # tranches des aides communales (on écarte une tranche vide à l'échelle nationale)
+    kb_nat, kb_per = _grid(pv_inst, KB_EDGES, KB_LABELS)
+    keep = [i for i, (n, _) in enumerate(kb_nat) if n]
+    zero = [[0, 0.0]] * len(KB_LABELS)
+    kb = {"bins": [KB_LABELS[i] for i in keep],
+          "nat": [[kb_nat[i][0], round(kb_nat[i][1], 1)] for i in keep],
+          "c": {str(c["lau2"]): [[kb_per.get(c["lau2"], zero)[i][0], round(kb_per.get(c["lau2"], zero)[i][1], 1)]
+                                 for i in keep] for c in communes}}
+    # évolution depuis la copie archivée de référence (nombre net d'installations par classe)
+    hist = None
+    bdate, bng = baseline
+    if bng is not None:
+        b_inst = _pv_rows(bng)
+        det_idx = [BIN_LABELS.index(s["bin"]) for s in sizes]
+        now_d, per_d = _grid(pv_inst, BIN_EDGES, BIN_LABELS)
+        was_d, wper_d = _grid(b_inst, BIN_EDGES, BIN_LABELS)
+        was_k, wper_k = _grid(b_inst, KB_EDGES, KB_LABELS)
+        zd = [[0, 0.0]] * len(BIN_LABELS)
+
+        def delta(now_det, was_det, now_kb, was_kb):
+            return [sum(x[0] for x in now_det) - sum(x[0] for x in was_det),
+                    round(sum(x[1] for x in now_det) - sum(x[1] for x in was_det), 1),
+                    [now_det[i][0] - was_det[i][0] for i in det_idx],
+                    [now_kb[i][0] - was_kb[i][0] for i in keep]]
+        hist = {"date_iso": bdate.isoformat(),
+                "date": f"{bdate.day}{'er' if bdate.day == 1 else ''} {MONTHS_FR[bdate.month - 1]} {bdate.year}",
+                "nat": delta(now_d, was_d, kb_nat, was_k),
+                "c": {str(c["lau2"]): delta(per_d.get(c["lau2"], zd), wper_d.get(c["lau2"], zd),
+                                            kb_per.get(c["lau2"], zero), wper_k.get(c["lau2"], zero))
+                      for c in communes}}
     # les quatre plus grandes installations PV recensées (encadré dérivé)
     top_records = [{"c": r["Commune"], "kw": round(float(r["p"]), 1)}
                    for _, r in pv_inst.sort_values("p", ascending=False).head(4).iterrows()]
@@ -283,6 +357,8 @@ def build(frames, wdate, ng, pop, pop_date):
         "cantons": cantons,
         "sizes": sizes,
         "sizes_c": sizes_c,
+        "kb": kb,
+        "hist": hist,
         "additions": additions,
         "population": {
             "source": RNPP_API, "date_iso": pop_date.isoformat(),
@@ -793,6 +869,10 @@ CSV_TITLES = {
                                  "en": "PV installations by municipality and size class",
                                  "lb": "PV-Installatiounen pro Gemeng an no Gréisstklass",
                                  "de": "PV-Anlagen je Gemeinde und Größenklasse"},
+    "solaire_communes_tranches_aides": {"fr": "Installations PV par commune, tranches des aides communales (Klimabonus Gemengen)",
+                                        "en": "PV installations by municipality, municipal subsidy bands (Klimabonus Gemengen)",
+                                        "lb": "PV-Installatiounen pro Gemeng, Tranche vun de Gemengenhëllefen (Klimabonus Gemengen)",
+                                        "de": "PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)"},
 }
 JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
               "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)"}
@@ -815,6 +895,10 @@ CSV_NOTES = {
                                  "en": "Weekly per-installation file, grouped by municipality (LAU2); right-closed bins (kw_max included); capacity in kW.",
                                  "lb": "Wëchentleche Fichier pro Installatioun, pro Gemeng (LAU2) gruppéiert; Klasse riets zou (kw_max abegraff); Kapazitéit a kW.",
                                  "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW."},
+    "solaire_communes_tranches_aides": {"fr": "Même fichier, tranches 30 / 200 / 500 kWc / 5 MWc du Klimabonus Gemengen (barème 2025) ; capacité en kW.",
+                                        "en": "Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp (2025 scale); capacity in kW.",
+                                        "lb": "Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem 2025); Kapazitéit a kW.",
+                                        "de": "Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand 2025); Leistung in kW."},
 }
 
 
@@ -863,6 +947,14 @@ def exports(d):
                    bin_bounds[s["bin"]][0], bin_bounds[s["bin"]][1], n, kw]
                   for c in sorted(d["communes"], key=lambda c: c["c"])
                   for s, (n, kw) in zip(d["sizes"], d["sizes_c"][str(c["lau2"])])]},
+        {"slug": "solaire_communes_tranches_aides", "source": DATASET_URL,
+         "headers": ["reading_date", "lau2", "commune", "canton", "size_class", "kw_min_excl", "kw_max_incl",
+                     "pv_installations", "capacity_kw"],
+         "rows": [[m["date_iso"], c["lau2"], c["c"], c["k"],
+                   b.replace("–", "-").replace(",", ".") + ("" if "MW" in b else " kW"),
+                   KB_EDGES[KB_LABELS.index(b)], KB_EDGES[KB_LABELS.index(b) + 1], n, kw]
+                  for c in sorted(d["communes"], key=lambda c: c["c"])
+                  for b, (n, kw) in zip(d["kb"]["bins"], d["kb"]["c"][str(c["lau2"])])]},
     ]
 
 
@@ -1309,8 +1401,9 @@ def render_all(data):
 
 def main():
     frames, wdate, ng = fetch_resources()
+    archive_snapshot(ng, wdate)
     pop, pop_date = fetch_population()
-    data = build(frames, wdate, ng, pop, pop_date)
+    data = build(frames, wdate, ng, pop, pop_date, load_baseline(wdate))
     check_claims(data)
     (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
     render_all(data)

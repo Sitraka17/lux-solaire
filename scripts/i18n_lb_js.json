@@ -11,5 +11,6 @@
 "' inst.'": "' Inst.'",
 "' W/hab.'": "' W/Aw.'",
 "' toitures/1 000'": "' Diecher/1 000'",
-"${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW ; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.": "${c.c}: ${fmt(nTot)} Installatiounen, ${fmt1(cTot)} MW; ${Math.round(sn)} % hunn 30 kW oder manner, fir ${Math.round(sc)} % vun der Kapazitéit."
+"<b>${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.": "<b>${c.c}: ${fmt(nTot)} Installatiounen, ${fmt1(cTot)} MW</b>; ${Math.round(sn)} % hunn 30 kW oder manner, fir ${Math.round(sc)} % vun der Kapazitéit.",
+"Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).": "Zënter dem ${H.date}: ${sg(h[0])} Installatiounen, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (an de Klameren: Ännerung pro Klass)."
 }

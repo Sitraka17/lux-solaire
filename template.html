@@ -137,6 +137,8 @@
   .pair .duo{display:grid;gap:3px}
   .pair .b{height:11px;border-radius:2px;position:relative}
   .pair .b i{position:absolute;left:calc(100% + 8px);top:-3px;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+  .pair .b.in i{left:auto;right:8px;color:var(--ink)}
+  .pair .b.cap.in i{color:#fff}
   .pair .b.cnt{background:var(--amber)}
   .pair .b.cap{background:var(--ink);opacity:.82}
   .pkey{display:flex;gap:16px;margin:2px 0 14px;font-size:12.5px;color:var(--ink-2)}
@@ -154,7 +156,10 @@
   .toolbar select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink);max-width:100%}
   .toolbar select:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .pctool{padding-bottom:12px;border-bottom:1px solid var(--line)}
-  .pctool .count{font-family:inherit;font-size:14px;color:var(--ink)}
+  .pcsum{flex-basis:100%;margin:2px 0 0;font-size:14px;color:var(--ink)}
+  .pcsum b{font-weight:600}
+  .kbnote{font-size:13px;line-height:1.55;color:var(--ink-2);margin:14px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+  .b.cnt i em{font-style:normal}
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .tblwrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:4px;background:var(--card)}
@@ -188,7 +193,7 @@
   footer{margin-top:56px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-2)}
   footer h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
   footer p{max-width:75ch;margin:0 0 10px}
-  footer a{color:var(--amber-text)}
+  footer a,.kbnote a{color:var(--amber-text)}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:620px}
   @media(prefers-reduced-motion:no-preference){
@@ -387,13 +392,16 @@
     <div class="toolbar pctool">
       <label for="pc" class="tlabel">Voir une commune</label>
       <select id="pc"><option value="">Tout le Luxembourg</option></select>
-      <span class="count" id="pc-sum" aria-live="polite"></span>
+      <label for="pg" class="tlabel">Classes</label>
+      <select id="pg"><option value="">tailles détaillées</option><option value="aides">seuils des aides aux communes</option></select>
+      <p class="pcsum" id="pc-sum" aria-live="polite"></p>
     </div>
     <div class="pkey">
       <span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
       <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
     </div>
     <div class="pair" id="paradox"><!--PRE_PARADOX--></div>
+    <p class="kbnote" id="kb-note" hidden>Aides aux communes pour une centrale sur bâtiment (<a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf" rel="noopener">Klimabonus Gemengen</a>, barème 2025 révisé chaque année) : 50 % des coûts entre 30 et 200 kWc (plafond 675 €/kWc), 45 % entre 200 et 500 kWc (505 €/kWc), 40 % entre 0,5 et 5 MWc (425 €/kWc) ; ombrière de parking : 45 % (990 €/kWc). En dessous de 30 kWc, l'aide relève du Klimabonus des particuliers. Les données Leneda ne disent pas si une installation est communale ou privée.</p>
     <details class="alt">
       <summary>Données du graphique</summary>
       <table class="mini"><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody id="paradox-rows"><!--PRE_PARADOX_ROWS--></tbody></table>
@@ -611,42 +619,51 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
      <div class="vv"><b>${a.pv_mw>0?'+':''}${fmt1(a.pv_mw)} MW</b> · ${a.pv_n>0?'+':''}${fmt(a.pv_n)}${' inst.'}</div>`).join('');
 })();
 
-/* ---- paradox (national, ou une commune via ?commune=) ---- */
+/* ---- paradox (national ou une commune via ?commune=, classes détaillées ou ?classes=aides) ---- */
 (function(){
-  const sel=document.getElementById('pc'), sum=document.getElementById('pc-sum');
-  const slug=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const sel=document.getElementById('pc'), grp=document.getElementById('pg'), sum=document.getElementById('pc-sum'),
+        note=document.getElementById('kb-note'), H=D.hist;
+  const slug=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const byName=[...D.communes].sort((a,b)=>a.c.localeCompare(b.c,'fr'));
   sel.insertAdjacentHTML('beforeend',byName.map(c=>`<option value="${slug(c.c)}">${c.c}</option>`).join(''));
   const pct=x=>x<1?x.toFixed(1).replace('.',','):Math.round(x);
-  function draw(c){
-    const rows=D.sizes.map((s,i)=>c?{bin:s.bin,count:D.sizes_c[c.lau2][i][0],mw:D.sizes_c[c.lau2][i][1]/1000}:s);
+  const sg=n=>(n>0?'+':n<0?'−':'±')+fmt(Math.abs(n));
+  function draw(c, kb){
+    const bins=kb?D.kb.bins:D.sizes.map(s=>s.bin);
+    const src=kb?(c?D.kb.c[c.lau2]:D.kb.nat):(c?D.sizes_c[c.lau2]:D.sizes.map(s=>[s.count,s.mw*1000]));
+    const rows=bins.map((b,i)=>({bin:b,count:src[i][0],mw:src[i][1]/1000}));
+    const h=H?(c?H.c[c.lau2]:H.nat):null, hd=h?(kb?h[3]:h[2]):null;
     const nTot=rows.reduce((a,s)=>a+s.count,0)||1, cTot=rows.reduce((a,s)=>a+s.mw,0)||1;
     const unit=s=>s.bin.includes('MW')?'':' kW';
-    document.getElementById('paradox').innerHTML=rows.map(s=>{
+    document.getElementById('paradox').innerHTML=rows.map((s,i)=>{
       const pn=s.count/nTot*100, pc=s.mw/cTot*100;
       return `<div class="bin">${s.bin}${unit(s)}</div>
        <div class="duo">
-         <div class="b cnt" style="width:${Math.max(pn,0.4)}%"><i>${pct(pn)} % · ${fmt(s.count)}${' inst.'}</i></div>
-         <div class="b cap" style="width:${Math.max(pc,0.4)}%"><i>${pct(pc)} % · ${c&&s.mw<1&&s.mw>0?fmt(Math.round(s.mw*1000))+' kW':fmt1(s.mw)+' MW'}</i></div>
+         <div class="b cnt${pn>70?' in':''}" style="width:${Math.max(pn,0.4)}%"><i>${pct(pn)} % · ${fmt(s.count)}${' inst.'}${hd&&hd[i]?` <em>(${sg(hd[i])})</em>`:''}</i></div>
+         <div class="b cap${pc>70?' in':''}" style="width:${Math.max(pc,0.4)}%"><i>${pct(pc)} % · ${c&&s.mw<1&&s.mw>0?fmt(Math.round(s.mw*1000))+' kW':fmt1(s.mw)+' MW'}</i></div>
        </div>`;}).join('');
     document.getElementById('paradox-rows').innerHTML=rows.map(s=>
       `<tr><th scope="row">${s.bin}${unit(s)}</th><td>${fmt(s.count)}</td><td>${fmt1(s.count/nTot*100)} %</td><td>${fmt1(s.mw)}</td><td>${fmt1(s.mw/cTot*100)} %</td></tr>`).join('');
-    if(c){
-      const sm=rows.slice(0,4), sn=sm.reduce((a,s)=>a+s.count,0)/nTot*100, sc=sm.reduce((a,s)=>a+s.mw,0)/cTot*100;
-      sum.textContent=`${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW ; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`;
-    } else sum.textContent='';
+    const small=kb?1:4, sn=rows.slice(0,small).reduce((a,s)=>a+s.count,0)/nTot*100, sc=rows.slice(0,small).reduce((a,s)=>a+s.mw,0)/cTot*100;
+    let t=c?`<b>${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`:'';
+    if(h) t+=(t?' ':'')+`Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).`;
+    sum.innerHTML=t;
+    note.hidden=!kb;
   }
-  function apply(v, push){
-    const c=byName.find(x=>slug(x.c)===v)||null;
-    sel.value=c?v:'';
-    draw(c);
-    if(push){const u=new URL(location.href); if(c) u.searchParams.set('commune',v); else u.searchParams.delete('commune');
+  function apply(v, k, push){
+    const c=byName.find(x=>slug(x.c)===v)||null, kb=k==='aides';
+    sel.value=c?v:''; grp.value=kb?'aides':'';
+    draw(c, kb);
+    if(push){const u=new URL(location.href);
+      if(c) u.searchParams.set('commune',v); else u.searchParams.delete('commune');
+      if(kb) u.searchParams.set('classes','aides'); else u.searchParams.delete('classes');
       u.hash='paradoxe'; history.replaceState(null,'',u);}
   }
-  sel.addEventListener('change',()=>apply(sel.value,true));
-  const q0=new URLSearchParams(location.search).get('commune');
-  apply(q0?slug(q0):'',false);
-  if(q0&&sel.value) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
+  sel.addEventListener('change',()=>apply(sel.value,grp.value,true));
+  grp.addEventListener('change',()=>apply(sel.value,grp.value,true));
+  const P=new URLSearchParams(location.search), q0=P.get('commune');
+  apply(q0?slug(q0):'',P.get('classes')||'',false);
+  if((q0&&sel.value)||P.get('classes')) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
 })();
 
 /* ---- table ---- */

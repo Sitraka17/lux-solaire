@@ -98,6 +98,24 @@
    }
   },
   {
+   "path": "/data/csv/solaire_communes_tranches_aides.csv",
+   "format": "text/csv",
+   "rows": 400,
+   "title": {
+    "fr": "Installations PV par commune, tranches des aides communales (Klimabonus Gemengen)",
+    "en": "PV installations by municipality, municipal subsidy bands (Klimabonus Gemengen)",
+    "lb": "PV-Installatiounen pro Gemeng, Tranche vun de Gemengenhëllefen (Klimabonus Gemengen)",
+    "de": "PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)"
+   },
+   "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
+   "notes": {
+    "fr": "Même fichier, tranches 30 / 200 / 500 kWc / 5 MWc du Klimabonus Gemengen (barème 2025) ; capacité en kW.",
+    "en": "Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp (2025 scale); capacity in kW.",
+    "lb": "Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem 2025); Kapazitéit a kW.",
+    "de": "Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand 2025); Leistung in kW."
+   }
+  },
+  {
    "path": "/data/data.json",
    "format": "application/json",
    "rows": 0,

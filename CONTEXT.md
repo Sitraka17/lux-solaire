@@ -86,3 +86,22 @@ installations PV par classe de taille, commune par commune.
   `https://solaire.sitraka.lu/fr/?commune=differdange`.
 - Le prérendu (robots, sans JS) reste national ; seul le JS affiche une commune.
 - Export `data/csv/solaire_communes_tailles.csv` (800 lignes, capacité en kW).
+
+### Tranches des aides communales et historique hebdomadaire (30/10/2026, suite)
+
+- **Sélecteur « Classes »** (`#pg`, `?classes=aides`) : bascule le graphique sur
+  les tranches du Klimabonus Gemengen (`KB_EDGES` : 30 / 200 / 500 kWc / 5 MWc ;
+  tranche vide à l'échelle nationale écartée), avec une note des taux du
+  barème 2025 (guide pratique V1 05/2025 : 50 % ≤ 675 €/kWc, 45 % ≤ 505,
+  40 % ≤ 425, ombrière 45 % ≤ 990). ⚠️ Barème révisé chaque année : vérifier
+  les taux chaque janvier et mettre à jour la note dans `template.html` + les 3
+  dictionnaires. Export `solaire_communes_tranches_aides.csv`.
+- **Archive** `archive/leneda-not-grouped-AAAA-MM-JJ.csv.gz` (~115 Ko/semaine) :
+  Leneda remplace son fichier par installation chaque semaine sans garder
+  d'historique. `archive_snapshot()` en garde une copie à chaque build (le
+  workflow du lundi la commite via `git add -A`) ; `archive/` est exclu du
+  site (.vercelignore). Première copie : 14/09/2026 (récupérée du cache local).
+- **`hist`** : variation nette (installations, kW, par classe) depuis la plus
+  ancienne copie de moins de 92 jours ; affichée dans la phrase de résumé et
+  entre parenthèses sur les barres. Variation NETTE : une installation
+  agrandie change de classe (−1 dans l'une, +1 dans l'autre).

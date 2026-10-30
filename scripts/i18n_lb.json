@@ -119,5 +119,9 @@
 "Ouvrir le simulateur <span aria-hidden=\"true\">→</span>": "De Rechner opmaachen <span aria-hidden=\"true\">→</span>",
 "href=\"/fr/simulateur/\"": "href=\"/lb/rechner/\"",
 ">Voir une commune</label>": ">Eng Gemeng weisen</label>",
-">Tout le Luxembourg</option>": ">Ganz Lëtzebuerg</option>"
+">Tout le Luxembourg</option>": ">Ganz Lëtzebuerg</option>",
+">Classes</label>": ">Klassen</label>",
+">tailles détaillées</option>": ">detailléiert Gréissten</option>",
+">seuils des aides aux communes</option>": ">Schwelle vun de Gemengenhëllefen</option>",
+"Aides aux communes pour une centrale sur bâtiment (<a href=\"https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf\" rel=\"noopener\">Klimabonus Gemengen</a>, barème 2025 révisé chaque année) : 50 % des coûts entre 30 et 200 kWc (plafond 675 €/kWc), 45 % entre 200 et 500 kWc (505 €/kWc), 40 % entre 0,5 et 5 MWc (425 €/kWc) ; ombrière de parking : 45 % (990 €/kWc). En dessous de 30 kWc, l'aide relève du Klimabonus des particuliers. Les données Leneda ne disent pas si une installation est communale ou privée.": "Hëllefe fir Gemengen fir eng Anlag op engem Gebai (<a href=\"https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf\" rel=\"noopener\">Klimabonus Gemengen</a>, Bareem 2025, all Joer iwwerschafft): 50 % vun de Käschten tëscht 30 an 200 kWp (Plafong 675 €/kWp), 45 % tëscht 200 a 500 kWp (505 €/kWp), 40 % tëscht 0,5 a 5 MWp (425 €/kWp); Parkplazendaach: 45 % (990 €/kWp). Ënner 30 kWp gëllt de Klimabonus fir Privatleit. D'Leneda-Donnéeë soen net, ob eng Installatioun der Gemeng oder engem Privatmann gehéiert."
 }
