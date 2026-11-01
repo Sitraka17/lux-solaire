@@ -1,43 +1,43 @@
 {
  "communes_de": {
   "date": "2026-11-01",
-  "hash": "4d24ef24bfad5fcb938f8f98d5f348d1fd13faddecb10910dffd736720c21f54"
+  "hash": "1109e5bcaaa4144d5cf7a0648d2fafcaf38dff05eefb1658d066fa2d5a3ea84c"
  },
  "communes_en": {
   "date": "2026-11-01",
-  "hash": "2e94d30b7312b0b4eb724fc39e237e0db7fd0486ddb3b93a8438f28342162f6d"
+  "hash": "f48917e0cdb6a03ae7bf5c0d814faaa4371230399f0441749fa8929c780f084e"
  },
  "communes_fr": {
   "date": "2026-11-01",
-  "hash": "40511eafd0bef4dd63cdf48053f93d46496d86220030971cfa95d50a7d0537b2"
+  "hash": "d1cbdda83e49b2566d9b81b3f7cd636adbfadab128d3bea1fbba69555d49de25"
  },
  "communes_lb": {
   "date": "2026-11-01",
-  "hash": "4d24ef24bfad5fcb938f8f98d5f348d1fd13faddecb10910dffd736720c21f54"
+  "hash": "1109e5bcaaa4144d5cf7a0648d2fafcaf38dff05eefb1658d066fa2d5a3ea84c"
  },
  "de": {
-  "date": "2026-10-30",
-  "hash": "15d14c55c8be560fe4a26fecca9baa3eba2d56027814b1faab0499e9daad8ea9"
+  "date": "2026-11-01",
+  "hash": "a6079101bc79bb40cbfe46286c3f6a5132fd909af3e75da1867bd32187b54f70"
  },
  "en": {
   "date": "2026-11-01",
-  "hash": "82443e414dddb8fd0ab70d1b430cce3ea2088566a4068859bce410756678ef3d"
+  "hash": "22c9842f96921aa59786f4fa7d647d82cae4439a652da83b3b5fb9d2b315439c"
  },
  "fr": {
-  "date": "2026-10-30",
-  "hash": "d0c071399b564c95171b05da6bd799a241967cede851593574fd3486ac5a6ffe"
+  "date": "2026-11-01",
+  "hash": "7660fa1d1b58241da4ce12e9a142629677b119a6be12f4b416b91d3d8a97b2e9"
  },
  "lb": {
   "date": "2026-11-01",
-  "hash": "c9c81bd2913778855c9fdacb7114c818c651ede6bb63107c4a2b3fccb95e1b0a"
+  "hash": "bacc303a76656ff38f0b9a36df70f5a4047596f5218e3c2782f868e45bf3d7b2"
  },
  "sim_de": {
   "date": "2026-11-01",
-  "hash": "192c4158930a6df5d92931617b5db3a88ef03e187bdf9b537c808e1e374783f2"
+  "hash": "471404720ecabc272910ed55d32eaa0800e502eac4187a83c2a0af955d6bcc0d"
  },
  "sim_en": {
   "date": "2026-11-01",
-  "hash": "a047bb0355b7a06327f05e4be3a9a22e05bfb0acd66773c74a95b6d9db122706"
+  "hash": "8261c4913a74aa3b093d87e54ce2f8cec3c7407b08bb60351dd13796449a69b6"
  },
  "sim_fr": {
   "date": "2026-11-01",
@@ -45,6 +45,6 @@
  },
  "sim_lb": {
   "date": "2026-11-01",
-  "hash": "4ea93c430664ab89c30efae28d1ea51545e1ab59aa86fdb72294b03dca56a095"
+  "hash": "7519c5e583b24e9bf281482f00a96483e9e64dd85b8a007a028e903482d4b295"
  }
 }

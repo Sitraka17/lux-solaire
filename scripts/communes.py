@@ -18,6 +18,13 @@ SIM = {"en": "/simulator/", "fr": "/fr/simulateur/", "de": "/de/rechner/", "lb":
 LANGS = ("en", "fr", "de", "lb")
 ORDER = ("en", "fr", "de", "lb")
 FLAG_LABEL = {"en": "EN", "fr": "FR", "de": "DE", "lb": "LU"}
+SRC_LENEDA = "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"
+SRC_RNPP = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-"
+            "population-par-commune-population-per-municipality/")
+SRC_KBG = ("https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/"
+           "guide-pratique-klimabonus-gemengen.pdf")
+SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", "population", "inhabitants as of"),
+             "de": ("Quellen", "Bevölkerung", "Einwohner, Stand"), "lb": ("Quellen", "Populatioun", "Awunner, Stand")}
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
 
 
@@ -69,7 +76,7 @@ S = {
         "hist_note": lambda d: f"Entre parenthèses : variation nette depuis le {d}.",
         "kb_h": "Selon les tranches des aides aux communes",
         "kb_cols": ("Tranche", "Installations", "Puissance", "Aide pour une centrale communale"),
-        "kb_aid": ("Klimabonus des particuliers", "50 % (plafond 675 €/kWc)", "45 % (505 €/kWc)",
+        "kb_aid": ("pas d'aide communale (Klimabonus des particuliers : logements seulement)", "50 % (plafond 675 €/kWc)", "45 % (505 €/kWc)",
                    "40 % (425 €/kWc)", "au cas par cas"),
         "kb_note": ("Barème 2025 du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de "
                     "parking est aidée à 45 % (990 €/kWc). Les données Leneda ne disent pas si une installation "
@@ -80,7 +87,7 @@ S = {
         "cmp_lede": lambda fq: f"Classées par W par habitant. « Ajouts » : puissance ajoutée depuis le relevé {fq}.",
         "links_h": "Aller plus loin",
         "l_dash": "Graphique interactif de la commune", "l_sim": "Simulateur : est-ce rentable sur votre toit ?",
-        "l_for": "Pour les communes : ce que montre cette page", "l_csv": "Données des 100 communes (CSV)",
+        "l_for": "Pour les communes : ce que montre cette page", "l_csv": "Tailles des installations, 100 communes (CSV)",
         "prev": "Commune précédente", "next": "Commune suivante", "all": "Toutes les communes",
         "foot": lambda date: (
             f"Données : jeu « La production d'énergie électrique au Luxembourg » publié par Leneda sur "
@@ -118,7 +125,7 @@ S = {
         "hist_note": lambda d: f"In brackets: net change since {d}.",
         "kb_h": "By municipal subsidy band",
         "kb_cols": ("Band", "Installations", "Capacity", "Subsidy for a municipal plant"),
-        "kb_aid": ("household Klimabonus", "50% (cap €675/kWp)", "45% (€505/kWp)", "40% (€425/kWp)", "case by case"),
+        "kb_aid": ("no municipal aid (household Klimabonus: housing only)", "50% (cap €675/kWp)", "45% (€505/kWp)", "40% (€425/kWp)", "case by case"),
         "kb_note": ("2025 Klimabonus Gemengen scale (practical guide, revised every year); a car-park canopy gets "
                     "45% (€990/kWp). The Leneda data do not say whether an installation is municipal or private."),
         "cmp_h": "Comparison", "cmp_canton": lambda k: f"Municipalities in the canton of {k}",
@@ -127,7 +134,7 @@ S = {
         "cmp_lede": lambda fq: f"Ranked by W per inhabitant. “Added”: capacity added since the {fq} reading.",
         "links_h": "Go further",
         "l_dash": "Interactive chart for this municipality", "l_sim": "Calculator: is solar worth it on your roof?",
-        "l_for": "For municipalities: what this page shows", "l_csv": "Data for all 100 municipalities (CSV)",
+        "l_for": "For municipalities: what this page shows", "l_csv": "Installation sizes, all 100 municipalities (CSV)",
         "prev": "Previous municipality", "next": "Next municipality", "all": "All municipalities",
         "foot": lambda date: (
             f"Data: “La production d'énergie électrique au Luxembourg” published by Leneda on data.public.lu (CC0), "
@@ -165,7 +172,7 @@ S = {
         "hist_note": lambda d: f"In Klammern: Nettoveränderung seit dem {d}.",
         "kb_h": "Nach Stufen der Gemeindeförderung",
         "kb_cols": ("Stufe", "Anlagen", "Leistung", "Förderung für eine Gemeindeanlage"),
-        "kb_aid": ("Klimabonus für Privathaushalte", "50 % (max. 675 €/kWp)", "45 % (505 €/kWp)",
+        "kb_aid": ("keine Gemeindeförderung (Klimabonus für Privathaushalte: nur Wohnungen)", "50 % (max. 675 €/kWp)", "45 % (505 €/kWp)",
                    "40 % (425 €/kWp)", "im Einzelfall"),
         "kb_note": ("Klimabonus Gemengen, Stand 2025 (Praxisleitfaden, jährlich angepasst); eine "
                     "Parkplatzüberdachung wird mit 45 % gefördert (990 €/kWp). Die Leneda-Daten sagen nicht, ob "
@@ -176,7 +183,7 @@ S = {
         "cmp_lede": lambda fq: f"Sortiert nach W pro Einwohner. „Zubau“: seit der Erhebung {fq} hinzugekommene Leistung.",
         "links_h": "Weiter",
         "l_dash": "Interaktive Grafik der Gemeinde", "l_sim": "Rechner: lohnt sich Solar auf Ihrem Dach?",
-        "l_for": "Für Gemeinden: was diese Seite zeigt", "l_csv": "Daten aller 100 Gemeinden (CSV)",
+        "l_for": "Für Gemeinden: was diese Seite zeigt", "l_csv": "Anlagengrößen, alle 100 Gemeinden (CSV)",
         "prev": "Vorherige Gemeinde", "next": "Nächste Gemeinde", "all": "Alle Gemeinden",
         "foot": lambda date: (
             f"Daten: „La production d'énergie électrique au Luxembourg“, veröffentlicht von Leneda auf "
@@ -215,7 +222,7 @@ S = {
         "hist_note": lambda d: f"An de Klameren: Nettoännerung zënter dem {d}.",
         "kb_h": "No de Tranche vun de Gemengenhëllefen",
         "kb_cols": ("Tranche", "Installatiounen", "Leeschtung", "Hëllef fir eng Gemengenanlag"),
-        "kb_aid": ("Klimabonus fir Privatleit", "50 % (Plafong 675 €/kWp)", "45 % (505 €/kWp)",
+        "kb_aid": ("keng Gemengenhëllef (Klimabonus fir Privatleit: just Wunnengen)", "50 % (Plafong 675 €/kWp)", "45 % (505 €/kWp)",
                    "40 % (425 €/kWp)", "vu Fall zu Fall"),
         "kb_note": ("Bareem 2025 vum Klimabonus Gemengen (praktesche Guide, all Joer iwwerschafft); e "
                     "Parkplazendaach kritt 45 % (990 €/kWp). D'Leneda-Donnéeë soen net, ob eng Installatioun der "
@@ -226,7 +233,7 @@ S = {
         "cmp_lede": lambda fq: f"Sortéiert no W pro Awunner. „Zouwuess“: Leeschtung derbäi zënter dem Relevé {fq}.",
         "links_h": "Weider",
         "l_dash": "Interaktiv Grafik vun der Gemeng", "l_sim": "Rechner: rentéiert Solar op Ärem Daach?",
-        "l_for": "Fir Gemengen: wat dës Säit weist", "l_csv": "Donnéeë vun allen 100 Gemengen (CSV)",
+        "l_for": "Fir Gemengen: wat dës Säit weist", "l_csv": "Gréisste vun den Installatiounen, 100 Gemengen (CSV)",
         "prev": "Gemeng virdrun", "next": "Nächst Gemeng", "all": "All Gemengen",
         "foot": lambda date: (
             f"Donnéeën: „La production d'énergie électrique au Luxembourg“, publizéiert vu Leneda op "
@@ -536,7 +543,11 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"]}</a></div>'
                 f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]} : {prev_c["c"]}</a>'
                 f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]} : {next_c["c"]} →</a></nav></section>'
-                f'<footer class="cfoot"><p>{L["foot"](date)}</p><p>{L["privacy"]}</p>'
+                f'<footer class="cfoot"><p>{L["foot"](date)}</p>'
+                f'<p>{SRC_LABEL[lang][0]}{" :" if lang == "fr" else ":"} <a href="{SRC_LENEDA}">Leneda (data.public.lu)</a> · '
+                f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {c["c"]}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
+                f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a></p>'
+                f'<p>{L["privacy"]}</p>'
                 f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a> · '
                 f'<a href="https://github.com/Sitraka17/lux-solaire">code source</a></p></footer>')
             canonical = site + CPATH[lang] + s + "/"

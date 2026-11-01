@@ -1,0 +1,14 @@
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/*.png
+  Cache-Control: public, max-age=604800
+
+/rt.js
+  Cache-Control: public, max-age=86400
+
+/ev.js
+  Cache-Control: public, max-age=86400

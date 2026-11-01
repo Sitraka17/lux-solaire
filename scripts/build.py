@@ -220,7 +220,7 @@ def _pv_rows(ng):
 
 def _grid(inst, edges, labels):
     """(national, {LAU2: ...}) : [[installations, kW], ...] par classe, dans l'ordre de `labels`."""
-    cut = pd.cut(inst["p"], bins=[e if e is not None else 1e9 for e in edges], labels=labels)
+    cut = pd.cut(inst["p"], bins=[e if e is not None else 1e9 for e in edges], labels=labels, include_lowest=True)
     nat = inst.groupby(cut, observed=False)["p"].agg(["size", "sum"])
     g = inst.groupby([inst["LAU2"], cut], observed=False)["p"].agg(["size", "sum"])
     per = {int(k): [[int(g.loc[(k, l), "size"]), float(g.loc[(k, l), "sum"])] for l in labels]
@@ -296,7 +296,7 @@ def build(frames, wdate, ng, pop, pop_date, baseline=(None, None)):
 
     # ---- histogramme des tailles ----
     bins = [e if e is not None else 1e9 for e in BIN_EDGES]
-    cut = pd.cut(pv_inst["p"], bins=bins, labels=BIN_LABELS)   # bornes fermées à droite : « 30 kW ou moins »
+    cut = pd.cut(pv_inst["p"], bins=bins, labels=BIN_LABELS, include_lowest=True)   # bornes fermées à droite : « 30 kW ou moins »
     hist = pv_inst.groupby(cut, observed=True).agg(count=("p", "size"), cap=("p", "sum"))
     sizes = [{"bin": str(i), "count": int(r["count"]), "mw": round(r["cap"] / 1000, 1)}
              for i, r in hist.iterrows()]
@@ -505,6 +505,7 @@ def _tr_str(s):
         s = s.replace(fr, en)
     s = _MONTH_RE.sub(lambda m: _FR2EN_MONTH[m.group(1)], s)  # « juillet » → « July »
     s = re.sub(r"(?<=\d),(?=\d)", ".", s)                    # « 0,5 » → « 0.5 »
+    s = re.sub(r"\b1er(?= [A-Z])", "1", s)                  # « 1er October » → « 1 October »
     return s
 
 

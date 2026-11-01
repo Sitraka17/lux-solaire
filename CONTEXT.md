@@ -126,3 +126,24 @@ installations PV par classe de taille, commune par commune.
   `functions/` est exclu du dist (.vercelignore) mais compilé par `wrangler pages deploy` lancé
   depuis la racine du dépôt. Rapport : `scripts/events_report.sh`.
 - **404.html** : vraie page 404 (Cloudflare Pages ne sert plus la page EN pour une URL inconnue).
+
+## Audits du 1/11/2026 (technique + sources)
+
+Rapports : `~/differdange-pilote/audit-sources-solaire.md` (sources, vérifiées le 1/11) et le rapport
+technique résumé ci-dessous. Corrigé le 1/11 : arrondi des pages communales aligné sur Math.round
+(`jsround`), référence d'archive fixe (plus ancienne copie, 14/09), `_fetch` avec code HTTP et 3 essais,
+commune sans relevé de référence (« n.d. »), paramètres d'URL invalides du simulateur, HTML EN/LB des
+en-têtes du tableau, phrase FAUSSE « sous 30 kWc : Klimabonus des particuliers » (vrai seulement pour
+des logements), installation à 0 kW hors classes (`include_lowest`), sources et population sur les pages
+communales, « 1er October » en anglais, en-têtes `_headers` (HSTS, nosniff, Referrer-Policy, cache).
+
+Reste à faire (par priorité) :
+- simulateur : aide HEMS 500 € (factures depuis le 1/10/2026), prolongation au 31/12/2031 si commande
+  avant le 31/12/2029, pose sur toiture ou façade, régime transitoire de l'option B ; préciser que
+  « 0,16 € avec aide » ne vaut que d'août à décembre 2026 ; libellé « gain net non actualisé » ;
+- alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow ;
+- tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda ;
+- compteur /e : listes blanches (lang, chemins) et limite de débit ;
+- `scripts/baremes.json` unique (barèmes dupliqués dans 5 endroits) ; découper build.py ;
+- moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu ;
+- accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement ; CSP à tester.
