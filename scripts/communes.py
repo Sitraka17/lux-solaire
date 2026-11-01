@@ -410,7 +410,7 @@ def _toggle(paths, lang, flags):
                    for c, p in paths)
 
 
-def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg, flags):
+def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg, flags, jsround=round):
     """Écrit les 400 pages communales et les 4 pages « Pour les communes » ;
     renvoie les groupes (chemins par langue, dates) pour le sitemap."""
     base = blobs["fr"]
@@ -444,9 +444,9 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             nn = T(c["n"], lang)
             wpc = T(c["wpc"], lang)
             med = T(P["median_wpc"], lang)
-            sg = lambda x: ("+" if x > 0 else "−" if x < 0 else "±") + T(abs(round(x)), lang)  # noqa: E731
+            sg = lambda x: ("+" if x > 0 else "−" if x < 0 else "±") + T(abs(jsround(x)), lang)  # noqa: E731
             gkw = sg(c["g"])
-            gp = ("+" if c["gp"] > 0 else "") + T(round(c["gp"]), lang)
+            gp = ("+" if c["gp"] > 0 else "") + T(jsround(c["gp"]), lang) if c["gp"] is not None else "n.d."
             title = L["title"](c["c"], nn, mw, meta["date_iso"][:4])
             desc = L["desc"](c["c"], c["k"], mw, date, nn, wpc)
             # tailles détaillées (blob traduit pour les libellés de classes)
@@ -456,10 +456,10 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             h = (base.get("hist") or {}).get("c", {}).get(str(c["lau2"])) if base.get("hist") else None
             hd = h[2] if h else None
             unit = lambda b: "" if "MW" in b else " kW"  # noqa: E731
-            pct = lambda x: (dec1(x, lang) if x < 1 else T(round(x), lang))  # noqa: E731
+            pct = lambda x: (dec1(x, lang) if x < 1 else T(jsround(x), lang))  # noqa: E731
 
             def capl(x):
-                return f"{T(round(x * 1000), lang)} kW" if 0 < x < 1 else f"{dec1(x, lang)} MW"
+                return f"{T(jsround(x * 1000), lang)} kW" if 0 < x < 1 else f"{dec1(x, lang)} MW"
             bars = "".join(
                 f'<div class="bin">{b}{unit(b)}</div><div class="duo">'
                 f'<div class="b cnt{" in" if n / nt * 100 > 70 else ""}" style="width:{max(n / nt * 100, 0.4):.2f}%">'
@@ -468,8 +468,8 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<div class="b cap{" in" if kw / ct * 100 > 70 else ""}" style="width:{max(kw / ct * 100, 0.4):.2f}%">'
                 f'<i>{pct(kw / ct * 100)} % · {capl(kw)}</i></div></div>'
                 for j, (b, n, kw) in enumerate(rows))
-            sn = round(sum(r[1] for r in rows[:SMALL_BINS]) / nt * 100)
-            sc = round(sum(r[2] for r in rows[:SMALL_BINS]) / ct * 100)
+            sn = jsround(sum(r[1] for r in rows[:SMALL_BINS]) / nt * 100)
+            sc = jsround(sum(r[2] for r in rows[:SMALL_BINS]) / ct * 100)
             kb_rows = "".join(
                 f'<tr><th scope="row">{b}{unit(b)}</th><td>{T(n, lang)}</td><td>{capl(kw / 1000)}</td>'
                 f'<td>{L["kb_aid"][["0–30", "30–200", "200–500", "0,5–5 MW", "> 5 MW"].index(fb)]}</td></tr>'

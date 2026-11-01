@@ -826,7 +826,14 @@ function writeUrl(){
 }
 (function init(){
   const q=new URLSearchParams(location.search);
-  ids.forEach(k=>{ if(q.has(k)) $(k).value=q.get(k); });
+  ids.forEach(k=>{
+    if(!q.has(k)) return;
+    const el=$(k), v=q.get(k);
+    if(el.tagName==='SELECT'){ if([...el.options].some(o=>o.value===v)) el.value=v; return; }
+    if(v===''||!isFinite(+v)) return;
+    const lo=el.min!==''?+el.min:-Infinity, hi=el.max!==''?+el.max:Infinity;
+    el.value=Math.min(hi,Math.max(lo,+v));
+  });
   if(q.get('scm')==='1') $('sc-auto').checked=false;
   if(!q.has('cost')) $('cost').value=Math.round(+$('p').value*1800/50)*50;
   if(!q.has('bcost')) $('bcost').value=Math.round(+$('batt').value*900/50)*50;

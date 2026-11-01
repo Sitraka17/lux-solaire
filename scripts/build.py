@@ -48,7 +48,8 @@ BIN_EDGES = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, None]
 KB_EDGES = [0, 30, 200, 500, 5000, None]
 KB_LABELS = ["0–30", "30–200", "200–500", "0,5–5 MW", "> 5 MW"]
 ARCHIVE = ROOT / "archive"   # copies hebdomadaires du fichier par installation (Leneda n'en garde qu'une)
-ARCHIVE_WINDOW = 92          # comparaison avec la plus ancienne copie de moins de 92 jours
+# comparaison avec la plus ancienne copie archivée (14/09/2026) : les textes publics
+# disent « depuis le 14 septembre 2026 », la référence ne doit donc jamais glisser
 BIN_LABELS = ["0–5", "5–10", "10–15", "15–30", "30–100", "100–500",
               "0,5–1 MW", "1–5 MW", ">5 MW"]
 
@@ -98,10 +99,25 @@ def _get(url, timeout=60):
         f = cache / hashlib.sha1(url.encode()).hexdigest()
         if f.exists():
             return f.read_bytes()
-        content = requests.get(url, timeout=timeout).content
+        content = _fetch(url, timeout)
         f.write_bytes(content)
         return content
-    return requests.get(url, timeout=timeout).content
+    return _fetch(url, timeout)
+
+
+def _fetch(url, timeout):
+    """GET avec 3 essais (délai croissant) ; échoue clairement sur un code HTTP
+    d'erreur au lieu de lire une page d'erreur comme un CSV."""
+    import time
+    for attempt in range(3):
+        try:
+            r = requests.get(url, timeout=timeout)
+            r.raise_for_status()
+            return r.content
+        except requests.RequestException as e:
+            if attempt == 2:
+                sys.exit(f"téléchargement impossible ({e}) : {url}")
+            time.sleep(5 * (attempt + 1))
 
 
 def _label_fr(d):
@@ -184,11 +200,11 @@ def archive_snapshot(ng, wdate):
 
 
 def load_baseline(wdate):
-    """Plus ancienne copie archivée de moins de ARCHIVE_WINDOW jours (ou None)."""
+    """Plus ancienne copie archivée antérieure au relevé courant (ou None)."""
     cands = []
     for f in ARCHIVE.glob("leneda-not-grouped-*.csv.gz"):
         d = date.fromisoformat(f.name[len("leneda-not-grouped-"):][:10])
-        if 0 < (wdate - d).days <= ARCHIVE_WINDOW:
+        if 0 < (wdate - d).days:
             cands.append((d, f))
     if not cands:
         return None, None
@@ -636,7 +652,7 @@ def prose_numbers(d, lang):
         "__MEDSHARE__": _dec1(d["meta"]["median_share"], lang),
         "__TOPGROWTHKW__": _thousands(_jsround(top["g"]), lang),
         "__TOPGROWTHCOMMUNE__": top["c"],
-        "__TOPGROWTHPCT__": str(_jsround(top["gp"])),
+        "__TOPGROWTHPCT__": str(_jsround(top["gp"])) if top["gp"] is not None else "n.d.",
         "__TOP4NAMES__": ", ".join(r["c"] for r in d["meta"]["top_records"]),
         # « paradoxe résidentiel » : installations comptées une à une dans le
         # fichier not-grouped, c.-à-d. l'effectif de l'histogramme des tailles
@@ -1403,7 +1419,7 @@ def render_all(data):
     csrc = (ROOT / "scripts" / "communes.py").read_text()
     cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                                         KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
-    groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG)
+    groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG, _jsround)
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)] + groups_c)
     print(f"{len(groups_c) * 4} pages communales et « pour les communes » écrites")
     print(f"8 pages rebuilt (tableau de bord + simulateur × en/fr/de/lb) : "
