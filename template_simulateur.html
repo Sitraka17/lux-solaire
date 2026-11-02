@@ -88,6 +88,7 @@
   .form fieldset{border:0;margin:0;padding:0;display:grid;gap:14px}
   .form legend{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0;margin:0 0 4px}
   .fld{display:grid;gap:5px}
+  .fld[hidden]{display:none}  /* sinon display:grid l'emporte sur hidden (coût batterie « 0 € » sans batterie) */
   .fld label{font-size:13.5px;color:var(--ink);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
   .fld label output{font-family:var(--mono);font-size:12.5px;color:var(--amber-text);font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
   .fld small{font-size:12px;color:var(--ink-3);line-height:1.4}
@@ -488,7 +489,7 @@
   </details>
   <details>
     <summary>Faut-il une batterie ?</summary>
-    <p>Une batterie fait passer la part autoconsommée d'environ 30 % à 50-60 % pour une maison type, mais coûte 700 à 1 100 € par kWh posé, dont le Klimabonus rembourse une partie (jusqu'à 2 250 €). Avec un surplus vendu 5 c€ et un kWh évité à 20 c€, chaque kWh stocké rapporte 15 c€ : une batterie de 7 kWh cyclée 250 fois par an rapporte environ 260 € par an pour 4 000 à 6 000 € d'investissement net. Elle allonge donc généralement le retour sur investissement ; l'outil 2 le montre pour votre cas.</p>
+    <p>Une batterie fait passer la part autoconsommée d'environ 30 % à 50-60 % pour une maison type, mais coûte 700 à 1 100 € par kWh posé (fourchette indicative retenue par l'outil, sans source publiée ; 900 € par défaut), dont le Klimabonus rembourse une partie (jusqu'à 2 250 €). Avec un surplus vendu 5 c€ et un kWh évité à 20 c€, chaque kWh stocké rapporte 15 c€ : une batterie de 7 kWh cyclée 250 fois par an rapporte environ 260 € par an pour __BAT7LO__ à __BAT7HI__ € d'investissement net après Klimabonus. Elle allonge donc généralement le retour sur investissement ; l'outil 2 le montre pour votre cas.</p>
   </details>
   <details>
     <summary>Les revenus d'une installation photovoltaïque sont-ils imposables ?</summary>
@@ -655,6 +656,9 @@ function read(){
 const compute = () => E.compute(I, G, BAR);
 
 /* ---- rendu ---- */
+/* largeur de dessin d'une figure : sous `min` px de cadre (mobile), le SVG est
+   dessiné à la largeur réelle (texte à taille réelle, sans défilement) */
+const figW=(id,def,min)=>{const w=$(id).clientWidth; return (w>0&&w<min)?Math.max(280,Math.round(w)):def;};
 function render(){
   read();
   // couplages : coût ↔ €/kWc, batterie ↔ coût batterie
@@ -691,7 +695,7 @@ function render(){
 
   // figure 1 : production mensuelle
   (function(){
-    const W=720,H=250,mL=46,mR=10,mT=16,mB=30, iw=W-mL-mR, ih=H-mT-mB;
+    const W=figW('fig-months',720,520), nar=W<720, H=nar?220:250, mL=nar?40:46,mR=nar?4:10,mT=16,mB=30, iw=W-mL-mR, ih=H-mT-mB;
     const tot=G.monthly_ref.reduce((a,b)=>a+b,0);
     const m=G.monthly_ref.map(v=>R.prod*v/tot);
     const maxY=Math.ceil(Math.max(...m)/100)*100;
@@ -705,10 +709,10 @@ function render(){
       const x=mL+iw*(i+0.16)/12, hs=ih*v/maxY*R.sc;
       g+=`<rect x="${x}" y="${y(v)}" width="${bw}" height="${ih*v/maxY-hs}" fill="#1D2734" fill-opacity=".82"/>`;
       g+=`<rect x="${x}" y="${y(v*R.sc)}" width="${bw}" height="${hs}" fill="${css('--amber')}" stroke="${css('--amber-text')}" stroke-width="1"/>`;
-      g+=`<text x="${x+bw/2}" y="${y(v)-5}" text-anchor="middle" font-size="10.5" fill="#1D2734" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
-      g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${L.months[i]}</text>`;
+      g+=`<text x="${x+bw/2}" y="${y(v)-5}" text-anchor="middle" font-size="${nar?8.5:10.5}" fill="#1D2734" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
+      g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${nar?L.months[i].charAt(0).toUpperCase():L.months[i]}</text>`;
     });
-    $('fig-months').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L.figMonths}">${g}</svg>`;
+    $('fig-months').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figMonths}">${g}</svg>`;
   })();
 
   // tableau 1
@@ -749,7 +753,7 @@ function render(){
 
   // figure 2 : trésorerie cumulée
   (function(){
-    const W=720,H=280,mL=56,mR=14,mT=14,mB=30, iw=W-mL-mR, ih=H-mT-mB;
+    const W=figW('fig-cash',720,520), nar=W<720, H=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H-mT-mB;
     const all=[...R.A.cum,...R.B.cum], lo=Math.min(0,...all), hi=Math.max(0,...all);
     const step=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2;
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
@@ -762,12 +766,14 @@ function render(){
     for(let i=0;i<=25;i+=5) g+=`<text x="${x(i)}" y="${H-10}" text-anchor="${i===0?'start':i===25?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}${i===0?'':''}</text>`;
     const path=(cum,c,w)=>`<path d="${cum.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
     g+=path(R.B.cum,'#1D2734',2.2)+path(R.A.cum,css('--amber-deep'),2.6);
+    // valeurs finales A et B : si elles se chevauchent, la plus basse passe sous sa courbe
+    const close=Math.abs(y(R.A.cum[25])-y(R.B.cum[25]))<16, lowB=R.B.cum[25]<R.A.cum[25];
     [[R.A,css('--amber-deep')],[R.B,'#1D2734']].forEach(([r,c])=>{
       if(r.pb!==null && r.pb>0) g+=`<circle cx="${x(r.pb)}" cy="${y(0)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
-      const last=r.cum[25];
-      g+=`<text x="${x(25)-6}" y="${y(last)-8}" text-anchor="end" font-size="12" font-weight="700" fill="${c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
+      const last=r.cum[25], below=close && ((r===R.B)===lowB);
+      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
     });
-    $('fig-cash').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L.figCash}">${g}</svg>`;
+    $('fig-cash').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figCash}">${g}</svg>`;
   })();
 
   // tableau trésorerie
@@ -836,6 +842,9 @@ function writeUrl(){
   ['az','tilt','canton','cons','year','price','growth','market','deg','disc','hcost','haid'].forEach(k=>$(k).addEventListener('input',render));
   document.querySelectorAll('.seg [data-price]').forEach(b=>b.addEventListener('click',()=>{ $('price').value=b.dataset.price; render(); }));
   render();
+  // rotation ou redimensionnement : figures redessinées à la nouvelle largeur
+  let lastW=innerWidth;
+  addEventListener('resize',()=>{ if(Math.abs(innerWidth-lastW)>20){ lastW=innerWidth; render(); } });
 })();
 </script>
 <script defer src="/rt.js"></script>

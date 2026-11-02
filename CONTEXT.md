@@ -267,6 +267,22 @@ Reste à faire (par priorité) :
   valoir `same-origin` quand l'en-tête est présent ; écriture D1 dans un try/catch (erreur journalisée,
   réponse 204). Schéma de la table `ev` inchangé. Pas de limite de débit.
 
+## Relecture mobile du 2/11/2026 (lot « 1 à 5 »)
+
+- **FAQ batterie** : « 4 000 à 6 000 € d'investissement net » (écrit à la main) valait 2 800 à 5 600 € ;
+  jetons `__BAT7LO__`/`__BAT7HI__` calculés dans `sim_numbers()` (7 kWh × 700 ou 1 100 € − `kb_batt(7)`,
+  à la centaine). La fourchette 700-1 100 €/kWh est présentée comme hypothèse de l'outil sans source
+  publiée (900 € par défaut) : À SOURCER (voir l'audit des sources, ligne « Coûts »).
+- **Barres `.hbars` sous 520 px** : nom sur sa propre ligne, puis barre + valeur (`.vv` en `max-width:14em`,
+  retour à la ligne permis). Avant : la valeur en max-content écrasait la colonne du nom à 0 px.
+- **Figures SVG sur mobile** : figures 1 et 2 du simulateur (cadre < 520 px) et aire du tableau de bord
+  (cadre < 620 px) dessinées à la largeur réelle du cadre (`figW`, `drawArea`), `min-width:0` en ligne,
+  initiales des mois, un libellé de relevé sur k (le dernier toujours affiché), redessin au `resize`.
+  Fig. 2 : si les valeurs finales A et B se chevauchent, la plus basse passe sous sa courbe.
+- **Tableau PNEC** : `.card.refs{overflow-x:auto}` ajouté aussi dans `template.html`.
+- Non traités dans ce lot (hors demande « 1 à 5 ») : `workflow_dispatch` hors `main` dans rebuild.yml,
+  listes blanches plus strictes de `functions/e.js` (slugs réels, x/r, taille du corps).
+
 ## Simulateur mis à jour le 2/11/2026
 
 Sources relues le 2/11/2026 : guichet.lu Klimabonus 2026 installations techniques (mise à jour du
@@ -291,8 +307,8 @@ ILR (loi du 22/07/2026), projet de loi 8707 (amendement gouvernemental du 21/07/
   `__NET6LO__`, `__NET6HI__`, `__TAR26__`, `__TAR27__` calculés par `sim_numbers()` (build.py, mêmes
   formules que le JS) ; « 4 500 à 7 500 € » corrigé en 4 300 à 7 300 €. La légende du tableau 4 est
   générée en JS (`aidNote1..3`).
-- Bogue préexistant NON corrigé : `.fld{display:grid}` l'emporte sur l'attribut `hidden`, donc le champ
-  « Coût de la batterie » (`#fld-bcost`) reste visible sans batterie.
+- ~~Bogue : `.fld{display:grid}` l'emporte sur l'attribut `hidden` (champ « Coût de la batterie » visible
+  sans batterie)~~ CORRIGÉ le 2/11/2026 par `.fld[hidden]{display:none}`.
 
 ## Moteur du simulateur (`/sim-engine.js`, 2/11/2026)
 

@@ -719,6 +719,11 @@ def sim_numbers(lang):
         "__C6HI__": _thousands(c_hi, lang),
         "__NET6LO__": _thousands(net(c_lo), lang),
         "__NET6HI__": _thousands(net(c_hi), lang),
+        # batterie de 7 kWh à 700-1 100 €/kWh (hypothèse de l'outil, sans source
+        # publiée) moins le Klimabonus batterie, à la centaine (corrigé le 2/11/2026 :
+        # « 4 000 à 6 000 € » écrit à la main valait 2 800 à 5 600 €)
+        "__BAT7LO__": _thousands(_jsround((7 * 700 - baremes.kb_batt(7)) / 100) * 100, lang),
+        "__BAT7HI__": _thousands(_jsround((7 * 1100 - baremes.kb_batt(7)) / 100) * 100, lang),
         "__TAR26__": _dec1(tar(6, 2026) * 100, lang),
         "__TAR27__": _dec1(tar(6, 2027) * 100, lang),
     }
