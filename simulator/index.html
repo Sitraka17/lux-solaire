@@ -204,7 +204,6 @@
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
-  #tab-profils caption{caption-side:bottom}
   #tab-profils{font-size:11.5px}
   #tab-profils th,#tab-profils td{padding:5px 7px}
   #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.3}
@@ -651,17 +650,19 @@
     <span class="sec-note">default assumptions of tool 2</span>
   </div>
   <p class="lede">Three typical households, computed with the default assumptions (due south at 35°, canton of Luxembourg, €1,800 per kWp installed, avoided kWh at €0.20, surplus sold at €0.05, first feed-in in 2027). Click a profile to load it into the calculator and adapt it to your case.</p>
-  <div class="card" style="overflow-x:auto">
-    <table class="mini" id="tab-profils">
+  <figure class="tab" style="margin-top:0">
+    <div class="card" style="overflow-x:auto">
+      <table class="mini" id="tab-profils">
       <thead><tr><th scope="col">Profile</th><th scope="col">Production</th><th scope="col">Self-consumed</th><th scope="col">Klimabonus</th><th scope="col">Left to pay (A)</th><th scope="col">Payback (A)</th><th scope="col">Payback (B)</th><th scope="col">Net gain 25 years (A)</th><th scope="col">Net gain 25 years (B)</th></tr></thead>
       <tbody>
         <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Small roof: 3 kWp south-east, 2,500 kWh/year</a></th><td>3,018 kWh</td><td>27%</td><td>3,168 €</td><td>2,232 €</td><td>8.2 years</td><td>15.5 years</td><td>+3,263 €</td><td>+2,634 €</td></tr>
         <tr><th scope="row"><a href="?p=6&amp;cons=4500">House: 6 kWp due south, 4,500 kWh/year</a></th><td>6,402 kWh</td><td>24%</td><td>5,742 €</td><td>5,058 €</td><td>9.1 years</td><td>11.6 years</td><td>+7,503 €</td><td>+7,331 €</td></tr>
         <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">House with heat pump and electric car: 10 kWp, 7 kWh battery, 10,000 kWh/year</a></th><td>10,670 kWh</td><td>43%</td><td>10,389 €</td><td>13,911 €</td><td>11.3 years</td><td>15.1 years</td><td>+16,146 €</td><td>+12,763 €</td></tr>
       </tbody>
-      <caption><b>Table 7.</b> Three profiles computed by the calculator's engine with the default assumptions of tool 2; option A = Klimabonus and surplus at market price, option B = 15-year guaranteed feed-in tariff without subsidy; net gain over 25 years undiscounted. Your figures depend on your roof, your consumption and your quote.</caption>
-    </table>
-  </div>
+      </table>
+    </div>
+    <figcaption><b>Table 7.</b> Three profiles computed by the calculator's engine with the default assumptions of tool 2; option A = Klimabonus and surplus at market price, option B = 15-year guaranteed feed-in tariff without subsidy; net gain over 25 years undiscounted. Your figures depend on your roof, your consumption and your quote.</figcaption>
+  </figure>
 </section>
 
 <section id="faq" class="faq">

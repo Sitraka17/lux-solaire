@@ -204,7 +204,6 @@
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
-  #tab-profils caption{caption-side:bottom}
   #tab-profils{font-size:11.5px}
   #tab-profils th,#tab-profils td{padding:5px 7px}
   #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.3}
@@ -651,17 +650,19 @@
     <span class="sec-note">Standardhypothese vum Tool 2</span>
   </div>
   <p class="lede">Dräi typesch Stéit, gerechent mat de Standardhypothesen (genee Südden, 35°, Kanton Lëtzebuerg, 1 800 €/kWp montéiert, gespuerte kWh zu 0,20 €, Iwwerschoss zu 0,05 € verkaaft, éischt Aspeisung 2027). Klickt op e Profil, fir en an de Rechner ze lueden an un Äre Fall unzepassen.</p>
-  <div class="card" style="overflow-x:auto">
-    <table class="mini" id="tab-profils">
+  <figure class="tab" style="margin-top:0">
+    <div class="card" style="overflow-x:auto">
+      <table class="mini" id="tab-profils">
       <thead><tr><th scope="col">Profil</th><th scope="col">Produktioun</th><th scope="col">Eegeverbrauch</th><th scope="col">Klimabonus</th><th scope="col">Rescht ze bezuelen (A)</th><th scope="col">Amortisatioun (A)</th><th scope="col">Amortisatioun (B)</th><th scope="col">Nettogewënn 25 Joer (A)</th><th scope="col">Nettogewënn 25 Joer (B)</th></tr></thead>
       <tbody>
         <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Klengt Daach: 3 kWp Südosten, 2 500 kWh/Joer</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Joer</td><td>15,5 Joer</td><td>+3 263 €</td><td>+2 634 €</td></tr>
         <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 kWp genee Südden, 4 500 kWh/Joer</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Joer</td><td>11,6 Joer</td><td>+7 503 €</td><td>+7 331 €</td></tr>
         <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mat Wärmepompel an Elektroauto: 10 kWp, Batterie vu 7 kWh, 10 000 kWh/Joer</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Joer</td><td>15,1 Joer</td><td>+16 146 €</td><td>+12 763 €</td></tr>
       </tbody>
-      <caption><b>Tabell 7.</b> Dräi Profiler, gerechent mam Motor vum Simulator a mat de Standardhypothese vum Tool 2; Optioun A = Klimabonus an Iwwerschoss zum Maartpräis, Optioun B = 15 Joer garantéierten Aspeistarif ouni Hëllef; Nettogewënn iwwer 25 Joer ouni Diskontéierung. Är Zuelen hänke vun Ärem Daach, Ärem Verbrauch an Ärem Devis of.</caption>
-    </table>
-  </div>
+      </table>
+    </div>
+    <figcaption><b>Tabell 7.</b> Dräi Profiler, gerechent mam Motor vum Simulator a mat de Standardhypothese vum Tool 2; Optioun A = Klimabonus an Iwwerschoss zum Maartpräis, Optioun B = 15 Joer garantéierten Aspeistarif ouni Hëllef; Nettogewënn iwwer 25 Joer ouni Diskontéierung. Är Zuelen hänke vun Ärem Daach, Ärem Verbrauch an Ärem Devis of.</figcaption>
+  </figure>
 </section>
 
 <section id="faq" class="faq">

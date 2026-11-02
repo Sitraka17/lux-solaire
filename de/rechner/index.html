@@ -204,7 +204,6 @@
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
-  #tab-profils caption{caption-side:bottom}
   #tab-profils{font-size:11.5px}
   #tab-profils th,#tab-profils td{padding:5px 7px}
   #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.3}
@@ -651,17 +650,19 @@
     <span class="sec-note">Standardannahmen von Werkzeug 2</span>
   </div>
   <p class="lede">Drei typische Haushalte, berechnet mit den Standardannahmen (genau Süd, 35°, Kanton Luxemburg, 1 800 €/kWp installiert, vermiedene kWh zu 0,20 €, Überschuss zu 0,05 € verkauft, erste Einspeisung 2027). Klicken Sie auf ein Profil, um es in den Rechner zu laden und an Ihren Fall anzupassen.</p>
-  <div class="card" style="overflow-x:auto">
-    <table class="mini" id="tab-profils">
+  <figure class="tab" style="margin-top:0">
+    <div class="card" style="overflow-x:auto">
+      <table class="mini" id="tab-profils">
       <thead><tr><th scope="col">Profil</th><th scope="col">Ertrag</th><th scope="col">Eigenverbrauch</th><th scope="col">Klimabonus</th><th scope="col">Restbetrag (A)</th><th scope="col">Amortisation (A)</th><th scope="col">Amortisation (B)</th><th scope="col">Nettogewinn 25 Jahre (A)</th><th scope="col">Nettogewinn 25 Jahre (B)</th></tr></thead>
       <tbody>
         <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Kleines Dach: 3 kWp Südost, 2 500 kWh/Jahr</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Jahre</td><td>15,5 Jahre</td><td>+3 263 €</td><td>+2 634 €</td></tr>
         <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 kWp genau Süd, 4 500 kWh/Jahr</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Jahre</td><td>11,6 Jahre</td><td>+7 503 €</td><td>+7 331 €</td></tr>
         <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mit Wärmepumpe und Elektroauto: 10 kWp, 7-kWh-Batterie, 10 000 kWh/Jahr</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Jahre</td><td>15,1 Jahre</td><td>+16 146 €</td><td>+12 763 €</td></tr>
       </tbody>
-      <caption><b>Tabelle 7.</b> Drei Profile, berechnet mit dem Rechenwerk des Simulators und den Standardannahmen von Werkzeug 2; Option A = Klimabonus und Überschuss zum Marktpreis, Option B = 15 Jahre garantierter Einspeisetarif ohne Förderung; Nettogewinn über 25 Jahre ohne Abzinsung. Ihre Zahlen hängen von Ihrem Dach, Ihrem Verbrauch und Ihrem Angebot ab.</caption>
-    </table>
-  </div>
+      </table>
+    </div>
+    <figcaption><b>Tabelle 7.</b> Drei Profile, berechnet mit dem Rechenwerk des Simulators und den Standardannahmen von Werkzeug 2; Option A = Klimabonus und Überschuss zum Marktpreis, Option B = 15 Jahre garantierter Einspeisetarif ohne Förderung; Nettogewinn über 25 Jahre ohne Abzinsung. Ihre Zahlen hängen von Ihrem Dach, Ihrem Verbrauch und Ihrem Angebot ab.</figcaption>
+  </figure>
 </section>
 
 <section id="faq" class="faq">
