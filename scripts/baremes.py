@@ -225,7 +225,20 @@ def check_page(html, lang, kind, b=None):
             v = n(m.group(1) or m.group(2))
             if not _eq(v, hm["aideMax"]):
                 bad("aide HEMS", m, f"{hm['aideMax']} €")
-        need = ["pv_formule", "batt_formule", "pv_max", "batt_max", "tarif_petit", "tarif_grand", "tarif_seuil", "hems"]
+        # outil 3 (pompe à chaleur, 2/11/2026) : montants du Klimabonus PAC et ballon tampon exigé
+        kp = b["klimabonus_pac"]["valeur"]
+        pairs = {(kp["remplacement"], kp["remplacementMajore"]), (kp["sansRemplacement"], kp["sansRemplacementMajore"])}
+        for m in re.finditer(_CUR_L + _N + _CUR_R + r" \(" + _CUR_L + _N + _CUR_R +
+                             r" (?:pour une commande|for an order|bei Bestellung|bei enger Bestellung)", t):
+            seen.add("pac_montant")
+            if (n(m.group(1)), n(m.group(2))) not in pairs:
+                bad("Klimabonus pompe à chaleur", m, f"{sorted(pairs)}")
+        for m in re.finditer(_N + r" L (?:par|per|pro) kW", t):
+            seen.add("pac_ballon")
+            if not _eq(n(m.group(1)), kp["ballonLParKw"]):
+                bad("ballon tampon exigé", m, f"{kp['ballonLParKw']} L par kW thermique")
+        need = ["pv_formule", "batt_formule", "pv_max", "batt_max", "tarif_petit", "tarif_grand", "tarif_seuil", "hems",
+                "pac_montant", "pac_ballon"]
     else:
         tranches = {(x["taux"], x["plafond"]) for x in gm["tranches"]}
         full = {(x["taux"], x["deKwc"], x["aKwc"], x["plafond"]) for x in gm["tranches"]}

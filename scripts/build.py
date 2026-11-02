@@ -727,6 +727,38 @@ def sim_numbers(lang):
         "__BAT7HI__": _thousands(_jsround((7 * 1100 - baremes.kb_batt(7)) / 100) * 100, lang),
         "__TAR26__": _dec1(tar(6, 2026) * 100, lang),
         "__TAR27__": _dec1(tar(6, 2027) * 100, lang),
+        **heat_numbers(lang),
+    }
+
+
+def _decn(x, nd, lang):
+    """x à nd décimales fixes (virgule en FR/DE/LB, point en anglais)."""
+    s = f"{x:.{nd}f}"
+    return s if lang == "en" else s.replace(".", ",")
+
+
+def heat_numbers(lang):
+    """Chiffres de l'outil 3 (pompe à chaleur) cités dans la FAQ, la méthode et les aides, lus
+    dans scripts/baremes.json (2/11/2026) : Klimabonus PAC, prix des combustibles, CO2, COP."""
+    B = baremes.B
+    k, ch = B["klimabonus_pac"]["valeur"], B["modele_chaleur"]["valeur"]
+    cop, co2 = B["cop_pac"]["valeur"], B["co2_combustibles"]["valeur"]
+    th = lambda v: _thousands(_jsround(v), lang)
+    return {
+        "__KBPAC_R__": th(k["remplacement"]), "__KBPAC_RM__": th(k["remplacementMajore"]),
+        "__KBPAC_S__": th(k["sansRemplacement"]), "__KBPAC_SM__": th(k["sansRemplacementMajore"]),
+        "__KBPAC_CUVE__": th(k["cuveMazout"]), "__KBPAC_ZONE__": th(k["zoneEau"]),
+        "__KBPAC_DISTPCT__": th(k["distTaux"] * 100), "__KBPAC_DISTMAX__": th(k["distMax"]),
+        "__KBPAC_BALLON__": th(k["ballonLParKw"]), "__KBPAC_COP__": _decn(k["copMinA7W35"], 1, lang),
+        "__MAZOUT_L__": _decn(B["prix_mazout"]["valeur"]["eurParL"], 3, lang),
+        "__GAZ_ILR__": _decn(B["prix_gaz"]["valeur"]["ilr2025"] * 100, 2, lang),
+        "__GAZ_RET__": _decn(B["prix_gaz"]["valeur"]["retenu"] * 100, 1, lang),
+        "__ELEC_ACHAT__": _decn(B["prix_electricite"]["valeur"]["achat"], 2, lang),
+        "__CO2_GAZ__": _dec1(co2["gazPCS"] * 1000, lang), "__CO2_MAZ__": _dec1(co2["mazoutPCI"] * 1000, lang),
+        "__CO2_EL__": _dec1(B["co2_electricite"]["valeur"]["reseau"] * 1000, lang),
+        "__COP_A__": _decn(cop["a"], 2, lang), "__COP_B__": _decn(abs(cop["b"]), 2, lang),
+        "__COP_C__": _decn(cop["c"], 4, lang), "__COP_F__": _decn(cop["f"], 2, lang),
+        "__COP_DTMIN__": th(cop["dTmin"]), "__HORIZON_H__": th(ch["horizon"]),
     }
 
 

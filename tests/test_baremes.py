@@ -128,7 +128,9 @@ def test_page_simulateur_inline_les_baremes(root):
 
 SIM_OK = ("<p>l'aide vaut P × (1 155 − 33 × P) euros sous 15 kWc et 10 000 euros à partir de 15 kWc. "
           "Q × (500 − 500/18 × Q) euros, 2 250 € à partir de 9 kWh. Un système (HEMS) reçoit 500 €. "
-          "165 × 0,97<sup>n−2019</sup> €/MWh jusqu'à 10 kW, 155 × 0,97<sup>n−2019</sup> au-delà.</p>")
+          "165 × 0,97<sup>n−2019</sup> €/MWh jusqu'à 10 kW, 155 × 0,97<sup>n−2019</sup> au-delà. "
+          "L'État verse 10 000 € (12 000 € pour une commande passée du 1er janvier 2026 au 30 juin 2027), "
+          "sinon 6 000 € (8 000 € pour une commande passée dans la même période) ; ballon d'au moins 30 L par kW.</p>")
 DASH_OK = ("<p>(Klimabonus Gemengen, barème 2025 révisé chaque année) : 50 % des coûts entre 30 et 200 kWc "
            "(plafond 675 €/kWc), 45 % entre 200 et 500 kWc (505 €/kWc), 40 % entre 0,5 et 5 MWc (425 €/kWc) ; "
            "ombrière de parking : 45 % (990 €/kWc).</p>")
@@ -138,7 +140,8 @@ def test_controle_phrases_valides():
     assert baremes.check_page(SIM_OK, "fr", "sim") == []
     assert baremes.check_page(DASH_OK, "fr", "dash") == []
     en = ("P × (1,155 − 33 × P) €, €10,000 from 15 kWp; Q × (500 − 500/18 × Q) €, €2,250 from 9 kWh; "
-          "(HEMS) connected to two devices: €500. 165 × 0.97<sup>n−2019</sup> €/MWh up to 10 kW, 155 × 0.97<sup>n−2019</sup>")
+          "(HEMS) connected to two devices: €500. 165 × 0.97<sup>n−2019</sup> €/MWh up to 10 kW, 155 × 0.97<sup>n−2019</sup>. "
+          "€10,000 (€12,000 for an order placed in 2026), otherwise €6,000 (€8,000 for an order placed then); 30 L per kW.")
     assert baremes.check_page(en, "en", "sim") == []
 
 
@@ -146,6 +149,7 @@ def test_controle_phrases_valides():
     ("1 155 − 33", "1 200 − 33"), ("10 000 euros", "9 000 euros"), ("2 250 €", "2 000 €"),
     ("500/18", "500/20"), ("reçoit 500 €", "reçoit 600 €"), ("165 × 0,97", "160 × 0,97"),
     ("n−2019</sup> €/MWh jusqu'à 10", "n−2019</sup> €/MWh jusqu'à 12"), ("0,97<sup>n−2019</sup> au", "0,96<sup>n−2019</sup> au"),
+    ("(12 000 € pour", "(11 000 € pour"), ("sinon 6 000 €", "sinon 5 000 €"), ("30 L par kW", "25 L par kW"),
 ])
 def test_controle_phrases_simulateur_perimees(old, new):
     assert old in SIM_OK

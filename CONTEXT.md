@@ -432,7 +432,7 @@ une année météo type. **Partage public / privé** : le moteur ne contient que
 (Klimabonus PAC, prix des énergies, CO2) ; une aide locale (commune) est un paramètre GÉNÉRIQUE
 (`aidesLocales`), aucun barème communal n'est écrit ici (un test le vérifie). Le barème de
 Differdange, l'habillage et les textes destinés à une Ville restent dans `~/sitraka-communes`.
-Aucune page publique n'utilise encore ce volet (rien d'affiché, aucune phrase traduite).
+Depuis le 2/11/2026 (soir), l'outil 3 du simulateur l'affiche (voir la section suivante).
 
 - **Données** : le moteur ne lit AUCUN fichier. La série horaire est passée en paramètre :
   `serie = { t2m_dixiemes[8760] (°C × 10), pv_w_par_kwc[8760] (W par kWc, plan sud 35°) }`. Celle du
@@ -509,3 +509,35 @@ Aucune page publique n'utilise encore ce volet (rien d'affiché, aucune phrase t
   `tests/test_baremes.py` : structure, sources datées, valeurs et `kb_pac` comparé au moteur JS.
 - **Effet de bord** : l'objet `BAR` inliné dans les 4 pages du simulateur PV contient aussi ces
   barèmes (≈ 1,6 Ko de plus) ; le simulateur PV ne les lit pas.
+
+## Simulateur : outil 3 « Chauffage : pompe à chaleur et ballon tampon » (2/11/2026)
+
+- **Place** : section `#chauffage` APRÈS « Repères » et avant la FAQ, pour garder la numérotation dans l'ordre
+  (Tableau 5, Figure 3, Tableau 6 après les tableaux 1 à 4). En-tête : « trois outils », phrase « Outil 3 » ajoutée.
+- **Données** : `fetch('/data/annee_type.json')` au chargement (55 Ko) ; tant qu'elle manque, `#h-status`
+  (role=status) et résultats cachés ; message d'erreur si le chargement échoue. Lien de téléchargement dans
+  « Partager, citer, télécharger » et dans les sources (donc dans `functions/_allow.js`).
+- **Branchement** : `renderHeat(R, npvq)` appelé à la fin de `render()` ; `E.computeHeat(…, SERIE, BAR, G)` avec
+  la série PV remise à l'échelle du canton, de l'orientation et de l'inclinaison de l'outil 1. Case `hpv`
+  (« Avec le photovoltaïque ci-dessus », cochée) : reprend p, cost, batt, bcost, hems, hcost, haid, inv des
+  outils 1-2 (option A, Klimabonus) ; décochée, seuls A et C sont affichés. Prix de l'électricité achetée et
+  vendue, hausse de l'électricité et actualisation = ceux de l'outil 2 (surplus 0,05 par défaut, pas le 0,07 du
+  moteur). `remplacement` toujours vrai (l'outil part d'un chauffage existant à remplacer), `aidesLocales: []`.
+  Date de commande : select `hmaj` (1 = majorée, `commande = majoreCommandeA`).
+- **URL** : `hids` (20 champs) toujours écrits ; cases `hmod`, `hbufon`, `hpv` (défaut 1) et `hzone` (défaut 0)
+  écrites seulement si elles diffèrent du défaut. Changer d'énergie remet la consommation et le rendement par
+  défaut (gaz 2 000 m³, mazout 2 000 L, électrique 15 000 kWh ; 85/80/100 %).
+- **Aucune aide communale** : une phrase renvoie à « Pour les communes » (`__FORPATH__`, lien hors clé de
+  dictionnaire car le jeton est substitué avant la traduction). Diff Primes et habillage Differdange restent
+  dans `~/sitraka-communes`.
+- **Chiffres** : jetons `heat_numbers()` (build.py, depuis baremes.json) : `__KBPAC_*__`, `__MAZOUT_L__`,
+  `__GAZ_ILR__`, `__GAZ_RET__`, `__ELEC_ACHAT__`, `__CO2_*__`, `__COP_*__`, `__HORIZON_H__`. `check_page` contrôle
+  en plus les paires « 10 000 € (12 000 € pour une commande » / « 6 000 € (8 000 € … » (4 langues) et « 30 L par
+  kW » (motifs obligatoires `pac_montant`, `pac_ballon`). Écrits à la main (hypothèses de l'outil ou sources
+  datées non lues dans baremes.json) : fourchettes de prix PAC (Renov.lu 10/2026, 32 300 € L'essentiel
+  9/6/2026), ballon 1 000-3 500 € (Reduco 2026), valeurs du paragraphe « Calcul de l'outil 3 » (modele_chaleur),
+  dates de la majoration (1/1/2026-30/6/2027, facture 31/12/2028).
+- **FAQ** : 3 questions (montant Klimabonus PAC, rentabilité, ballon tampon), reprises dans le JSON-LD FAQPage.
+- **Vérifié** (Chrome sans tête, 2/11/2026) : 4 langues × mazout / gaz / électrique direct × 1 280 et 375 px :
+  aucune erreur JS (hors balise Cloudflare en local), aucun défilement horizontal de page (le tableau 5 défile
+  dans son bloc sur mobile), URL partagée = même résultat, aucun texte français resté en EN/DE/LB.
