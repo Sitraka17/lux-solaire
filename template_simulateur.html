@@ -327,12 +327,12 @@
         <legend>Votre devis</legend>
         <div class="fld">
           <label for="cost">Coût de l'installation photovoltaïque, TVA 3 % comprise</label>
-          <div class="row"><input type="range" id="cost-r" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
+          <div class="row"><input type="range" id="cost-r" aria-label="Coût par kWc de l'installation photovoltaïque" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
           <small id="cost-hint">soit 1 800 €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.</small>
         </div>
         <div class="fld" id="fld-bcost" hidden>
           <label for="bcost">Coût de la batterie, posée</label>
-          <div class="row"><input type="range" id="bcost-r" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
+          <div class="row"><input type="range" id="bcost-r" aria-label="Coût de la batterie par kWh" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
           <small id="bcost-hint">soit 900 €/kWh utile.</small>
         </div>
         <div class="fld">
@@ -345,7 +345,7 @@
         </div>
         <div class="fld">
           <label for="inv">Remplacement de l'onduleur (année 13)</label>
-          <div class="row"><input type="range" id="inv-r" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
+          <div class="row"><input type="range" id="inv-r" aria-label="Coût du remplacement de l'onduleur" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
           <small>Un onduleur dure 10 à 15 ans ; 800 à 2 000 € selon la puissance.</small>
         </div>
         <div class="fld">
@@ -745,7 +745,7 @@
   <h3 id="methode">Méthode et sources</h3>
   <p>Ce simulateur est une aide à la décision, pas un devis : il ne connaît ni l'ombrage de votre toit, ni votre profil horaire de consommation, ni votre contrat. Il ne vend rien et ne transmet aucune donnée : tout est calculé dans votre navigateur. Les hypothèses sont affichées, modifiables et datées ; signalez-nous toute évolution réglementaire.</p>
   <p><strong>Calcul.</strong> Production = puissance × productible PVGIS (orientation, inclinaison) × facteur du canton, répartie par mois selon le profil PVGIS de Luxembourg-Ville. Part autoconsommée sans batterie = 30 % × (production ÷ consommation)<sup>−0,6</sup>, bornée entre 10 et 90 % ; une batterie de Q kWh ajoute 35 % × (1 − e<sup>−Q ÷ (0,5 × consommation journalière)</sup>). Gain annuel = kWh autoconsommés × valeur du kWh évité (indexée de la hausse choisie) + kWh injectés × prix du surplus (option A) ou tarif garanti pendant 15 ans puis prix du surplus (option B). La production baisse du taux de vieillissement choisi ; l'onduleur est remplacé à l'année 13. Retour sur investissement = première année où la trésorerie cumulée redevient positive (interpolée) ; gain net = trésorerie cumulée à 25 ans en euros courants, non actualisée par défaut (avec un taux d'actualisation : somme des flux actualisés ; le retour sur investissement et la figure 2 restent non actualisés) ; TRI = taux qui annule la valeur actuelle des flux. Aucun coût d'entretien ni d'assurance n'est compté. La formule de la part autoconsommée est une heuristique propre à ce simulateur, calée sur l'ordre de grandeur de 30 % sans batterie, sans référence publiée. La batterie n'est ni remplacée ni dégradée sur 25 ans : avec une batterie, le résultat est optimiste. Le HEMS optionnel est compté comme un coût et, en option A seulement, avec son aide ; son effet sur la part autoconsommée n'est pas modélisé.</p>
-  <p><strong>Calcul de l'outil 3 (chauffage).</strong> Hypothèses de l'outil, sauf mention contraire. Besoin de chaleur utile = consommation × rendement de l'installation actuelle (gaz : 10,6 kWh par m³ facturé ; mazout : 10 kWh par litre), ou surface × besoin par m² selon l'époque de construction ; eau chaude : 800 kWh par personne et par an, au plus 40 % du total. Le chauffage est réparti heure par heure au prorata des degrés-heures sous 15 °C de l'année météo type, l'eau chaude et les autres usages selon des profils journaliers fixes. COP horaire de la pompe à chaleur = __COP_F__ × (__COP_A__ − __COP_B__ ΔT + __COP_C__ ΔT²), au moins 1, ΔT étant l'écart entre la température de départ et la température extérieure T, d'au moins __COP_DTMIN__ °C (formule de Ruhnau et al., 2019, facteur de correction compris) ; départ à 40 − T °C (radiateurs) ou 30 − 0,5 × T °C (plancher chauffant), eau chaude à 50 °C ; un appoint électrique direct couvre ce que la puissance disponible ne couvre pas. Le ballon tampon est chauffé 15 °C au-dessus du départ avec le surplus solaire (1,163 Wh par litre et par °C, pertes de 1 % par heure) et rend sa chaleur quand les panneaux ne suffisent plus. Batterie : 90 % de rendement aller-retour, 0,5 kW par kWh, 5 kW au plus. Facture = combustible + électricité achetée − surplus vendu + entretien (chaudière 200 €/an, pompe à chaleur 150 €/an) ; le combustible augmente selon la hausse choisie, l'électricité selon l'outil 2 ; avec des panneaux, l'onduleur est remplacé à l'année 13. Retour sur investissement et gain net = écart de dépense avec le chauffage actuel sur __HORIZON_H__ ans. Limites : une seule année météo, pas de vieillissement des panneaux ni de remplacement de la batterie dans cet outil, maison unifamiliale seulement, abonnement au gaz supprimé non compté, primes communales non comptées.</p>
+  <p><strong>Calcul de l'outil 3 (chauffage).</strong> Hypothèses de l'outil, sauf mention contraire. Besoin de chaleur utile = consommation × rendement de l'installation actuelle (gaz : 10,6 kWh par m³ facturé ; mazout : 10 kWh par litre), ou surface × besoin par m² selon l'époque de construction ; eau chaude : 800 kWh par personne et par an, au plus 40 % du total. Le chauffage est réparti heure par heure au prorata des degrés-heures sous 15 °C de l'année météo type, l'eau chaude et les autres usages selon des profils journaliers fixes. COP horaire de la pompe à chaleur = __COP_F__ × (__COP_A__ − __COP_B__ ΔT + __COP_C__ ΔT²), au moins 1, ΔT étant l'écart entre la température de départ et la température extérieure T, d'au moins __COP_DTMIN__ °C (seuil : hypothèse de l'outil, Ruhnau et al. retiennent 15 °C ; formule de Ruhnau et al., 2019, facteur de correction compris) ; départ à 40 − T °C (radiateurs) ou 30 − 0,5 × T °C (plancher chauffant), eau chaude à 50 °C ; un appoint électrique direct couvre ce que la puissance disponible ne couvre pas. Le ballon tampon est chauffé 15 °C au-dessus du départ avec le surplus solaire (1,163 Wh par litre et par °C, pertes de 1 % par heure) et rend sa chaleur quand les panneaux ne suffisent plus. Batterie : 90 % de rendement aller-retour, 0,5 kW par kWh, 5 kW au plus. Facture = combustible + électricité achetée − surplus vendu + entretien (chaudière 200 €/an, pompe à chaleur 150 €/an) ; le combustible augmente selon la hausse choisie, l'électricité selon l'outil 2 ; avec des panneaux, l'onduleur est remplacé à l'année 13. Retour sur investissement et gain net = écart de dépense avec le chauffage actuel sur __HORIZON_H__ ans. Limites : une seule année météo, pas de vieillissement des panneaux ni de remplacement de la batterie dans cet outil, maison unifamiliale seulement, abonnement au gaz supprimé non compté, primes communales non comptées.</p>
   <ol>
     <li>Productible : <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centre commun de recherche (JRC), Commission européenne, base d'irradiation SARAH3 (2005-2023), système fixe, pertes 14 %, horizon calculé ; requêtes du 23 octobre 2026 pour Luxembourg-Ville (49,61 N ; 6,13 E) et le centre de chaque canton (<a href="/data/pvgis.json">données</a>).</li>
     <li>Klimabonus : <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">Aide financière pour les installations techniques qui valorisent les sources d'énergies renouvelables (Klimabonus régime 2026)</a>, guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026 ; loi du 24 juillet 2026 relative au régime d'aides pour la promotion de la durabilité, de l'utilisation rationnelle de l'énergie et des énergies renouvelables dans le domaine du logement.</li>
@@ -853,6 +853,8 @@ const compute = () => E.compute(I, G, BAR);
 /* largeur de dessin d'une figure : sous `min` px de cadre (mobile), le SVG est
    dessiné à la largeur réelle (texte à taille réelle, sans défilement) */
 const figW=(id,def,min)=>{const w=$(id).clientWidth; return (w>0&&w<min)?Math.max(280,Math.round(w)):def;};
+// pas des graduations : 1, 2, 5 ou 2,5 × 10^n, au plus `max` intervalles (lisible à 375 px)
+const niceStep=(lo,hi,max)=>{let s=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2; const m=[2,2.5,2]; let i=0; while(Math.ceil(hi/s)-Math.floor(lo/s)>max) s*=m[i++%3]; return s;};
 function render(){
   read();
   // couplages : coût ↔ €/kWc, batterie ↔ coût batterie
@@ -949,7 +951,7 @@ function render(){
   (function(){
     const W=figW('fig-cash',720,520), nar=W<720, H=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H-mT-mB;
     const all=[...R.A.cum,...R.B.cum], lo=Math.min(0,...all), hi=Math.max(0,...all);
-    const step=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2;
+    const step=niceStep(lo,hi,8);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
     const x=i=>mL+iw*i/25, y=v=>mT+ih*(1-(v-y0)/(y1-y0));
     let g='';
@@ -965,7 +967,7 @@ function render(){
     [[R.A,css('--amber-deep')],[R.B,'#1D2734']].forEach(([r,c])=>{
       if(r.pb!==null && r.pb>0) g+=`<circle cx="${x(r.pb)}" cy="${y(0)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
       const last=r.cum[25], below=close && ((r===R.B)===lowB);
-      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
+      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${r===R.A?css('--amber-text'):c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
     });
     $('fig-cash').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figCash}">${g}</svg>`;
   })();
@@ -1104,9 +1106,10 @@ function renderHeat(R, npvq){
   // figure 3 : dépense cumulée
   const COL={A:'#5A6472',B:css('--hydro'),C:css('--green'),D:css('--amber-deep')};
   (function(){
-    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H2-mT-mB;
+    // marge droite réservée aux montants finaux, hors des courbes
+    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?260:280, mL=nar?50:56,mR=nar?68:80,mT=14,mB=30, iw=W-mL-mR, ih=H2-mT-mB;
     const all=cols.flatMap(k=>S[k].cum), lo=Math.min(0,...all), hi=Math.max(0,...all);
-    const step=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2;
+    const step=niceStep(lo,hi,7);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
     const x=i=>mL+iw*i/Y, y=v=>mT+ih*(1-(v-y0)/(y1-y0));
     let g='';
@@ -1116,11 +1119,14 @@ function renderHeat(R, npvq){
     }
     for(let i=0;i<=Y;i+=5) g+=`<text x="${x(i)}" y="${H2-10}" text-anchor="${i===0?'start':i===Y?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}</text>`;
     cols.forEach(k=>{ g+=`<path d="${S[k].cum.map((vv,i)=>(i?'L':'M')+x(i)+','+y(vv)).join(' ')}" fill="none" stroke="${COL[k]}" stroke-width="${k==='A'?2:2.4}"${k==='A'?' stroke-dasharray="6 4"':''} stroke-linejoin="round"/>`; });
-    // valeurs finales : chacune sous la précédente si elles se chevauchent
-    let lastY=-1e9;
-    cols.map(k=>[k,S[k].cum[Y]]).sort((a,b)=>b[1]-a[1]).forEach(([k,vv])=>{
-      let yy=y(vv)-6; if(yy<lastY+14) yy=lastY+14; lastY=yy;
-      g+=`<text x="${x(Y)-6}" y="${yy}" text-anchor="end" font-size="12" font-weight="700" fill="${COL[k]}" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
+    // valeurs finales dans la marge droite : écart minimal de 15 px À L'ÉCRAN (le SVG est mis à l'échelle)
+    const cw=$('fig-heat').clientWidth, sc=cw>0?Math.min(1,cw/W):1, gap=15/sc, fs=nar?11:12;
+    const lab=cols.map(k=>[k,S[k].cum[Y]]).sort((a,b)=>b[1]-a[1]).map(([k,vv])=>({k,vv,yy:y(vv)+4}));
+    lab.forEach((l,i)=>{ if(i&&l.yy<lab[i-1].yy+gap) l.yy=lab[i-1].yy+gap; });
+    for(let i=lab.length-1, lim=H2-mB+12;i>=0;i--){ if(lab[i].yy>lim) lab[i].yy=lim; lim=lab[i].yy-gap; }
+    lab.forEach(({k,vv,yy})=>{
+      g+=`<line x1="${x(Y)}" x2="${x(Y)+4}" y1="${y(vv)}" y2="${yy-4}" stroke="${COL[k]}" stroke-width="1"/>`;
+      g+=`<text x="${x(Y)+6}" y="${yy}" text-anchor="start" font-size="${fs}" font-weight="700" fill="${k==='D'?css('--amber-text'):COL[k]}" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
     });
     $('fig-heat').innerHTML=`<svg viewBox="0 0 ${W} ${H2}"${nar?' style="min-width:0"':''} role="img" aria-label="${LH.figHeat}">${g}</svg>`;
     $('leg-heat').innerHTML=cols.map(k=>`<span><span class="sw" style="background:${COL[k]}"></span>${name[k]}</span>`).join('');

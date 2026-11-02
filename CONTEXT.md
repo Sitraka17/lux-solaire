@@ -426,9 +426,8 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
 ## Moteur du simulateur : chauffage (`computeHeat`, 2/11/2026)
 
 `sim-engine.js` couvre aussi le remplacement d'une chaudière par une pompe à chaleur (PAC) air-eau,
-avec ou sans panneaux, batterie, HEMS et ballon tampon. Formules reprises de la maquette PAC privée
-du 1/11/2026 (`~/differdange-pilote/maquette-pac/`, non versionnée), simulation heure par heure sur
-une année météo type. **Partage public / privé** : le moteur ne contient que les règles NATIONALES
+avec ou sans panneaux, batterie, HEMS et ballon tampon. Simulation heure par heure sur une année
+météo type (formules établies le 1/11/2026, hypothèses de l'outil sauf barèmes sourcés ci-dessous). **Partage public / privé** : le moteur ne contient que les règles NATIONALES
 (Klimabonus PAC, prix des énergies, CO2) ; une aide locale (commune) est un paramètre GÉNÉRIQUE
 (`aidesLocales`), aucun barème communal n'est écrit ici (un test le vérifie). Le barème de
 Differdange, l'habillage et les textes destinés à une Ville restent dans `~/sitraka-communes`.
@@ -494,14 +493,13 @@ Depuis le 2/11/2026 (soir), l'outil 3 du simulateur l'affiche (voir la section s
   net du surplus qui n'est plus vendu (`ballon.gainNet`), pour 1 800 € : il ne se rembourse pas seul.
   Le Klimabonus ne l'exige d'ailleurs pas pour une PAC à modulation.
 - **Cas type gaz** (maison de 140 m² des années 1980, 2 000 m³/an, 8 kWc à 1 800 €/kWc, PAC 9 kW à
-  22 000 €, ballon 300 L à 1 800 €, HEMS 1 000 € aidé 500 €, commande le 15/11/2026, aide locale
-  générique de 50 % de l'aide de l'État plafonnée à 5 000 € PAC et PV) : D remboursé en **5,6 ans**,
-  CO2 **−73 %** (série de Luxembourg-Ville : 5,60 ans, −73,1 %). Contrôle : sur la série de la
-  maquette, le moteur reproduit la maquette à 1e-10 près sur 7 variantes (gaz, mazout, batterie,
-  surface, plancher sans ballon, sans aide locale avec chaudière évitée, mazout avec distribution).
-  Écart expliqué : la maquette affiche −72 % parce qu'elle prend 0,227 kg/kWh PCI × 0,9 = 0,204 par
-  kWh PCS pour le gaz ; le facteur relu (Base Carbone v23.9) est 0,2154 par kWh PCS, d'où −73 %.
-  Sans aide locale, D se rembourse en ≈ 9,4 ans (9,3 sur la série de la maquette).
+  22 000 €, ballon 300 L à 1 800 €, HEMS 1 000 € aidé 500 €, commande le 15/11/2026) : sans aide
+  locale, D se rembourse en **≈ 9,4 ans**, CO2 **−73 %** (série de Luxembourg-Ville, −73,1 %). Avec
+  l'aide locale FICTIVE des tests (30 % de l'aide de l'État sur la PAC plafonnés à 2 000 €, 20 % sur
+  les panneaux plafonnés à 1 000 €) : ≈ 8,1 ans. Aucun barème communal réel ici : le contrôle de
+  concordance avec le calcul de référence privé (à 1e-10 près, 7 variantes) est dans
+  `~/sitraka-communes/tests/moteur.test.mjs`. Facteur gaz retenu : 0,2154 kgCO2e par kWh PCS (Base
+  Carbone v23.9), et non 0,227 par kWh PCI × 0,9 = 0,204 par kWh PCS (ce qui donnerait −72 %).
 - **Limites** : une seule année météo, pas de dégradation des panneaux ni de remplacement de la
   batterie dans ce volet, factures non actualisées (seul `gain` l'est avec `disc`), maison
   unifamiliale seulement pour le Klimabonus PAC, abonnement gaz supprimé non compté.

@@ -327,12 +327,12 @@
         <legend>Your quote</legend>
         <div class="fld">
           <label for="cost">Cost of the PV system, including 3% VAT</label>
-          <div class="row"><input type="range" id="cost-r" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
+          <div class="row"><input type="range" id="cost-r" aria-label="Photovoltaic system cost per kWp" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
           <small id="cost-hint">i.e. €1,800/kWp. 2026 quotes observed: €1,600 to €2,200/kWp for 6 to 15 kWp, installed.</small>
         </div>
         <div class="fld" id="fld-bcost" hidden>
           <label for="bcost">Battery cost, installed</label>
-          <div class="row"><input type="range" id="bcost-r" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
+          <div class="row"><input type="range" id="bcost-r" aria-label="Battery cost per kWh" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
           <small id="bcost-hint">i.e. €900 per usable kWh.</small>
         </div>
         <div class="fld">
@@ -345,7 +345,7 @@
         </div>
         <div class="fld">
           <label for="inv">Inverter replacement (year 13)</label>
-          <div class="row"><input type="range" id="inv-r" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
+          <div class="row"><input type="range" id="inv-r" aria-label="Inverter replacement cost" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
           <small>An inverter lasts 10 to 15 years; €800 to €2,000 depending on power.</small>
         </div>
         <div class="fld">
@@ -745,7 +745,7 @@
   <h3 id="methode">Method and sources</h3>
   <p>This calculator is a decision aid, not a quote: it knows neither your roof's shading, nor your hourly consumption profile, nor your contract. It sells nothing and sends no data: everything is computed in your browser. The assumptions are displayed, adjustable and dated; please report any regulatory change to us.</p>
   <p><strong>Calculation.</strong> Production = power × PVGIS yield (orientation, pitch) × canton factor, spread by month along the PVGIS profile for Luxembourg City. Self-consumed share without battery = 30% × (production ÷ consumption)<sup>−0.6</sup>, bounded between 10 and 90%; a battery of Q kWh adds 35% × (1 − e<sup>−Q ÷ (0.5 × daily consumption)</sup>). Annual gain = self-consumed kWh × value of the avoided kWh (indexed by the chosen rise) + kWh fed in × surplus price (option A) or guaranteed tariff for 15 years then surplus price (option B). Production declines at the chosen ageing rate; the inverter is replaced in year 13. Payback time = first year in which the cumulative cash flow turns positive (interpolated); net gain = cumulative cash flow at 25 years in nominal euros, undiscounted by default (with a discount rate: sum of the discounted flows; payback time and figure 2 remain undiscounted); IRR = rate that sets the present value of the flows to zero. No maintenance or insurance cost is counted. The self-consumption formula is a heuristic specific to this calculator, set to the order of magnitude of 30% without a battery, with no published reference. The battery is neither replaced nor degraded over 25 years: with a battery, the result is optimistic. The optional HEMS is counted as a cost and, in option A only, with its subsidy; its effect on the self-consumed share is not modelled.</p>
-  <p><strong>Tool 3 calculation (heating).</strong> Tool assumptions unless stated otherwise. Useful heat demand = consumption × efficiency of the current system (gas: 10.6 kWh per billed m³; heating oil: 10 kWh per litre), or floor area × demand per m² by construction period; hot water: 800 kWh per person per year, at most 40% of the total. Space heating is spread hour by hour in proportion to the degree-hours below 15 °C of the typical weather year, hot water and other uses along fixed daily profiles. Hourly heat pump COP = 0.85 × (6.08 − 0.09 ΔT + 0.0005 ΔT²), at least 1, where ΔT is the gap between the flow temperature and the outdoor temperature T, taken as at least 10 °C (formula of Ruhnau et al., 2019, correction factor included); flow at 40 − T °C (radiators) or 30 − 0.5 × T °C (underfloor heating), hot water at 50 °C; a direct electric back-up covers whatever the available output does not. The buffer tank is heated 15 °C above the flow temperature with the solar surplus (1.163 Wh per litre per °C, losses of 1% per hour) and releases its heat when the panels no longer suffice. Battery: 90% round-trip efficiency, 0.5 kW per kWh, 5 kW at most. Bill = fuel + electricity bought − surplus sold + maintenance (boiler €200/year, heat pump €150/year); fuel rises at the chosen rate, electricity as in tool 2; with panels, the inverter is replaced in year 13. Payback and net gain = spending difference with the current heating over 20 years. Limits: a single weather year, no panel ageing or battery replacement in this tool, single-family houses only, cancelled gas standing charge not counted, municipal grants not counted.</p>
+  <p><strong>Tool 3 calculation (heating).</strong> Tool assumptions unless stated otherwise. Useful heat demand = consumption × efficiency of the current system (gas: 10.6 kWh per billed m³; heating oil: 10 kWh per litre), or floor area × demand per m² by construction period; hot water: 800 kWh per person per year, at most 40% of the total. Space heating is spread hour by hour in proportion to the degree-hours below 15 °C of the typical weather year, hot water and other uses along fixed daily profiles. Hourly heat pump COP = 0.85 × (6.08 − 0.09 ΔT + 0.0005 ΔT²), at least 1, where ΔT is the gap between the flow temperature and the outdoor temperature T, taken as at least 10 °C (threshold: tool assumption, Ruhnau et al. use 15 °C; formula of Ruhnau et al., 2019, correction factor included); flow at 40 − T °C (radiators) or 30 − 0.5 × T °C (underfloor heating), hot water at 50 °C; a direct electric back-up covers whatever the available output does not. The buffer tank is heated 15 °C above the flow temperature with the solar surplus (1.163 Wh per litre per °C, losses of 1% per hour) and releases its heat when the panels no longer suffice. Battery: 90% round-trip efficiency, 0.5 kW per kWh, 5 kW at most. Bill = fuel + electricity bought − surplus sold + maintenance (boiler €200/year, heat pump €150/year); fuel rises at the chosen rate, electricity as in tool 2; with panels, the inverter is replaced in year 13. Payback and net gain = spending difference with the current heating over 20 years. Limits: a single weather year, no panel ageing or battery replacement in this tool, single-family houses only, cancelled gas standing charge not counted, municipal grants not counted.</p>
   <ol>
     <li>Yield: <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank" rel="noopener">PVGIS 5.3</a>, Joint Research Centre (JRC), European Commission, SARAH3 irradiation database (2005-2023), fixed system, 14% losses, computed horizon; queries of 23 October 2026 for Luxembourg City (49.61 N; 6.13 E) and the centre of each canton (<a href="/data/pvgis.json">data</a>).</li>
     <li>Klimabonus: <a href="https://guichet.public.lu/en/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">Financial aid for technical installations using renewable energy sources (Klimabonus 2026 scheme)</a>, guichet.lu, page updated 11 August 2026, accessed 2 November 2026; law of 24 July 2026 on the aid scheme promoting sustainability, rational energy use and renewable energy in housing.</li>
@@ -779,7 +779,7 @@
 </footer>
 </div>
 
-<script src="/sim-engine.js?v=11cd7ec6bf"></script>
+<script src="/sim-engine.js?v=8ada632755"></script>
 <script>
 const G = {"source": "PVGIS 5.3, JRC (Commission européenne)", "url": "https://re.jrc.ec.europa.eu/pvg_tools/fr/", "radiation_db": "PVGIS-SARAH3", "years": [2005, 2023], "system_loss_pct": 14, "center": {"name": "Luxembourg-Ville", "lat": 49.61, "lon": 6.13}, "azimuths": [-90, -60, -45, -30, 0, 30, 45, 60, 90], "tilts": [0, 10, 20, 30, 35, 40, 50, 60, 90], "grid": {"-90:10": 908, "-90:20": 897, "-90:30": 880, "-90:35": 868, "-90:40": 853, "-90:50": 815, "-90:60": 765, "-90:90": 549, "-60:10": 946, "-60:20": 968, "-60:30": 976, "-60:35": 974, "-60:40": 967, "-60:50": 941, "-60:60": 897, "-60:90": 665, "-45:10": 962, "-45:20": 996, "-45:30": 1013, "-45:35": 1014, "-45:40": 1010, "-45:50": 988, "-45:60": 944, "-45:90": 707, "-30:10": 974, "-30:20": 1017, "-30:30": 1040, "-30:35": 1044, "-30:40": 1042, "-30:50": 1022, "-30:60": 980, "-30:90": 730, "0:0": 912, "0:10": 983, "0:20": 1033, "0:30": 1061, "0:35": 1067, "0:40": 1066, "0:50": 1047, "0:60": 1004, "0:90": 741, "30:10": 972, "30:20": 1014, "30:30": 1036, "30:35": 1039, "30:40": 1036, "30:50": 1014, "30:60": 971, "30:90": 721, "45:10": 960, "45:20": 992, "45:30": 1006, "45:35": 1006, "45:40": 1001, "45:50": 977, "45:60": 933, "45:90": 696, "60:10": 944, "60:20": 963, "60:30": 968, "60:35": 964, "60:40": 957, "60:50": 928, "60:60": 884, "60:90": 655, "90:10": 905, "90:20": 890, "90:30": 869, "90:35": 856, "90:40": 840, "90:50": 801, "90:60": 751, "90:90": 540}, "monthly_ref": [35, 55, 96, 122, 129, 130, 132, 120, 107, 71, 37, 32], "cantons": {"Capellen": {"E_y": 1084, "factor": 1.016}, "Clervaux": {"E_y": 1034, "factor": 0.969}, "Diekirch": {"E_y": 1066, "factor": 0.999}, "Echternach": {"E_y": 1065, "factor": 0.998}, "Esch": {"E_y": 1086, "factor": 1.018}, "Grevenmacher": {"E_y": 1072, "factor": 1.005}, "Luxembourg": {"E_y": 1067, "factor": 1.0}, "Mersch": {"E_y": 1061, "factor": 0.994}, "Redange": {"E_y": 1073, "factor": 1.006}, "Remich": {"E_y": 1078, "factor": 1.01}, "Vianden": {"E_y": 1050, "factor": 0.984}, "Wiltz": {"E_y": 1036, "factor": 0.971}}};
 const D = {"meta": {"pv_mw": 825.8, "total_mw": 1275.8, "pv_n": 38187, "growth12_mw": 175.5, "since_year_end": {"base": "2025 Q4", "pv_mw": 80.4, "pv_n": 4937}, "date": "2 November 2026", "date_iso": "2026-11-02", "median_share": 93.2, "full_pv_communes": 23, "top_records": [{"c": "Junglinster", "kw": 4999.7}, {"c": "Differdange", "kw": 4999.2}, {"c": "Käerjeng", "kw": 4998.0}, {"c": "Sanem", "kw": 4996.5}]}, "cantons": [{"k": "Clervaux", "pv": 85292.6, "n": 2504, "pop": 22423, "tot": 189780.6, "wpc": 3804, "ipk": 111.7, "share": 44.9}, {"k": "Vianden", "pv": 16673.8, "n": 487, "pop": 5856, "tot": 24111.8, "wpc": 2847, "ipk": 83.2, "share": 69.2}, {"k": "Redange", "pv": 59723.7, "n": 2812, "pop": 21812, "tot": 89089.1, "wpc": 2738, "ipk": 128.9, "share": 67.0}, {"k": "Grevenmacher", "pv": 77755.9, "n": 2958, "pop": 34461, "tot": 93000.4, "wpc": 2256, "ipk": 85.8, "share": 83.6}, {"k": "Mersch", "pv": 82860.9, "n": 2945, "pop": 37424, "tot": 101666.6, "wpc": 2214, "ipk": 78.7, "share": 81.5}, {"k": "Wiltz", "pv": 35762.8, "n": 1723, "pop": 20623, "tot": 66017.6, "wpc": 1734, "ipk": 83.5, "share": 54.2}, {"k": "Echternach", "pv": 34784.9, "n": 1703, "pop": 20736, "tot": 43986.9, "wpc": 1678, "ipk": 82.1, "share": 79.1}, {"k": "Remich", "pv": 37096.8, "n": 1882, "pop": 24844, "tot": 65594.8, "wpc": 1493, "ipk": 75.8, "share": 56.6}, {"k": "Capellen", "pv": 84186.2, "n": 4647, "pop": 57336, "tot": 99395.0, "wpc": 1468, "ipk": 81.0, "share": 84.7}, {"k": "Diekirch", "pv": 41629.5, "n": 2097, "pop": 36670, "tot": 90550.8, "wpc": 1135, "ipk": 57.2, "share": 46.0}, {"k": "Esch", "pv": 159233.1, "n": 7501, "pop": 198114, "tot": 261503.4, "wpc": 804, "ipk": 37.9, "share": 60.9}, {"k": "Luxembourg", "pv": 110816.2, "n": 6928, "pop": 215968, "tot": 151142.8, "wpc": 513, "ipk": 32.1, "share": 73.3}]};
@@ -853,6 +853,8 @@ const compute = () => E.compute(I, G, BAR);
 /* largeur de dessin d'une figure : sous `min` px de cadre (mobile), le SVG est
    dessiné à la largeur réelle (texte à taille réelle, sans défilement) */
 const figW=(id,def,min)=>{const w=$(id).clientWidth; return (w>0&&w<min)?Math.max(280,Math.round(w)):def;};
+// pas des graduations : 1, 2, 5 ou 2,5 × 10^n, au plus `max` intervalles (lisible à 375 px)
+const niceStep=(lo,hi,max)=>{let s=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2; const m=[2,2.5,2]; let i=0; while(Math.ceil(hi/s)-Math.floor(lo/s)>max) s*=m[i++%3]; return s;};
 function render(){
   read();
   // couplages : coût ↔ €/kWc, batterie ↔ coût batterie
@@ -949,7 +951,7 @@ function render(){
   (function(){
     const W=figW('fig-cash',720,520), nar=W<720, H=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H-mT-mB;
     const all=[...R.A.cum,...R.B.cum], lo=Math.min(0,...all), hi=Math.max(0,...all);
-    const step=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2;
+    const step=niceStep(lo,hi,8);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
     const x=i=>mL+iw*i/25, y=v=>mT+ih*(1-(v-y0)/(y1-y0));
     let g='';
@@ -965,7 +967,7 @@ function render(){
     [[R.A,css('--amber-deep')],[R.B,'#1D2734']].forEach(([r,c])=>{
       if(r.pb!==null && r.pb>0) g+=`<circle cx="${x(r.pb)}" cy="${y(0)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
       const last=r.cum[25], below=close && ((r===R.B)===lowB);
-      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
+      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${r===R.A?css('--amber-text'):c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
     });
     $('fig-cash').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figCash}">${g}</svg>`;
   })();
@@ -1104,9 +1106,10 @@ function renderHeat(R, npvq){
   // figure 3 : dépense cumulée
   const COL={A:'#5A6472',B:css('--hydro'),C:css('--green'),D:css('--amber-deep')};
   (function(){
-    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H2-mT-mB;
+    // marge droite réservée aux montants finaux, hors des courbes
+    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?260:280, mL=nar?50:56,mR=nar?68:80,mT=14,mB=30, iw=W-mL-mR, ih=H2-mT-mB;
     const all=cols.flatMap(k=>S[k].cum), lo=Math.min(0,...all), hi=Math.max(0,...all);
-    const step=Math.pow(10,Math.floor(Math.log10(hi-lo||1)))/2;
+    const step=niceStep(lo,hi,7);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
     const x=i=>mL+iw*i/Y, y=v=>mT+ih*(1-(v-y0)/(y1-y0));
     let g='';
@@ -1116,11 +1119,14 @@ function renderHeat(R, npvq){
     }
     for(let i=0;i<=Y;i+=5) g+=`<text x="${x(i)}" y="${H2-10}" text-anchor="${i===0?'start':i===Y?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}</text>`;
     cols.forEach(k=>{ g+=`<path d="${S[k].cum.map((vv,i)=>(i?'L':'M')+x(i)+','+y(vv)).join(' ')}" fill="none" stroke="${COL[k]}" stroke-width="${k==='A'?2:2.4}"${k==='A'?' stroke-dasharray="6 4"':''} stroke-linejoin="round"/>`; });
-    // valeurs finales : chacune sous la précédente si elles se chevauchent
-    let lastY=-1e9;
-    cols.map(k=>[k,S[k].cum[Y]]).sort((a,b)=>b[1]-a[1]).forEach(([k,vv])=>{
-      let yy=y(vv)-6; if(yy<lastY+14) yy=lastY+14; lastY=yy;
-      g+=`<text x="${x(Y)-6}" y="${yy}" text-anchor="end" font-size="12" font-weight="700" fill="${COL[k]}" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
+    // valeurs finales dans la marge droite : écart minimal de 15 px À L'ÉCRAN (le SVG est mis à l'échelle)
+    const cw=$('fig-heat').clientWidth, sc=cw>0?Math.min(1,cw/W):1, gap=15/sc, fs=nar?11:12;
+    const lab=cols.map(k=>[k,S[k].cum[Y]]).sort((a,b)=>b[1]-a[1]).map(([k,vv])=>({k,vv,yy:y(vv)+4}));
+    lab.forEach((l,i)=>{ if(i&&l.yy<lab[i-1].yy+gap) l.yy=lab[i-1].yy+gap; });
+    for(let i=lab.length-1, lim=H2-mB+12;i>=0;i--){ if(lab[i].yy>lim) lab[i].yy=lim; lim=lab[i].yy-gap; }
+    lab.forEach(({k,vv,yy})=>{
+      g+=`<line x1="${x(Y)}" x2="${x(Y)+4}" y1="${y(vv)}" y2="${yy-4}" stroke="${COL[k]}" stroke-width="1"/>`;
+      g+=`<text x="${x(Y)+6}" y="${yy}" text-anchor="start" font-size="${fs}" font-weight="700" fill="${k==='D'?css('--amber-text'):COL[k]}" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
     });
     $('fig-heat').innerHTML=`<svg viewBox="0 0 ${W} ${H2}"${nar?' style="min-width:0"':''} role="img" aria-label="${LH.figHeat}">${g}</svg>`;
     $('leg-heat').innerHTML=cols.map(k=>`<span><span class="sw" style="background:${COL[k]}"></span>${name[k]}</span>`).join('');

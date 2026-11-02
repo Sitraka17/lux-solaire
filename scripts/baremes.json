@@ -168,12 +168,12 @@
    "reseau": 0.2122
   },
   "source": "https://www.electricitymaps.com/grid-in-review-2025/luxembourg",
-  "source_titre": "Electricity Maps, Grid in review 2025 : Luxembourg (212,2 gCO2e/kWh consommé, 97,6 produit)",
+  "source_titre": "Electricity Maps, Grid in review 2025 : Luxembourg (212,2 gCO2e/kWh consommé, 97,6 produit ; page non datée, publiée en 2026, consultée le 2026-11-02)",
   "date_source": "2026",
   "date_verification": "2026-11-02"
  },
  "cop_pac": {
-  "libelle": "COP horaire d'une PAC air-eau : f × (a + b ΔT + c ΔT²), ΔT = température de départ − température extérieure (au moins dTmin K), au moins 1 ; f = correction pour les conditions réelles",
+  "libelle": "COP horaire d'une PAC air-eau : f × (a + b ΔT + c ΔT²), ΔT = température de départ − température extérieure (au moins dTmin K), au moins 1 ; f = correction pour les conditions réelles ; dTmin = 10 K est une hypothèse de l'outil (Ruhnau et al. bornent ΔT à 15 K dans when2heat)",
   "valeur": {
    "a": 6.08,
    "b": -0.09,
@@ -183,7 +183,7 @@
   },
   "source": "https://doi.org/10.1038/s41597-019-0199-y",
   "source_titre": "Ruhnau, Hirth et Praktiknjo, « Time series of heat demand and heat pump efficiency for energy system modeling », Scientific Data 6, 189 (2019), jeu when2heat (régression sur données constructeurs, f = 0,85)",
-  "date_source": "2019-10-03",
+  "date_source": "2019-10-01",
   "date_verification": "2026-11-02"
  },
  "modele_chaleur": {
@@ -308,7 +308,7 @@
    "coutCuve": 1500
   },
   "source": null,
-  "source_titre": "estimation simplifiée lux-solaire, reprise de la maquette PAC du 1/11/2026 (voir CONTEXT.md, « Moteur du simulateur : chauffage »)",
+  "source_titre": "estimation simplifiée lux-solaire, simulation heure par heure sur une année météo type, hypothèses de l'outil (voir CONTEXT.md, « Moteur du simulateur : chauffage »)",
   "date_source": null,
   "date_verification": "2026-11-02"
  },

@@ -176,8 +176,8 @@
 
   /* =====================================================================================
    * VOLET CHAUFFAGE (2/11/2026) : pompe à chaleur air-eau, ballon tampon, aides, CO2.
-   * Formules reprises de la maquette PAC du 1/11/2026 (simulation heure par heure sur une
-   * année météo type). Le moteur ne lit AUCUN fichier : la série horaire est passée en
+   * Simulation heure par heure sur une année météo type, hypothèses de l'outil lux-solaire
+   * (voir CONTEXT.md, « Moteur du simulateur : chauffage »). Le moteur ne lit AUCUN fichier : la série horaire est passée en
    * paramètre (`serie` = { t2m_dixiemes[8760] (°C × 10), pv_w_par_kwc[8760] (W par kWc) },
    * format de data/annee_type.json). Barèmes : bar.klimabonusPAC, bar.energie, bar.co2,
    * bar.cop, bar.chaleur. Les fonctions photovoltaïques ci-dessus ne sont PAS modifiées :

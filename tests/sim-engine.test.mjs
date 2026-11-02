@@ -105,15 +105,14 @@ test('les barèmes viennent bien du paramètre', () => {
  * Série horaire : data/annee_type.json (PVGIS 5.3, Luxembourg-Ville, année type 2017), passée en
  * paramètre (le moteur ne lit aucun fichier). Cas type = maison de 140 m² des années 1980 au gaz
  * (2 000 m³/an), 8 kWc à 1 800 €/kWc, PAC 9 kW à 22 000 €, ballon 300 L à 1 800 €, HEMS 1 000 €
- * (aide 500 €), commande le 15/11/2026, aide locale GÉNÉRIQUE de 50 % de l'aide de l'État
- * (plafonds 5 000 € PAC et PV, 1 125 € batterie). Sur la série de la maquette (autre lieu), le moteur
- * reproduit la maquette à 1e-10 près ; ici, l'écart de lieu donne 5,60 ans au lieu de 5,55. */
+ * (aide 500 €), commande le 15/11/2026, aide locale GÉNÉRIQUE aux valeurs FICTIVES (30 % de l'aide
+ * de l'État sur la PAC plafonnés à 2 000 €, 20 % sur les panneaux plafonnés à 1 000 €) : aucun
+ * barème communal réel dans ce dépôt public. Sans aide locale, D se rembourse en ≈ 9,4 ans. */
 const SERIE = JSON.parse(fs.readFileSync(new URL('data/annee_type.json', root), 'utf8'));
 const BAR = E.BAREMES;
 const LOCALE = [
-  { nom: 'aide locale (exemple)', base: 'pac', taux: 0.5, plafond: 5000 },
-  { nom: 'aide locale (exemple)', base: 'pv', taux: 0.5, plafond: 5000 },
-  { nom: 'aide locale (exemple)', base: 'batterie', taux: 0.5, plafond: 1125 },
+  { nom: 'aide locale (exemple fictif)', base: 'pac', taux: 0.3, plafond: 2000 },
+  { nom: 'aide locale (exemple fictif)', base: 'pv', taux: 0.2, plafond: 1000 },
 ];
 const TYPE = {
   energie: 'gaz', conso: 2000, unite: 'm3', occupants: 4, emetteurs: 'radiateurs', elecBase: 3900,
@@ -123,14 +122,15 @@ const TYPE = {
 };
 const heat = (o = {}) => E.computeHeat({ ...TYPE, ...o }, SERIE, BAR);
 
-test('chauffage : cas type gaz, remboursement de D ≈ 5,6 ans et CO2 −73 %', () => {
+test('chauffage : cas type gaz, remboursement de D ≈ 8,1 ans (9,4 sans aide locale) et CO2 −73 %', () => {
   const R = heat();
-  assert.ok(R.sc.D.pb > 5.5 && R.sc.D.pb < 5.7, `pb D = ${R.sc.D.pb}`);
+  assert.ok(R.sc.D.pb > 8 && R.sc.D.pb < 8.25, `pb D = ${R.sc.D.pb}`);
   assert.ok(R.sc.D.co2Baisse > 0.725 && R.sc.D.co2Baisse < 0.735, `CO2 D = ${R.sc.D.co2Baisse}`);
-  assert.ok(R.sc.C.pb > 5 && R.sc.C.pb < 5.3);
-  assert.ok(R.sc.B.pb > 4.4 && R.sc.B.pb < 4.8);
+  assert.ok(R.sc.C.pb > 7.6 && R.sc.C.pb < 7.8);
+  assert.ok(R.sc.B.pb > 7.6 && R.sc.B.pb < 7.9);
+  assert.ok(Math.abs(heat({ aidesLocales: [] }).sc.D.pb - 9.4) < 0.05);
   assert.equal(R.sc.D.cum.length, 21);                           // horizon de 20 ans
-  assert.equal(R.sc.D.net, 14400 + 22000 + 1800 + 1000 - (7128 + 12000 + 500) - (3564 + 5000));
+  assert.equal(R.sc.D.net, 14400 + 22000 + 1800 + 1000 - (7128 + 12000 + 500) - (1000 + 2000));
   assert.ok(R.sc.C.energie.scop > 2.9 && R.sc.C.energie.scop < 3.1);
 });
 
@@ -157,14 +157,21 @@ test('chauffage : bonus mazout (cuve, zone de protection d\'eau) et adaptation d
 
 test('chauffage : aide locale générique en paramètre, aucun barème communal dans le moteur', () => {
   const L = E.localAid(LOCALE, { pac: 12000, pv: 7128, batterie: 3000, hems: 500 });
-  assert.equal(L.parBase.pac, 5000);
-  assert.equal(L.parBase.pv, 3564);
-  assert.equal(L.parBase.batterie, 1125);
-  assert.equal(L.total, 9689);
+  assert.equal(L.parBase.pac, 2000);                             // 30 % de 12 000 = 3 600, plafonné
+  assert.equal(L.parBase.pv, 1000);                              // 20 % de 7 128 = 1 425,6, plafonné
+  assert.equal(L.parBase.batterie, 0);
+  assert.equal(L.total, 3000);
+  assert.equal(E.localAid(LOCALE, { pac: 6000 }).parBase.pac, 1800);
   assert.equal(E.localAid([], { pac: 12000 }).total, 0);
   assert.equal(heat({ aidesLocales: [] }).sc.D.aideLocale, 0);
-  const src = fs.readFileSync(new URL('sim-engine.js', root), 'utf8');
-  assert.ok(!/Differdange|Diff Primes/.test(src));
+  // garde public / privé : aucun nom ni barème communal dans le moteur ; aucun plafond du barème
+  // privé ni renvoi à la maquette privée dans les tests, la documentation et les barèmes
+  const eng = fs.readFileSync(new URL('sim-engine.js', root), 'utf8');
+  assert.ok(!new RegExp(['Differdange', 'Diff ?Primes', 'maquette'].join('|'), 'i').test(eng));
+  for (const f of ['sim-engine.js', 'tests/sim-engine.test.mjs', 'CONTEXT.md', 'scripts/baremes.json']) {
+    const src = fs.readFileSync(new URL(f, root), 'utf8');
+    assert.ok(!new RegExp(['maquette' + '-pac', 'maquette ' + 'PAC', '1[  ]?' + '125\\b'].join('|'), 'i').test(src), f);
+  }
 });
 
 test('chauffage : COP horaire (Ruhnau et al. 2019)', () => {
