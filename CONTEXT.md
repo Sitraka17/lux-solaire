@@ -1,4 +1,4 @@
-# CONTEXT — lux-solaire (notes internes, jamais servies : exclues par .vercelignore)
+# CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
 ## i18n : l'allemand (/de), ajouté le 26/10/2026
 
@@ -65,11 +65,100 @@ allemands. Vouvoiement partout.
 
 ## Déploiement
 
-Cloudflare Pages, projet `lux-solaire`, domaine solaire.sitraka.lu.
-`npx wrangler@3 pages deploy <dist> --project-name=lux-solaire --branch=main`
-(wrangler 3.x OBLIGATOIRE, 4.x convertit en Workers assets) ; `<dist>` =
-copie rsync de la racine qui honore `.vercelignore` (cf.
-`.github/workflows/rebuild.yml`, qui fait la même chose chaque lundi).
+Cloudflare Pages, projet `lux-solaire`, domaine solaire.sitraka.lu. Depuis le 2/11/2026, le dist
+est construit par LISTE BLANCHE (`scripts/make_dist.py`), le même script en local et dans
+`.github/workflows/rebuild.yml`. Déploiement local, depuis la RACINE du dépôt (wrangler y compile
+`functions/`, jamais copié dans le dist) :
+
+```sh
+/usr/bin/python3 scripts/build.py                       # SANS LUX_SOLAIRE_CACHE
+/usr/bin/python3 -m pytest tests/ -q && node --test tests/sim-engine.test.mjs
+/usr/bin/python3 scripts/make_dist.py /tmp/lux-solaire-dist
+npx --yes wrangler@3.114.17 pages deploy /tmp/lux-solaire-dist --project-name=lux-solaire --branch=main --commit-dirty=true
+```
+
+- wrangler 3.x OBLIGATOIRE (4.x convertit en Workers assets) ; version exacte 3.114.17, la même
+  que le workflow (`WRANGLER_VERSION`).
+- `make_dist.py` copie `PUBLIC_FILES` (racine : pages, `_headers`, og, scripts JS servis, fichiers
+  de vérification GSC et IndexNow) et `PUBLIC_DIRS` (`data`, `fr`, `de`, `lb`, `simulator`,
+  `municipality`, `for-municipalities`). Il ÉCHOUE si une entrée publique manque, si une entrée
+  suivie par git à la racine n'est ni publique ni dans `INTERNAL` (tout NOUVEAU fichier servi doit
+  être ajouté à la liste, sinon il ne serait jamais publié), ou si un fichier interne se retrouve
+  dans le dist (CONTEXT.md, README.md, scripts/, tests/, archive/, functions/, .github/, gabarits,
+  `.py`, `.md`, et les motifs de `.vercelignore`, gardé comme filet de sécurité). Le dossier de
+  sortie doit être hors du dépôt.
+- Vérifié le 2/11/2026 : le dist par liste blanche est identique (443 fichiers) à l'ancienne copie
+  rsync par exclusion, à une fuite près que l'ancienne méthode laissait passer en local :
+  `.ruff_cache/`.
+
+## Workflow du lundi et alertes (2/11/2026)
+
+`.github/workflows/rebuild.yml` (cron lundi 06:00 UTC, en pratique lancé avec plusieurs heures de
+retard par GitHub ; déclenchement manuel possible). Étapes dans l'ordre, arrêt au premier échec :
+build → `pytest tests/` → `node --test tests/sim-engine.test.mjs` → dist par liste blanche →
+commit + push si `data/data.json` a changé → déploiement. Donc rien n'est commité ni redéployé si
+le build ou un test échoue. Bloc `concurrency` (pas deux rebuilds simultanés), `timeout-minutes: 30`.
+Versions figées sur celles du poste local au 2/11/2026 : pandas 2.3.3, requests 2.32.5,
+pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.12 et Node 22 dans le workflow,
+Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, après un build local.
+
+### Garde-fou de fraîcheur (`check_freshness`, build.py)
+
+Avant tout téléchargement lourd, le build ÉCHOUE (exit 1, message « fraîcheur des données Leneda,
+build arrêté ») si le relevé hebdomadaire le plus récent du jeu Leneda a plus de 10 jours
+(`MAX_AGE_DAYS`) ou si les fichiers `commune` et `not-grouped` les plus récents ont plus de 7 jours
+d'écart (`MAX_GAP_DAYS` ; un écart de 1 à 7 jours reste un simple avertissement). Dérogation
+locale : `LUX_SOLAIRE_ALLOW_STALE=1` ramène le contrôle d'ÂGE à un avertissement (utile avec un
+`.cache/` ancien, utilisé par le build à blanc des tests) ; l'écart, lui, échoue toujours. Ne jamais
+la poser dans le workflow. Tests : `tests/test_fraicheur.py`.
+
+### Où arrive l'alerte
+
+- **E-mail GitHub d'échec de workflow** : c'est la seule alerte en place. Pour un déclenchement par
+  `schedule`, GitHub prévient l'utilisateur qui a modifié en dernier la ligne `cron` du workflow
+  (ici Sitraka17) ; pour un lancement manuel, celui qui l'a lancé. Il faut que
+  github.com/settings/notifications, rubrique « Actions », ait l'e-mail coché (option « Only notify
+  for failed workflows » conseillée). Objet du type « [Sitraka17/lux-solaire] Run failed:
+  rebuild-weekly ». Le détail est dans l'onglet Actions du dépôt (étape en rouge, message du
+  garde-fou en clair).
+- Ce que l'e-mail NE couvre PAS : un workflow qui ne tourne plus du tout (GitHub désactive les
+  `schedule` d'un dépôt public après 60 jours sans activité ; le commit hebdomadaire du bot n'a lieu
+  que si les données changent) et une panne de Cloudflare après un déploiement réussi. D'où le
+  contrôle externe ci-dessous.
+
+### Ajouter un contrôle Grafana / uptime sur `meta.date_iso` (rien n'est créé à ce jour)
+
+Cible : `https://solaire.sitraka.lu/data/data.json`, champ `meta.date_iso` (ex. `"2026-11-02"`,
+date du relevé Leneda ; cache Cloudflare 1 h). Seuil conseillé : alerte au-delà de 10 jours, comme
+le build (le relevé du lundi est en ligne le lundi après-midi : un âge de 8 à 10 jours le mardi
+signale déjà un lundi manqué).
+
+1. Grafana Cloud, Testing & synthetics > Synthetics > Add new check > **Scripted** (k6), fréquence
+   1 h, 1 ou 2 sondes européennes (ex. Frankfurt, Paris), script :
+
+   ```js
+   import http from 'k6/http';
+   import { check } from 'k6';
+   export default function () {
+     const r = http.get('https://solaire.sitraka.lu/data/data.json');
+     const d = r.status === 200 ? r.json('meta.date_iso') : null;
+     const ageJours = d ? (Date.now() - Date.parse(d + 'T00:00:00Z')) / 86400000 : Infinity;
+     check(r, {
+       'HTTP 200': (x) => x.status === 200,
+       'relevé Leneda de 10 jours au plus': () => ageJours <= 10,
+     });
+   }
+   ```
+2. Alerte : dans le check, « Alerting » avec la sensibilité « Low » ou une règle Grafana sur
+   `probe_all_success` du job (échec sur 2 évaluations de suite), vers le point de contact e-mail
+   déjà utilisé par les alertes d'uptime existantes.
+3. Variante sans script (datasource Infinity, déjà utilisée pour le tableau de bord d'indexation) :
+   requête JSON sur la même URL, parser « Backend », sélecteur `meta`, colonne `date_iso` de type
+   « Timestamp » ; règle d'alerte avec une expression Math `(now() - $A) / 86400000 > 10` (adapter à
+   la syntaxe de l'instance) ; plus fragile que le check scripté.
+4. Simple check d'uptime HTTP (si seul ce type est disponible) : statut 200 et expression régulière
+   sur le corps `"date_iso": ?"20\d\d-` ; il détecte un fichier absent ou cassé, PAS un relevé
+   périmé.
 
 ## Vue par commune des tailles d'installation (30/10/2026)
 
@@ -141,7 +230,8 @@ communales, « 1er October » en anglais, en-têtes `_headers` (HSTS, nosniff, R
 Reste à faire (par priorité) :
 - ~~simulateur : HEMS, 2031, toiture/façade, régime transitoire B, prix 0,16/0,20, gain non actualisé~~
   FAIT le 2/11/2026 (voir « Simulateur mis à jour le 2/11/2026 » ci-dessous) ;
-- alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow ;
+- ~~alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow~~
+  FAIT le 2/11/2026 (voir « Workflow du lundi et alertes ») ; reste à créer le contrôle Grafana externe ;
 - ~~tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda~~
   FAIT le 2/11/2026 (voir « Barèmes uniques et tests ») ;
 - compteur /e : listes blanches (lang, chemins) et limite de débit ;
@@ -258,4 +348,5 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
 - **`_jsround`** corrigé : `floor(x + 0.5)` donnait 1 pour 0.49999999999999994 (Math.round : 0).
 - **`vercel.json` supprimé** (inutile sur Cloudflare Pages) : son `Cache-Control: public, max-age=3600`
   sur `/data/*` est passé dans `_headers` ; `Access-Control-Allow-Origin: *` est déjà envoyé par
-  Cloudflare Pages (vérifié le 2/11/2026), donc pas répété. `.vercelignore` reste (lu par le workflow).
+  Cloudflare Pages (vérifié le 2/11/2026), donc pas répété. `.vercelignore` reste (relu par
+  `scripts/make_dist.py` comme filet de sécurité : aucun de ses motifs ne doit se trouver dans le dist).

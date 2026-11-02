@@ -3,11 +3,19 @@ name: rebuild-weekly
 # Leneda dépose ses fichiers hebdomadaires sur data.public.lu le lundi vers
 # 02:00 UTC (ex. resources/…/20260914-020016/…weekly-2026-09-14-commune.csv).
 # On reconstruit le lundi à 06:00 UTC + déclenchement manuel possible.
-# Le build s'arrête de lui-même (exit 1) si un garde-fou de scripts/build.py
-# échoue : rien n'est alors commité.
-# Le site est servi par Cloudflare Pages (solaire.sitraka.lu) : après le commit,
-# on déploie un dist/ qui honore .vercelignore (notes internes jamais publiées).
+#
+# Ordre strict, chaque étape s'arrête au premier échec (rien n'est alors commité
+# ni déployé, et GitHub envoie l'e-mail d'échec : voir CONTEXT.md, « Alertes ») :
+#   1. build (garde-fous de scripts/build.py, dont la fraîcheur du relevé Leneda :
+#      plus de 10 jours, ou fichiers commune / not-grouped à plus de 7 jours d'écart
+#      = exit 1) ;
+#   2. tests (pytest + node --test) ;
+#   3. dist par LISTE BLANCHE (scripts/make_dist.py, même script qu'en local) ;
+#   4. commit + push si les données ont changé ;
+#   5. déploiement Cloudflare Pages (solaire.sitraka.lu).
 # ⚠️ wrangler 3.x obligatoire pour Pages (4.x convertit en Workers assets).
+# Versions figées le 2/11/2026 sur celles du poste local (Python 3.9 en local,
+# 3.12 ici : mêmes versions de paquets).
 
 on:
   schedule:
@@ -17,17 +25,46 @@ on:
 permissions:
   contents: write
 
+# Jamais deux rebuilds en parallèle (cron + déclenchement manuel) : le second
+# attend la fin du premier au lieu de pousser et déployer en même temps.
+concurrency:
+  group: rebuild-weekly
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  WRANGLER_VERSION: "3.114.17"
+
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - run: sudo apt-get install -y fonts-dejavu-core
-      - run: pip install pandas requests pillow
-      - run: python3 scripts/build.py
+      - name: Dépendances Python (versions exactes)
+        run: pip install pandas==2.3.3 requests==2.32.5 pillow==11.3.0 pytest==8.4.2
+
+      - name: Build (échoue si un garde-fou saute, dont la fraîcheur Leneda)
+        run: python3 scripts/build.py
+
+      - name: Tests Python
+        run: python3 -m pytest tests/ -q
+      - name: Tests du moteur du simulateur
+        run: node --test tests/sim-engine.test.mjs
+
+      - name: Dist par liste blanche
+        run: python3 scripts/make_dist.py /tmp/dist
+
       - name: Commit si les données ont changé
         run: |
           git config user.name "lux-solaire-bot"
@@ -35,19 +72,13 @@ jobs:
           git add -A
           git diff --cached --quiet -- data/data.json || git commit -am "rebuild: relevé Leneda du $(python3 -c 'import json;print(json.load(open("data/data.json"))["meta"]["date_iso"])')"
           git push
+
       - name: Déploiement Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        # Lancé depuis la racine du dépôt : wrangler y compile functions/ (compteur /e),
+        # qui n'est jamais copié dans /tmp/dist.
         run: |
-          rm -rf /tmp/dist && mkdir -p /tmp/dist
-          args=(-a --exclude=.git --exclude=.gitignore --exclude=.vercel --exclude=.vercelignore
-                --exclude=__pycache__ --exclude=.cache --exclude=node_modules --exclude=.DS_Store
-                --exclude=.wrangler)
-          while IFS= read -r line; do
-            line="${line%%#*}"; line="${line// /}"
-            [ -n "$line" ] && args+=(--exclude="$line")
-          done < .vercelignore
-          rsync "${args[@]}" ./ /tmp/dist/
-          test -f /tmp/dist/index.html
-          npx --yes wrangler@3 pages deploy /tmp/dist --project-name=lux-solaire --branch=main --commit-dirty=true
+          case "$WRANGLER_VERSION" in 3.*) ;; *) echo "wrangler $WRANGLER_VERSION : 3.x obligatoire" >&2; exit 1;; esac
+          npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy /tmp/dist --project-name=lux-solaire --branch=main --commit-dirty=true

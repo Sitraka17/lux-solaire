@@ -1,5 +1,6 @@
-# La racine du repo EST le répertoire servi : tout fichier non exclu ici devient
-# publiquement lisible. Le README documente le repo GitHub, pas le site.
+# Depuis le 2/11/2026, le site publié est construit par LISTE BLANCHE (scripts/make_dist.py).
+# Ce fichier n'est plus la règle de publication : make_dist.py le relit comme filet de sécurité
+# (aucun de ces motifs ne doit se retrouver dans le dist). Le README documente le repo, pas le site.
 README.md
 CONTEXT.md
 STRATEGY.md

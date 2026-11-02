@@ -12,7 +12,9 @@ Garde-fous (le build ÉCHOUE plutôt que de publier une prose fausse) :
   - après traduction, aucune clé traduite ne doit subsister dans la page ;
   - aucun jeton __XXX__ ni tiret cadratin (U+2014) dans les pages produites ;
   - les encadrés dérivés (plus forte hausse, quatre plus grandes centrales)
-    sont recalculés et vérifiés contre les données à chaque build.
+    sont recalculés et vérifiés contre les données à chaque build ;
+  - le relevé hebdomadaire le plus récent a au plus 10 jours, et les fichiers
+    « commune » et « not-grouped » ont au plus 7 jours d'écart (check_freshness).
 """
 import csv
 import hashlib
@@ -178,6 +180,42 @@ def _label_fr(d):
     return f"{d.day} {m if len(m) <= 4 else m[:4] + '.'} {d.year}"
 
 
+MAX_AGE_DAYS = 10      # relevé hebdomadaire plus vieux : build en échec (Leneda n'a pas publié)
+MAX_GAP_DAYS = 7       # écart toléré entre les fichiers « commune » et « not-grouped » du relevé
+
+
+def check_freshness(wdate, ngdate, today=None):
+    """Garde-fou de fraîcheur, avant tout téléchargement lourd : le build ÉCHOUE (exit 1)
+    si le relevé hebdomadaire le plus récent a plus de MAX_AGE_DAYS jours (Leneda a cessé
+    de publier ou a renommé ses fichiers : le site afficherait des données périmées sans
+    le dire), ou si les fichiers par commune et par installation divergent de plus de
+    MAX_GAP_DAYS jours (les vues croisées mélangeraient deux relevés). L'échec du
+    workflow du lundi déclenche l'e-mail d'alerte de GitHub (CONTEXT.md, « Alertes »).
+    LUX_SOLAIRE_ALLOW_STALE=1 ramène le contrôle d'âge à un avertissement (build à
+    blanc sur un .cache/ ancien, travail local) ; jamais dans le workflow."""
+    today = today or date.today()
+    age = (today - wdate).days
+    gap = abs((ngdate - wdate).days)
+    problems = []
+    if age > MAX_AGE_DAYS:
+        msg = (f"relevé hebdomadaire Leneda périmé : le plus récent est daté du {wdate.isoformat()}, "
+               f"soit {age} jours (maximum {MAX_AGE_DAYS}). Vérifier le jeu de données sur data.public.lu "
+               f"(publication suspendue ou fichiers renommés ?)")
+        if os.environ.get("LUX_SOLAIRE_ALLOW_STALE") == "1":
+            print("attention (LUX_SOLAIRE_ALLOW_STALE=1) : " + msg, file=sys.stderr)
+        else:
+            problems.append(msg)
+    if gap > MAX_GAP_DAYS:
+        problems.append(f"fichiers hebdomadaires désynchronisés : « commune » du {wdate.isoformat()}, "
+                        f"« not-grouped » du {ngdate.isoformat()}, soit {gap} jours d'écart "
+                        f"(maximum {MAX_GAP_DAYS})")
+    elif gap:
+        print(f"attention : fichier par installation daté du {ngdate}, commune du {wdate} ({gap} j d'écart)")
+    if problems:
+        sys.exit("fraîcheur des données Leneda, build arrêté :\n  " + "\n  ".join(problems))
+    return age, gap
+
+
 def fetch_resources():
     """Return ({label: dataframe} quarterly commune files + weekly commune file,
     weekly date, weekly not-grouped dataframe). The weekly resource retained is
@@ -202,8 +240,7 @@ def fetch_resources():
         sys.exit("no weekly commune / not-grouped file found in dataset")
     wdate, wurl = max(weekly)
     ngdate, ngurl = max(ng)
-    if ngdate != wdate:
-        print(f"attention : fichier par installation daté du {ngdate}, commune du {wdate}")
+    check_freshness(wdate, ngdate)
     frames[_label_fr(wdate)] = pd.read_csv(io.BytesIO(_get(wurl, timeout=30)))
     ngdf = pd.read_csv(io.BytesIO(_get(ngurl, timeout=60)))
     return frames, wdate, ngdf

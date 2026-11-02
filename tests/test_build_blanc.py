@@ -2,7 +2,8 @@
 réponses déjà en cache (.cache/, rempli par LUX_SOLAIRE_CACHE=1) et les archives locales,
 SANS réseau : tout téléchargement manquant fait sauter le test proprement. Le dépôt lui-même
 n'est pas touché. Les données en cache peuvent être anciennes : ce test vérifie le pipeline
-(format, garde-fous, rendu des 4 langues, contrôle des barèmes), pas la fraîcheur."""
+(format, garde-fous, rendu des 4 langues, contrôle des barèmes), pas la fraîcheur
+(LUX_SOLAIRE_ALLOW_STALE=1 ; la fraîcheur est testée dans test_fraicheur.py)."""
 import os
 import shutil
 import subprocess
@@ -27,7 +28,8 @@ def test_build_a_blanc(root, tmp_path):
         pytest.skip("pas de .cache/ local (lancer une fois LUX_SOLAIRE_CACHE=1 /usr/bin/python3 scripts/build.py)")
     dst = tmp_path / "site"
     shutil.copytree(root, dst, ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__", ".pytest_cache"))
-    env = {**os.environ, "LUX_SOLAIRE_CACHE": "1", "PYTHONDONTWRITEBYTECODE": "1"}
+    env = {**os.environ, "LUX_SOLAIRE_CACHE": "1", "LUX_SOLAIRE_ALLOW_STALE": "1",
+           "PYTHONDONTWRITEBYTECODE": "1"}
     r = subprocess.run([sys.executable, "-c", RUNNER, str(dst / "scripts")], cwd=dst, env=env,
                        capture_output=True, text=True, timeout=600)
     if r.returncode == 77:
