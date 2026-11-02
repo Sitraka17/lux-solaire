@@ -11,6 +11,7 @@ import re
 import unicodedata
 
 import baremes   # scripts/baremes.json : taux et plafonds du Klimabonus Gemengen (source unique)
+import grandes   # nouvelles grandes installations (> 100 kW) : détection et textes
 
 CPATH = {"en": "/municipality/", "fr": "/fr/commune/", "de": "/de/gemeinde/", "lb": "/lb/gemeng/"}
 FORPATH = {"en": "/for-municipalities/", "fr": "/fr/pour-les-communes/", "de": "/de/fuer-gemeinden/",
@@ -560,6 +561,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> {L["k_cnt"]}</span>'
                 f'<span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> {L["k_cap"]}</span></div>'
                 f'<div class="pair">{bars}</div>{hist_note}</div></section>'
+                + grandes.commune_section(d.get("bigs"), lang, c["lau2"], cn, HOME[lang]) +
                 f'<section id="aides"><div class="sec-head"><h2>{L["kb_h"]}</h2></div><div class="card">'
                 f'<div class="tw"><table class="mini"><thead><tr>{kb_head}</tr></thead>'
                 f'<tbody>{kb_rows}</tbody></table></div><p class="kbnote2">{L["kb_note"]}</p></div></section>'

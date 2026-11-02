@@ -118,6 +118,13 @@ Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, apr�
   Launchpad), donc `runs-on: ubuntu-24.04` au lieu de `ubuntu-latest` (la version apt dépend de
   l'image), précédé de `apt-get update`.
 - Restent non figés au patch près : Python « 3.12 » et Node « 22 » (dernière mineure de la branche).
+- Jeton (2/11/2026, relecture) : `actions/checkout` avec `persist-credentials: false`, le
+  GITHUB_TOKEN (droit d'écriture) n'est plus laissé dans `.git/config` pour pip, le build, les tests
+  et `npx wrangler` ; seule l'étape de commit le reçoit (`env: GITHUB_TOKEN`) et pousse par
+  `git push https://x-access-token:…@github.com/$GITHUB_REPOSITORY.git HEAD:main`.
+- Non fait (durcissement optionnel) : verrou pip par empreintes (`uv pip compile … --generate-hashes`
+  puis `pip install --require-hashes`). PyPI interdit de republier un fichier sous le même nom, le
+  risque résiduel est faible ; à faire avec une mise à jour de `test_dependances_figees`.
 
 ### Garde-fou de fraîcheur (`check_freshness`, build.py)
 
@@ -232,6 +239,45 @@ installations PV par classe de taille, commune par commune.
   ancienne copie de moins de 92 jours ; affichée dans la phrase de résumé et
   entre parenthèses sur les barres. Variation NETTE : une installation
   agrandie change de classe (−1 dans l'une, +1 dans l'autre).
+
+## Grandes installations : lignes de plus de 100 kW apparues ou disparues (chantier C, 2/11/2026)
+
+Module `scripts/grandes.py` (textes des 4 langues DANS le module, comme `communes.py`), appelé par
+`build.py` (`import grandes` : le module DOIT être commité avec build.py, sinon le rebuild du lundi
+échoue à l'import). Section `<section id="grandes-installations">` du tableau de bord (marqueur
+`<!--PRE_BIGNEW-->` de template.html, rendu par `prerender`) et des 400 pages communales
+(`communes.write_all`). Bloc `bigs` de data*.json, export `data/csv/solaire_grandes_installations.csv`
+(une ligne par ligne apparue ou disparue, colonnes en anglais, `note` = `same_value_other_municipality`
+ou `same_technology_changed_in_municipality`).
+
+- **Source** : les copies archivées du fichier Leneda par installation
+  (`archive/leneda-not-grouped-AAAA-MM-JJ.csv.gz`, depuis le 14/09/2026). Pas d'identifiant, pas de
+  date de mise en service, pas d'exploitant : impossible de suivre une installation d'un relevé à l'autre.
+- **Méthode** : comparaison en MULTI-ENSEMBLE sur la clé (LAU2, filière, kW arrondi à 3 décimales)
+  des lignes de plus de 100 kW de deux copies CONSÉCUTIVES (deux lignes identiques qui deviennent
+  trois = une ligne apparue). Seuil STRICT : `kW > 100`, 100 kW exactement exclus (`BIG_KW`).
+- **Remarques factuelles** : « m » = même filière et même puissance disparues dans une AUTRE
+  commune au même relevé (appariement un pour un) : changement de commune possible ; « r » = une
+  ligne de même filière disparue ET une apparue dans la MÊME commune au même relevé : agrandissement
+  ou correction possible. Jamais « a augmenté » ni « nouvelle installation » : le fichier ne permet
+  pas de trancher. D'où le titre « Grandes installations : lignes apparues » (EN « Large
+  installations: rows that appeared », DE « Großanlagen: hinzugekommene Zeilen », LB « Grouss
+  Installatiounen: dobäikomm Zeilen »), renommé le 2/11/2026 (avant : « Nouvelles grandes
+  installations », qui affirmait la nouveauté ; ex. Rambrouch éolien 12 600 kW marqué « m » avec
+  Ell, Nommern biogaz 350 kW marqué « r »).
+- **Période** : le chapeau du tableau de bord dit la période réelle (« Du 14 septembre 2026 au
+  2 novembre 2026, sur 3 relevés archivés comparés chacun au précédent… ») et, à partir de trois
+  copies, la part du dernier relevé. Au 2/11/2026 : 18 lignes apparues (16 entre le 14/09 et le
+  26/10, intervalle de 42 jours dû au trou d'archive ; 2 au relevé du 2/11 : Dippach éolien
+  4 260 kW, Heffingen PV 4 623,84 kW) et 3 disparues (Ell 12 600, Betzdorf 625, Nommern 300) ;
+  chiffres recalculés indépendamment (pandas) lors de la relecture du 2/11/2026. Un écart de plus de
+  8 jours entre deux copies est signalé dans la méthode (« 42 jours après la précédente »).
+- **Allemand / luxembourgeois** : dans les pages communales, le nombre suit « je Anlage » / « pro
+  Installatioun » et la date passe entre parenthèses, pour que l'année du relevé ne se colle pas au
+  nombre (« 2026 16 Anlagen » se lisait comme un seul nombre).
+- **Tests** : `tests/test_grandes.py` (multi-ensemble, seuil exclu, remarques m / r, rendu 4 langues,
+  parité des textes, noms de filières alignés sur le mix, période réelle du chapeau, ordre DE/LB).
+  Cité dans le commentaire de `.github/workflows/rebuild.yml`.
 
 ## Pages par commune, page « Pour les communes », compteur d'événements, 404 (30/10/2026)
 

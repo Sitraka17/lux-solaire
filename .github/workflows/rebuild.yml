@@ -50,7 +50,11 @@ jobs:
       run:
         shell: bash
     steps:
+      # persist-credentials: false : le jeton GITHUB_TOKEN (droit d'écriture) n'est pas laissé dans
+      # .git/config pour les étapes suivantes (pip, build, tests, npx wrangler) ; seul le push le reçoit.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
@@ -68,8 +72,9 @@ jobs:
         run: python3 scripts/build.py
 
       # tests/ entier : test_arrondis, test_baremes, test_build_blanc, test_croise_baremes (formules
-      # Python = moteur JS sur une grille fine), test_fraicheur, test_leneda, test_make_dist, test_slug,
-      # test_tailles, test_veille (workflow fraicheur.yml)
+      # Python = moteur JS sur une grille fine), test_fraicheur, test_grandes (lignes de plus de 100 kW
+      # apparues ou disparues, scripts/grandes.py), test_leneda, test_make_dist, test_slug,
+      # test_tailles, test_veille (workflows rebuild.yml et fraicheur.yml)
       - name: Tests Python
         run: python3 -m pytest tests/ -q
       - name: Tests du moteur du simulateur
@@ -79,12 +84,15 @@ jobs:
         run: python3 scripts/make_dist.py /tmp/dist
 
       - name: Commit si les données ont changé
+        # jeton passé à cette seule étape (checkout sans persist-credentials)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name "lux-solaire-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -A
           git diff --cached --quiet -- data/data.json || git commit -am "rebuild: relevé Leneda du $(python3 -c 'import json;print(json.load(open("data/data.json"))["meta"]["date_iso"])')"
-          git push
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
 
       - name: Déploiement Cloudflare Pages
         env:

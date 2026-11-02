@@ -36,6 +36,7 @@ import pandas as pd
 import requests
 
 import baremes   # scripts/baremes.json : source UNIQUE des barèmes (aides, tarifs)
+import grandes   # nouvelles grandes installations (> 100 kW) d'une copie archivée à la suivante
 
 ROOT = Path(__file__).resolve().parent.parent
 DATASET_API = "https://data.public.lu/api/1/datasets/la-production-denergie-electrique-au-luxembourg/"
@@ -300,6 +301,17 @@ def load_baseline(wdate):
     return d, pd.read_csv(f)
 
 
+def load_archives(wdate):
+    """Toutes les copies archivées jusqu'au relevé courant compris, triées par date :
+    [(date, DataFrame)] (détection des nouvelles grandes installations, grandes.py)."""
+    out = []
+    for f in ARCHIVE.glob("leneda-not-grouped-*.csv.gz"):
+        d = date.fromisoformat(f.name[len("leneda-not-grouped-"):][:10])
+        if d <= wdate:
+            out.append((d, pd.read_csv(f)))
+    return sorted(out, key=lambda x: x[0])
+
+
 def _pv_rows(ng):
     out = ng[ng["Type d'installation"] == PV].copy()
     out["p"] = pd.to_numeric(out["Puissance installée [kW]"])
@@ -316,7 +328,7 @@ def _grid(inst, edges, labels):
     return [[int(nat.loc[l, "size"]), float(nat.loc[l, "sum"])] for l in labels], per
 
 
-def build(frames, wdate, ng, pop, pop_date, baseline=(None, None)):
+def build(frames, wdate, ng, pop, pop_date, baseline=(None, None), snaps=None):
     labels = list(frames)
     series = []
     for label, df in frames.items():
@@ -463,6 +475,9 @@ def build(frames, wdate, ng, pop, pop_date, baseline=(None, None)):
         "sizes_c": sizes_c,
         "kb": kb,
         "hist": hist,
+        # lignes de plus de 100 kW apparues ou disparues d'une copie archivée à la suivante
+        # (pas d'identifiant d'installation dans le fichier : méthode dans grandes.py)
+        "bigs": grandes.detect(snaps or [], lambda x: f"{x.day}{'er' if x.day == 1 else ''} {MONTHS_FR[x.month - 1]} {x.year}"),
         "additions": additions,
         "population": {
             "source": RNPP_API, "date_iso": pop_date.isoformat(),
@@ -977,6 +992,7 @@ def prerender(d, lang):
             for a in A),
         "<!--PRE_PARADOX-->": "".join(paradox_row(s) for s in d["sizes"]),
         "<!--PRE_PARADOX_ROWS-->": "".join(paradox_table_row(s) for s in d["sizes"]),
+        "<!--PRE_BIGNEW-->": grandes.dashboard_section(d.get("bigs"), lang, CPATH[lang], _slug),
         "<!--PRE_AREA_HEAD-->": "".join(f'<th scope="col">{names[k]}</th>' for k, _, _ in TECH_ORDER),
         "<!--PRE_AREA_ROWS-->": "".join(
             f'<tr><th scope="row">{r["label"]}</th>' + "".join(f'<td>{D1(r[k])}</td>' for k, _, _ in TECH_ORDER) + "</tr>"
@@ -1050,6 +1066,10 @@ CSV_TITLES = {
                                         "en": "PV installations by municipality, municipal subsidy bands (Klimabonus Gemengen)",
                                         "lb": "PV-Installatiounen pro Gemeng, Tranche vun de Gemengenhëllefen (Klimabonus Gemengen)",
                                         "de": "PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)"},
+    "solaire_grandes_installations": {"fr": "Lignes de plus de 100 kW apparues ou disparues entre deux relevés ({n} lignes)",
+                                      "en": "Rows over 100 kW that appeared or disappeared between two readings ({n} rows)",
+                                      "lb": "Zeilen iwwer 100 kW, déi tëscht zwee Relevéen dobäikomm oder ewechgefall sinn ({n} Zeilen)",
+                                      "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind ({n} Zeilen)"},
 }
 JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
               "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)"}
@@ -1076,6 +1096,11 @@ CSV_NOTES = {
                                         "en": f"Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp ({KBG_YEAR} scale); capacity in kW.",
                                         "lb": f"Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem {KBG_YEAR}); Kapazitéit a kW.",
                                         "de": f"Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand {KBG_YEAR}); Leistung in kW."},
+    "solaire_grandes_installations": {
+        "fr": "Copies archivées du fichier hebdomadaire par installation, comparées deux à deux par commune et par filière (lignes de plus de 100 kW, seuil exclu). Sans identifiant d'installation : une ligne apparue peut être une installation nouvelle, agrandie, corrigée ou rattachée à une autre commune.",
+        "en": "Archived copies of the weekly per-installation file, compared pairwise by municipality and technology (rows over 100 kW, threshold excluded). No installation identifier: a row that appears may be a new, extended or corrected installation, or one assigned to another municipality.",
+        "lb": "Archivéiert Kopie vum wëchentleche Fichier pro Installatioun, zwou a zwou pro Gemeng a pro Filière verglach (Zeilen iwwer 100 kW, Schwell ausgeschloss). Ouni Identifiant: eng nei Zeil kann eng nei, erweidert oder korrigéiert Installatioun sinn, oder eng, déi enger anerer Gemeng zougeuerdnet gouf.",
+        "de": "Archivierte Kopien der wöchentlichen Datei je Anlage, paarweise je Gemeinde und Technologie verglichen (Zeilen über 100 kW, Schwelle ausgenommen). Ohne Anlagenkennung: Eine hinzugekommene Zeile kann eine neue, erweiterte oder korrigierte Anlage sein oder einer anderen Gemeinde zugeordnet worden sein."},
 }
 
 
@@ -1132,6 +1157,7 @@ def exports(d):
                    KB_EDGES[KB_LABELS.index(b)], KB_EDGES[KB_LABELS.index(b) + 1], n, kw]
                   for c in sorted(d["communes"], key=lambda c: c["c"])
                   for b, (n, kw) in zip(d["kb"]["bins"], d["kb"]["c"][str(c["lau2"])])]},
+        grandes.csv_table(d.get("bigs"), DATASET_URL),
     ]
 
 
@@ -1498,6 +1524,7 @@ def render_all(data):
             sys.exit(f"{name} contient un tiret cadratin (U+2014)")
     # date de contenu par page et par langue, puis exports (le manifeste porte la plus récente)
     rt_js = (ROOT / "rt.js").read_text()
+    grandes_src = (ROOT / "scripts" / "grandes.py").read_text()   # textes du bloc « grandes installations »
     # moteur du simulateur (fonctions pures) : servi à part, version = empreinte du contenu
     # son bloc BAREMES est régénéré depuis scripts/baremes.json (source unique) avant l'empreinte
     sim_engine = baremes.sync_engine(ROOT / "sim-engine.js")
@@ -1509,7 +1536,7 @@ def render_all(data):
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                        rt_js, KIT_VERSION, bar_txt]) for lang in ("fr", "en", "de", "lb")}
+                                        rt_js, KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
     cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, bar_txt, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
@@ -1609,7 +1636,7 @@ def render_all(data):
     import communes
     csrc = (ROOT / "scripts" / "communes.py").read_text()
     cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                                        KIT_VERSION, bar_txt]) for lang in ("fr", "en", "de", "lb")}
+                                                        KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
     groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG, _jsround)
     for lang in ("fr", "en", "de", "lb"):
         for f in sorted((ROOT / communes.CPATH[lang].strip("/")).glob("*/index.html")):
@@ -1636,7 +1663,7 @@ def main():
     check_leneda(frames, ng)
     archive_snapshot(ng, wdate)
     pop, pop_date = fetch_population()
-    data = build(frames, wdate, ng, pop, pop_date, load_baseline(wdate))
+    data = build(frames, wdate, ng, pop, pop_date, load_baseline(wdate), load_archives(wdate))
     check_claims(data)
     (ROOT / "data" / "data.json").write_text(json.dumps(data, ensure_ascii=False))
     render_all(data)

@@ -116,6 +116,24 @@
    }
   },
   {
+   "path": "/data/csv/solaire_grandes_installations.csv",
+   "format": "text/csv",
+   "rows": 21,
+   "title": {
+    "fr": "Lignes de plus de 100 kW apparues ou disparues entre deux relevés (21 lignes)",
+    "en": "Rows over 100 kW that appeared or disappeared between two readings (21 rows)",
+    "lb": "Zeilen iwwer 100 kW, déi tëscht zwee Relevéen dobäikomm oder ewechgefall sinn (21 Zeilen)",
+    "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind (21 Zeilen)"
+   },
+   "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
+   "notes": {
+    "fr": "Copies archivées du fichier hebdomadaire par installation, comparées deux à deux par commune et par filière (lignes de plus de 100 kW, seuil exclu). Sans identifiant d'installation : une ligne apparue peut être une installation nouvelle, agrandie, corrigée ou rattachée à une autre commune.",
+    "en": "Archived copies of the weekly per-installation file, compared pairwise by municipality and technology (rows over 100 kW, threshold excluded). No installation identifier: a row that appears may be a new, extended or corrected installation, or one assigned to another municipality.",
+    "lb": "Archivéiert Kopie vum wëchentleche Fichier pro Installatioun, zwou a zwou pro Gemeng a pro Filière verglach (Zeilen iwwer 100 kW, Schwell ausgeschloss). Ouni Identifiant: eng nei Zeil kann eng nei, erweidert oder korrigéiert Installatioun sinn, oder eng, déi enger anerer Gemeng zougeuerdnet gouf.",
+    "de": "Archivierte Kopien der wöchentlichen Datei je Anlage, paarweise je Gemeinde und Technologie verglichen (Zeilen über 100 kW, Schwelle ausgenommen). Ohne Anlagenkennung: Eine hinzugekommene Zeile kann eine neue, erweiterte oder korrigierte Anlage sein oder einer anderen Gemeinde zugeordnet worden sein."
+   }
+  },
+  {
    "path": "/data/data.json",
    "format": "application/json",
    "rows": 0,

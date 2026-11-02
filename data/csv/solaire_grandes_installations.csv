@@ -1,0 +1,22 @@
+﻿reading_date,previous_reading_date,change,lau2,commune,canton,technology,technology_leneda,capacity_kw,threshold_kw_excl,note,other_commune,source_url
+2026-11-02,2026-10-26,appeared,405,Heffingen,Mersch,pv,Installation photovoltaïque,4623.84,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-11-02,2026-10-26,appeared,101,Dippach,Capellen,wind,Eolienne,4260.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,704,Rambrouch,Redange,wind,Eolienne,12600.0,100,same_value_other_municipality,Ell,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,609,Schieren,Diekirch,wind,Eolienne,4260.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,606,Feulen,Diekirch,wind,Eolienne,3200.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,405,Heffingen,Mersch,pv,Installation photovoltaïque,1612.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,202,Differdange,Esch,pv,Installation photovoltaïque,999.6,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,505,Weiswampach,Clervaux,pv,Installation photovoltaïque,497.7,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,410,Nommern,Mersch,biogas,Biogaz,350.0,100,same_technology_changed_in_municipality,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,304,Luxembourg,Luxembourg,pv,Installation photovoltaïque,324.9,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,301,Bertrange,Luxembourg,pv,Installation photovoltaïque,234.9,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,807,Wiltz,Wiltz,pv,Installation photovoltaïque,226.95,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,204,Esch-sur-Alzette,Esch,pv,Installation photovoltaïque,199.5,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,204,Esch-sur-Alzette,Esch,pv,Installation photovoltaïque,199.5,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,204,Esch-sur-Alzette,Esch,pv,Installation photovoltaïque,185.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,302,Contern,Luxembourg,pv,Installation photovoltaïque,147.42,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,105,Kehlen,Capellen,pv,Installation photovoltaïque,120.12,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,appeared,610,Vallée de l'Ernz,Diekirch,pv,Installation photovoltaïque,109.02,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,disappeared,703,Ell,Redange,wind,Eolienne,12600.0,100,same_value_other_municipality,Rambrouch,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,disappeared,1101,Betzdorf,Grevenmacher,chp,Cogénération,625.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-10-26,2026-09-14,disappeared,410,Nommern,Mersch,biogas,Biogaz,300.0,100,same_technology_changed_in_municipality,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
