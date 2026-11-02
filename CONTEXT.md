@@ -144,7 +144,8 @@ Reste à faire (par priorité) :
 - tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda ;
 - compteur /e : listes blanches (lang, chemins) et limite de débit ;
 - `scripts/baremes.json` unique (barèmes dupliqués dans 5 endroits) ; découper build.py ;
-- moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu ;
+- ~~moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu~~
+  FAIT le 2/11/2026 (voir « Moteur du simulateur » ci-dessous) ;
 - accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement ; CSP à tester.
 
 ## Simulateur mis à jour le 2/11/2026
@@ -173,3 +174,48 @@ ILR (loi du 22/07/2026), projet de loi 8707 (amendement gouvernemental du 21/07/
   générée en JS (`aidNote1..3`).
 - Bogue préexistant NON corrigé : `.fld{display:grid}` l'emporte sur l'attribut `hidden`, donc le champ
   « Coût de la batterie » (`#fld-bcost`) reste visible sans batterie.
+
+## Moteur du simulateur (`/sim-engine.js`, 2/11/2026)
+
+Le calcul du simulateur est sorti du gabarit dans `sim-engine.js` (racine, servi publiquement :
+https://solaire.sitraka.lu/sim-engine.js). Fonctions PURES : ni DOM, ni variable globale, aucun
+libellé (la mise en forme et les textes traduits restent dans `template_simulateur.html`, qui garde
+`read()` et `render()` et appelle `E.compute(I, G, BAR)`).
+
+- **Chargement** : script classique `<script src="/sim-engine.js?v=…">` placé avant le script inline
+  (expose `window.SimEngine`) ; sous Node, `require()` ou `createRequire(import.meta.url)` (CommonJS,
+  pas de `package.json` dans le dépôt). `?v=` = 10 premiers caractères du SHA-256 du fichier, substitué
+  par build.py (jeton `__SIMENGINE_V__`) ; le fichier entre dans l'empreinte de la date de contenu des
+  pages simulateur. Cache court : `Cache-Control: public, max-age=3600` (`_headers`).
+- **Barèmes** : un seul objet passé en paramètre à toutes les fonctions qui en dépendent ; celui du site
+  est `SimEngine.BAREMES` (gelé, `version: '2026-11-02'`) :
+  `klimabonusPV {pMin 2, pCap 15, a 1155, b 35, max 10000}` (p × (a − a/b × p)),
+  `klimabonusBatt {qMin 2, qCap 9, a 500, b 18, max 2250}`, `hems {aideMax 500}`,
+  `tarif {seuilKw 10, petit 165, grand 155, baisse 0.97, anneeBase 2019, duree 15}` (€/MWh),
+  `horizon 25`, `anneeOnduleur 12` (indice 0 = 1re année), `autoconso {base 0.30, expo −0.6, min 0.1,
+  max 0.9, battGain 0.35, battJour 0.5}` (heuristique maison, pas un barème officiel). Pour une autre
+  hypothèse : `{...SimEngine.BAREMES, tarif: {...SimEngine.BAREMES.tarif, baisse: 0.96}}`.
+  ⚠️ `sim_numbers()` de build.py recopie encore `bonusPV` et le tarif en Python (FAQ) : à aligner si
+  les barèmes changent (le futur `scripts/baremes.json` devrait alimenter les deux).
+- **API** (`pvgis` = contenu de `data/pvgis.json`, `bar` = objet de barèmes) :
+  - `gridYield(pvgis, az, tilt)` : kWh/kWc/an de la grille PVGIS (0° = `0:0`, symétrie est/ouest) ;
+  - `yieldPerKwc(pvgis, az, tilt, canton)` : idem × `pvgis.cantons[canton].factor` ;
+  - `selfShare(prod, cons, batt, bar)` : part autoconsommée (fraction) ;
+  - `bonusPV(p, bar)`, `bonusBattery(q, bar)`, `hemsAid(hems, montant, bar)` (min(montant, aideMax),
+    option A seulement), `feedInTariff(p, annee, bar)` (€/kWh) ;
+  - `annualFlows({capex, self, inj, price, growth, deg, inv, injPrice(y)}, bar)` → `{cf, gains}` ;
+  - `cumulative(cf)`, `npvAt(cf, r)`, `netGain(cf, disc %)` (cumul non actualisé si 0),
+    `payback(cum)` (années ou `null`), `irr(cf)` (fraction ou `null`), `analyse(flux, disc)` ;
+  - `compute(I, pvgis, bar)` avec `I = {p, az, tilt, canton, cons, batt, scAuto, sc, cost, bcost,
+    hcost, haid, hems, inv, year, price, growth, market, deg, disc}` (mêmes unités que les champs de
+    la page) → `{P, cons, ey, prod, sc, self, inj, bonus, capexGross, tar, A, B, lcoeA, lcoeB}`,
+    `A`/`B` = `{cum[26], pb, npv, irr, y1}` (A = Klimabonus, B = tarif garanti).
+- **Tests** : `node --test tests/sim-engine.test.mjs` (19 tests). `tests/fixtures/sim-reference.json`
+  a été calculé AVANT l'extraction avec l'ancien code inline (commit d2cc47b) par
+  `tests/gen_reference_old.mjs` sur les 10 cas de `tests/fixtures/sim-cases.json` ; le nouveau moteur
+  les reproduit À L'IDENTIQUE (égalité stricte, pas de tolérance). Ne pas régénérer ces références
+  depuis le nouveau code. `tests/` est exclu du dist (`.vercelignore`).
+- **Réutilisation** (communes.sitraka.lu, plus tard) : charger `https://solaire.sitraka.lu/sim-engine.js`
+  ou en copier une version datée ; ne jamais diverger des barèmes sans changer `version`.
+- Comportement inchangé, une nuance : l'aide HEMS est désormais plafonnée par `hems.aideMax` (500 €),
+  ce que le champ `haid` (max 500) imposait déjà dans la page.

@@ -12,3 +12,6 @@
 
 /ev.js
   Cache-Control: public, max-age=86400
+
+/sim-engine.js
+  Cache-Control: public, max-age=3600

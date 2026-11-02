@@ -614,7 +614,7 @@ def _q_label(label):
 
 def sim_numbers(lang):
     """Montants d'exemple de la FAQ du simulateur, calculés avec les MÊMES formules
-    que le JS de template_simulateur.html (bonusPV, tariff) : plus aucun montant
+    que le moteur sim-engine.js (bonusPV, feedInTariff, objet BAREMES) : plus aucun montant
     écrit à la main (corrigé le 2/11/2026 : « 4 500 à 7 500 € » valait 4 300 à 7 300 €)."""
     kb = lambda p: 0 if p < 2 else (p * (1155 - 1155 / 35 * p) if p < 15 else 10000)
     tar = lambda p, n: (165 if p <= 10 else 155) * 0.97 ** (n - 2019) / 1000   # €/kWh
@@ -1345,13 +1345,16 @@ def render_all(data):
             sys.exit(f"{name} contient un tiret cadratin (U+2014)")
     # date de contenu par page et par langue, puis exports (le manifeste porte la plus récente)
     rt_js = (ROOT / "rt.js").read_text()
+    # moteur du simulateur (fonctions pures) : servi à part, version = empreinte du contenu
+    sim_engine = (ROOT / "sim-engine.js").read_text()
+    sim_engine_v = hashlib.sha256(sim_engine.encode()).hexdigest()[:10]
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                         rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
-    cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, dict_txt[lang], pv_txt,
+    cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
                                                      rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
@@ -1415,6 +1418,7 @@ def render_all(data):
         for token, value in prose_numbers(d, lang).items():
             html = html.replace(token, value)
         if sim:
+            html = html.replace("__SIMENGINE_V__", sim_engine_v)
             for token, value in sim_numbers(lang).items():
                 html = html.replace(token, value)
         # fragments prérendus (déjà localisés) : après traduction et jetons

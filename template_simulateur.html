@@ -575,6 +575,7 @@
 </footer>
 </div>
 
+<script src="/sim-engine.js?v=__SIMENGINE_V__"></script>
 <script>
 const G = /*__PVGIS__*/;
 const D = /*__DATA__*/;
@@ -621,23 +622,17 @@ const pct = n => Math.round(n)+' %';
 const $ = id => document.getElementById(id);
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
-/* ---- productible ---- */
-function yieldKwc(az, tilt){
-  const g = G.grid;
-  if(tilt===0) return g['0:0'];
-  return g[az+':'+tilt] ?? g[(-az)+':'+tilt];
-}
+/* ---- moteur de calcul : /sim-engine.js (fonctions pures, barèmes en paramètre) ---- */
+const E = window.SimEngine, BAR = E.BAREMES;
+const yieldKwc  = (az, tilt) => E.gridYield(G, az, tilt);   // grille PVGIS (tableau de repères)
+const bonusPV   = p => E.bonusPV(p, BAR);
+const tariff    = (p, n) => E.feedInTariff(p, n, BAR);      // €/kWh, 15 ans
 const CANTON_ORDER = ['Luxembourg','Capellen','Clervaux','Diekirch','Echternach','Esch','Grevenmacher','Mersch','Redange','Remich','Vianden','Wiltz'];
 (function(){
   const sel = $('canton');
   CANTON_ORDER.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;sel.append(o);});
   $('cantons-line').textContent = CANTON_ORDER.map(k=>k+' ×'+G.cantons[k].factor.toLocaleString('fr-FR',{minimumFractionDigits:3})).join(' · ');
 })();
-
-/* ---- aides et tarifs (règles officielles, voir sources) ---- */
-const bonusPV   = p => p < 2 ? 0 : (p < 15 ? p*(1155 - 1155/35*p) : 10000);
-const bonusBatt = q => q < 2 ? 0 : (q < 9 ? q*(500 - 500/18*q) : 2250);
-const tariff    = (p, n) => (p <= 10 ? 165 : 155) * Math.pow(0.97, n-2019) / 1000;   // €/kWh, 15 ans
 
 /* ---- état ---- */
 const I = {};
@@ -647,59 +642,7 @@ function read(){
   I.scAuto = $('sc-auto').checked;
   I.hems = $('hems').checked;
 }
-function selfShare(prod, cons, batt){
-  const r = prod/cons;
-  let s = 0.30*Math.pow(r,-0.6);
-  s = Math.min(0.9, Math.max(0.1, s));
-  if(batt>0){ const daily=cons/365; s += 0.35*(1-Math.exp(-batt/(0.5*daily))); }
-  return Math.min(0.9, s);
-}
-
-function compute(){
-  const P=I.p, cons=I.cons;
-  const ey = yieldKwc(I.az, I.tilt) * G.cantons[I.canton].factor;
-  const prod = P*ey;
-  const sc = I.scAuto ? selfShare(prod, cons, I.batt) : I.sc/100;
-  const self = Math.min(prod*sc, cons), inj = prod-self;
-  const hemsAid = I.hems ? I.haid : 0;   // aide HEMS (500 € par défaut), option A seulement
-  const bonus = bonusPV(P)+bonusBatt(I.batt)+hemsAid;
-  const capexGross = I.cost + (I.batt>0 ? I.bcost : 0) + (I.hems ? I.hcost : 0);
-  const tar = tariff(P, I.year);
-  const N=25;
-  function flows(optA){
-    const cf=[-(capexGross-(optA?bonus:0))], gains=[];
-    for(let y=0;y<N;y++){
-      const f=Math.pow(1-I.deg/100,y);
-      const price=I.price*Math.pow(1+I.growth/100,y);
-      const inj_price = optA ? I.market : (y<15 ? tar : I.market);
-      let g = self*f*price + inj*f*inj_price;
-      gains.push(g);
-      if(y===12) g -= I.inv;
-      cf.push(g);
-    }
-    return {cf,gains};
-  }
-  function analyse(f){
-    const cum=[]; let acc=0; f.cf.forEach(v=>{acc+=v;cum.push(acc);});
-    let pb=null;
-    for(let y=1;y<cum.length;y++){ if(cum[y]>=0 && cum[y-1]<0){ pb=(y-1)+(-cum[y-1])/(cum[y]-cum[y-1]); break; } }
-    if(pb===null && cum[0]>=0) pb=0;
-    // gain net : trésorerie cumulée à 25 ans (non actualisée) ou, si un taux est choisi, somme des flux actualisés
-    const r=I.disc/100, npv = r>0 ? f.cf.reduce((a,v,t)=>a+v/Math.pow(1+r,t),0) : cum[cum.length-1];
-    return {cum, pb, npv, irr:irr(f.cf), y1:f.gains[0]};
-  }
-  function irr(cf){
-    let lo=-0.99, hi=1.0;
-    const npv=r=>cf.reduce((a,v,t)=>a+v/Math.pow(1+r,t),0);
-    if(npv(lo)*npv(hi)>0) return null;
-    for(let i=0;i<80;i++){ const m=(lo+hi)/2; if(npv(m)>0) lo=m; else hi=m; }
-    return (lo+hi)/2;
-  }
-  const A=analyse(flows(true)), B=analyse(flows(false));
-  const prodTotal = Array.from({length:N},(_,y)=>prod*Math.pow(1-I.deg/100,y)).reduce((a,b)=>a+b,0);
-  return {P,cons,ey,prod,sc,self,inj,bonus,capexGross,tar,A,B,
-          lcoeA:(capexGross-bonus+I.inv)/prodTotal, lcoeB:(capexGross+I.inv)/prodTotal};
-}
+const compute = () => E.compute(I, G, BAR);
 
 /* ---- rendu ---- */
 function render(){

@@ -11,4 +11,5 @@ template_simulateur.html
 *.pdf
 archive/
 functions/
+tests/
 wrangler.toml
