@@ -13,3 +13,4 @@ archive/
 functions/
 tests/
 wrangler.toml
+.pytest_cache/

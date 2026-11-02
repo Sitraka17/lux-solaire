@@ -10,6 +10,8 @@ import json
 import re
 import unicodedata
 
+import baremes   # scripts/baremes.json : taux et plafonds du Klimabonus Gemengen (source unique)
+
 CPATH = {"en": "/municipality/", "fr": "/fr/commune/", "de": "/de/gemeinde/", "lb": "/lb/gemeng/"}
 FORPATH = {"en": "/for-municipalities/", "fr": "/fr/pour-les-communes/", "de": "/de/fuer-gemeinden/",
            "lb": "/lb/fir-gemengen/"}
@@ -21,11 +23,32 @@ FLAG_LABEL = {"en": "EN", "fr": "FR", "de": "DE", "lb": "LU"}
 SRC_LENEDA = "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"
 SRC_RNPP = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-"
             "population-par-commune-population-per-municipality/")
-SRC_KBG = ("https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/"
-           "guide-pratique-klimabonus-gemengen.pdf")
+SRC_KBG = baremes.B["klimabonus_gemengen"]["source"]   # guide pratique Klimabonus Gemengen
 SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", "population", "inhabitants as of"),
              "de": ("Quellen", "Bevölkerung", "Einwohner, Stand"), "lb": ("Quellen", "Populatioun", "Awunner, Stand")}
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
+
+# Klimabonus Gemengen : colonne « Aide » et note des pages, générées depuis baremes.json
+_KBG = baremes.gemengen()
+_KBG_YEAR, _OMB = _KBG["bareme"], _KBG["ombriere"]
+
+
+def _n(x, lang):
+    s = format(int(x), ",")
+    return s if lang == "en" else s.replace(",", " ")
+
+
+_KB_FMT = {
+    "fr": lambda t, first: f"{t['taux']} % ({'plafond ' if first else ''}{_n(t['plafond'], 'fr')} €/kWc)",
+    "en": lambda t, first: f"{t['taux']}% ({'cap ' if first else ''}€{_n(t['plafond'], 'en')}/kWp)",
+    "de": lambda t, first: f"{t['taux']} % ({'max. ' if first else ''}{_n(t['plafond'], 'de')} €/kWp)",
+    "lb": lambda t, first: f"{t['taux']} % ({'Plafong ' if first else ''}{_n(t['plafond'], 'lb')} €/kWp)",
+}
+
+
+def _kb_aid(lang, below, above):
+    """(sous la 1re tranche, une cellule par tranche du barème, au-delà de la dernière)."""
+    return (below, *[_KB_FMT[lang](t, i == 0) for i, t in enumerate(_KBG["tranches"])], above)
 
 
 def slug(name):
@@ -76,10 +99,9 @@ S = {
         "hist_note": lambda d: f"Entre parenthèses : variation nette depuis le {d}.",
         "kb_h": "Selon les tranches des aides aux communes",
         "kb_cols": ("Tranche", "Installations", "Puissance", "Aide pour une centrale communale"),
-        "kb_aid": ("pas d'aide communale (Klimabonus des particuliers : logements seulement)", "50 % (plafond 675 €/kWc)", "45 % (505 €/kWc)",
-                   "40 % (425 €/kWc)", "au cas par cas"),
-        "kb_note": ("Barème 2025 du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de "
-                    "parking est aidée à 45 % (990 €/kWc). Les données Leneda ne disent pas si une installation "
+        "kb_aid": _kb_aid("fr", "pas d'aide communale (Klimabonus des particuliers : logements seulement)", "au cas par cas"),
+        "kb_note": (f"Barème {_KBG_YEAR} du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de "
+                    f"parking est aidée à {_OMB['taux']} % ({_n(_OMB['plafond'], 'fr')} €/kWc). Les données Leneda ne disent pas si une installation "
                     "appartient à la commune ou à un particulier."),
         "cmp_h": "Comparaison", "cmp_canton": lambda k: f"Communes du canton de {k}",
         "cmp_size": "Communes de taille comparable",
@@ -125,9 +147,9 @@ S = {
         "hist_note": lambda d: f"In brackets: net change since {d}.",
         "kb_h": "By municipal subsidy band",
         "kb_cols": ("Band", "Installations", "Capacity", "Subsidy for a municipal plant"),
-        "kb_aid": ("no municipal aid (household Klimabonus: housing only)", "50% (cap €675/kWp)", "45% (€505/kWp)", "40% (€425/kWp)", "case by case"),
-        "kb_note": ("2025 Klimabonus Gemengen scale (practical guide, revised every year); a car-park canopy gets "
-                    "45% (€990/kWp). The Leneda data do not say whether an installation is municipal or private."),
+        "kb_aid": _kb_aid("en", "no municipal aid (household Klimabonus: housing only)", "case by case"),
+        "kb_note": (f"{_KBG_YEAR} Klimabonus Gemengen scale (practical guide, revised every year); a car-park canopy gets "
+                    f"{_OMB['taux']}% (€{_n(_OMB['plafond'], 'en')}/kWp). The Leneda data do not say whether an installation is municipal or private."),
         "cmp_h": "Comparison", "cmp_canton": lambda k: f"Municipalities in the canton of {k}",
         "cmp_size": "Municipalities of similar size",
         "cmp_cols": ("Municipality", "Canton", "PV (MW)", "Inst.", "W/inh.", "Inst./1,000 inh.", "Added (kW)"),
@@ -172,10 +194,9 @@ S = {
         "hist_note": lambda d: f"In Klammern: Nettoveränderung seit dem {d}.",
         "kb_h": "Nach Stufen der Gemeindeförderung",
         "kb_cols": ("Stufe", "Anlagen", "Leistung", "Förderung für eine Gemeindeanlage"),
-        "kb_aid": ("keine Gemeindeförderung (Klimabonus für Privathaushalte: nur Wohnungen)", "50 % (max. 675 €/kWp)", "45 % (505 €/kWp)",
-                   "40 % (425 €/kWp)", "im Einzelfall"),
-        "kb_note": ("Klimabonus Gemengen, Stand 2025 (Praxisleitfaden, jährlich angepasst); eine "
-                    "Parkplatzüberdachung wird mit 45 % gefördert (990 €/kWp). Die Leneda-Daten sagen nicht, ob "
+        "kb_aid": _kb_aid("de", "keine Gemeindeförderung (Klimabonus für Privathaushalte: nur Wohnungen)", "im Einzelfall"),
+        "kb_note": (f"Klimabonus Gemengen, Stand {_KBG_YEAR} (Praxisleitfaden, jährlich angepasst); eine "
+                    f"Parkplatzüberdachung wird mit {_OMB['taux']} % gefördert ({_n(_OMB['plafond'], 'de')} €/kWp). Die Leneda-Daten sagen nicht, ob "
                     "eine Anlage der Gemeinde oder Privatleuten gehört."),
         "cmp_h": "Vergleich", "cmp_canton": lambda k: f"Gemeinden im Kanton {k}",
         "cmp_size": "Gemeinden ähnlicher Größe",
@@ -222,10 +243,9 @@ S = {
         "hist_note": lambda d: f"An de Klameren: Nettoännerung zënter dem {d}.",
         "kb_h": "No de Tranche vun de Gemengenhëllefen",
         "kb_cols": ("Tranche", "Installatiounen", "Leeschtung", "Hëllef fir eng Gemengenanlag"),
-        "kb_aid": ("keng Gemengenhëllef (Klimabonus fir Privatleit: just Wunnengen)", "50 % (Plafong 675 €/kWp)", "45 % (505 €/kWp)",
-                   "40 % (425 €/kWp)", "vu Fall zu Fall"),
-        "kb_note": ("Bareem 2025 vum Klimabonus Gemengen (praktesche Guide, all Joer iwwerschafft); e "
-                    "Parkplazendaach kritt 45 % (990 €/kWp). D'Leneda-Donnéeë soen net, ob eng Installatioun der "
+        "kb_aid": _kb_aid("lb", "keng Gemengenhëllef (Klimabonus fir Privatleit: just Wunnengen)", "vu Fall zu Fall"),
+        "kb_note": (f"Bareem {_KBG_YEAR} vum Klimabonus Gemengen (praktesche Guide, all Joer iwwerschafft); e "
+                    f"Parkplazendaach kritt {_OMB['taux']} % ({_n(_OMB['plafond'], 'lb')} €/kWp). D'Leneda-Donnéeë soen net, ob eng Installatioun der "
                     "Gemeng oder engem Privatmann gehéiert."),
         "cmp_h": "Verglach", "cmp_canton": lambda k: f"Gemengen am Kanton {k}",
         "cmp_size": "Gemenge vun änlecher Gréisst",
@@ -479,7 +499,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             sc = jsround(sum(r[2] for r in rows[:SMALL_BINS]) / ct * 100)
             kb_rows = "".join(
                 f'<tr><th scope="row">{b}{unit(b)}</th><td>{T(n, lang)}</td><td>{capl(kw / 1000)}</td>'
-                f'<td>{L["kb_aid"][["0–30", "30–200", "200–500", "0,5–5 MW", "> 5 MW"].index(fb)]}</td></tr>'
+                f'<td>{L["kb_aid"][baremes.kb_labels().index(fb)]}</td></tr>'
                 for b, fb, (n, kw) in zip(d["kb"]["bins"], base["kb"]["bins"], base["kb"]["c"][str(c["lau2"])]))
             # comparaison
             me = ' class="me"'

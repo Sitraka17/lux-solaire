@@ -33,6 +33,8 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+import baremes   # scripts/baremes.json : source UNIQUE des barèmes (aides, tarifs)
+
 ROOT = Path(__file__).resolve().parent.parent
 DATASET_API = "https://data.public.lu/api/1/datasets/la-production-denergie-electrique-au-luxembourg/"
 DATASET_URL = "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"
@@ -43,10 +45,11 @@ KIT_VERSION = "2026-10-23"   # à incrémenter quand le pipeline de rendu change
 
 # classes de taille de l'histogramme (bornes fermées à droite : « 30 kW ou moins »)
 BIN_EDGES = [0, 5, 10, 15, 30, 100, 500, 1000, 5000, None]
-# tranches du « Klimabonus Gemengen » (aides aux communes, barème 2025, révisé chaque année) :
-# moins de 30 kWc = Klimabonus Wunnen (particuliers) ; 30-200 ; 200-500 ; 0,5-5 MWc
-KB_EDGES = [0, 30, 200, 500, 5000, None]
-KB_LABELS = ["0–30", "30–200", "200–500", "0,5–5 MW", "> 5 MW"]
+# tranches du « Klimabonus Gemengen » (aides aux communes, barème révisé chaque année),
+# lues dans scripts/baremes.json : [0, 30, 200, 500, 5000, None] et « 0–30 » … « > 5 MW »
+KB_EDGES = baremes.kb_edges()
+KB_LABELS = baremes.kb_labels()
+KBG_YEAR = baremes.gemengen()["bareme"]
 ARCHIVE = ROOT / "archive"   # copies hebdomadaires du fichier par installation (Leneda n'en garde qu'une)
 # comparaison avec la plus ancienne copie archivée (14/09/2026) : les textes publics
 # disent « depuis le 14 septembre 2026 », la référence ne doit donc jamais glisser
@@ -118,6 +121,54 @@ def _fetch(url, timeout):
             if attempt == 2:
                 sys.exit(f"téléchargement impossible ({e}) : {url}")
             time.sleep(5 * (attempt + 1))
+
+
+# ──────────────── contrôle du format Leneda ───────────────────────────────────
+N_COMMUNES = 100   # communes des fichiers Leneda (2026) ; les textes disent « 100 communes »
+COMMUNE_COLS = ["LAU2", "Commune", "Canton"] + [t + " Performance [kW]" for t in TECHS] + [PV + " Producteur [#]"]
+NG_COLS = ["LAU2", "Commune", "Type d'installation", "Puissance installée [kW]"]
+
+
+def check_leneda(frames, ng):
+    """Échoue avec un message clair si le format des fichiers Leneda a changé :
+    colonnes attendues (fichiers par commune et fichier par installation), types
+    d'installation connus, nombre de communes (100 dans le relevé le plus récent,
+    95 à 105 dans les relevés trimestriels plus anciens)."""
+    problems = []
+    labels = list(frames)
+    for label, df in frames.items():
+        miss = [c for c in COMMUNE_COLS if c not in df.columns]
+        if miss:
+            problems.append(f"fichier par commune « {label} » : colonnes absentes {miss} "
+                            f"(colonnes reçues : {list(df.columns)})")
+            continue
+        n = df["LAU2"].nunique()
+        if label == labels[-1] and (n != N_COMMUNES or len(df) != N_COMMUNES):
+            problems.append(f"relevé le plus récent « {label} » : {len(df)} lignes et {n} codes LAU2 au lieu de "
+                            f"{N_COMMUNES} (fusion de communes ? adapter N_COMMUNES et les textes « 100 communes »)")
+        elif not 95 <= n <= 105:
+            problems.append(f"fichier par commune « {label} » : {n} communes (attendu : environ {N_COMMUNES})")
+        bad = [c for c in COMMUNE_COLS[3:] if pd.to_numeric(df[c], errors="coerce").isna().any()]
+        if bad:
+            problems.append(f"fichier par commune « {label} » : valeurs non numériques dans {bad}")
+    miss = [c for c in NG_COLS if c not in ng.columns]
+    if miss:
+        problems.append(f"fichier par installation : colonnes absentes {miss} (colonnes reçues : {list(ng.columns)})")
+    else:
+        types = set(ng["Type d'installation"].dropna().unique())
+        if PV not in types:
+            problems.append(f"fichier par installation : aucun type « {PV} » (types reçus : {sorted(types)})")
+        unknown = types - set(TECHS)
+        if unknown:
+            problems.append(f"fichier par installation : types d'installation inconnus {sorted(unknown)} "
+                            f"(attendus : {TECHS})")
+        if pd.to_numeric(ng["Puissance installée [kW]"], errors="coerce").isna().any():
+            problems.append("fichier par installation : puissances non numériques")
+        n = ng["LAU2"].nunique()
+        if not 95 <= n <= N_COMMUNES:
+            problems.append(f"fichier par installation : {n} communes (attendu : au plus {N_COMMUNES}, environ {N_COMMUNES})")
+    if problems:
+        sys.exit("format Leneda inattendu, build arrêté :\n  " + "\n  ".join(problems))
 
 
 def _label_fr(d):
@@ -582,8 +633,11 @@ SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechn
 
 def _jsround(x):
     """Arrondi de Math.round côté JS (moitié vers +∞) : la prose et les KPI
-    calculés dans le navigateur ne peuvent pas diverger d'une unité."""
-    return math.floor(x + 0.5)
+    calculés dans le navigateur ne peuvent pas diverger d'une unité. Pas de
+    floor(x + 0.5) : pour 0.49999999999999994, x + 0.5 vaut 1.0 en flottant alors
+    que Math.round renvoie 0 (cas couvert par tests/test_arrondis.py)."""
+    f = math.floor(x)
+    return f + 1 if x - f >= 0.5 else f
 
 
 def _thousands(n, lang):
@@ -614,10 +668,10 @@ def _q_label(label):
 
 def sim_numbers(lang):
     """Montants d'exemple de la FAQ du simulateur, calculés avec les MÊMES formules
-    que le moteur sim-engine.js (bonusPV, feedInTariff, objet BAREMES) : plus aucun montant
-    écrit à la main (corrigé le 2/11/2026 : « 4 500 à 7 500 € » valait 4 300 à 7 300 €)."""
-    kb = lambda p: 0 if p < 2 else (p * (1155 - 1155 / 35 * p) if p < 15 else 10000)
-    tar = lambda p, n: (165 if p <= 10 else 155) * 0.97 ** (n - 2019) / 1000   # €/kWh
+    que le moteur sim-engine.js (bonusPV, feedInTariff), sur les barèmes de
+    scripts/baremes.json : plus aucun montant écrit à la main (corrigé le 2/11/2026 :
+    « 4 500 à 7 500 € » valait 4 300 à 7 300 €)."""
+    kb, tar = baremes.kb_pv, baremes.tarif   # tar : €/kWh
     c_lo, c_hi = round(1600 * 6, -3), round(2200 * 6, -3)   # devis 1 600 à 2 200 €/kWc, 6 kWc
     net = lambda c: _jsround((c - kb(6)) / 100) * 100        # après Klimabonus, à la centaine
     return {
@@ -936,10 +990,10 @@ CSV_NOTES = {
                                  "en": "Weekly per-installation file, grouped by municipality (LAU2); right-closed bins (kw_max included); capacity in kW.",
                                  "lb": "Wëchentleche Fichier pro Installatioun, pro Gemeng (LAU2) gruppéiert; Klasse riets zou (kw_max abegraff); Kapazitéit a kW.",
                                  "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW."},
-    "solaire_communes_tranches_aides": {"fr": "Même fichier, tranches 30 / 200 / 500 kWc / 5 MWc du Klimabonus Gemengen (barème 2025) ; capacité en kW.",
-                                        "en": "Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp (2025 scale); capacity in kW.",
-                                        "lb": "Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem 2025); Kapazitéit a kW.",
-                                        "de": "Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand 2025); Leistung in kW."},
+    "solaire_communes_tranches_aides": {"fr": f"Même fichier, tranches 30 / 200 / 500 kWc / 5 MWc du Klimabonus Gemengen (barème {KBG_YEAR}) ; capacité en kW.",
+                                        "en": f"Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp ({KBG_YEAR} scale); capacity in kW.",
+                                        "lb": f"Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem {KBG_YEAR}); Kapazitéit a kW.",
+                                        "de": f"Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand {KBG_YEAR}); Leistung in kW."},
 }
 
 
@@ -1346,15 +1400,18 @@ def render_all(data):
     # date de contenu par page et par langue, puis exports (le manifeste porte la plus récente)
     rt_js = (ROOT / "rt.js").read_text()
     # moteur du simulateur (fonctions pures) : servi à part, version = empreinte du contenu
-    sim_engine = (ROOT / "sim-engine.js").read_text()
+    # son bloc BAREMES est régénéré depuis scripts/baremes.json (source unique) avant l'empreinte
+    sim_engine = baremes.sync_engine(ROOT / "sim-engine.js")
+    bar_txt = baremes.PATH.read_text()
+    bar_json = json.dumps(baremes.engine_bar(), ensure_ascii=False, separators=(",", ":"))
     sim_engine_v = hashlib.sha256(sim_engine.encode()).hexdigest()[:10]
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                        rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
-    cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, dict_txt[lang], pv_txt,
+                                        rt_js, KIT_VERSION, bar_txt]) for lang in ("fr", "en", "de", "lb")}
+    cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, bar_txt, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
                                                      rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
@@ -1419,6 +1476,8 @@ def render_all(data):
             html = html.replace(token, value)
         if sim:
             html = html.replace("__SIMENGINE_V__", sim_engine_v)
+            html = (html.replace("__BAREMES_JSON__", bar_json)
+                        .replace("__HEMS_MAX__", str(baremes.B["aide_hems"]["valeur"]["aideMax"])))
             for token, value in sim_numbers(lang).items():
                 html = html.replace(token, value)
         # fragments prérendus (déjà localisés) : après traduction et jetons
@@ -1438,17 +1497,31 @@ def render_all(data):
         check_output(html, lang, dct)
         return html
 
+    checked = []   # (nom, html, langue, type) : contrôle des chiffres de barème cités
     for sim, paths in ((False, LANG_PATHS), (True, SIM_PATHS)):
         for lang, path in paths:
             out = ROOT / path.strip("/") / "index.html" if path.strip("/") else ROOT / "index.html"
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(render(blobs[lang], lang, sim))
+            page = render(blobs[lang], lang, sim)
+            out.write_text(page)
+            checked.append((str(out.relative_to(ROOT)), page, lang, "sim" if sim else "dash"))
     # pages par commune et « Pour les communes » (reprennent le style des pages rendues)
     import communes
     csrc = (ROOT / "scripts" / "communes.py").read_text()
     cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                                        KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
+                                                        KIT_VERSION, bar_txt]) for lang in ("fr", "en", "de", "lb")}
     groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG, _jsround)
+    for lang in ("fr", "en", "de", "lb"):
+        for f in sorted((ROOT / communes.CPATH[lang].strip("/")).glob("*/index.html")):
+            checked.append((str(f.relative_to(ROOT)), f.read_text(), lang, "commune"))
+        f = ROOT / communes.FORPATH[lang].strip("/") / "index.html"
+        checked.append((str(f.relative_to(ROOT)), f.read_text(), lang, "info"))
+    problems = baremes.check_pages(checked)
+    if problems:
+        sys.exit("chiffres de barème cités qui ne correspondent plus à scripts/baremes.json "
+                 "(corriger la phrase dans le gabarit, les dictionnaires i18n ou communes.py) :\n  "
+                 + "\n  ".join(problems[:40]) + (f"\n  … et {len(problems) - 40} autres" if len(problems) > 40 else ""))
+    print(f"barèmes : {len(checked)} pages contrôlées contre scripts/baremes.json (version {baremes.B['version']})")
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)] + groups_c)
     print(f"{len(groups_c) * 4} pages communales et « pour les communes » écrites")
     print(f"8 pages rebuilt (tableau de bord + simulateur × en/fr/de/lb) : "
@@ -1459,6 +1532,7 @@ def render_all(data):
 
 def main():
     frames, wdate, ng = fetch_resources()
+    check_leneda(frames, ng)
     archive_snapshot(ng, wdate)
     pop, pop_date = fetch_population()
     data = build(frames, wdate, ng, pop, pop_date, load_baseline(wdate))

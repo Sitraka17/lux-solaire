@@ -94,7 +94,8 @@ installations PV par classe de taille, commune par commune.
   tranche vide à l'échelle nationale écartée), avec une note des taux du
   barème 2025 (guide pratique V1 05/2025 : 50 % ≤ 675 €/kWc, 45 % ≤ 505,
   40 % ≤ 425, ombrière 45 % ≤ 990). ⚠️ Barème révisé chaque année : vérifier
-  les taux chaque janvier et mettre à jour la note dans `template.html` + les 3
+  les taux chaque janvier dans `scripts/baremes.json` (source unique, voir « Barèmes uniques et
+  tests ») ; le build signale alors les phrases à corriger dans `template.html` + les 3
   dictionnaires. Export `solaire_communes_tranches_aides.csv`.
 - **Archive** `archive/leneda-not-grouped-AAAA-MM-JJ.csv.gz` (~115 Ko/semaine) :
   Leneda remplace son fichier par installation chaque semaine sans garder
@@ -141,9 +142,10 @@ Reste à faire (par priorité) :
 - ~~simulateur : HEMS, 2031, toiture/façade, régime transitoire B, prix 0,16/0,20, gain non actualisé~~
   FAIT le 2/11/2026 (voir « Simulateur mis à jour le 2/11/2026 » ci-dessous) ;
 - alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow ;
-- tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda ;
+- ~~tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda~~
+  FAIT le 2/11/2026 (voir « Barèmes uniques et tests ») ;
 - compteur /e : listes blanches (lang, chemins) et limite de débit ;
-- `scripts/baremes.json` unique (barèmes dupliqués dans 5 endroits) ; découper build.py ;
+- ~~`scripts/baremes.json` unique~~ FAIT le 2/11/2026 ; découper build.py ;
 - ~~moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu~~
   FAIT le 2/11/2026 (voir « Moteur du simulateur » ci-dessous) ;
 - accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement ; CSP à tester.
@@ -195,8 +197,8 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
   `horizon 25`, `anneeOnduleur 12` (indice 0 = 1re année), `autoconso {base 0.30, expo −0.6, min 0.1,
   max 0.9, battGain 0.35, battJour 0.5}` (heuristique maison, pas un barème officiel). Pour une autre
   hypothèse : `{...SimEngine.BAREMES, tarif: {...SimEngine.BAREMES.tarif, baisse: 0.96}}`.
-  ⚠️ `sim_numbers()` de build.py recopie encore `bonusPV` et le tarif en Python (FAQ) : à aligner si
-  les barèmes changent (le futur `scripts/baremes.json` devrait alimenter les deux).
+  Depuis le 2/11/2026, ce bloc est RÉGÉNÉRÉ par build.py depuis `scripts/baremes.json` (marqueurs
+  `BAREMES:DEBUT` / `BAREMES:FIN`, ne pas l'éditer à la main) et `sim_numbers()` lit le même fichier.
 - **API** (`pvgis` = contenu de `data/pvgis.json`, `bar` = objet de barèmes) :
   - `gridYield(pvgis, az, tilt)` : kWh/kWc/an de la grille PVGIS (0° = `0:0`, symétrie est/ouest) ;
   - `yieldPerKwc(pvgis, az, tilt, canton)` : idem × `pvgis.cantons[canton].factor` ;
@@ -219,3 +221,41 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
   ou en copier une version datée ; ne jamais diverger des barèmes sans changer `version`.
 - Comportement inchangé, une nuance : l'aide HEMS est désormais plafonnée par `hems.aideMax` (500 €),
   ce que le champ `haid` (max 500) imposait déjà dans la page.
+
+## Barèmes uniques et tests (2/11/2026)
+
+- **`scripts/baremes.json`** = source UNIQUE des barèmes : Klimabonus PV (P × (1 155 − 33 P), 2 à
+  15 kWc, 10 000 €), batterie (Q × (500 − 500/18 Q), 2 250 €), HEMS (500 €), tarif d'injection (165 /
+  155 €/MWh × 0,97^(n−2019), 10 kW, 15 ans), Klimabonus Gemengen (barème 2025 : 50/45/40 %,
+  675/505/425 €/kWc, ombrière 45 % / 990 €/kWc), hypothèses du modèle (horizon, onduleur,
+  autoconsommation, sans source). Chaque entrée : `valeur`, `source` (URL), `date_source`,
+  `date_verification`. Le fichier n'est pas servi (`scripts/` exclu du dist).
+- **`scripts/baremes.py`** (chargement et usages) : `engine_bar()` (objet au format du moteur),
+  `sync_engine()` (régénère le bloc BAREMES de `sim-engine.js` à chaque build), `kb_pv`, `kb_batt`,
+  `tarif` (FAQ), `kb_edges` / `kb_labels` (tranches Gemengen de build.py et communes.py),
+  `check_page` / `check_pages` (contrôle des phrases).
+- **Simulateur** : l'objet est inliné au build (`BAR = Object.freeze(__BAREMES_JSON__)` dans
+  `template_simulateur.html`) ; le champ `haid` prend son maximum de `aide_hems` (`__HEMS_MAX__`).
+- **Pages communales** : colonne « Aide », note et lien du guide générés depuis le fichier (communes.py).
+- **Contrôle des phrases** : les phrases traduites qui citent ces chiffres restent dans les gabarits et
+  les dictionnaires ; après rendu, `baremes.check_pages` relit les 412 pages (simulateur, tableau de
+  bord, pages communales) et le build ÉCHOUE si un chiffre cité (formules, plafonds, seuils, tarif,
+  HEMS, taux et plafonds Gemengen, ombrière, année du barème) ne correspond plus, ou si une phrase
+  attendue a disparu (motif reformulé : adapter `check_page`). Non contrôlés : le régime transitoire
+  de l'option B (20 %, 500 €/kWc), les « 15 ans » du tarif, les bornes « 30 / 200 / 500 kWc » des
+  textes des pages « Pour les communes ».
+- **Format Leneda** : `check_leneda()` (build.py, juste après le téléchargement) vérifie les colonnes
+  des fichiers par commune (`COMMUNE_COLS`) et par installation (`NG_COLS`), les types d'installation
+  connus, des valeurs numériques, et 100 communes (`N_COMMUNES`) dans le relevé le plus récent (95 à 105
+  dans les plus anciens) ; message clair sinon.
+- **Tests Python** : `/usr/bin/python3 -m pytest tests/` (pytest installé avec `--user`) : slug Python =
+  `slugC` et `slug` du sélecteur de template.html exécutés par node, sur les 100 noms réels ;
+  `_jsround` = Math.round et `_dec1` = toLocaleString sur des cas .5 (comparés à node) ; barèmes et
+  contrôle des phrases (valeurs périmées détectées) ; classes de taille avec `include_lowest` ;
+  format Leneda ; build « à blanc » (copie du dépôt en dossier temporaire, `.cache/` + archives, sans
+  réseau, sauté proprement s'il manque une réponse en cache). Tests du moteur : `node --test
+  tests/sim-engine.test.mjs`.
+- **`_jsround`** corrigé : `floor(x + 0.5)` donnait 1 pour 0.49999999999999994 (Math.round : 0).
+- **`vercel.json` supprimé** (inutile sur Cloudflare Pages) : son `Cache-Control: public, max-age=3600`
+  sur `/data/*` est passé dans `_headers` ; `Access-Control-Allow-Origin: *` est déjà envoyé par
+  Cloudflare Pages (vérifié le 2/11/2026), donc pas répété. `.vercelignore` reste (lu par le workflow).

@@ -15,3 +15,8 @@
 
 /sim-engine.js
   Cache-Control: public, max-age=3600
+
+# ex-vercel.json (supprimé le 2/11/2026) : Access-Control-Allow-Origin: * est déjà envoyé
+# par Cloudflare Pages sur toutes les réponses, ne pas le répéter ici
+/data/*
+  Cache-Control: public, max-age=3600

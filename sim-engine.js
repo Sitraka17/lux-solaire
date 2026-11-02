@@ -3,7 +3,8 @@
  * Fonctions PURES : aucun accès au DOM, aucune variable globale lue ou écrite
  * (hors l'export final). Toutes les règles chiffrées (aides, tarifs, horizon,
  * heuristique d'autoconsommation) viennent d'UN objet de barèmes passé en
- * paramètre ; BAREMES ci-dessous est celui du site (sources relues le 2/11/2026).
+ * paramètre ; BAREMES ci-dessous est celui du site (sources relues le 2/11/2026),
+ * régénéré par scripts/build.py depuis scripts/baremes.json (source unique).
  * Chargement : script classique (<script src="/sim-engine.js">) qui expose
  * window.SimEngine, ou require() / createRequire() sous Node (CommonJS).
  * API documentée dans CONTEXT.md, section « Moteur du simulateur ».
@@ -25,17 +26,19 @@
    *                        pendant duree ans, puis prix de marché
    *  Autoconsommation    : s = base × (prod/cons)^expo borné à [min, max] ; batterie :
    *                        + battGain × (1 − exp(−batt / (battJour × cons/365))), borné à max */
+  /* BAREMES:DEBUT : bloc régénéré par scripts/build.py depuis scripts/baremes.json, ne pas éditer à la main. anneeOnduleur = indice d'année (0 = première année). */
   var BAREMES = Object.freeze({
-    version: '2026-11-02',
-    sources: 'guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026)',
+    version: "2026-11-02",
+    sources: "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026)",
     klimabonusPV: Object.freeze({ pMin: 2, pCap: 15, a: 1155, b: 35, max: 10000 }),
     klimabonusBatt: Object.freeze({ qMin: 2, qCap: 9, a: 500, b: 18, max: 2250 }),
     hems: Object.freeze({ aideMax: 500 }),
     tarif: Object.freeze({ seuilKw: 10, petit: 165, grand: 155, baisse: 0.97, anneeBase: 2019, duree: 15 }),
     horizon: 25,
-    anneeOnduleur: 12,   // indice d'année (0 = première année) où l'onduleur est remplacé
-    autoconso: Object.freeze({ base: 0.30, expo: -0.6, min: 0.1, max: 0.9, battGain: 0.35, battJour: 0.5 }),
+    anneeOnduleur: 12,
+    autoconso: Object.freeze({ base: 0.3, expo: -0.6, min: 0.1, max: 0.9, battGain: 0.35, battJour: 0.5 }),
   });
+  /* BAREMES:FIN */
 
   /* ---- productible ---- */
   // kWh par kWc et par an au centre du pays (grille PVGIS), symétrie est/ouest

@@ -1,0 +1,66 @@
+{
+ "_doc": "Source UNIQUE des barèmes du site (aides, tarifs). Lue par scripts/build.py (montants de la FAQ, bloc BAREMES de sim-engine.js régénéré, objet inliné dans les pages du simulateur, tranches KB_EDGES, contrôle des chiffres cités dans les phrases traduites) et par scripts/communes.py (colonne « Aide » et note des pages communales). Pour chaque entrée : valeur, source (URL), date_source (date de mise à jour ou de publication de la source), date_verification (dernière relecture). Après toute modification : relancer /usr/bin/python3 scripts/build.py, qui échoue si une phrase des gabarits ou des dictionnaires cite encore l'ancien chiffre, puis mettre à jour ces phrases (template*.html et scripts/i18n_*.json).",
+ "version": "2026-11-02",
+ "sources_moteur": "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026)",
+ "klimabonus_pv": {
+  "libelle": "Klimabonus photovoltaïque (logement, autoconsommation, pose sur toiture ou façade)",
+  "formule": "0 sous pMin kWc ; P × (a − a/b × P) € de pMin à pCap exclu (a/b = 33) ; max € à partir de pCap kWc",
+  "valeur": {"pMin": 2, "pCap": 15, "a": 1155, "b": 35, "max": 10000},
+  "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
+  "source_titre": "guichet.lu, Klimabonus 2026, aide pour les installations techniques",
+  "date_source": "2026-08-11",
+  "date_verification": "2026-11-02"
+ },
+ "klimabonus_batterie": {
+  "libelle": "Klimabonus batterie (stockage raccordé à une installation PV en autoconsommation)",
+  "formule": "0 sous qMin kWh ; Q × (a − a/b × Q) € de qMin à qCap exclu ; max € à partir de qCap kWh",
+  "valeur": {"qMin": 2, "qCap": 9, "a": 500, "b": 18, "max": 2250},
+  "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
+  "source_titre": "guichet.lu, Klimabonus 2026, aide pour les installations techniques",
+  "date_source": "2026-08-11",
+  "date_verification": "2026-11-02"
+ },
+ "aide_hems": {
+  "libelle": "Klimabonus système de gestion de l'énergie (HEMS) pilotant au moins deux équipements, factures du 1/10/2026 au 31/12/2030",
+  "valeur": {"aideMax": 500},
+  "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
+  "source_titre": "guichet.lu, Klimabonus 2026 ; aussi gouvernement.lu, communiqué du 16/07/2026",
+  "date_source": "2026-08-11",
+  "date_verification": "2026-11-02"
+ },
+ "tarif_injection": {
+  "libelle": "Tarif d'injection garanti (RGD modifié du 1/8/2014, art. 17ter), selon l'année n de première injection",
+  "formule": "(P ≤ seuilKw ? petit : grand) × baisse^(n − anneeBase) €/MWh, pendant duree ans, jusqu'à plafondKw kW",
+  "valeur": {"seuilKw": 10, "plafondKw": 30, "petit": 165, "grand": 155, "baisse": 0.97, "anneeBase": 2019, "duree": 15},
+  "source": "https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2019/05-mai/07-energie-solaire.html",
+  "source_titre": "gouvernement.lu, communiqué du 7/5/2019 (RGD du 12/4/2019) ; valeurs 2026 recoupées avec le manuel des procédures Klima-Agence v1.5 (09/2025)",
+  "date_source": "2019-05-07",
+  "date_verification": "2026-11-02"
+ },
+ "klimabonus_gemengen": {
+  "libelle": "Klimabonus Gemengen, mesure 17 (centrale PV sur bâtiment communal), barème révisé chaque année",
+  "formule": "taux % des coûts éligibles, plafonné à plafond €/kWc, par tranche de puissance ]deKwc, aKwc]",
+  "valeur": {
+   "bareme": 2025,
+   "tranches": [
+    {"deKwc": 30, "aKwc": 200, "taux": 50, "plafond": 675},
+    {"deKwc": 200, "aKwc": 500, "taux": 45, "plafond": 505},
+    {"deKwc": 500, "aKwc": 5000, "taux": 40, "plafond": 425}
+   ],
+   "ombriere": {"taux": 45, "plafond": 990}
+  },
+  "source": "https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf",
+  "source_titre": "Guide pratique Klimabonus Gemengen, V1 05/2025 (dernier barème publié au 1/11/2026)",
+  "date_source": "2025-05",
+  "date_verification": "2026-11-01"
+ },
+ "modele": {
+  "libelle": "Hypothèses du simulateur lux-solaire (PAS un barème officiel) : horizon, année de remplacement de l'onduleur (indice 0 = 1re année), heuristique d'autoconsommation",
+  "valeur": {"horizon": 25, "anneeOnduleur": 12,
+             "autoconso": {"base": 0.30, "expo": -0.6, "min": 0.1, "max": 0.9, "battGain": 0.35, "battJour": 0.5}},
+  "source": null,
+  "source_titre": "estimation simplifiée lux-solaire (voir CONTEXT.md)",
+  "date_source": null,
+  "date_verification": "2026-11-02"
+ }
+}

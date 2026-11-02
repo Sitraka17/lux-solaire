@@ -329,7 +329,7 @@
           <label class="chk"><input type="checkbox" id="hems"> Ajouter un système de gestion de l'énergie (HEMS)</label>
           <div class="hems-in" id="hems-in" hidden>
             <div class="row"><label for="hcost">Coût du HEMS, posé</label><span class="num"><input type="number" id="hcost" min="0" max="20000" step="50" value="1000">€</span></div>
-            <div class="row"><label for="haid">Aide Klimabonus HEMS (option A)</label><span class="num"><input type="number" id="haid" min="0" max="500" step="50" value="500">€</span></div>
+            <div class="row"><label for="haid">Aide Klimabonus HEMS (option A)</label><span class="num"><input type="number" id="haid" min="0" max="__HEMS_MAX__" step="50" value="__HEMS_MAX__">€</span></div>
           </div>
           <small>Klimabonus de 500 € pour un système qui pilote au moins deux équipements parmi : panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable ; factures du 1er octobre 2026 au 31 décembre 2030, hors préfinancement. Coût par défaut (1 000 €) : hypothèse sans source, à remplacer par votre devis. L'aide n'est comptée qu'en option A, le cumul avec le tarif garanti n'étant pas précisé ; le gain d'autoconsommation du HEMS n'est pas modélisé.</small>
         </div>
@@ -623,7 +623,8 @@ const $ = id => document.getElementById(id);
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 /* ---- moteur de calcul : /sim-engine.js (fonctions pures, barèmes en paramètre) ---- */
-const E = window.SimEngine, BAR = E.BAREMES;
+// barèmes : scripts/baremes.json, inliné au build (même objet que SimEngine.BAREMES, régénéré depuis le même fichier)
+const E = window.SimEngine, BAR = Object.freeze(__BAREMES_JSON__);
 const yieldKwc  = (az, tilt) => E.gridYield(G, az, tilt);   // grille PVGIS (tableau de repères)
 const bonusPV   = p => E.bonusPV(p, BAR);
 const tariff    = (p, n) => E.feedInTariff(p, n, BAR);      // €/kWh, 15 ans
