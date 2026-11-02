@@ -296,21 +296,21 @@
     </form>
     <div>
       <div class="kpis">
-        <div class="kpi hero"><div class="lbl">Annual production</div><div class="val" id="r-prod">–</div><div class="sub" id="r-prod-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Self-consumed</div><div class="val" id="r-self">–</div><div class="sub" id="r-self-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Fed into the grid</div><div class="val" id="r-inj">–</div><div class="sub" id="r-inj-sub">–</div></div>
-        <div class="kpi"><div class="lbl">First-year gain</div><div class="val" id="r-gain">–</div><div class="sub" id="r-gain-sub">–</div></div>
+        <div class="kpi hero"><div class="lbl">Annual production</div><div class="val" id="r-prod">6,402 kWh</div><div class="sub" id="r-prod-sub">1,067 kWh per kWp, i.e. 1.6 times the consumption of an average household (3,900 kWh)</div></div>
+        <div class="kpi"><div class="lbl">Self-consumed</div><div class="val" id="r-self">1,427 kWh</div><div class="sub" id="r-self-sub">22% of your production · covers 37% of your consumption</div></div>
+        <div class="kpi"><div class="lbl">Fed into the grid</div><div class="val" id="r-inj">4,975 kWh</div><div class="sub" id="r-inj-sub">78% of production</div></div>
+        <div class="kpi"><div class="lbl">First-year gain</div><div class="val" id="r-gain">534 €/year</div><div class="sub" id="r-gain-sub">option A: 534 € · option B: 929 €</div></div>
       </div>
-      <p class="hint" id="r-cover">–</p>
+      <p class="hint" id="r-cover">Your system produces the equivalent of 164% of your annual consumption, but the sun and your usage do not coincide: only the self-consumed share saves you from buying kWh.</p>
       <figure class="fig">
         <div class="svgwrap bar" id="fig-months"></div>
         <figcaption><b>Figure 1.</b> Estimated monthly production (kWh) and self-consumed share. PVGIS profile for Luxembourg City scaled to your system; the self-consumed share is spread in proportion to production.</figcaption>
       </figure>
       <figure class="tab">
-        <table class="mini" id="tab-detail"></table>
+        <table class="mini" id="tab-detail"><thead><tr><th scope="col">Item</th><th scope="col">Option A · Klimabonus</th><th scope="col">Option B · guaranteed tariff</th></tr></thead><tbody><tr><th scope="row">Self-consumed kWh × value of the avoided kWh</th><td>1,427 × 20.0 c€ = 285 €</td><td>1,427 × 20.0 c€ = 285 €</td></tr><tr><th scope="row">kWh fed in × sale price</th><td>4,975 × 5.0 c€ = 249 €</td><td>4,975 × 12.9 c€ = 643 €</td></tr><tr><th scope="row"><strong>First-year gain</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus deducted from the invoice</th><td>5,742 €</td><td>0 €</td></tr><tr><th scope="row">Left to pay</th><td>5,058 €</td><td>10,800 €</td></tr></tbody></table>
         <figcaption><b>Table 1.</b> First-year breakdown by remuneration scheme. Option A: Klimabonus and surplus sold at market price. Option B: 15-year guaranteed feed-in tariff, no Klimabonus. Prices are those set in tool 2.</figcaption>
       </figure>
-      <p class="hint" id="r-canton">–</p>
+      <p class="hint" id="r-canton">In the canton of Luxembourg: 6,928 PV installations connected, 513 W of solar PV per inhabitant, 32.1 installations per 1,000 inhabitants (Leneda, 2 November 2026).</p>
     </div>
   </div>
 </section>
@@ -388,28 +388,28 @@
       </fieldset>
     </form>
     <div>
-      <div class="verdict" id="verdict"><div class="big">–</div><p>–</p></div>
+      <div class="verdict good" id="verdict"><div class="big">Pays back</div><p>Option A (Klimabonus) pays the system back in <strong>9.5 years</strong> and leaves a net gain of <strong>+6,975 €</strong> over 25 years (undiscounted). The two options are level at 25 years.</p></div>
       <div class="cmp">
         <div>
-          <h3>Option A · Klimabonus<span class="tag" id="tag-a"></span></h3>
+          <h3>Option A · Klimabonus<span class="tag win" id="tag-a">the better deal</span></h3>
           <dl>
-            <dt>Klimabonus (panels, battery, HEMS)</dt><dd id="a-bonus">–</dd>
-            <dt>Left to pay</dt><dd id="a-capex">–</dd>
-            <dt>First-year gain</dt><dd id="a-y1">–</dd>
-            <dt>Payback time</dt><dd id="a-pb">–</dd>
-            <dt>Net gain over 25 years <span class="npvq">(undiscounted)</span></dt><dd id="a-npv">–</dd>
-            <dt>Annual return (IRR)</dt><dd id="a-irr">–</dd>
+            <dt>Klimabonus (panels, battery, HEMS)</dt><dd id="a-bonus"><b>5,742 €</b></dd>
+            <dt>Left to pay</dt><dd id="a-capex"><b>5,058 €</b></dd>
+            <dt>First-year gain</dt><dd id="a-y1">534 €</dd>
+            <dt>Payback time</dt><dd id="a-pb"><b>9.5 years</b></dd>
+            <dt>Net gain over 25 years <span class="npvq">(undiscounted)</span></dt><dd id="a-npv"><b>+6,975 €</b></dd>
+            <dt>Annual return (IRR)</dt><dd id="a-irr">8.4%</dd>
           </dl>
         </div>
         <div>
           <h3>Option B · Guaranteed tariff<span class="tag" id="tag-b"></span></h3>
           <dl>
-            <dt>15-year guaranteed feed-in tariff</dt><dd id="b-tariff">–</dd>
-            <dt>Left to pay</dt><dd id="b-capex">–</dd>
-            <dt>First-year gain</dt><dd id="b-y1">–</dd>
-            <dt>Payback time</dt><dd id="b-pb">–</dd>
-            <dt>Net gain over 25 years <span class="npvq">(undiscounted)</span></dt><dd id="b-npv">–</dd>
-            <dt>Annual return (IRR)</dt><dd id="b-irr">–</dd>
+            <dt>15-year guaranteed feed-in tariff</dt><dd id="b-tariff"><b>12.9 c€/kWh</b></dd>
+            <dt>Left to pay</dt><dd id="b-capex"><b>10,800 €</b></dd>
+            <dt>First-year gain</dt><dd id="b-y1">929 €</dd>
+            <dt>Payback time</dt><dd id="b-pb"><b>11.7 years</b></dd>
+            <dt>Net gain over 25 years <span class="npvq">(undiscounted)</span></dt><dd id="b-npv"><b>+6,950 €</b></dd>
+            <dt>Annual return (IRR)</dt><dd id="b-irr">5%</dd>
           </dl>
         </div>
       </div>
@@ -422,7 +422,7 @@
         <summary>Cash flow year by year</summary>
         <table class="mini" id="tab-cash"></table>
       </details>
-      <p class="hint" id="r-lcoe">–</p>
+      <p class="hint" id="r-lcoe">Average cost of a produced kWh over 25 years (net investment and inverter, undiscounted): 4.3 c€/kWh with the Klimabonus, 8.1 c€/kWh without. Compare with the 20.0 c€/kWh of a purchased kWh.</p>
     </div>
   </div>
 </section>
@@ -637,6 +637,25 @@
         <p class="hint" id="h-demand">–</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="profils">
+  <div class="sec-head">
+    <h2><span class="num">Three typical profiles</span>How much do 3, 6 and 10 kWp earn in Luxembourg?</h2>
+    <span class="sec-note">default assumptions of tool 2</span>
+  </div>
+  <p class="lede">Three typical households, computed with the default assumptions (due south at 35°, canton of Luxembourg, €1,800 per kWp installed, avoided kWh at €0.20, surplus sold at €0.05, first feed-in in 2027). Click a profile to load it into the calculator and adapt it to your case.</p>
+  <div class="card" style="overflow-x:auto">
+    <table class="mini" id="tab-profils">
+      <thead><tr><th scope="col">Profile</th><th scope="col">Production</th><th scope="col">Self-consumed</th><th scope="col">Klimabonus</th><th scope="col">Left to pay (A)</th><th scope="col">Payback (A)</th><th scope="col">Payback (B)</th><th scope="col">Net gain 25 years (A)</th><th scope="col">Net gain 25 years (B)</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Small roof: 3 kWp south-east, 2,500 kWh/year</a></th><td>3,018 kWh</td><td>27%</td><td>3,168 €</td><td>2,232 €</td><td>8.2 years</td><td>15.5 years</td><td>+3,263 €</td><td>+2,634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">House: 6 kWp due south, 4,500 kWh/year</a></th><td>6,402 kWh</td><td>24%</td><td>5,742 €</td><td>5,058 €</td><td>9.1 years</td><td>11.6 years</td><td>+7,503 €</td><td>+7,331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">House with heat pump and electric car: 10 kWp, 7 kWh battery, 10,000 kWh/year</a></th><td>10,670 kWh</td><td>43%</td><td>10,389 €</td><td>13,911 €</td><td>11.3 years</td><td>15.1 years</td><td>+16,146 €</td><td>+12,763 €</td></tr>
+      </tbody>
+      <caption><b>Table 7.</b> Three profiles computed by the calculator's engine with the default assumptions of tool 2; option A = Klimabonus and surplus at market price, option B = 15-year guaranteed feed-in tariff without subsidy; net gain over 25 years undiscounted. Your figures depend on your roof, your consumption and your quote.</caption>
+    </table>
   </div>
 </section>
 

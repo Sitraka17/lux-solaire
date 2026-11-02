@@ -430,6 +430,28 @@ ILR (loi du 22/07/2026), projet de loi 8707 devenu la loi du 22/07/2026 (exposé
 - ~~Bogue : `.fld{display:grid}` l'emporte sur l'attribut `hidden` (champ « Coût de la batterie » visible
   sans batterie)~~ CORRIGÉ le 2/11/2026 par `.fld[hidden]{display:none}`.
 
+## Pré-rendu statique du simulateur et trois profils types (2/11/2026, SEO)
+
+- Avant : les résultats du simulateur (KPI de l'outil 1, verdict et options A/B de l'outil 2,
+  tableau 1) n'existaient qu'après exécution du JS ; le HTML servi ne contenait que des tirets.
+  Depuis le 2/11/2026, `scripts/sim_prerender.mjs` (node) calcule avec le MÊME moteur
+  (`/sim-engine.js` + `SimEngine.BAREMES`, régénéré juste avant) le scénario par défaut et trois
+  profils types, et `build.py` (`sim_prerender()`, `sim_static()`) écrit ces chiffres dans le HTML
+  à la place des tirets ; le JS recalcule ensuite les mêmes valeurs au chargement.
+- Les libellés ne sont PAS dupliqués en Python : `_jsl(lang, name, tpl_sim)` relit `name:'…'` dans
+  l'objet `L` du gabarit (FR) ou dans la valeur traduite de `i18n_sim_*_js.json` (EN/DE/LB). Les
+  formats imitent le JS (`_thousands`/`_jsround`, `_dec1`, `maximumFractionDigits: 1` → `dmax1`,
+  `%` collé en anglais).
+- Section `#profils` (template_simulateur.html, entre l'outil 3 et la FAQ) : « Tableau 7 », trois
+  profils (3 kWc sud-est 2 500 kWh ; 6 kWc sud 4 500 kWh ; 10 kWc + batterie 7 kWh 10 000 kWh),
+  jetons `__P1_…__` à `__P3_…__`, liens `?p=…&cons=…` qui chargent le profil dans la page.
+  Les cas sont définis dans `sim_prerender.mjs` (coût = kWc × 1 800 €, batterie × 900 €, comme
+  `init()`). Textes traduits dans `i18n_sim_{en,de,lb}.json`.
+- Pages communales : le lien vers le simulateur passe `?canton=<canton>` (présélection).
+- `baremes.check_page` : le motif « aide HEMS » ignore `HEMS)` immédiatement suivi d'un chiffre
+  (libellé « Klimabonus (panneaux, batterie, HEMS) » + montant pré-rendu de l'option A).
+- Le build dépend désormais de node pour le pré-rendu (le workflow installe déjà Node 22).
+
 ## Moteur du simulateur (`/sim-engine.js`, 2/11/2026)
 
 Le calcul du simulateur est sorti du gabarit dans `sim-engine.js` (racine, servi publiquement :

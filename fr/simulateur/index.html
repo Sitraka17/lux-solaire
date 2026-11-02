@@ -296,21 +296,21 @@
     </form>
     <div>
       <div class="kpis">
-        <div class="kpi hero"><div class="lbl">Production annuelle</div><div class="val" id="r-prod">–</div><div class="sub" id="r-prod-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Autoconsommé</div><div class="val" id="r-self">–</div><div class="sub" id="r-self-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Injecté au réseau</div><div class="val" id="r-inj">–</div><div class="sub" id="r-inj-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Gain la première année</div><div class="val" id="r-gain">–</div><div class="sub" id="r-gain-sub">–</div></div>
+        <div class="kpi hero"><div class="lbl">Production annuelle</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh par kWc, soit 1,6 fois la consommation d'un ménage moyen (3 900 kWh)</div></div>
+        <div class="kpi"><div class="lbl">Autoconsommé</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % de votre production · couvre 37 % de votre consommation</div></div>
+        <div class="kpi"><div class="lbl">Injecté au réseau</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % de la production</div></div>
+        <div class="kpi"><div class="lbl">Gain la première année</div><div class="val" id="r-gain">534 €/an</div><div class="sub" id="r-gain-sub">option A : 534 € · option B : 929 €</div></div>
       </div>
-      <p class="hint" id="r-cover">–</p>
+      <p class="hint" id="r-cover">Votre installation produit l'équivalent de 164 % de votre consommation annuelle, mais le soleil et vos usages ne coïncident pas : seule la part autoconsommée vous évite d'acheter des kWh.</p>
       <figure class="fig">
         <div class="svgwrap bar" id="fig-months"></div>
         <figcaption><b>Figure 1.</b> Production mensuelle estimée (kWh) et part autoconsommée. Profil PVGIS de Luxembourg-Ville mis à l'échelle de votre installation ; la part autoconsommée est répartie au prorata de la production.</figcaption>
       </figure>
       <figure class="tab">
-        <table class="mini" id="tab-detail"></table>
+        <table class="mini" id="tab-detail"><thead><tr><th scope="col">Poste</th><th scope="col">Option A · Klimabonus</th><th scope="col">Option B · tarif garanti</th></tr></thead><tbody><tr><th scope="row">kWh autoconsommés × valeur du kWh évité</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">kWh injectés × prix de vente</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gain la première année</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus déduit de la facture</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Reste à payer</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
         <figcaption><b>Tableau 1.</b> Détail de la première année selon le mode de valorisation. Option A : Klimabonus et surplus vendu au prix de marché. Option B : tarif d'injection garanti 15 ans, sans Klimabonus. Les prix sont ceux de l'outil 2.</figcaption>
       </figure>
-      <p class="hint" id="r-canton">–</p>
+      <p class="hint" id="r-canton">Dans le canton de Luxembourg : 6 928 installations PV raccordées, 513 W de photovoltaïque par habitant, 32,1 installations pour 1 000 habitants (Leneda, 2 novembre 2026).</p>
     </div>
   </div>
 </section>
@@ -388,28 +388,28 @@
       </fieldset>
     </form>
     <div>
-      <div class="verdict" id="verdict"><div class="big">–</div><p>–</p></div>
+      <div class="verdict good" id="verdict"><div class="big">Rentable</div><p>L'option A (Klimabonus) rembourse l'installation en <strong>9,5 ans</strong> et laisse un gain net de <strong>+6 975 €</strong> sur 25 ans (non actualisé). Les deux options se valent à 25 ans.</p></div>
       <div class="cmp">
         <div>
-          <h3>Option A · Klimabonus<span class="tag" id="tag-a"></span></h3>
+          <h3>Option A · Klimabonus<span class="tag win" id="tag-a">la plus avantageuse</span></h3>
           <dl>
-            <dt>Klimabonus (panneaux, batterie, HEMS)</dt><dd id="a-bonus">–</dd>
-            <dt>Reste à payer</dt><dd id="a-capex">–</dd>
-            <dt>Gain la première année</dt><dd id="a-y1">–</dd>
-            <dt>Retour sur investissement</dt><dd id="a-pb">–</dd>
-            <dt>Gain net sur 25 ans <span class="npvq">(non actualisé)</span></dt><dd id="a-npv">–</dd>
-            <dt>Rendement annuel (TRI)</dt><dd id="a-irr">–</dd>
+            <dt>Klimabonus (panneaux, batterie, HEMS)</dt><dd id="a-bonus"><b>5 742 €</b></dd>
+            <dt>Reste à payer</dt><dd id="a-capex"><b>5 058 €</b></dd>
+            <dt>Gain la première année</dt><dd id="a-y1">534 €</dd>
+            <dt>Retour sur investissement</dt><dd id="a-pb"><b>9,5 ans</b></dd>
+            <dt>Gain net sur 25 ans <span class="npvq">(non actualisé)</span></dt><dd id="a-npv"><b>+6 975 €</b></dd>
+            <dt>Rendement annuel (TRI)</dt><dd id="a-irr">8,4 %</dd>
           </dl>
         </div>
         <div>
           <h3>Option B · Tarif garanti<span class="tag" id="tag-b"></span></h3>
           <dl>
-            <dt>Tarif d'injection garanti 15 ans</dt><dd id="b-tariff">–</dd>
-            <dt>Reste à payer</dt><dd id="b-capex">–</dd>
-            <dt>Gain la première année</dt><dd id="b-y1">–</dd>
-            <dt>Retour sur investissement</dt><dd id="b-pb">–</dd>
-            <dt>Gain net sur 25 ans <span class="npvq">(non actualisé)</span></dt><dd id="b-npv">–</dd>
-            <dt>Rendement annuel (TRI)</dt><dd id="b-irr">–</dd>
+            <dt>Tarif d'injection garanti 15 ans</dt><dd id="b-tariff"><b>12,9 c€/kWh</b></dd>
+            <dt>Reste à payer</dt><dd id="b-capex"><b>10 800 €</b></dd>
+            <dt>Gain la première année</dt><dd id="b-y1">929 €</dd>
+            <dt>Retour sur investissement</dt><dd id="b-pb"><b>11,7 ans</b></dd>
+            <dt>Gain net sur 25 ans <span class="npvq">(non actualisé)</span></dt><dd id="b-npv"><b>+6 950 €</b></dd>
+            <dt>Rendement annuel (TRI)</dt><dd id="b-irr">5 %</dd>
           </dl>
         </div>
       </div>
@@ -422,7 +422,7 @@
         <summary>Trésorerie année par année</summary>
         <table class="mini" id="tab-cash"></table>
       </details>
-      <p class="hint" id="r-lcoe">–</p>
+      <p class="hint" id="r-lcoe">Coût moyen du kWh produit sur 25 ans (investissement net et onduleur, sans actualisation) : 4,3 c€/kWh avec le Klimabonus, 8,1 c€/kWh sans. À comparer aux 20,0 c€/kWh d'un kWh acheté.</p>
     </div>
   </div>
 </section>
@@ -637,6 +637,25 @@
         <p class="hint" id="h-demand">–</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="profils">
+  <div class="sec-head">
+    <h2><span class="num">Trois profils types</span>Combien rapportent 3, 6 et 10 kWc au Luxembourg ?</h2>
+    <span class="sec-note">hypothèses par défaut de l'outil 2</span>
+  </div>
+  <p class="lede">Trois ménages types, calculés avec les hypothèses par défaut (plein sud à 35°, canton de Luxembourg, 1 800 €/kWc posé, kWh évité à 0,20 €, surplus vendu 0,05 €, première injection en 2027). Cliquez sur un profil pour le charger dans le simulateur et l'adapter à votre cas.</p>
+  <div class="card" style="overflow-x:auto">
+    <table class="mini" id="tab-profils">
+      <thead><tr><th scope="col">Profil</th><th scope="col">Production</th><th scope="col">Autoconsommé</th><th scope="col">Klimabonus</th><th scope="col">Reste à payer (A)</th><th scope="col">Retour (A)</th><th scope="col">Retour (B)</th><th scope="col">Gain net 25 ans (A)</th><th scope="col">Gain net 25 ans (B)</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Petit toit : 3 kWc sud-est, 2 500 kWh/an</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 ans</td><td>15,5 ans</td><td>+3 263 €</td><td>+2 634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Maison : 6 kWc plein sud, 4 500 kWh/an</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 ans</td><td>11,6 ans</td><td>+7 503 €</td><td>+7 331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Maison avec pompe à chaleur et voiture électrique : 10 kWc, batterie de 7 kWh, 10 000 kWh/an</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 ans</td><td>15,1 ans</td><td>+16 146 €</td><td>+12 763 €</td></tr>
+      </tbody>
+      <caption><b>Tableau 7.</b> Trois profils calculés par le moteur du simulateur avec les hypothèses par défaut de l'outil 2 ; option A = Klimabonus et surplus au prix de marché, option B = tarif d'injection garanti 15 ans sans aide ; gain net sur 25 ans non actualisé. Vos chiffres dépendent de votre toit, de votre consommation et de votre devis.</caption>
+    </table>
   </div>
 </section>
 

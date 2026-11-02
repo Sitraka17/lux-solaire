@@ -9,6 +9,7 @@ import html as html_mod
 import json
 import re
 import unicodedata
+import urllib.parse
 
 import baremes   # scripts/baremes.json : taux et plafonds du Klimabonus Gemengen (source unique)
 import grandes   # nouvelles grandes installations (> 100 kW) : détection et textes
@@ -571,7 +572,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<h3 class="refs" style="font-size:15px;margin:22px 0 6px">{L["cmp_size"]}</h3>{cmp_table(similar)}</section>'
                 f'<section><div class="sec-head"><h2>{L["links_h"]}</h2></div><div class="links">'
                 f'<a href="{HOME[lang]}?commune={s}#paradoxe">{L["l_dash"]}</a>'
-                f'<a href="{SIM[lang]}">{L["l_sim"]}</a>'
+                f'<a href="{SIM[lang]}?canton={urllib.parse.quote(c["k"])}">{L["l_sim"]}</a>'
                 f'<a href="{FORPATH[lang]}">{L["l_for"]}</a>'
                 f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"].replace("{N}", str(n_all))}</a></div>'
                 f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]} : {esc(prev_c["c"])}</a>'

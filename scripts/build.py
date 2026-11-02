@@ -25,6 +25,7 @@ import math
 import os
 import re
 import statistics
+import subprocess
 import sys
 import unicodedata
 import urllib.parse
@@ -744,6 +745,131 @@ def sim_numbers(lang):
         "__TAR27__": _dec1(tar(6, 2027) * 100, lang),
         **heat_numbers(lang),
     }
+
+
+# ──────────────── pré-rendu statique du simulateur (robots, aperçus) ──────────
+# Les résultats du scénario par défaut et de trois profils types sont calculés
+# au build par le MÊME moteur que la page (node + /sim-engine.js, via
+# scripts/sim_prerender.mjs) et écrits dans le HTML à la place des tirets ; le
+# JS de la page recalcule ensuite les mêmes valeurs. Les libellés viennent de
+# l'objet L du gabarit (FR) ou de sa traduction dans i18n_sim_*_js.json : aucune
+# phrase n'est dupliquée en Python.
+def sim_prerender():
+    r = subprocess.run(["node", str(ROOT / "scripts" / "sim_prerender.mjs")], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit("sim_prerender.mjs : " + r.stderr.strip())
+    return json.loads(r.stdout)
+
+
+_JSL_RE = {}
+
+
+def _jsl(lang, name, tpl_sim):
+    """Libellé `name:'…'` de l'objet L : dans le gabarit (FR) ou dans la VALEUR du
+    dictionnaire JS de la langue cible (la clé est la ligne FR entière)."""
+    pat = _JSL_RE.get(name)
+    if pat is None:
+        pat = _JSL_RE[name] = re.compile(r"(?<![A-Za-z0-9_])" + re.escape(name) + r":'((?:[^'\\]|\\.)*)'")
+    sources = [tpl_sim] if lang == "fr" else {"en": I18N, "de": I18N_DE, "lb": I18N_LB}[lang].values()
+    for src in sources:
+        m = pat.search(src)
+        if m:
+            return m.group(1).replace("\\'", "'")
+    sys.exit(f"{lang} : libellé JS « {name} » introuvable pour le pré-rendu du simulateur")
+
+
+def sim_static(html, lang, d, tpl_sim, pre):
+    """Remplace les tirets des résultats (ids r-*, a-*, b-*, verdict, tableau 1) par le
+    scénario par défaut et substitue les jetons __P1_…__ des trois profils types."""
+    L = lambda n: _jsl(lang, n, tpl_sim)   # noqa: E731
+    T = lambda x: _thousands(_jsround(x), lang)   # noqa: E731
+    eur = lambda x: T(x) + " €"   # noqa: E731
+    eurS = lambda x: ("+" if x > 0 else "") + T(x) + " €"   # noqa: E731
+    pct_sfx = "%" if lang == "en" else " %"
+    pct = lambda x: str(_jsround(x)) + pct_sfx   # noqa: E731
+
+    def dmax1(x):   # toLocaleString(maximumFractionDigits: 1)
+        v = _dec1(x, lang)
+        return v[:-2] if v.endswith((",0", ".0")) else v
+
+    cts = lambda x: _dec1(x * 100, lang) + " c€/kWh"   # noqa: E731
+    ctsS = lambda x: _dec1(x * 100, lang) + " c€"   # noqa: E731
+    pb_txt = lambda pb: L("never") if pb is None else ("< 1" + L("year1") if pb < 1 else dmax1(pb) + L("years"))   # noqa: E731
+    irr_txt = lambda r: "–" if r is None else dmax1(r * 100) + pct_sfx   # noqa: E731
+
+    R, I = pre["defaut"], pre["defaut"]["I"]
+    A, B = R["A"], R["B"]
+    a_wins = A["npv"] >= B["npv"]
+    best, diff = (A if a_wins else B), abs(A["npv"] - B["npv"])
+    pb = best["pb"]
+    if pb is None:
+        cls, title = "bad", L("vNo")
+    elif pb < 8:
+        cls, title = "good", L("vFast")
+    elif pb < 12:
+        cls, title = "good", L("vOk")
+    elif pb < 18:
+        cls, title = "", L("vSlow")
+    else:
+        cls, title = "bad", L("vNo")
+    verdict = L("vNever") if pb is None else (
+        (L("vTextA") if a_wins else L("vTextB")) + "<strong>" + pb_txt(pb) + "</strong>" + L("vThen")
+        + "<strong>" + eurS(best["npv"]) + "</strong>" + L("vOver") + L("undisc") + ". "
+        + (L("vEq") if diff < 100 else L("vDiff") + "<strong>" + eur(diff) + "</strong>" + L("vDiffEnd")))
+    K = next(k for k in d["cantons"] if k["k"] == I["canton"])
+    canton = ((L("cantonLineV") if re.match(r"[aeiouyéè]", K["k"], re.I) else L("cantonLine")) + K["k"] + L("cantonMid")
+              + T(K["n"]) + L("cantonInst") + T(K["wpc"]) + L("cantonWpc") + _dec1(K["ipk"], lang) + L("cantonIpk")
+              + d["meta"]["date"] + L("cantonEnd"))
+    vals = {
+        "r-prod": T(R["prod"]) + L("kwh"),
+        "r-prod-sub": T(R["ey"]) + L("perKwc") + dmax1(R["prod"] / 3900) + L("timesHousehold"),
+        "r-self": T(R["self"]) + L("kwh"),
+        "r-self-sub": pct(R["self"] / R["prod"] * 100) + L("selfSub") + pct(R["self"] / R["cons"] * 100) + L("ofCons"),
+        "r-inj": T(R["inj"]) + L("kwh"),
+        "r-inj-sub": pct(R["inj"] / R["prod"] * 100) + L("injSub"),
+        "r-gain": T(A["y1"]) + L("eurYear"),
+        "r-gain-sub": L("gainA") + eur(A["y1"]) + " · " + L("gainB") + eur(B["y1"]),
+        "r-cover": L("cover") + pct(R["prod"] / R["cons"] * 100) + L("coverOf"),
+        "r-canton": canton,
+        "a-bonus": "<b>" + eur(R["bonus"]) + "</b>", "a-capex": "<b>" + eur(R["capexGross"] - R["bonus"]) + "</b>",
+        "a-y1": eur(A["y1"]), "a-pb": "<b>" + pb_txt(A["pb"]) + "</b>", "a-npv": "<b>" + eurS(A["npv"]) + "</b>", "a-irr": irr_txt(A["irr"]),
+        "b-tariff": "<b>" + cts(R["tar"]) + "</b>", "b-capex": "<b>" + eur(R["capexGross"]) + "</b>",
+        "b-y1": eur(B["y1"]), "b-pb": "<b>" + pb_txt(B["pb"]) + "</b>", "b-npv": "<b>" + eurS(B["npv"]) + "</b>", "b-irr": irr_txt(B["irr"]),
+        "r-lcoe": L("lcoe") + cts(R["lcoeA"]) + L("lcoeA") + cts(R["lcoeB"]) + L("lcoeB") + cts(I["price"]) + L("lcoeEnd"),
+    }
+    for id_, val in vals.items():
+        old = f'id="{id_}">–<'
+        if html.count(old) != 1:
+            sys.exit(f"{lang} : pré-rendu du simulateur, cible {old!r} introuvable ou multiple")
+        html = html.replace(old, f'id="{id_}">{val}<')
+    old = '<div class="verdict" id="verdict"><div class="big">–</div><p>–</p></div>'
+    if html.count(old) != 1:
+        sys.exit(f"{lang} : pré-rendu du simulateur, bloc verdict introuvable")
+    html = html.replace(old, f'<div class="verdict {cls}" id="verdict"><div class="big">{title}</div><p>{verdict}</p></div>')
+    win = L("win")
+    html = html.replace('<span class="tag" id="tag-a"></span>', f'<span class="tag{" win" if a_wins else ""}" id="tag-a">{win if a_wins else ""}</span>')
+    html = html.replace('<span class="tag" id="tag-b"></span>', f'<span class="tag{"" if a_wins else " win"}" id="tag-b">{"" if a_wins else win}</span>')
+    old = '<table class="mini" id="tab-detail"></table>'
+    if html.count(old) != 1:
+        sys.exit(f"{lang} : pré-rendu du simulateur, tableau 1 introuvable")
+    price, market, tar = I["price"], I["market"], R["tar"]
+    tab = (f'<table class="mini" id="tab-detail"><thead><tr><th scope="col">{L("thItem")}</th><th scope="col">{L("thA")}</th><th scope="col">{L("thB")}</th></tr></thead><tbody>'
+           f'<tr><th scope="row">{L("rowSelf")}</th><td>{T(R["self"])} × {ctsS(price)} = {eur(R["self"] * price)}</td><td>{T(R["self"])} × {ctsS(price)} = {eur(R["self"] * price)}</td></tr>'
+           f'<tr><th scope="row">{L("rowInj")}</th><td>{T(R["inj"])} × {ctsS(market)} = {eur(R["inj"] * market)}</td><td>{T(R["inj"])} × {ctsS(tar)} = {eur(R["inj"] * tar)}</td></tr>'
+           f'<tr><th scope="row"><strong>{L("rowTotal")}</strong></th><td class="{"best" if A["y1"] >= B["y1"] else ""}"><strong>{eur(A["y1"])}</strong></td><td class="{"best" if B["y1"] > A["y1"] else ""}"><strong>{eur(B["y1"])}</strong></td></tr>'
+           f'<tr><th scope="row">{L("rowBonus")}</th><td>{eur(R["bonus"])}</td><td>0 €</td></tr>'
+           f'<tr><th scope="row">{L("rowCapex")}</th><td>{eur(R["capexGross"] - R["bonus"])}</td><td>{eur(R["capexGross"])}</td></tr></tbody></table>')
+    html = html.replace(old, tab)
+    # trois profils types (tableau 7)
+    for i, key in ((1, "p1"), (2, "p2"), (3, "p3")):
+        P = pre[key]
+        for tok, val in {
+            "PROD": T(P["prod"]) + L("kwh"), "SC": pct(P["sc"] * 100), "KB": eur(P["bonus"]),
+            "CAPA": eur(P["capexGross"] - P["bonus"]), "PBA": pb_txt(P["A"]["pb"]), "PBB": pb_txt(P["B"]["pb"]),
+            "NPVA": eurS(P["A"]["npv"]), "NPVB": eurS(P["B"]["npv"]),
+        }.items():
+            html = html.replace(f"__P{i}_{tok}__", val)
+    return html
 
 
 def _decn(x, nd, lang):
@@ -1531,6 +1657,7 @@ def render_all(data):
     bar_txt = baremes.PATH.read_text()
     bar_json = json.dumps(baremes.engine_bar(), ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
     sim_engine_v = hashlib.sha256(sim_engine.encode()).hexdigest()[:10]
+    pre_sim = sim_prerender()   # scénario par défaut + 3 profils, par le moteur JS (node)
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
@@ -1607,6 +1734,7 @@ def render_all(data):
                         .replace("__HEMS_MAX__", str(baremes.B["aide_hems"]["valeur"]["aideMax"])))
             for token, value in sim_numbers(lang).items():
                 html = html.replace(token, value)
+            html = sim_static(html, lang, d, tpl_sim, pre_sim)
         # fragments prérendus (déjà localisés) : après traduction et jetons
         if not sim:
             for marker, frag in prerender(d, lang).items():

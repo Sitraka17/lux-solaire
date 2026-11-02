@@ -296,21 +296,21 @@
     </form>
     <div>
       <div class="kpis">
-        <div class="kpi hero"><div class="lbl">Jahreserzeugung</div><div class="val" id="r-prod">–</div><div class="sub" id="r-prod-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Selbst verbraucht</div><div class="val" id="r-self">–</div><div class="sub" id="r-self-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Ins Netz eingespeist</div><div class="val" id="r-inj">–</div><div class="sub" id="r-inj-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Gewinn im ersten Jahr</div><div class="val" id="r-gain">–</div><div class="sub" id="r-gain-sub">–</div></div>
+        <div class="kpi hero"><div class="lbl">Jahreserzeugung</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh je kWp, also das 1,6-Fache des Verbrauchs eines Durchschnittshaushalts (3 900 kWh)</div></div>
+        <div class="kpi"><div class="lbl">Selbst verbraucht</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % Ihrer Erzeugung · deckt 37 % Ihres Verbrauchs</div></div>
+        <div class="kpi"><div class="lbl">Ins Netz eingespeist</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % der Erzeugung</div></div>
+        <div class="kpi"><div class="lbl">Gewinn im ersten Jahr</div><div class="val" id="r-gain">534 €/Jahr</div><div class="sub" id="r-gain-sub">Option A: 534 € · Option B: 929 €</div></div>
       </div>
-      <p class="hint" id="r-cover">–</p>
+      <p class="hint" id="r-cover">Ihre Anlage erzeugt das Äquivalent von 164 % Ihres Jahresverbrauchs, aber Sonne und Verbrauch fallen zeitlich nicht zusammen: nur der selbst verbrauchte Anteil erspart Ihnen den Kauf von kWh.</p>
       <figure class="fig">
         <div class="svgwrap bar" id="fig-months"></div>
         <figcaption><b>Abbildung 1.</b> Geschätzte Monatserzeugung (kWh) und Eigenverbrauchsanteil. PVGIS-Profil von Luxemburg-Stadt, auf Ihre Anlage skaliert; der Eigenverbrauch wird proportional zur Erzeugung verteilt.</figcaption>
       </figure>
       <figure class="tab">
-        <table class="mini" id="tab-detail"></table>
+        <table class="mini" id="tab-detail"><thead><tr><th scope="col">Posten</th><th scope="col">Option A · Klimabonus</th><th scope="col">Option B · garantierter Tarif</th></tr></thead><tbody><tr><th scope="row">Selbst verbrauchte kWh × Wert der vermiedenen kWh</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">Eingespeiste kWh × Verkaufspreis</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gewinn im ersten Jahr</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus von der Rechnung abgezogen</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Verbleibender Betrag</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
         <figcaption><b>Tabelle 1.</b> Aufschlüsselung des ersten Jahres nach Vergütungsmodell. Option A: Klimabonus und Überschuss zum Marktpreis verkauft. Option B: 15 Jahre garantierter Einspeisetarif, ohne Klimabonus. Die Preise sind die von Werkzeug 2.</figcaption>
       </figure>
-      <p class="hint" id="r-canton">–</p>
+      <p class="hint" id="r-canton">Im Kanton Luxembourg: 6 928 angeschlossene PV-Anlagen, 513 W Photovoltaik pro Einwohner, 32,1 Anlagen je 1 000 Einwohner (Leneda, 2. November 2026).</p>
     </div>
   </div>
 </section>
@@ -388,28 +388,28 @@
       </fieldset>
     </form>
     <div>
-      <div class="verdict" id="verdict"><div class="big">–</div><p>–</p></div>
+      <div class="verdict good" id="verdict"><div class="big">Rentabel</div><p>Option A (Klimabonus): Amortisationszeit <strong>9,5 Jahre</strong>, Nettogewinn <strong>+6 975 €</strong> über 25 Jahre (nicht abgezinst). Nach 25 Jahren liegen beide Optionen gleichauf.</p></div>
       <div class="cmp">
         <div>
-          <h3>Option A · Klimabonus<span class="tag" id="tag-a"></span></h3>
+          <h3>Option A · Klimabonus<span class="tag win" id="tag-a">die vorteilhaftere</span></h3>
           <dl>
-            <dt>Klimabonus (Module, Batterie, HEMS)</dt><dd id="a-bonus">–</dd>
-            <dt>Verbleibender Betrag</dt><dd id="a-capex">–</dd>
-            <dt>Gewinn im ersten Jahr</dt><dd id="a-y1">–</dd>
-            <dt>Amortisationszeit</dt><dd id="a-pb">–</dd>
-            <dt>Nettogewinn über 25 Jahre <span class="npvq">(nicht abgezinst)</span></dt><dd id="a-npv">–</dd>
-            <dt>Jahresrendite (IRR)</dt><dd id="a-irr">–</dd>
+            <dt>Klimabonus (Module, Batterie, HEMS)</dt><dd id="a-bonus"><b>5 742 €</b></dd>
+            <dt>Verbleibender Betrag</dt><dd id="a-capex"><b>5 058 €</b></dd>
+            <dt>Gewinn im ersten Jahr</dt><dd id="a-y1">534 €</dd>
+            <dt>Amortisationszeit</dt><dd id="a-pb"><b>9,5 Jahre</b></dd>
+            <dt>Nettogewinn über 25 Jahre <span class="npvq">(nicht abgezinst)</span></dt><dd id="a-npv"><b>+6 975 €</b></dd>
+            <dt>Jahresrendite (IRR)</dt><dd id="a-irr">8,4 %</dd>
           </dl>
         </div>
         <div>
           <h3>Option B · Garantierter Tarif<span class="tag" id="tag-b"></span></h3>
           <dl>
-            <dt>Garantierter Einspeisetarif, 15 Jahre</dt><dd id="b-tariff">–</dd>
-            <dt>Verbleibender Betrag</dt><dd id="b-capex">–</dd>
-            <dt>Gewinn im ersten Jahr</dt><dd id="b-y1">–</dd>
-            <dt>Amortisationszeit</dt><dd id="b-pb">–</dd>
-            <dt>Nettogewinn über 25 Jahre <span class="npvq">(nicht abgezinst)</span></dt><dd id="b-npv">–</dd>
-            <dt>Jahresrendite (IRR)</dt><dd id="b-irr">–</dd>
+            <dt>Garantierter Einspeisetarif, 15 Jahre</dt><dd id="b-tariff"><b>12,9 c€/kWh</b></dd>
+            <dt>Verbleibender Betrag</dt><dd id="b-capex"><b>10 800 €</b></dd>
+            <dt>Gewinn im ersten Jahr</dt><dd id="b-y1">929 €</dd>
+            <dt>Amortisationszeit</dt><dd id="b-pb"><b>11,7 Jahre</b></dd>
+            <dt>Nettogewinn über 25 Jahre <span class="npvq">(nicht abgezinst)</span></dt><dd id="b-npv"><b>+6 950 €</b></dd>
+            <dt>Jahresrendite (IRR)</dt><dd id="b-irr">5 %</dd>
           </dl>
         </div>
       </div>
@@ -422,7 +422,7 @@
         <summary>Zahlungsstrom Jahr für Jahr</summary>
         <table class="mini" id="tab-cash"></table>
       </details>
-      <p class="hint" id="r-lcoe">–</p>
+      <p class="hint" id="r-lcoe">Mittlere Kosten der erzeugten kWh über 25 Jahre (Nettoinvestition und Wechselrichter, ohne Abzinsung): 4,3 c€/kWh mit Klimabonus, 8,1 c€/kWh ohne. Zum Vergleich: 20,0 c€/kWh für eine gekaufte kWh.</p>
     </div>
   </div>
 </section>
@@ -637,6 +637,25 @@
         <p class="hint" id="h-demand">–</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="profils">
+  <div class="sec-head">
+    <h2><span class="num">Drei typische Profile</span>Wie viel bringen 3, 6 und 10 kWp in Luxemburg?</h2>
+    <span class="sec-note">Standardannahmen von Werkzeug 2</span>
+  </div>
+  <p class="lede">Drei typische Haushalte, berechnet mit den Standardannahmen (genau Süd, 35°, Kanton Luxemburg, 1 800 €/kWp installiert, vermiedene kWh zu 0,20 €, Überschuss zu 0,05 € verkauft, erste Einspeisung 2027). Klicken Sie auf ein Profil, um es in den Rechner zu laden und an Ihren Fall anzupassen.</p>
+  <div class="card" style="overflow-x:auto">
+    <table class="mini" id="tab-profils">
+      <thead><tr><th scope="col">Profil</th><th scope="col">Ertrag</th><th scope="col">Eigenverbrauch</th><th scope="col">Klimabonus</th><th scope="col">Restbetrag (A)</th><th scope="col">Amortisation (A)</th><th scope="col">Amortisation (B)</th><th scope="col">Nettogewinn 25 Jahre (A)</th><th scope="col">Nettogewinn 25 Jahre (B)</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Kleines Dach: 3 kWp Südost, 2 500 kWh/Jahr</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Jahre</td><td>15,5 Jahre</td><td>+3 263 €</td><td>+2 634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 kWp genau Süd, 4 500 kWh/Jahr</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Jahre</td><td>11,6 Jahre</td><td>+7 503 €</td><td>+7 331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mit Wärmepumpe und Elektroauto: 10 kWp, 7-kWh-Batterie, 10 000 kWh/Jahr</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Jahre</td><td>15,1 Jahre</td><td>+16 146 €</td><td>+12 763 €</td></tr>
+      </tbody>
+      <caption><b>Tabelle 7.</b> Drei Profile, berechnet mit dem Rechenwerk des Simulators und den Standardannahmen von Werkzeug 2; Option A = Klimabonus und Überschuss zum Marktpreis, Option B = 15 Jahre garantierter Einspeisetarif ohne Förderung; Nettogewinn über 25 Jahre ohne Abzinsung. Ihre Zahlen hängen von Ihrem Dach, Ihrem Verbrauch und Ihrem Angebot ab.</caption>
+    </table>
   </div>
 </section>
 

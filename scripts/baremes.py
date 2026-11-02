@@ -220,7 +220,9 @@ def check_page(html, lang, kind, b=None):
             seen.add("tarif_seuil")
             if not _eq(n(m.group(1)), tr["seuilKw"]):
                 bad("seuil du tarif d'injection", m, f"{tr['seuilKw']} kW")
-        for m in re.finditer(r"HEMS[^.;]{0,220}?" + r"(?:€\s?" + _N + r"(?![\d])|" + _N + r"\s?€)", t):
+        # (?!\)\d) : le libellé « Klimabonus (panneaux, batterie, HEMS) » suivi du montant
+        # pré-rendu de l'option A (« HEMS)5 742 € » une fois les balises retirées) n'est pas une aide HEMS
+        for m in re.finditer(r"HEMS(?!\)\d)[^.;]{0,220}?" + r"(?:€\s?" + _N + r"(?![\d])|" + _N + r"\s?€)", t):
             seen.add("hems")
             v = n(m.group(1) or m.group(2))
             if not _eq(v, hm["aideMax"]):

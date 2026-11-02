@@ -296,21 +296,21 @@
     </form>
     <div>
       <div class="kpis">
-        <div class="kpi hero"><div class="lbl">Joresproduktioun</div><div class="val" id="r-prod">–</div><div class="sub" id="r-prod-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Eegeverbrauch</div><div class="val" id="r-self">–</div><div class="sub" id="r-self-sub">–</div></div>
-        <div class="kpi"><div class="lbl">An d'Netz agespeist</div><div class="val" id="r-inj">–</div><div class="sub" id="r-inj-sub">–</div></div>
-        <div class="kpi"><div class="lbl">Gewënn am éischte Joer</div><div class="val" id="r-gain">–</div><div class="sub" id="r-gain-sub">–</div></div>
+        <div class="kpi hero"><div class="lbl">Joresproduktioun</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh pro kWp, dat sinn 1,6 Mol de Verbrauch vun engem Duerchschnëttsstot (3 900 kWh)</div></div>
+        <div class="kpi"><div class="lbl">Eegeverbrauch</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % vun Ärer Produktioun · deckt 37 % vun Ärem Verbrauch</div></div>
+        <div class="kpi"><div class="lbl">An d'Netz agespeist</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % vun der Produktioun</div></div>
+        <div class="kpi"><div class="lbl">Gewënn am éischte Joer</div><div class="val" id="r-gain">534 €/Joer</div><div class="sub" id="r-gain-sub">Optioun A: 534 € · Optioun B: 929 €</div></div>
       </div>
-      <p class="hint" id="r-cover">–</p>
+      <p class="hint" id="r-cover">Är Installatioun produzéiert den Equivalent vu 164 % vun Ärem Joresverbrauch, mee d'Sonn an Är Notzung fale net zesummen: nëmmen den Eegeverbrauch erspuert Iech, kWh ze kafen.</p>
       <figure class="fig">
         <div class="svgwrap bar" id="fig-months"></div>
         <figcaption><b>Figur 1.</b> Geschate Produktioun pro Mount (kWh) an Undeel Eegeverbrauch. PVGIS-Profil vun der Stad Lëtzebuerg, op Är Installatioun skaléiert; den Eegeverbrauch gëtt proportional zur Produktioun verdeelt.</figcaption>
       </figure>
       <figure class="tab">
-        <table class="mini" id="tab-detail"></table>
+        <table class="mini" id="tab-detail"><thead><tr><th scope="col">Posten</th><th scope="col">Optioun A · Klimabonus</th><th scope="col">Optioun B · garantéierten Tarif</th></tr></thead><tbody><tr><th scope="row">Selwer verbraucht kWh × Wäert vun der agespuerter kWh</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">Agespeist kWh × Verkafspräis</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gewënn am éischte Joer</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus op der Rechnung ofgezunn</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Rescht ze bezuelen</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
         <figcaption><b>Tabell 1.</b> Detail vum éischte Joer jee no Verwäertungsmodell. Optioun A: Klimabonus an Iwwerschoss zum Maartpräis verkaaft. Optioun B: garantéierten Aspeistarif iwwer 15 Joer, ouni Klimabonus. D'Präisser sinn déi vum Tool 2.</figcaption>
       </figure>
-      <p class="hint" id="r-canton">–</p>
+      <p class="hint" id="r-canton">Am Kanton Luxembourg: 6 928 PV-Installatiounen um Netz, 513 W Photovoltaik pro Awunner, 32,1 Installatioune pro 1 000 Awunner (Leneda, 2. November 2026).</p>
     </div>
   </div>
 </section>
@@ -388,28 +388,28 @@
       </fieldset>
     </form>
     <div>
-      <div class="verdict" id="verdict"><div class="big">–</div><p>–</p></div>
+      <div class="verdict good" id="verdict"><div class="big">Rentéiert sech</div><p>D'Optioun A (Klimabonus) amortiséiert d'Installatioun an <strong>9,5 Joer</strong> a léisst en Nettogewënn vu <strong>+6 975 €</strong> iwwer 25 Joer (net ofgezinst). Déi zwou Optioune si no 25 Joer gläichwäerteg.</p></div>
       <div class="cmp">
         <div>
-          <h3>Option A · Klimabonus<span class="tag" id="tag-a"></span></h3>
+          <h3>Option A · Klimabonus<span class="tag win" id="tag-a">am avantagéisten</span></h3>
           <dl>
-            <dt>Klimabonus (Panneauen, Batterie, HEMS)</dt><dd id="a-bonus">–</dd>
-            <dt>Rescht ze bezuelen</dt><dd id="a-capex">–</dd>
-            <dt>Gewënn am éischte Joer</dt><dd id="a-y1">–</dd>
-            <dt>Amortisatiounsdauer</dt><dd id="a-pb">–</dd>
-            <dt>Nettogewënn iwwer 25 Joer <span class="npvq">(net ofgezinst)</span></dt><dd id="a-npv">–</dd>
-            <dt>Jäerlech Rendite (IRR)</dt><dd id="a-irr">–</dd>
+            <dt>Klimabonus (Panneauen, Batterie, HEMS)</dt><dd id="a-bonus"><b>5 742 €</b></dd>
+            <dt>Rescht ze bezuelen</dt><dd id="a-capex"><b>5 058 €</b></dd>
+            <dt>Gewënn am éischte Joer</dt><dd id="a-y1">534 €</dd>
+            <dt>Amortisatiounsdauer</dt><dd id="a-pb"><b>9,5 Joer</b></dd>
+            <dt>Nettogewënn iwwer 25 Joer <span class="npvq">(net ofgezinst)</span></dt><dd id="a-npv"><b>+6 975 €</b></dd>
+            <dt>Jäerlech Rendite (IRR)</dt><dd id="a-irr">8,4 %</dd>
           </dl>
         </div>
         <div>
           <h3>Optioun B · Garantéierten Tarif<span class="tag" id="tag-b"></span></h3>
           <dl>
-            <dt>Garantéierten Aspeistarif iwwer 15 Joer</dt><dd id="b-tariff">–</dd>
-            <dt>Rescht ze bezuelen</dt><dd id="b-capex">–</dd>
-            <dt>Gewënn am éischte Joer</dt><dd id="b-y1">–</dd>
-            <dt>Amortisatiounsdauer</dt><dd id="b-pb">–</dd>
-            <dt>Nettogewënn iwwer 25 Joer <span class="npvq">(net ofgezinst)</span></dt><dd id="b-npv">–</dd>
-            <dt>Jäerlech Rendite (IRR)</dt><dd id="b-irr">–</dd>
+            <dt>Garantéierten Aspeistarif iwwer 15 Joer</dt><dd id="b-tariff"><b>12,9 c€/kWh</b></dd>
+            <dt>Rescht ze bezuelen</dt><dd id="b-capex"><b>10 800 €</b></dd>
+            <dt>Gewënn am éischte Joer</dt><dd id="b-y1">929 €</dd>
+            <dt>Amortisatiounsdauer</dt><dd id="b-pb"><b>11,7 Joer</b></dd>
+            <dt>Nettogewënn iwwer 25 Joer <span class="npvq">(net ofgezinst)</span></dt><dd id="b-npv"><b>+6 950 €</b></dd>
+            <dt>Jäerlech Rendite (IRR)</dt><dd id="b-irr">5 %</dd>
           </dl>
         </div>
       </div>
@@ -422,7 +422,7 @@
         <summary>Cashflow Joer fir Joer</summary>
         <table class="mini" id="tab-cash"></table>
       </details>
-      <p class="hint" id="r-lcoe">–</p>
+      <p class="hint" id="r-lcoe">Duerchschnëttskäschte vun enger produzéierter kWh iwwer 25 Joer (Nettoinvestitioun a Wiesselrichter, ouni Diskontéierung): 4,3 c€/kWh mam Klimabonus, 8,1 c€/kWh ouni. Zum Verglach: 20,0 c€/kWh fir eng kaaft kWh.</p>
     </div>
   </div>
 </section>
@@ -637,6 +637,25 @@
         <p class="hint" id="h-demand">–</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="profils">
+  <div class="sec-head">
+    <h2><span class="num">Dräi typesch Profiler</span>Wéi vill bréngen 3, 6 an 10 kWp zu Lëtzebuerg?</h2>
+    <span class="sec-note">Standardhypothese vum Tool 2</span>
+  </div>
+  <p class="lede">Dräi typesch Stéit, gerechent mat de Standardhypothesen (genee Südden, 35°, Kanton Lëtzebuerg, 1 800 €/kWp montéiert, gespuerte kWh zu 0,20 €, Iwwerschoss zu 0,05 € verkaaft, éischt Aspeisung 2027). Klickt op e Profil, fir en an de Rechner ze lueden an un Äre Fall unzepassen.</p>
+  <div class="card" style="overflow-x:auto">
+    <table class="mini" id="tab-profils">
+      <thead><tr><th scope="col">Profil</th><th scope="col">Produktioun</th><th scope="col">Eegeverbrauch</th><th scope="col">Klimabonus</th><th scope="col">Rescht ze bezuelen (A)</th><th scope="col">Amortisatioun (A)</th><th scope="col">Amortisatioun (B)</th><th scope="col">Nettogewënn 25 Joer (A)</th><th scope="col">Nettogewënn 25 Joer (B)</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Klengt Daach: 3 kWp Südosten, 2 500 kWh/Joer</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Joer</td><td>15,5 Joer</td><td>+3 263 €</td><td>+2 634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 kWp genee Südden, 4 500 kWh/Joer</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Joer</td><td>11,6 Joer</td><td>+7 503 €</td><td>+7 331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mat Wärmepompel an Elektroauto: 10 kWp, Batterie vu 7 kWh, 10 000 kWh/Joer</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Joer</td><td>15,1 Joer</td><td>+16 146 €</td><td>+12 763 €</td></tr>
+      </tbody>
+      <caption><b>Tabell 7.</b> Dräi Profiler, gerechent mam Motor vum Simulator a mat de Standardhypothese vum Tool 2; Optioun A = Klimabonus an Iwwerschoss zum Maartpräis, Optioun B = 15 Joer garantéierten Aspeistarif ouni Hëllef; Nettogewënn iwwer 25 Joer ouni Diskontéierung. Är Zuelen hänke vun Ärem Daach, Ärem Verbrauch an Ärem Devis of.</caption>
+    </table>
   </div>
 </section>
 
