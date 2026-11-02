@@ -764,9 +764,11 @@ def prose_numbers(d, lang):
         "__FULLPVCOUNT__": str(d["meta"]["full_pv_communes"]),
         "__MEDSHARE__": _dec1(d["meta"]["median_share"], lang),
         "__TOPGROWTHKW__": _thousands(_jsround(top["g"]), lang),
-        "__TOPGROWTHCOMMUNE__": top["c"],
+        "__TOPGROWTHCOMMUNE__": html_mod.escape(top["c"]),
         "__TOPGROWTHPCT__": str(_jsround(top["gp"])) if top["gp"] is not None else "n.d.",
-        "__TOP4NAMES__": ", ".join(r["c"] for r in d["meta"]["top_records"]),
+        "__TOP4NAMES__": html_mod.escape(", ".join(r["c"] for r in d["meta"]["top_records"])),
+        # nombre de communes du relevé (badge, titre de la table) : plus de « 100 » écrit en dur
+        "__NCOMMUNES__": str(len(d["communes"])),
         # « paradoxe résidentiel » : installations comptées une à une dans le
         # fichier not-grouped, c.-à-d. l'effectif de l'histogramme des tailles
         "__NGCOUNT__": _thousands(n_all, lang),
@@ -879,10 +881,12 @@ def prerender(d, lang):
     last = d["series"][-1]
     names = {k: _js_lit(lang, f"name:'{fr}'") for k, fr, _ in TECH_ORDER}
     tot = sum(last[k] for k, _, _ in TECH_ORDER)
+    E = html_mod.escape                        # noms de communes et de cantons : défense en profondeur
+    AM = ' class="am"'                         # segment PV de la barre du mix : filet de contraste
 
     def hb(rows, val, sub, mx):
         return "".join(
-            f'<div class="nm">{r["c"]} <small>· {r["k"]}</small></div>'
+            f'<div class="nm">{E(r["c"])} <small>· {E(r["k"])}</small></div>'
             f'<div class="tr"><div class="fl" style="width:{val(r) / mx * 100}%"></div></div>'
             f'<div class="vv">{sub(r)}</div>' for r in rows)
 
@@ -911,10 +915,10 @@ def prerender(d, lang):
 
     return {
         "<!--PRE_MIXBAR-->": "".join(
-            f'<div style="width:{last[k] / tot * 100}%;background:var({css})" title="{names[k]} {D1(last[k] / tot * 100)} %"></div>'
+            f'<div{AM if k == "pv" else ""} style="width:{last[k] / tot * 100}%;background:var({css})" title="{names[k]} {D1(last[k] / tot * 100)} %"></div>'
             for k, _, css in TECH_ORDER),
         "<!--PRE_MIXLIST-->": "".join(
-            f'<div class="mixrow"><span class="sw" style="background:var({css})"></span>{names[k]}'
+            f'<div class="mixrow"><span class="sw{" am" if k == "pv" else ""}" style="background:var({css})"></span>{names[k]}'
             f'<span class="vv"><b>{D1(last[k] / tot * 100)} %</b> · {D1(last[k])} MW</span></div>'
             for k, _, css in TECH_ORDER),
         "<!--PRE_TOP_PV-->": hb(top15, lambda r: r["pv"],
@@ -924,7 +928,7 @@ def prerender(d, lang):
         "<!--PRE_TOP_WPC-->": hb(topw, lambda r: r["wpc"],
                                  lambda r: f'<b>{T(r["wpc"])}</b>{lbl_w} · {D1(r["rpk"])}{lbl_r}', topw[0]["wpc"]),
         "<!--PRE_CANTONS-->": "".join(
-            f'<tr><td>{k["k"]}</td><td>{T(_jsround(k["pv"]))}</td><td>{T(k["n"])}</td><td>{T(k["pop"])}</td>'
+            f'<tr><td>{E(k["k"])}</td><td>{T(_jsround(k["pv"]))}</td><td>{T(k["n"])}</td><td>{T(k["pop"])}</td>'
             f'<td>{T(k["wpc"])}</td><td>{D1(k["ipk"])}</td></tr>' for k in d["cantons"]),
         "<!--PRE_ADDITIONS-->": "".join(
             f'<div class="nm">{a["from"]} → {a["to"]}{" <small>· " + lbl_week + "</small>" if a["kind"] == "weekly" else ""}</div>'
@@ -938,7 +942,7 @@ def prerender(d, lang):
             f'<tr><th scope="row">{r["label"]}</th>' + "".join(f'<td>{D1(r[k])}</td>' for k, _, _ in TECH_ORDER) + "</tr>"
             for r in d["series"]),
         "<!--PRE_ROWS-->": "".join(
-            f'<tr id="c-{r["lau2"]}"><td><a class="cl" href="{CPATH[lang]}{_slug(r["c"])}/">{r["c"]}</a></td><td>{r["k"]}</td><td>{T(_jsround(r["pv"]))}</td><td>{T(r["n"])}</td>'
+            f'<tr id="c-{r["lau2"]}"><td><a class="cl" href="{CPATH[lang]}{_slug(r["c"])}/">{E(r["c"])}</a></td><td>{E(r["k"])}</td><td>{T(_jsround(r["pv"]))}</td><td>{T(r["n"])}</td>'
             f'<td><span class="sharecell"><span class="minitr"><i style="width:{r["share"]}%"></i></span>{D1(r["share"])} %</span></td>'
             f'<td class="{"pos" if r["g"] > 0 else ""}">{sign(r["g"])}{T(_jsround(r["g"]))}</td>'
             f'<td>{T(_jsround(r["tot"]))}</td><td>{T(r["wpc"])}</td><td>{D1(r["ipk"])}</td></tr>'
@@ -981,14 +985,15 @@ def content_date(lang, parts):
 # ──────────────── exports CSV publics + manifeste ───────────────────────────
 # Titres par langue = configuration du kit (pas des clés de dictionnaire).
 CSV_TITLES = {
-    "solaire_communes": {"fr": "Capacité PV par commune (100 communes)",
-                         "en": "PV capacity by municipality (100 municipalities)",
-                         "lb": "PV-Kapazitéit pro Gemeng (100 Gemengen)",
-                         "de": "PV-Leistung je Gemeinde (100 Gemeinden)"},
-    "solaire_cantons": {"fr": "Capacité PV par canton (12 cantons)",
-                        "en": "PV capacity by canton (12 cantons)",
-                        "lb": "PV-Kapazitéit pro Kanton (12 Kantonen)",
-                        "de": "PV-Leistung je Kanton (12 Kantone)"},
+    # {n} = nombre de lignes du CSV (communes, cantons), substitué par write_exports
+    "solaire_communes": {"fr": "Capacité PV par commune ({n} communes)",
+                         "en": "PV capacity by municipality ({n} municipalities)",
+                         "lb": "PV-Kapazitéit pro Gemeng ({n} Gemengen)",
+                         "de": "PV-Leistung je Gemeinde ({n} Gemeinden)"},
+    "solaire_cantons": {"fr": "Capacité PV par canton ({n} cantons)",
+                        "en": "PV capacity by canton ({n} cantons)",
+                        "lb": "PV-Kapazitéit pro Kanton ({n} Kantonen)",
+                        "de": "PV-Leistung je Kanton ({n} Kantone)"},
     "solaire_filieres": {"fr": "Capacité installée par filière et par relevé",
                          "en": "Installed capacity by technology and reading",
                          "lb": "Installéiert Kapazitéit pro Filière a Relevé",
@@ -1104,7 +1109,8 @@ def write_exports(tables, cdate):
             for r in t["rows"]:
                 w.writerow([("" if v is None else v) for v in r] + [t["source"]])
         files.append({"path": f"/data/csv/{t['slug']}.csv", "format": "text/csv", "rows": len(t["rows"]),
-                      "title": CSV_TITLES[t["slug"]], "source": t["source"], "notes": CSV_NOTES[t["slug"]]})
+                      "title": {lg: v.replace("{n}", str(len(t["rows"]))) for lg, v in CSV_TITLES[t["slug"]].items()},
+                      "source": t["source"], "notes": CSV_NOTES[t["slug"]]})
     for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("de", "data.de.json"), ("lb", "data.lb.json")):
         files.append({"path": f"/data/{name}", "format": "application/json", "rows": 0, "lang": lang,
                       "title": JSON_TITLE, "source": DATASET_URL, "notes": {}})
@@ -1440,7 +1446,7 @@ def render_all(data):
     # son bloc BAREMES est régénéré depuis scripts/baremes.json (source unique) avant l'empreinte
     sim_engine = baremes.sync_engine(ROOT / "sim-engine.js")
     bar_txt = baremes.PATH.read_text()
-    bar_json = json.dumps(baremes.engine_bar(), ensure_ascii=False, separators=(",", ":"))
+    bar_json = json.dumps(baremes.engine_bar(), ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
     sim_engine_v = hashlib.sha256(sim_engine.encode()).hexdigest()[:10]
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
@@ -1480,7 +1486,8 @@ def render_all(data):
         canonical = SITE + dict(paths)[lang]
         cdate = (cdates_sim if sim else cdates)[lang]
         # le simulateur n'embarque que le nécessaire (relevé et cantons), pas les 100 communes
-        blob = json.dumps({"meta": d["meta"], "cantons": d["cantons"]} if sim else d, ensure_ascii=False)
+        blob = json.dumps({"meta": d["meta"], "cantons": d["cantons"]} if sim else d,
+                          ensure_ascii=False).replace("<", "\\u003c")
         toggle = "".join(
             '<a href="{}"{}>{}{}</a>'.format(
                 path, ' class="cur"' if code == lang else '', _FLAG[code],
@@ -1490,7 +1497,7 @@ def render_all(data):
             f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
             for c, _ in LANG_PATHS if c != lang)
         html = (t.replace("/*__DATA__*/", blob)
-                 .replace("/*__PVGIS__*/", json.dumps(pv, ensure_ascii=False))
+                 .replace("/*__PVGIS__*/", json.dumps(pv, ensure_ascii=False).replace("<", "\\u003c"))
                  .replace("__LANG__", lang)
                  .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
                  .replace("__CONTENT_DATE__", cdate)

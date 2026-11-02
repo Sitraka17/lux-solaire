@@ -1,4 +1,4 @@
-"""Pages par commune (100 communes × 4 langues) et page « Pour les communes ».
+"""Pages par commune (une par commune du relevé, 100 en 2026, × 4 langues) et page « Pour les communes ».
 
 Appelé par build.render_all APRÈS l'écriture des tableaux de bord : la feuille
 de style et la barre de série sont reprises des pages déjà rendues, pour que
@@ -26,6 +26,8 @@ SRC_RNPP = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-
 SRC_KBG = baremes.B["klimabonus_gemengen"]["source"]   # guide pratique Klimabonus Gemengen
 SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", "population", "inhabitants as of"),
              "de": ("Quellen", "Bevölkerung", "Einwohner, Stand"), "lb": ("Quellen", "Populatioun", "Awunner, Stand")}
+SKIP = {"fr": "Aller au contenu", "en": "Skip to content", "de": "Zum Inhalt springen",
+        "lb": "Op den Inhalt sprangen"}   # lien d'évitement (mêmes libellés que les dictionnaires des gabarits)
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
 
 # Klimabonus Gemengen : colonne « Aide » et note des pages, générées depuis baremes.json
@@ -73,7 +75,7 @@ def _ord(r, lang):
 
 S = {
     "fr": {
-        "rank": lambda r: f"{_ord(r, 'fr')} sur 100",
+        "rank": lambda r, n: f"{_ord(r, 'fr')} sur {n}",
         "title": lambda c, n, mw, y: f"Photovoltaïque à {c} : {n} installations, {mw} MW ({y})",
         "desc": lambda c, k, mw, date, n, wpc: (f"{c} (canton de {k}) : {mw} MW de photovoltaïque raccordés au {date}, "
                                                 f"{n} installations, {wpc} W par habitant. Tailles des installations, "
@@ -109,7 +111,7 @@ S = {
         "cmp_lede": lambda fq: f"Classées par W par habitant. « Ajouts » : puissance ajoutée depuis le relevé {fq}.",
         "links_h": "Aller plus loin",
         "l_dash": "Graphique interactif de la commune", "l_sim": "Simulateur : est-ce rentable sur votre toit ?",
-        "l_for": "Pour les communes : ce que montre cette page", "l_csv": "Tailles des installations, 100 communes (CSV)",
+        "l_for": "Pour les communes : ce que montre cette page", "l_csv": "Tailles des installations, {N} communes (CSV)",
         "prev": "Commune précédente", "next": "Commune suivante", "all": "Toutes les communes",
         "foot": lambda date: (
             f"Données : jeu « La production d'énergie électrique au Luxembourg » publié par Leneda sur "
@@ -121,7 +123,7 @@ S = {
         "crumb_home": "Le photovoltaïque au Luxembourg",
     },
     "en": {
-        "rank": lambda r: f"{_ord(r, 'en')} of 100",
+        "rank": lambda r, n: f"{_ord(r, 'en')} of {n}",
         "title": lambda c, n, mw, y: f"Solar PV in {c}: {n} installations, {mw} MW ({y})",
         "desc": lambda c, k, mw, date, n, wpc: (f"{c} (canton of {k}): {mw} MW of solar PV connected as of {date}, "
                                                 f"{n} installations, {wpc} W per inhabitant. Installation sizes, "
@@ -156,7 +158,7 @@ S = {
         "cmp_lede": lambda fq: f"Ranked by W per inhabitant. “Added”: capacity added since the {fq} reading.",
         "links_h": "Go further",
         "l_dash": "Interactive chart for this municipality", "l_sim": "Calculator: is solar worth it on your roof?",
-        "l_for": "For municipalities: what this page shows", "l_csv": "Installation sizes, all 100 municipalities (CSV)",
+        "l_for": "For municipalities: what this page shows", "l_csv": "Installation sizes, all {N} municipalities (CSV)",
         "prev": "Previous municipality", "next": "Next municipality", "all": "All municipalities",
         "foot": lambda date: (
             f"Data: “La production d'énergie électrique au Luxembourg” published by Leneda on data.public.lu (CC0), "
@@ -168,7 +170,7 @@ S = {
         "crumb_home": "Solar PV in Luxembourg",
     },
     "de": {
-        "rank": lambda r: f"Platz {r} von 100",
+        "rank": lambda r, n: f"Platz {r} von {n}",
         "title": lambda c, n, mw, y: f"Photovoltaik in {c}: {n} Anlagen, {mw} MW ({y})",
         "desc": lambda c, k, mw, date, n, wpc: (f"{c} (Kanton {k}): {mw} MW Photovoltaik angeschlossen, Stand {date}, "
                                                 f"{n} Anlagen, {wpc} W pro Einwohner. Anlagengrößen, Stufen des "
@@ -204,7 +206,7 @@ S = {
         "cmp_lede": lambda fq: f"Sortiert nach W pro Einwohner. „Zubau“: seit der Erhebung {fq} hinzugekommene Leistung.",
         "links_h": "Weiter",
         "l_dash": "Interaktive Grafik der Gemeinde", "l_sim": "Rechner: lohnt sich Solar auf Ihrem Dach?",
-        "l_for": "Für Gemeinden: was diese Seite zeigt", "l_csv": "Anlagengrößen, alle 100 Gemeinden (CSV)",
+        "l_for": "Für Gemeinden: was diese Seite zeigt", "l_csv": "Anlagengrößen, alle {N} Gemeinden (CSV)",
         "prev": "Vorherige Gemeinde", "next": "Nächste Gemeinde", "all": "Alle Gemeinden",
         "foot": lambda date: (
             f"Daten: „La production d'énergie électrique au Luxembourg“, veröffentlicht von Leneda auf "
@@ -216,7 +218,7 @@ S = {
         "crumb_home": "Photovoltaik in Luxemburg",
     },
     "lb": {
-        "rank": lambda r: f"Plaz {r} vun 100",
+        "rank": lambda r, n: f"Plaz {r} vun {n}",
         "title": lambda c, n, mw, y: f"Photovoltaik zu {c}: {n} Installatiounen, {mw} MW ({y})",
         "desc": lambda c, k, mw, date, n, wpc: (f"{c} (Kanton {k}): {mw} MW Photovoltaik ugeschloss, Stand {date}, "
                                                 f"{n} Installatiounen, {wpc} W pro Awunner. Gréisste vun den "
@@ -253,7 +255,7 @@ S = {
         "cmp_lede": lambda fq: f"Sortéiert no W pro Awunner. „Zouwuess“: Leeschtung derbäi zënter dem Relevé {fq}.",
         "links_h": "Weider",
         "l_dash": "Interaktiv Grafik vun der Gemeng", "l_sim": "Rechner: rentéiert Solar op Ärem Daach?",
-        "l_for": "Fir Gemengen: wat dës Säit weist", "l_csv": "Gréisste vun den Installatiounen, 100 Gemengen (CSV)",
+        "l_for": "Fir Gemengen: wat dës Säit weist", "l_csv": "Gréisste vun den Installatiounen, {N} Gemengen (CSV)",
         "prev": "Gemeng virdrun", "next": "Nächst Gemeng", "all": "All Gemengen",
         "foot": lambda date: (
             f"Donnéeën: „La production d'énergie électrique au Luxembourg“, publizéiert vu Leneda op "
@@ -293,7 +295,7 @@ FOR = {
         "contact_h": "Une question, un besoin pour votre commune ?",
         "contact": ("Écrivez à <a href=\"mailto:hello@sitraka.lu?subject=Commune%20%3A%20solaire.sitraka.lu\">"
                     "hello@sitraka.lu</a>, en indiquant votre commune."),
-        "list_h": "Les 100 communes",
+        "list_h": "Les {N} communes",
     },
     "en": {
         "title": "For municipalities: your solar PV data, ready to present",
@@ -317,7 +319,7 @@ FOR = {
         "contact_h": "A question or a need for your municipality?",
         "contact": ("Write to <a href=\"mailto:hello@sitraka.lu?subject=Municipality%3A%20solaire.sitraka.lu\">"
                     "hello@sitraka.lu</a>, mentioning your municipality."),
-        "list_h": "All 100 municipalities",
+        "list_h": "All {N} municipalities",
     },
     "de": {
         "title": "Für Gemeinden: Ihre Photovoltaik-Daten, bereit zur Präsentation",
@@ -344,7 +346,7 @@ FOR = {
         "contact_h": "Eine Frage oder ein Anliegen Ihrer Gemeinde?",
         "contact": ("Schreiben Sie an <a href=\"mailto:hello@sitraka.lu?subject=Gemeinde%3A%20solaire.sitraka.lu\">"
                     "hello@sitraka.lu</a> und nennen Sie Ihre Gemeinde."),
-        "list_h": "Alle 100 Gemeinden",
+        "list_h": "Alle {N} Gemeinden",
     },
     "lb": {
         "title": "Fir Gemengen: Är Photovoltaik-Donnéeën, prett fir ze presentéieren",
@@ -372,7 +374,7 @@ FOR = {
         "contact_h": "Eng Fro oder e Besoin fir Är Gemeng?",
         "contact": ("Schreift un <a href=\"mailto:hello@sitraka.lu?subject=Gemeng%3A%20solaire.sitraka.lu\">"
                     "hello@sitraka.lu</a> a gitt Är Gemeng un."),
-        "list_h": "All 100 Gemengen",
+        "list_h": "All {N} Gemengen",
     },
 }
 
@@ -413,6 +415,8 @@ EXTRA_CSS = """
 def _shell(lang, title, desc, canonical, alternates, style, seriesbar, body, jsonld):
     if lang != "en":   # « 45 % » ne se coupe pas avant le signe
         body = body.replace(" %", "\u202f%")
+    i = body.rindex('<footer class="cfoot">')          # le pied de page reste hors de <main>
+    main, foot = body[:i], body[i:]
     alt = "".join(f'<link rel="alternate" hreflang="{c}" href="{u}">' for c, u in alternates)
     alt += f'<link rel="alternate" hreflang="x-default" href="{dict(alternates)["en"]}">'
     return (f'<!doctype html>\n<html lang="{lang}">\n<meta charset="utf-8">\n'
@@ -424,10 +428,11 @@ def _shell(lang, title, desc, canonical, alternates, style, seriesbar, body, jso
             f'<meta property="og:title" content="{esc(title)}">\n<meta property="og:description" content="{esc(desc)}">\n'
             f'<meta property="og:image" content="https://solaire.sitraka.lu/{ {"fr": "og.png"}.get(lang, f"og.{lang}.png") }">\n'
             f'<meta name="twitter:card" content="summary_large_image">\n{alt}\n'
-            f'<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>\n'
+            f'<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False).replace("<", chr(92) + "u003c")}</script>\n'
             f"<script defer src=\"https://static.cloudflareinsights.com/beacon.min.js\" "
             f"data-cf-beacon='{{\"token\": \"48047aeb049d4a6ba27a197d274297a7\"}}'></script>\n"
-            f"<style>{style}{EXTRA_CSS}</style>\n<div class=\"wrap\">\n{seriesbar}\n{body}\n</div>\n"
+            f"<style>{style}{EXTRA_CSS}</style>\n<a class=\"skip\" href=\"#contenu\">{SKIP[lang]}</a>\n"
+            f"<div class=\"wrap\">\n{seriesbar}\n<main id=\"contenu\" tabindex=\"-1\">\n{main}\n</main>\n{foot}\n</div>\n"
             f'<script defer src="/ev.js"></script>\n</html>\n')
 
 
@@ -474,6 +479,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             sg = lambda x: ("+" if x > 0 else "−" if x < 0 else "±") + T(abs(jsround(x)), lang)  # noqa: E731
             gkw = sg(c["g"])
             gp = ("+" if c["gp"] > 0 else "") + T(jsround(c["gp"]), lang) if c["gp"] is not None else "n.d."
+            cn, kn = esc(c["c"]), esc(c["k"])   # noms insérés dans le HTML : échappés (title/desc le sont dans _shell)
             title = L["title"](c["c"], nn, mw, meta["date_iso"][:4])
             desc = L["desc"](c["c"], c["k"], mw, date, nn, wpc)
             # tailles détaillées (blob traduit pour les libellés de classes)
@@ -509,7 +515,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 hd_ = "".join(f"<th scope=\"col\">{x}</th>" for x in L["cmp_cols"])
                 body = "".join(
                     f'<tr{me if o["lau2"] == c["lau2"] else ""}>'
-                    f'<td><a href="{CPATH[lang]}{slug(o["c"])}/">{o["c"]}</a></td><td>{o["k"]}</td>'
+                    f'<td><a href="{CPATH[lang]}{slug(o["c"])}/">{esc(o["c"])}</a></td><td>{esc(o["k"])}</td>'
                     f'<td>{dec1(o["pv"] / 1000, lang)}</td><td>{T(o["n"], lang)}</td><td>{T(o["wpc"], lang)}</td>'
                     f'<td>{dec1(o["ipk"], lang)}</td><td>{sg(o["g"])}</td></tr>'
                     for o in sorted(lst, key=lambda o: -o["wpc"]))
@@ -529,11 +535,11 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<div class="kpi"><div class="lbl">{L["k_share"]}</div><div class="val">{dec1(c["share"], lang)} %</div>'
                 f'<div class="sub">{L["k_share_sub"](dec1(c["tot"] / 1000, lang))}</div></div>'
                 f'<div class="kpi"><div class="lbl">{L["k_wpc"]}</div><div class="val">{wpc}</div>'
-                f'<div class="sub">{L["rank"](rank["wpc"][c["lau2"]])} · {L["med"](med)}</div></div>'
+                f'<div class="sub">{L["rank"](rank["wpc"][c["lau2"]], n_all)} · {L["med"](med)}</div></div>'
                 f'<div class="kpi"><div class="lbl">{L["k_ipk"]}</div><div class="val">{dec1(c["ipk"], lang)}</div>'
-                f'<div class="sub">{L["k_ipk_sub"](L["rank"](rank["ipk"][c["lau2"]]), dec1(c["rpk"], lang))}</div></div>'
+                f'<div class="sub">{L["k_ipk_sub"](L["rank"](rank["ipk"][c["lau2"]], n_all), dec1(c["rpk"], lang))}</div></div>'
                 f'<div class="kpi"><div class="lbl">{L["k_g"](fq)}</div><div class="val">{gkw} kW</div>'
-                f'<div class="sub">{L["rank"](rank["g"][c["lau2"]])} · {gp} %</div></div>'
+                f'<div class="sub">{L["rank"](rank["g"][c["lau2"]], n_all)} · {gp} %</div></div>'
                 f'<div class="kpi"><div class="lbl">{k6[0]}</div><div class="val">{k6[1]}</div>'
                 f'<div class="sub">{k6[2]}</div></div>')
             hist_note = f'<p class="kbnote2">{L["hist_note"](d["hist"]["date"])}</p>' if h else ""
@@ -541,11 +547,11 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             body = (
                 f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a> · '
                 f'<a href="{FORPATH[lang]}">{L["all"]}</a></p>'
-                f'<header><div class="eyebrow">{L["eyebrow"](c["k"])}</div><h1>{L["h1"](c["c"])}</h1>'
-                f'<p class="standfirst">{L["stand"](c["c"], mw, date, nn, wpc, med, gkw, gp, fq)}</p></header>'
+                f'<header><div class="eyebrow">{L["eyebrow"](kn)}</div><h1>{L["h1"](cn)}</h1>'
+                f'<p class="standfirst">{L["stand"](cn, mw, date, nn, wpc, med, gkw, gp, fq)}</p></header>'
                 f'<div class="kpis k6">{kpis}</div>'
                 f'<section id="tailles"><div class="sec-head"><h2>{L["sizes_h"]}</h2></div>'
-                f'<p class="lede">{L["sizes_lede"](c["c"], sn, sc)}</p><div class="card">'
+                f'<p class="lede">{L["sizes_lede"](cn, sn, sc)}</p><div class="card">'
                 f'<div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> {L["k_cnt"]}</span>'
                 f'<span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> {L["k_cap"]}</span></div>'
                 f'<div class="pair">{bars}</div>{hist_note}</div></section>'
@@ -554,18 +560,18 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<tbody>{kb_rows}</tbody></table></div><p class="kbnote2">{L["kb_note"]}</p></div></section>'
                 f'<section id="comparaison"><div class="sec-head"><h2>{L["cmp_h"]}</h2></div>'
                 f'<p class="lede">{L["cmp_lede"](fq)}</p>'
-                f'<h3 class="refs" style="font-size:15px;margin:18px 0 6px">{L["cmp_canton"](c["k"])}</h3>{cmp_table(same_k)}'
+                f'<h3 class="refs" style="font-size:15px;margin:18px 0 6px">{L["cmp_canton"](kn)}</h3>{cmp_table(same_k)}'
                 f'<h3 class="refs" style="font-size:15px;margin:22px 0 6px">{L["cmp_size"]}</h3>{cmp_table(similar)}</section>'
                 f'<section><div class="sec-head"><h2>{L["links_h"]}</h2></div><div class="links">'
                 f'<a href="{HOME[lang]}?commune={s}#paradoxe">{L["l_dash"]}</a>'
                 f'<a href="{SIM[lang]}">{L["l_sim"]}</a>'
                 f'<a href="{FORPATH[lang]}">{L["l_for"]}</a>'
-                f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"]}</a></div>'
-                f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]} : {prev_c["c"]}</a>'
-                f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]} : {next_c["c"]} →</a></nav></section>'
+                f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"].replace("{N}", str(n_all))}</a></div>'
+                f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]} : {esc(prev_c["c"])}</a>'
+                f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]} : {esc(next_c["c"])} →</a></nav></section>'
                 f'<footer class="cfoot"><p>{L["foot"](date)}</p>'
                 f'<p>{SRC_LABEL[lang][0]}{" :" if lang == "fr" else ":"} <a href="{SRC_LENEDA}">Leneda (data.public.lu)</a> · '
-                f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {c["c"]}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
+                f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {cn}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
                 f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a></p>'
                 f'<p>{L["privacy"]}</p>'
                 f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a> · '
@@ -591,14 +597,14 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
         by_k = {}
         for c in sorted(base["communes"], key=lambda c: slug(c["c"])):
             by_k.setdefault(c["k"], []).append(c)
-        clist = "".join(f'<div><h3>{k}</h3>' + "".join(f'<a href="{CPATH[lang]}{slug(c["c"])}/">{c["c"]}</a>' for c in cs)
+        clist = "".join(f'<div><h3>{esc(k)}</h3>' + "".join(f'<a href="{CPATH[lang]}{slug(c["c"])}/">{esc(c["c"])}</a>' for c in cs)
                         + "</div>" for k, cs in sorted(by_k.items()))
         body = (f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a></p>'
                 f'<header><div class="eyebrow">{F["eyebrow"]}</div><h1>{F["h1"]}</h1></header>'
                 f'<section class="prose">{"".join(f"<p>{p}</p>" for p in F["paras"])}'
                 f'<h2>{F["limits_h"]}</h2><p>{F["limits"]}</p>'
                 f'<h2>{F["contact_h"]}</h2><p>{F["contact"]}</p></section>'
-                f'<section id="liste"><div class="sec-head"><h2>{F["list_h"]}</h2></div><div class="clist">{clist}</div></section>'
+                f'<section id="liste"><div class="sec-head"><h2>{F["list_h"].replace("{N}", str(n_all))}</h2></div><div class="clist">{clist}</div></section>'
                 f'<footer class="cfoot"><p>{L["foot"](blobs[lang]["meta"]["date"])}</p><p>{L["privacy"]}</p>'
                 f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a></p></footer>')
         alternates = [(l, site + FORPATH[l]) for l in ORDER]

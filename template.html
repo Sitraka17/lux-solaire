@@ -97,8 +97,9 @@
   .sec-note{font-size:13px;color:var(--ink-3);font-family:var(--mono)}
   .lede{font-size:14.5px;color:var(--ink-2);max-width:70ch;margin:4px 0 18px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  @media(max-width:800px){.grid-2{grid-template-columns:1fr}}
+  /* minmax(0,1fr) : une colonne ne s'élargit pas à la largeur de son contenu (tableaux, notes) sur mobile */
+  .grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+  @media(max-width:800px){.grid-2{grid-template-columns:minmax(0,1fr)}}
 
   /* ---------- repères officiels ---------- */
   .refs h3{font-family:var(--display);font-size:15px;font-weight:600;margin:0 0 6px}
@@ -113,13 +114,16 @@
   .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
   .legend span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
   .sw{width:11px;height:11px;border-radius:2px;flex:none}
+  /* WCAG 1.4.11 : l'ambre #EE9B05 n'a que 2,1:1 sur --paper ; un filet --amber-text (5,6:1) délimite
+     barres et pastilles ambre sans changer la couleur de remplissage */
+  .sw.am,.mixbar .am{box-shadow:inset 0 0 0 1px var(--amber-text)}
 
   /* ---------- horizontal bars ---------- */
   .hbars{display:grid;grid-template-columns:minmax(110px,max-content) 1fr max-content;gap:7px 12px;align-items:center;margin-top:10px}
   .hbars .nm{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hbars .nm small{color:var(--ink-3);font-size:11.5px}
   .hbars .tr{height:17px;background:var(--paper);border-radius:2px;position:relative;overflow:hidden}
-  .hbars .fl{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--amber)}
+  .hbars .fl{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .hbars .vv{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
   .hbars .vv b{color:var(--ink);font-weight:600}
 
@@ -132,14 +136,14 @@
   .mixrow .vv b{color:var(--ink)}
 
   /* ---------- paradox chart ---------- */
-  .pair{display:grid;grid-template-columns:max-content 1fr;gap:6px 12px;align-items:center;margin-top:8px}
+  .pair{display:grid;grid-template-columns:max-content 1fr;gap:6px 12px;align-items:center;margin-top:5px;padding:3px 0 4px;overflow-x:auto}
   .pair .bin{font-family:var(--mono);font-size:12px;color:var(--ink-2);text-align:right;white-space:nowrap}
   .pair .duo{display:grid;gap:3px}
   .pair .b{height:11px;border-radius:2px;position:relative}
   .pair .b i{position:absolute;left:calc(100% + 8px);top:-3px;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
   .pair .b.in i{left:auto;right:8px;color:var(--ink)}
   .pair .b.cap.in i{color:#fff}
-  .pair .b.cnt{background:var(--amber)}
+  .pair .b.cnt{background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .pair .b.cap{background:var(--ink);opacity:.82}
   .pkey{display:flex;gap:16px;margin:2px 0 14px;font-size:12.5px;color:var(--ink-2)}
 
@@ -179,7 +183,7 @@
   thead th button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   thead th .arr{color:var(--amber)}
   .tlabel{font-size:13.5px;color:var(--ink-2)}
-  details.alt{margin-top:12px;font-size:13px}
+  details.alt{margin-top:12px;font-size:13px;overflow-x:auto}  /* tableau large : défile dans le bloc, pas la page */
   details.alt summary{cursor:pointer;color:var(--ink-3);font-family:var(--mono);font-size:12px}
   details.alt table.mini{margin-top:8px;width:100%}
   details.alt table.mini th[scope=row]{text-align:left;font-weight:500}
@@ -189,7 +193,7 @@
   tbody tr:hover{background:var(--amber-soft)}
   .sharecell{display:flex;align-items:center;gap:8px;justify-content:flex-end}
   .minitr{width:52px;height:6px;background:var(--paper);border-radius:2px;overflow:hidden;flex:none}
-  .minitr i{display:block;height:100%;background:var(--amber)}
+  .minitr i{display:block;height:100%;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .pos{color:#3E7A2E!important}
 
   /* ---------- footer ---------- */
@@ -224,21 +228,29 @@
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
+  .skip{position:absolute;left:12px;top:-80px;z-index:10;padding:8px 14px;background:var(--card);color:var(--amber-text);border:2px solid var(--amber-text);border-radius:4px;font-weight:650;font-size:14px;text-decoration:none}
+  .skip:focus{top:12px}
+  main:focus{outline:none}
   @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
     .hbars{grid-template-columns:1fr max-content;grid-auto-flow:dense}
     .hbars .tr{grid-column:1/-1}
+    /* graphique des tailles : étiquette SOUS la barre (à droite, elle sortait de l'écran) */
+    .pair .b{margin-bottom:15px}
+    .pair .b i,.pair .b.in i,.pair .b.cap.in i{left:0;right:auto;top:12px;color:var(--ink-3)}
   }
 </style>
 
+<a class="skip" href="#contenu">Aller au contenu</a>
 <div class="wrap">
 <div class="seriesbar">
   <span class="sb-label">Série open-data · Luxembourg</span>
   <nav aria-label="La série de tableaux de bord"><a class="cur" aria-current="page" href="https://solaire.sitraka.lu">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a><span class="arw" aria-hidden="true">→</span><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a><span class="arw" aria-hidden="true">→</span><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></nav>
   <span class="langtoggle"><!--LANGTOGGLE--></span>
 </div>
+<main id="contenu" tabindex="-1">
 <header>
   <h1>Le <span class="sun">photovoltaïque</span> au Luxembourg, commune par commune</h1>
   <p class="standfirst"><strong>__PVMW__ MW</strong> de photovoltaïque raccordés au __DATE__, soit +__PVGROWTHPCT__ % depuis le relevé __FIRSTQ__ : le solaire pèse <strong>__PVSHARE__ %</strong> de la capacité de production décentralisée. Le portail Open Data demandait <em>la part du photovoltaïque dans la production électrique par commune</em> ; les fichiers Leneda donnant la capacité raccordée et non l'énergie produite, ce tableau de bord mesure la part du PV dans la <strong>capacité installée</strong>, commune par commune.</p>
@@ -246,7 +258,7 @@
     <span class="badge">Données au <b>__DATE__</b></span>
     <span class="badge">Source <b>Leneda</b> · data.public.lu</span>
     <span class="badge">Licence <b>CC0</b></span>
-    <span class="badge"><b>100</b> communes · <b>6</b> filières</span>
+    <span class="badge"><b>__NCOMMUNES__</b> communes · <b>6</b> filières</span>
   </div>
   <p class="cta-row"><a class="cta" href="/fr/simulateur/">Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden="true">→</span></a></p>
 </header>
@@ -400,7 +412,7 @@
       <p class="pcsum" id="pc-sum" aria-live="polite"></p>
     </div>
     <div class="pkey">
-      <span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
+      <span><span class="sw am" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
       <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
     </div>
     <div class="pair" id="paradox"><!--PRE_PARADOX--></div>
@@ -422,7 +434,7 @@
 
 <section id="communes">
   <div class="sec-head">
-    <h2>Les 100 communes</h2>
+    <h2>Les __NCOMMUNES__ communes</h2>
     <span class="sec-note">cliquer sur un en-tête pour trier</span>
   </div>
   <p class="lede">Chaque commune a sa page : cliquez sur son nom dans le tableau. <a href="__FORPATH__">Vous travaillez pour une commune ?</a></p>
@@ -496,6 +508,7 @@
   </div>
   <p class="rt-sr" id="rt-live" aria-live="polite"></p>
 </aside>
+</main>
 
 <footer>
   <h3 id="methode">Méthode & source</h3>
@@ -529,6 +542,8 @@ const fmt = n => n.toLocaleString('fr-FR');
 const slugC = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fmt1 = n => n.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+/* noms de communes et de cantons insérés par innerHTML : échappés (défense en profondeur) */
+const escH = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
 
 const TECHS = [
   {k:'pv',    name:'Photovoltaïque', c:css('--amber')},
@@ -584,7 +599,7 @@ document.getElementById('growth-total').textContent = Math.round(totLast-totFirs
   document.getElementById('area').innerHTML =
     `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Capacité installée par filière, ${first.label} à aujourd'hui">${g}</svg>`;
   document.getElementById('area-legend').innerHTML =
-    [...TECHS].map(t=>`<span><span class="sw" style="background:${t.c}"></span>${t.name} <b style="font-family:var(--mono);font-size:11.5px">${fmt1(last[t.k])} MW</b></span>`).join('');
+    [...TECHS].map(t=>`<span><span class="sw${t.k==='pv'?' am':''}" style="background:${t.c}"></span>${t.name} <b style="font-family:var(--mono);font-size:11.5px">${fmt1(last[t.k])} MW</b></span>`).join('');
 })();
 
 /* ---- mix ---- */
@@ -593,15 +608,15 @@ document.getElementById('growth-total').textContent = Math.round(totLast-totFirs
 (function(){
   const bar=document.getElementById('mixbar'), list=document.getElementById('mixlist');
   bar.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
-    return `<div style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`;}).join('');
+    return `<div${t.k==='pv'?' class="am"':''} style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`;}).join('');
   list.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
-    return `<div class="mixrow"><span class="sw" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`;}).join('');
+    return `<div class="mixrow"><span class="sw${t.k==='pv'?' am':''}" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`;}).join('');
 })();
 
 /* ---- top bars ---- */
 function hbars(el, rows, max, val, sub){
   document.getElementById(el).innerHTML=rows.map(r=>
-      `<div class="nm">${r.c} <small>· ${r.k}</small></div>
+      `<div class="nm">${escH(r.c)} <small>· ${escH(r.k)}</small></div>
        <div class="tr"><div class="fl" style="width:${val(r)/max*100}%"></div></div>
        <div class="vv">${sub(r)}</div>`).join('');
 }
@@ -614,7 +629,7 @@ hbars('top-growth', topG, topG[0].g, r=>r.g, r=>`<b>+${fmt(Math.round(r.g))}</b>
 const topW=[...D.communes].sort((a,b)=>b.wpc-a.wpc).slice(0,10);
 hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<b>${fmt(r.wpc)}</b>${' W/hab.'} · ${fmt1(r.rpk)}${' toitures/1 000'}`);
 document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
-  `<tr><td>${k.k}</td><td>${fmt(Math.round(k.pv))}</td><td>${fmt(k.n)}</td><td>${fmt(k.pop)}</td><td>${fmt(k.wpc)}</td><td>${fmt1(k.ipk)}</td></tr>`).join('');
+  `<tr><td>${escH(k.k)}</td><td>${fmt(Math.round(k.pv))}</td><td>${fmt(k.n)}</td><td>${fmt(k.pop)}</td><td>${fmt(k.wpc)}</td><td>${fmt1(k.ipk)}</td></tr>`).join('');
 
 /* ---- ajouts entre relevés consécutifs ---- */
 (function(){
@@ -631,7 +646,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
         note=document.getElementById('kb-note'), H=D.hist;
   const slug=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const byName=[...D.communes].sort((a,b)=>a.c.localeCompare(b.c,'fr'));
-  sel.insertAdjacentHTML('beforeend',byName.map(c=>`<option value="${slug(c.c)}">${c.c}</option>`).join(''));
+  byName.forEach(c=>sel.add(new Option(c.c, slug(c.c))));   // texte de l'option = textContent
   const pct=x=>x<1?x.toFixed(1).replace('.',','):Math.round(x);
   const sg=n=>(n>0?'+':n<0?'−':'±')+fmt(Math.abs(n));
   function draw(c, kb){
@@ -651,7 +666,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
     document.getElementById('paradox-rows').innerHTML=rows.map(s=>
       `<tr><th scope="row">${s.bin}${unit(s)}</th><td>${fmt(s.count)}</td><td>${fmt1(s.count/nTot*100)} %</td><td>${fmt1(s.mw)}</td><td>${fmt1(s.mw/cTot*100)} %</td></tr>`).join('');
     const small=kb?1:4, sn=rows.slice(0,small).reduce((a,s)=>a+s.count,0)/nTot*100, sc=rows.slice(0,small).reduce((a,s)=>a+s.mw,0)/cTot*100;
-    let t=c?`<b>${c.c} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`:'';
+    let t=c?`<b>${escH(c.c)} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`:'';
     if(c) t+=` <a href="__CPATH__${slug(c.c)}/">${'Page de la commune'} →</a>`;
     if(h) t+=(t?' ':'')+`Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).`;
     sum.innerHTML=t;
@@ -686,7 +701,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       return (typeof va==='string'? va.localeCompare(vb,'fr') : (va===null?-1:vb===null?1:va-vb))*dir;
     });
     tbody.innerHTML=vis.map(r=>`<tr id="c-${r.lau2}">
-      <td><a class="cl" href="__CPATH__${slugC(r.c)}/">${r.c}</a></td><td>${r.k}</td>
+      <td><a class="cl" href="__CPATH__${slugC(r.c)}/">${escH(r.c)}</a></td><td>${escH(r.k)}</td>
       <td>${fmt(Math.round(r.pv))}</td>
       <td>${fmt(r.n)}</td>
       <td><span class="sharecell"><span class="minitr"><i style="width:${r.share}%"></i></span>${fmt1(r.share)} %</span></td>

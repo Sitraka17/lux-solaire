@@ -234,11 +234,38 @@ Reste à faire (par priorité) :
   FAIT le 2/11/2026 (voir « Workflow du lundi et alertes ») ; reste à créer le contrôle Grafana externe ;
 - ~~tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda~~
   FAIT le 2/11/2026 (voir « Barèmes uniques et tests ») ;
-- compteur /e : listes blanches (lang, chemins) et limite de débit ;
+- ~~compteur /e : listes blanches (lang, chemins)~~ FAIT le 2/11/2026 (voir « Accessibilité et compteur /e » ci-dessous) ;
+  reste la limite de débit (rien de fait : pas de stockage d'IP par principe, à faire côté règles Cloudflare) ;
 - ~~`scripts/baremes.json` unique~~ FAIT le 2/11/2026 ; découper build.py ;
 - ~~moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu~~
   FAIT le 2/11/2026 (voir « Moteur du simulateur » ci-dessous) ;
-- accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement ; CSP à tester.
+- ~~accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement~~ FAIT le 2/11/2026 ; CSP à tester.
+
+## Accessibilité et compteur /e (2/11/2026)
+
+- **Contraste (WCAG 1.4.11)** : l'ambre `--amber` #EE9B05 ne fait que 2,06:1 sur `--paper` et 2,25:1 sur
+  blanc. Couleur de remplissage inchangée ; un filet intérieur `box-shadow: inset 0 0 0 1px var(--amber-text)`
+  (#8A5600 : 5,62:1 sur `--paper`, 6,16:1 sur blanc) entoure les barres `.hbars .fl`, `.pair .b.cnt`,
+  `.minitr i`, les pastilles `.sw.am` et le segment PV de la barre du mix (`.mixbar .am`, classe posée par
+  le JS ET par `prerender`). Simulateur : `stroke` `--amber-text` sur les barres ambre de la figure 1.
+  La courbe de la figure 2 (#C77F00, 3,25:1 sur blanc) et le liseré de l'aire PV passaient déjà.
+- **Structure** : lien d'évitement `<a class="skip" href="#contenu">` (premier élément focalisable, visible
+  au focus) avant la barre de série, puis `<main id="contenu" tabindex="-1">` jusqu'avant `<footer>`, sur les
+  8 pages des gabarits ET les 404 pages de communes.py (`_shell`, libellés dans `SKIP`). Libellés : « Aller
+  au contenu » / Skip to content / Zum Inhalt springen / Op den Inhalt sprangen (clé dans `i18n_en/de/lb.json`).
+- **Mobile (375 px)** : il y avait un défilement horizontal préexistant (tableaux des `details.alt`, grille
+  PVGIS et tableaux du simulateur, étiquettes du graphique des tailles). Corrigé : `.grid-2` en
+  `minmax(0,1fr)`, `overflow-x:auto` sur `details.alt`, `.pair`, `figure.tab`, `.card.refs` ; sous 520 px
+  l'étiquette du graphique des tailles passe sous la barre. Vérifié : 412 pages sans défilement à 375 px.
+- **Échappement** : noms de communes et cantons échappés dans `prerender`, `communes.py` (`esc`) et le JS
+  (`escH`, `new Option()` pour la liste des communes) ; « < » échappé en `\u003c` dans les blocs JSON inlinés
+  (`/*__DATA__*/`, `/*__PVGIS__*/`, `__BAREMES_JSON__`, JSON-LD des pages communales).
+- **Nombre de communes** : jeton `__NCOMMUNES__` (badge, titre de la table), rang « sur N », titres CSV
+  (`{n}` = nombre de lignes). `N_COMMUNES = 100` reste le contrôle de format Leneda (build en échec si ≠ 100).
+- **Compteur `functions/e.js`** : écrit seulement si type ∈ liste, lang ∈ en/fr/de/lb, page = chemin réel
+  du site (accueil, simulateur, page communale `[a-z0-9-]`, « Pour les communes ») ; `Sec-Fetch-Site` doit
+  valoir `same-origin` quand l'en-tête est présent ; écriture D1 dans un try/catch (erreur journalisée,
+  réponse 204). Schéma de la table `ev` inchangé. Pas de limite de débit.
 
 ## Simulateur mis à jour le 2/11/2026
 
