@@ -52,7 +52,8 @@ def test_tranches_gemengen():
 def test_montants_faq_simulateur():
     fr, en = build.sim_numbers("fr"), build.sim_numbers("en")
     assert fr["__KB6__"] == "5 742" and en["__KB6__"] == "5,742"
-    assert fr["__NET6LO__"] == "4 300" and fr["__NET6HI__"] == "7 300"
+    assert fr["__NET6LO__"] == "3 900" and fr["__NET6HI__"] == "7 500"
+    assert fr["__C6LO__"] == "9 600" and fr["__C6HI__"] == "13 200"
     assert fr["__TAR26__"] == "13,3" and en["__TAR27__"] == "12.9"
 
 

@@ -21,7 +21,7 @@
   /* Barèmes du site. Formules :
    *  Klimabonus PV       : 0 sous pMin kWc ; p × (a − a/b × p) jusqu'à pCap ; max au-delà
    *  Klimabonus batterie : 0 sous qMin kWh ; q × (a − a/b × q) jusqu'à qCap ; max au-delà
-   *  Aide HEMS           : montant saisi, plafonné à aideMax, option A seulement
+   *  Aide HEMS           : montant saisi, plafonné à aideMax ET au coût du HEMS, option A seulement
    *  Tarif garanti       : (p ≤ seuilKw ? petit : grand) × baisse^(année − anneeBase) / 1000 €/kWh,
    *                        pendant duree ans, puis prix de marché
    *  Autoconsommation    : s = base × (prod/cons)^expo borné à [min, max] ; batterie :
@@ -71,8 +71,12 @@
     var k = bar.klimabonusBatt;
     return q < k.qMin ? 0 : (q < k.qCap ? q * (k.a - k.a / k.b * q) : k.max);
   }
-  function hemsAid(hems, amount, bar) {
-    return hems ? Math.min(amount, bar.hems.aideMax) : 0;
+  // cost (facultatif) : coût saisi du HEMS ; l'aide ne peut pas le dépasser (un HEMS à 0 €
+  // ne rapporte pas 500 €)
+  function hemsAid(hems, amount, bar, cost) {
+    if (!hems) return 0;
+    var cap = (cost === undefined || cost === null) ? bar.hems.aideMax : Math.min(cost, bar.hems.aideMax);
+    return Math.max(0, Math.min(amount, cap));
   }
   // €/kWh, selon la puissance et l'année de première injection
   function feedInTariff(p, year, bar) {
@@ -147,7 +151,7 @@
     var prod = P * ey;
     var sc = I.scAuto ? selfShare(prod, cons, I.batt, bar) : I.sc / 100;
     var self = Math.min(prod * sc, cons), inj = prod - self;
-    var bonus = bonusPV(P, bar) + bonusBattery(I.batt, bar) + hemsAid(I.hems, I.haid, bar);
+    var bonus = bonusPV(P, bar) + bonusBattery(I.batt, bar) + hemsAid(I.hems, I.haid, bar, I.hcost);
     var capexGross = I.cost + (I.batt > 0 ? I.bcost : 0) + (I.hems ? I.hcost : 0);
     var tar = feedInTariff(P, I.year, bar);
     var base = { self: self, inj: inj, price: I.price, growth: I.growth, deg: I.deg, inv: I.inv };

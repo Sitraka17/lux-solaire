@@ -707,9 +707,10 @@ def sim_numbers(lang):
     """Montants d'exemple de la FAQ du simulateur, calculés avec les MÊMES formules
     que le moteur sim-engine.js (bonusPV, feedInTariff), sur les barèmes de
     scripts/baremes.json : plus aucun montant écrit à la main (corrigé le 2/11/2026 :
-    « 4 500 à 7 500 € » valait 4 300 à 7 300 €)."""
+    « 4 500 à 7 500 € » valait 3 900 à 7 500 €). Coûts NON arrondis (9 600 et
+    13 200 €) : le net est calculé sur eux, un seul arrondi à la centaine à la fin."""
     kb, tar = baremes.kb_pv, baremes.tarif   # tar : €/kWh
-    c_lo, c_hi = round(1600 * 6, -3), round(2200 * 6, -3)   # devis 1 600 à 2 200 €/kWc, 6 kWc
+    c_lo, c_hi = 1600 * 6, 2200 * 6                           # devis 1 600 à 2 200 €/kWc, 6 kWc
     net = lambda c: _jsround((c - kb(6)) / 100) * 100        # après Klimabonus, à la centaine
     return {
         "__KB3__": _thousands(_jsround(kb(3)), lang),
@@ -1425,6 +1426,22 @@ def jsonld_sim(final_html, lang, canonical, cdate, pv):
     return '<script type="application/ld+json">' + payload.replace("<", "\\u003c") + "</script>"
 
 
+def write_ev_allowlist(communes_fr, checked):
+    """Listes blanches du compteur /e (functions/e.js) : slugs RÉELS des communes et fichiers
+    de données réellement liés depuis les pages. Fichier généré, réécrit seulement s'il change
+    (functions/ est compilé par wrangler, jamais copié dans le dist)."""
+    slugs = sorted({_slug(c["c"]) for c in communes_fr})
+    files = sorted({m.split("/")[-1] for _, html, _, _ in checked
+                    for m in re.findall(r'href="(/data/[^"]+\.(?:csv|json))"', html)})
+    js = ("// GÉNÉRÉ par scripts/build.py (write_ev_allowlist) : ne pas éditer à la main.\n"
+          "// Listes blanches du compteur /e : slugs réels des communes, fichiers de données liés.\n"
+          f"export const SLUGS = new Set({json.dumps(slugs)});\n"
+          f"export const FILES = new Set({json.dumps(files)});\n")
+    out = ROOT / "functions" / "_allow.js"
+    if not out.exists() or out.read_text() != js:
+        out.write_text(js)
+
+
 def render_all(data):
     """Écrit les JSON dérivés (EN, DE, LB) et les huit pages (tableau de bord
     et simulateur, quatre langues chacun) depuis le blob FR."""
@@ -1565,6 +1582,7 @@ def render_all(data):
             checked.append((str(f.relative_to(ROOT)), f.read_text(), lang, "commune"))
         f = ROOT / communes.FORPATH[lang].strip("/") / "index.html"
         checked.append((str(f.relative_to(ROOT)), f.read_text(), lang, "info"))
+    write_ev_allowlist(blobs["fr"]["communes"], checked)
     problems = baremes.check_pages(checked)
     if problems:
         sys.exit("chiffres de barème cités qui ne correspondent plus à scripts/baremes.json "

@@ -75,6 +75,19 @@ test('aide HEMS : option A seulement, plafonnée par le barème', () => {
   assert.equal(E.hemsAid(true, 900, E.BAREMES), 500);
 });
 
+test('aide HEMS plafonnée au coût saisi du HEMS', () => {
+  assert.equal(E.hemsAid(true, 500, E.BAREMES, 0), 0);
+  assert.equal(E.hemsAid(true, 500, E.BAREMES, 300), 300);
+  assert.equal(E.hemsAid(true, 500, E.BAREMES, 1000), 500);
+  // dans compute : un HEMS gratuit ne fait rien gagner en option A
+  const base = CASES[0].inputs;
+  const sans = E.compute({ ...base, hems: false }, G, E.BAREMES);
+  const gratuit = E.compute({ ...base, hems: true, hcost: 0, haid: 500 }, G, E.BAREMES);
+  assert.equal(gratuit.A.npv, sans.A.npv);
+  const moitie = E.compute({ ...base, hems: true, hcost: 300, haid: 500 }, G, E.BAREMES);
+  assert.equal(moitie.A.npv, sans.A.npv);   // coût 300 €, aide 300 € : neutre en option A
+});
+
 test('jamais remboursé : retour sur investissement null', () => {
   const R = run('2kwc_facade_est_clervaux_jamais');
   assert.equal(R.A.pb, null);

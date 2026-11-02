@@ -53,6 +53,11 @@ def _kb_aid(lang, below, above):
     return (below, *[_KB_FMT[lang](t, i == 0) for i, t in enumerate(_KBG["tranches"])], above)
 
 
+def de_k(k):
+    """« de » élidé devant voyelle : canton d'Esch, canton d'Echternach, canton de Wiltz."""
+    return ("d'" if (unicodedata.normalize("NFD", k)[:1] or "x").lower() in "aeiouy" else "de ") + k
+
+
 def slug(name):
     s = unicodedata.normalize("NFD", name)
     s = "".join(ch for ch in s if unicodedata.category(ch) != "Mn").lower()
@@ -77,10 +82,10 @@ S = {
     "fr": {
         "rank": lambda r, n: f"{_ord(r, 'fr')} sur {n}",
         "title": lambda c, n, mw, y: f"Photovoltaïque à {c} : {n} installations, {mw} MW ({y})",
-        "desc": lambda c, k, mw, date, n, wpc: (f"{c} (canton de {k}) : {mw} MW de photovoltaïque raccordés au {date}, "
+        "desc": lambda c, k, mw, date, n, wpc: (f"{c} (canton {de_k(k)}) : {mw} MW de photovoltaïque raccordés au {date}, "
                                                 f"{n} installations, {wpc} W par habitant. Tailles des installations, "
                                                 f"tranches du Klimabonus Gemengen et comparaison avec les communes voisines."),
-        "eyebrow": lambda k: f"Commune · canton de {k}",
+        "eyebrow": lambda k: f"Commune · canton {de_k(k)}",
         "h1": lambda c: f"Le photovoltaïque à <span class=\"sun\">{c}</span>",
         "stand": lambda c, mw, date, n, wpc, med, gkw, gp, fq: (
             f"<strong>{mw} MW</strong> de photovoltaïque raccordés au {date} sur <strong>{n} installations</strong>, "
@@ -105,7 +110,7 @@ S = {
         "kb_note": (f"Barème {_KBG_YEAR} du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de "
                     f"parking est aidée à {_OMB['taux']} % ({_n(_OMB['plafond'], 'fr')} €/kWc). Les données Leneda ne disent pas si une installation "
                     "appartient à la commune ou à un particulier."),
-        "cmp_h": "Comparaison", "cmp_canton": lambda k: f"Communes du canton de {k}",
+        "cmp_h": "Comparaison", "cmp_canton": lambda k: f"Communes du canton {de_k(k)}",
         "cmp_size": "Communes de taille comparable",
         "cmp_cols": ("Commune", "Canton", "PV (MW)", "Install.", "W/hab.", "Inst./1 000 hab.", "Ajouts (kW)"),
         "cmp_lede": lambda fq: f"Classées par W par habitant. « Ajouts » : puissance ajoutée depuis le relevé {fq}.",

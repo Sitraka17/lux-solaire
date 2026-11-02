@@ -37,6 +37,10 @@ env:
 
 jobs:
   rebuild:
+    # Un déclenchement manuel sur une autre branche que main mettrait cette branche
+    # en production (déploiement --branch=main) : le job ne tourne que sur main
+    # (le cron tourne toujours sur la branche par défaut, main).
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:

@@ -104,6 +104,7 @@
   .seg button[aria-pressed=true]{background:var(--ink);color:#fff}
   .seg button:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
   .chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2)}
+  .fld label.chk{justify-content:flex-start}  /* .fld label (space-between) écartait la case de son libellé */
   .chk input{accent-color:var(--amber-deep);width:15px;height:15px}
   .hint{font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
   .hint a{color:var(--amber-text)}
@@ -123,15 +124,14 @@
   .kpi.hero .sub{color:#9AA5B4}
   @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   .fig{margin-top:18px}
-  .fig figcaption,.tab caption{font-size:12.5px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45;caption-side:bottom}
-  .fig figcaption b,.tab caption b{font-family:var(--mono);color:var(--amber-text);font-weight:650}
+  .fig figcaption,.tab figcaption{font-size:12.5px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45;caption-side:bottom}
+  .fig figcaption b,.tab figcaption b{font-family:var(--mono);color:var(--amber-text);font-weight:650}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:520px}
   table.mini{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
   table.mini th,table.mini td{padding:6px 10px;text-align:right;border:1px solid var(--line)}
   table.mini th{background:var(--paper);color:var(--ink-2);font-weight:600}
   table.mini th[scope=row],table.mini td:first-child,table.mini th:first-child{text-align:left}
-  table.mini caption{caption-side:bottom;text-align:left;font-family:var(--body);font-size:12.5px;color:var(--ink-2);padding:8px 0 0;line-height:1.45}
   table.mini td.best{color:var(--green);font-weight:650}
   table.mini td.hi{background:var(--amber-soft)}
   .tab{margin-top:18px}
@@ -319,7 +319,7 @@
     <h2><span class="num">Outil 2</span>Est-ce rentable pour vous ?</h2>
     <span class="sec-note">retour sur investissement · gain net sur 25 ans, non actualisé par défaut</span>
   </div>
-  <p class="lede">L'outil reprend la production de l'outil 1 et compare les deux régimes ouverts aux particuliers en __YEAR__ : <strong>option A</strong>, Klimabonus (versé sur la facture) avec autoconsommation et surplus vendu au prix de marché ; <strong>option B</strong>, pas d'aide mais surplus payé au tarif d'injection garanti pendant 15 ans. Les deux ne se cumulent pas : demander le Klimabonus, c'est renoncer au tarif garanti. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire combine le tarif garanti et une aide de 20 % (500 €/kWc au plus), facture finale au plus tard le 31 décembre 2026 : il n'est pas simulé ici.</p>
+  <p class="lede">L'outil reprend la production de l'outil 1 et compare les deux régimes ouverts aux particuliers en __YEAR__ : <strong>option A</strong>, Klimabonus (déduit de la facture ou demandé ensuite) avec autoconsommation et surplus vendu au prix de marché ; <strong>option B</strong>, pas d'aide mais surplus payé au tarif d'injection garanti pendant 15 ans. Les deux ne se cumulent pas : demander le Klimabonus, c'est renoncer au tarif garanti. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire combine le tarif garanti et une aide de 20 % (500 €/kWc au plus), facture finale au plus tard le 31 décembre 2026 : il n'est pas simulé ici.</p>
   <div class="grid-tool">
     <form class="card form" id="f2" autocomplete="off">
       <fieldset>
@@ -457,7 +457,8 @@
       <div class="card refs" style="margin-top:20px">
         <h3>Tableau 4. Klimabonus 2026 et tarif d'injection garanti</h3>
         <p>Klimabonus (guichet.lu, page mise à jour le 11 août 2026) : installation d'au moins 2 kWc en autoconsommation, posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment ; P × (1 155 − 33 × P) € pour une puissance P inférieure à 15 kWc, 10 000 € à partir de 15 kWc ; batterie Q × (500 − 500/18 × Q) €, 2 250 € à partir de 9 kWh ; factures du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 pour une commande passée au plus tard le 31 décembre 2029. Système de gestion de l'énergie (HEMS) relié à au moins deux équipements : 500 €, factures du 1er octobre 2026 au 31 décembre 2030. Tarif garanti (règlement grand-ducal modifié du 1er août 2014, art. 17ter) : 165 × 0,97<sup>n−2019</sup> €/MWh jusqu'à 10 kW, 155 × 0,97<sup>n−2019</sup> au-delà et jusqu'à 30 kW, n étant l'année de première injection.</p>
-        <table class="mini" id="tab-aid"></table>
+        <table class="mini" id="tab-aid" aria-describedby="aid-note"></table>
+        <p class="hint" id="aid-note"></p>
       </div>
     </div>
   </div>
@@ -473,7 +474,7 @@
   </details>
   <details>
     <summary>Quel est le montant du Klimabonus pour le photovoltaïque en 2026 ?</summary>
-    <p>Pour une installation en autoconsommation de puissance P (en kWc, au moins 2), posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment, l'aide vaut P × (1 155 − 33 × P) euros sous 15 kWc et 10 000 euros à partir de 15 kWc : __KB3__ € pour 3 kWc, __KB6__ € pour 6 kWc, __KB10__ € pour 10 kWc. Une batterie de capacité Q (kWh) ajoute Q × (500 − 500/18 × Q) euros, 2 250 € à partir de 9 kWh. L'aide est déduite de la facture par l'installateur (préfinancement) pour les factures établies du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation a été commandée au plus tard le 31 décembre 2029. Condition : renoncer à toute rémunération garantie de l'électricité injectée. Depuis le 1er octobre 2026 (date de facture), un système de gestion de l'énergie (HEMS) qui pilote au moins deux équipements (panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable) reçoit en outre 500 €.</p>
+    <p>Pour une installation en autoconsommation de puissance P (en kWc, au moins 2), posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment, l'aide vaut P × (1 155 − 33 × P) euros sous 15 kWc et 10 000 euros à partir de 15 kWc : __KB3__ € pour 3 kWc, __KB6__ € pour 6 kWc, __KB10__ € pour 10 kWc. Une batterie de capacité Q (kWh) ajoute Q × (500 − 500/18 × Q) euros, 2 250 € à partir de 9 kWh. L'aide peut être déduite de la facture par un installateur inscrit au registre des demandeurs intermédiaires (préfinancement, optionnel) ou demandée ensuite selon la procédure classique. Factures éligibles : du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation a été commandée au plus tard le 31 décembre 2029. Condition : renoncer à toute rémunération garantie de l'électricité injectée. Depuis le 1er octobre 2026 (date de facture), un système de gestion de l'énergie (HEMS) qui pilote au moins deux équipements (panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable) reçoit en outre 500 €.</p>
   </details>
   <details>
     <summary>Klimabonus ou tarif d'injection garanti : lequel choisir ?</summary>
@@ -559,10 +560,10 @@
   <ol>
     <li>Productible : <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centre commun de recherche (JRC), Commission européenne, base d'irradiation SARAH3 (2005-2023), système fixe, pertes 14 %, horizon calculé ; requêtes du 23 octobre 2026 pour Luxembourg-Ville (49,61 N ; 6,13 E) et le centre de chaque canton (<a href="/data/pvgis.json">données</a>).</li>
     <li>Klimabonus : <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">Aide financière pour les installations techniques qui valorisent les sources d'énergies renouvelables (Klimabonus régime 2026)</a>, guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026 ; loi du 24 juillet 2026 relative au régime d'aides pour la promotion de la durabilité, de l'utilisation rationnelle de l'énergie et des énergies renouvelables dans le domaine du logement.</li>
-    <li>Aide HEMS (500 €, factures à partir du 1er octobre 2026) : <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">présentation du « Klimabonus Wunnen » 2026-2030</a>, gouvernement.lu, 16 juillet 2026, consultée le 2 novembre 2026. Régime transitoire de l'option B (offres signées du 1er octobre 2024 au 4 mars 2026) : <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">période de transition du Klimabonus photovoltaïque</a>, Klima-Agence, 17 décembre 2025, consultée le 2 novembre 2026.</li>
+    <li>Aide HEMS : montant (500 €) et condition (au moins deux équipements pilotés) d'après la <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">page Klimabonus de guichet.lu</a> (mise à jour le 11 août 2026) ; date d'effet (factures à partir du 1er octobre 2026) d'après la <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">présentation du « Klimabonus Wunnen » 2026-2030</a>, gouvernement.lu, 16 juillet 2026 ; consultées le 2 novembre 2026. Régime transitoire de l'option B (offres signées du 1er octobre 2024 au 4 mars 2026) : <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">période de transition du Klimabonus photovoltaïque</a>, Klima-Agence, 17 décembre 2025, consultée le 2 novembre 2026.</li>
     <li>Tarif d'injection garanti : règlement grand-ducal modifié du 1er août 2014 relatif à la production d'électricité basée sur les sources d'énergie renouvelables, art. 17ter (version du règlement du 12 avril 2019), <a href="https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo" target="_blank" rel="noopener">Legilux</a> ; facteurs de réduction X = 1 à défaut de fixation ministérielle.</li>
     <li>Tarifs réseau et taxes : <a href="https://www.ilr.lu/wp-content/uploads/ilr-elc-dec-2025-12-22-E25-41-44-Tariff-sheet-GRD-elec-2026.pdf" target="_blank" rel="noopener">Tarifs d'utilisation du réseau 2026</a> (ILR, Creos, version du 26 novembre 2025) ; grille « Tarifs réseau et taxes réglementées » d'Enovos valable à partir du 1er août 2026 (mécanisme de compensation −3,71 c€/kWh, taxe 0,10 c€/kWh) ; prix de l'énergie : offres résidentielles d'octobre 2026, 10,9 à 13,8 c€/kWh, offre courante Enovos 13,2 c€/kWh hors TVA depuis le 1er janvier 2026.</li>
-    <li>Prix de l'électricité 2026 : <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">loi du 22 juillet 2026 relative à la contribution de l'État dans le cadre du mécanisme de compensation pour l'année 2026</a> (ILR) et <a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">projet de loi n° 8707, amendement gouvernemental du 21 juillet 2026</a> (contribution de l'État sur toute l'année 2026 ; aide de l'ordre de 4 c€/kWh pour la catégorie A du 1er août au 31 décembre 2026), consultés le 2 novembre 2026. Facture type (3 900 kWh/an) : présentation du ministre de l'Économie du 2 décembre 2025, rapportée par Le Quotidien du 3 décembre 2025.</li>
+    <li>Prix de l'électricité 2026 : <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">loi du 22 juillet 2026 relative à la contribution de l'État dans le cadre du mécanisme de compensation pour l'année 2026</a> (ILR ; texte issu du projet de loi n° 8707, voir l'<a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">exposé de l'amendement gouvernemental</a> pour l'aide de l'ordre de 4 c€/kWh de la catégorie A du 1er août au 31 décembre 2026), consultés le 2 novembre 2026. Facture type (3 900 kWh/an) : présentation du ministre de l'Économie du 2 décembre 2025, rapportée par Le Quotidien du 3 décembre 2025.</li>
     <li>Coûts d'installation, de batterie et d'onduleur, prix du surplus : fourchettes relevées sur les sites d'installateurs et comparateurs luxembourgeois en octobre 2026 ; valeurs indicatives, à remplacer par votre devis.</li>
     <li>Fiscalité : <a href="https://www.klima-agence.lu/sites/default/files/2025-09/Traitement%20fiscal%20PV_FR_Sep25_VF.pdf" target="_blank" rel="noopener">Traitement fiscal d'une personne physique exploitant une installation photovoltaïque</a>, Klima-Agence, septembre 2025.</li>
     <li>Installations raccordées : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> (Leneda, CC0), relevé du __DATE__.</li>
@@ -605,7 +606,7 @@ const L = {
   thItem:'Poste', thA:'Option A · Klimabonus', thB:'Option B · tarif garanti',
   rowSelf:'kWh autoconsommés × valeur du kWh évité', rowInj:'kWh injectés × prix de vente', rowTotal:'Gain la première année',
   rowBonus:'Klimabonus déduit de la facture', rowCapex:'Reste à payer', rowTariff:'prix du surplus',
-  cantonLine:'Dans le canton de ', cantonMid:' : ', cantonInst:' installations PV raccordées, ', cantonWpc:' W de photovoltaïque par habitant, ', cantonIpk:' installations pour 1 000 habitants (Leneda, ', cantonEnd:').',
+  cantonLine:'Dans le canton de ', cantonLineV:'Dans le canton d\'', cantonMid:' : ', cantonInst:' installations PV raccordées, ', cantonWpc:' W de photovoltaïque par habitant, ', cantonIpk:' installations pour 1 000 habitants (Leneda, ', cantonEnd:').',
   win:'la plus avantageuse', tie:'ex æquo',
   vFast:'Rentable rapidement', vOk:'Rentable', vSlow:'Rentable, mais lentement', vNo:'Difficilement rentable',
   vTextA:'L\'option A (Klimabonus) rembourse l\'installation en ', vTextB:'L\'option B (tarif garanti) rembourse l\'installation en ',
@@ -617,7 +618,7 @@ const L = {
   costHint1:'soit ', costHint2:' €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.',
   bcostHint:' €/kWh utile.',
   thP:'Puissance', thBonus:'Klimabonus', thBonusKwc:'par kWc', thTariff10:'Tarif garanti ≤ 10 kW', thTariff30:'10 à 30 kW', thFirst:'1re injection',
-  aidNote1:'Lecture : 6 kWc dont la première injection a lieu en 2027 reçoivent ', aidNote2:' de Klimabonus, ou un tarif garanti de ', aidNote3:' pendant 15 ans, pas les deux.',
+  aidNote1:'Lecture : 6 kWc dont la première injection a lieu en 2027 reçoivent ', aidNote2:' € de Klimabonus, ou un tarif garanti de ', aidNote3:' pendant 15 ans, pas les deux.',
   undisc:'(non actualisé)', discAt:'(actualisé à ', discEnd:' %)',
   gridAz:['Sud','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Est / Ouest 90°'], gridTilt:'Inclinaison',
 };
@@ -726,7 +727,7 @@ function render(){
 
   // canton
   const K = D.cantons.find(k=>k.k===I.canton);
-  if(K) $('r-canton').textContent = L.cantonLine+K.k+L.cantonMid+fmt(K.n)+L.cantonInst+fmt(K.wpc)+L.cantonWpc+fmt1(K.ipk)+L.cantonIpk+D.meta.date+L.cantonEnd;
+  if(K) $('r-canton').textContent = (/^[aeiouyéè]/i.test(K.k)?L.cantonLineV:L.cantonLine)+K.k+L.cantonMid+fmt(K.n)+L.cantonInst+fmt(K.wpc)+L.cantonWpc+fmt1(K.ipk)+L.cantonIpk+D.meta.date+L.cantonEnd;
 
   /* outil 2 */
   const pbTxt = pb => pb===null ? L.never : (pb<1 ? '< 1'+L.year1 : pb.toLocaleString('fr-FR',{maximumFractionDigits:1})+L.years);
@@ -799,7 +800,9 @@ function render(){
     a+=`<tr><th scope="row">${p} kWc</th><td>${eur(bonusPV(p))}</td><td>${fmt(bonusPV(p)/p)} €</td><td>${n}</td><td>${cts(tariff(10,n))}</td><td>${cts(tariff(30,n))}</td></tr>`;
   });
   // lecture générée par les mêmes formules que le tableau (plus de montant écrit à la main)
-  $('tab-aid').innerHTML=a+`</tbody><caption>${L.aidNote1}${eur(bonusPV(6))}${L.aidNote2}${cts(tariff(6,2027))}${L.aidNote3}</caption>`;
+  $('tab-aid').innerHTML=a+'</tbody>';
+  // note de lecture HORS du tableau : une légende de tableau (caption) prend la largeur du tableau et défile avec lui sur mobile
+  $('aid-note').textContent=L.aidNote1+fmt(bonusPV(6))+L.aidNote2+cts(tariff(6,2027))+L.aidNote3;
 })();
 
 /* ---- liaisons ---- */

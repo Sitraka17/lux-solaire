@@ -281,13 +281,42 @@ Reste à faire (par priorité) :
   Fig. 2 : si les valeurs finales A et B se chevauchent, la plus basse passe sous sa courbe.
 - **Tableau PNEC** : `.card.refs{overflow-x:auto}` ajouté aussi dans `template.html`.
 - Non traités dans ce lot (hors demande « 1 à 5 ») : `workflow_dispatch` hors `main` dans rebuild.yml,
-  listes blanches plus strictes de `functions/e.js` (slugs réels, x/r, taille du corps).
+  listes blanches plus strictes de `functions/e.js` (slugs réels, x/r, taille du corps). FAIT ensuite
+  (voir « Relecture du 2/11/2026, lot suivant »).
+
+## Relecture du 2/11/2026, lot suivant
+
+- **FAQ coûts** : `sim_numbers()` calcule le net sur les coûts NON arrondis (6 × 1 600 = 9 600 et
+  6 × 2 200 = 13 200 €, affichés tels quels) : « environ 3 900 à 7 500 € » (avant : 4 300 à 7 300 €,
+  double arrondi).
+- **Préfinancement** : optionnel, par un installateur inscrit au registre des demandeurs intermédiaires,
+  ou demande classique ensuite ; 4/1/2026-31/12/2029 = période d'éligibilité des FACTURES (FR + EN/DE/LB).
+- **Sources** : montant HEMS (500 €, 2 équipements) cité d'après guichet.lu, date du 1/10/2026 d'après
+  gouvernement.lu ; prix de l'électricité : « loi du 22 juillet 2026 » issue du projet 8707 (le PDF de la CHD
+  est cité comme exposé de l'amendement, plus comme projet en cours).
+- **Tableau 4** : la note de lecture est un `<p class="hint" id="aid-note">` HORS du tableau (le `<caption>`
+  défilait avec le tableau à 375 px) ; le symbole € est dans `aidNote1`/`aidNote2` (EN « €5,742 »,
+  FR/DE/LB « 5 742 € »).
+- **CSS simulateur** : `.tab figcaption` (la légende « Tableau 1. » avait le style par défaut),
+  `.fld label.chk{justify-content:flex-start}` ; tableau de bord : `.refs a` en `--amber-text`.
+- **Élision** : `communes.de_k()` (« canton d'Esch », « canton d'Echternach ») dans le texte, la meta
+  description et le JSON-LD des pages communales ; simulateur : clé JS `cantonLineV`.
+- **rebuild.yml** : le job ne tourne que si `github.ref == 'refs/heads/main'` (un déclenchement manuel sur
+  une autre branche ne déploie plus en production).
+- **Compteur `/e`** : listes blanches générées au build (`functions/_allow.js`, `write_ev_allowlist` dans
+  build.py : 100 slugs réels + fichiers de données liés depuis les pages ; pas une route Pages, vérifié avec
+  `wrangler pages functions build`). Cible `x` contrôlée par type (dl = fichier lié, commune = slug ou `lux`,
+  classes = `aides`/`detail`, copy = ids `rt-copy*`, contact = hello@sitraka.lu, page = slug, sim/land = vide),
+  `r` seulement pour `land` et réduit à un nom d'hôte, corps limité à 1 Ko (lecture plafonnée même sans
+  Content-Length). Le simulateur ne charge pas ev.js : son motif de page a été retiré. Toujours sans cookie
+  ni IP ; la limite de débit reste à poser en règle Cloudflare.
+- **Moteur** : l'aide HEMS est plafonnée au coût saisi du HEMS (`hemsAid(hems, montant, bar, coût)`, test ajouté).
 
 ## Simulateur mis à jour le 2/11/2026
 
 Sources relues le 2/11/2026 : guichet.lu Klimabonus 2026 installations techniques (mise à jour du
 11/08/2026), communiqué gouvernement.lu du 16/07/2026, Klima-Agence « transition period » (17/12/2025),
-ILR (loi du 22/07/2026), projet de loi 8707 (amendement gouvernemental du 21/07/2026).
+ILR (loi du 22/07/2026), projet de loi 8707 devenu la loi du 22/07/2026 (exposé de l'amendement gouvernemental).
 - **HEMS** : case « Ajouter un système de gestion de l'énergie » (ids `hems`, `hcost` 1 000 € par
   défaut = hypothèse SANS source, `haid` 500 € max), coût compté dans les deux options, aide en
   option A seulement (cumul avec le tarif garanti non précisé par guichet.lu), aucun gain

@@ -4,7 +4,7 @@
 - `engine_js()` / `sync_engine()` : régénère le bloc BAREMES de sim-engine.js ;
 - `kb_pv()`, `kb_batt()`, `tarif()` : mêmes formules que le moteur JS (FAQ du simulateur) ;
 - `kb_edges()`, `kb_labels()` : tranches du Klimabonus Gemengen (graphiques, CSV, pages communales) ;
-- `check_phrases()` : contrôle des chiffres de barème cités dans les pages rendues (phrases
+- `check_page()` / `check_pages()` : contrôle des chiffres de barème cités dans les pages rendues (phrases
   traduites restées dans les dictionnaires) : le build échoue si l'un d'eux ne correspond
   plus à baremes.json.
 """
