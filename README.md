@@ -1,6 +1,6 @@
 # Lux-Solaire ☀️
 
-**Tableau de bord du photovoltaïque au Luxembourg** — une réutilisation des
+**Tableau de bord du photovoltaïque au Luxembourg** : une réutilisation des
 données ouvertes de [Leneda](https://leneda.eu) publiées sur
 [data.public.lu](https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/).
 
@@ -8,7 +8,7 @@ données ouvertes de [Leneda](https://leneda.eu) publiées sur
 💻 **Code** : [github.com/Sitraka17/lux-solaire](https://github.com/Sitraka17/lux-solaire)
 
 Le portail Open data luxembourgeois posait la question : *« Quelle est la part
-du photovoltaïque dans la production électrique par commune ? »* — ce tableau
+du photovoltaïque dans la production électrique par commune ? »*, ce tableau
 de bord y répond, commune par commune.
 
 ## Ce que montre le dashboard
