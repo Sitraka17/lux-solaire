@@ -16,7 +16,7 @@
 "win:'la plus avantageuse', tie:'ex æquo',": "win:'the better deal', tie:'tie',",
 "vFast:'Rentable rapidement', vOk:'Rentable', vSlow:'Rentable, mais lentement', vNo:'Difficilement rentable',": "vFast:'Pays back quickly', vOk:'Pays back', vSlow:'Pays back, but slowly', vNo:'Hard to pay back',",
 "vTextA:'L\\'option A (Klimabonus) rembourse l\\'installation en ', vTextB:'L\\'option B (tarif garanti) rembourse l\\'installation en ',": "vTextA:'Option A (Klimabonus) pays the system back in ', vTextB:'Option B (guaranteed tariff) pays the system back in ',",
-"vThen:' et laisse un gain net de ', vOver:' sur 25 ans. ', vDiff:'Elle devance l\\'autre option de ', vDiffEnd:' sur 25 ans.', vEq:'Les deux options se valent à 25 ans.',": "vThen:' and leaves a net gain of ', vOver:' over 25 years. ', vDiff:'It beats the other option by ', vDiffEnd:' over 25 years.', vEq:'The two options are level at 25 years.',",
+"vThen:' et laisse un gain net de ', vOver:' sur 25 ans ', vDiff:'Elle devance l\\'autre option de ', vDiffEnd:' sur 25 ans.', vEq:'Les deux options se valent à 25 ans.',": "vThen:' and leaves a net gain of ', vOver:' over 25 years ', vDiff:'It beats the other option by ', vDiffEnd:' over 25 years.', vEq:'The two options are level at 25 years.',",
 "vNever:'Avec ces hypothèses, aucune des deux options n\\'est remboursée en 25 ans : vérifiez le devis, l\\'orientation et la part autoconsommée.',": "vNever:'With these assumptions, neither option pays back within 25 years: check the quote, the orientation and the self-consumed share.',",
 "never:'jamais (> 25 ans)',": "never:'never (> 25 years)',",
 "lcoe:'Coût moyen du kWh produit sur 25 ans (investissement net et onduleur, sans actualisation) : ', lcoeA:' avec le Klimabonus, ', lcoeB:' sans. À comparer aux ', lcoeEnd:' d\\'un kWh acheté.',": "lcoe:'Average cost of a produced kWh over 25 years (net investment and inverter, undiscounted): ', lcoeA:' with the Klimabonus, ', lcoeB:' without. Compare with the ', lcoeEnd:' of a purchased kWh.',",
@@ -24,11 +24,13 @@
 "costHint1:'soit ', costHint2:' €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.',": "costHint1:'i.e. ', costHint2:' €/kWp. 2026 quotes observed: €1,600 to €2,200/kWp for 6 to 15 kWp, installed.',",
 "bcostHint:' €/kWh utile.',": "bcostHint:' € per usable kWh.',",
 "thP:'Puissance', thBonus:'Klimabonus', thBonusKwc:'par kWc', thTariff10:'Tarif garanti ≤ 10 kW', thTariff30:'10 à 30 kW', thFirst:'1re injection',": "thP:'Power', thBonus:'Klimabonus', thBonusKwc:'per kWp', thTariff10:'Guaranteed tariff ≤ 10 kW', thTariff30:'10 to 30 kW', thFirst:'First feed-in',",
-"aidNote:'Lecture : 6 kWc commandés en 2027 reçoivent 5 742 € de Klimabonus, ou un tarif garanti de 12,9 c€/kWh pendant 15 ans, pas les deux.',": "aidNote:'How to read: 6 kWp first fed in during 2027 get €5,742 of Klimabonus, or a guaranteed tariff of 12.9 c€/kWh for 15 years, not both.',",
+"aidNote1:'Lecture : 6 kWc dont la première injection a lieu en 2027 reçoivent ', aidNote2:' de Klimabonus, ou un tarif garanti de ', aidNote3:' pendant 15 ans, pas les deux.',": "aidNote1:'How to read: 6 kWp first fed in during 2027 get ', aidNote2:' of Klimabonus, or a guaranteed tariff of ', aidNote3:' for 15 years, not both.',",
+"undisc:'(non actualisé)', discAt:'(actualisé à ', discEnd:' %)',": "undisc:'(undiscounted)', discAt:'(discounted at ', discEnd:'%)',",
 "gridAz:['Sud','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Est / Ouest 90°'], gridTilt:'Inclinaison',": "gridAz:['South','SSE / SSW 30°','SE / SW 45°','ESE / WSW 60°','East / West 90°'], gridTilt:'Pitch',",
 "+' %/an'": "+'%/year'",
 "const pct = n => Math.round(n)+' %';": "const pct = n => Math.round(n)+'%';",
 "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';": "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+'%';",
 "(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';": "(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+'%';",
-"${p} kWc</th>": "${p} kWp</th>"
+"${p} kWc</th>": "${p} kWp</th>",
+"$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+' %';": "$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+'%';"
 }

@@ -138,12 +138,38 @@ des logements), installation à 0 kW hors classes (`include_lowest`), sources et
 communales, « 1er October » en anglais, en-têtes `_headers` (HSTS, nosniff, Referrer-Policy, cache).
 
 Reste à faire (par priorité) :
-- simulateur : aide HEMS 500 € (factures depuis le 1/10/2026), prolongation au 31/12/2031 si commande
-  avant le 31/12/2029, pose sur toiture ou façade, régime transitoire de l'option B ; préciser que
-  « 0,16 € avec aide » ne vaut que d'août à décembre 2026 ; libellé « gain net non actualisé » ;
+- ~~simulateur : HEMS, 2031, toiture/façade, régime transitoire B, prix 0,16/0,20, gain non actualisé~~
+  FAIT le 2/11/2026 (voir « Simulateur mis à jour le 2/11/2026 » ci-dessous) ;
 - alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow ;
 - tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda ;
 - compteur /e : listes blanches (lang, chemins) et limite de débit ;
 - `scripts/baremes.json` unique (barèmes dupliqués dans 5 endroits) ; découper build.py ;
 - moteur du simulateur en module pur (`sim-engine.js`) réutilisable par communes.sitraka.lu ;
 - accessibilité : contraste des barres ambre (2,1:1), `<main>` + lien d'évitement ; CSP à tester.
+
+## Simulateur mis à jour le 2/11/2026
+
+Sources relues le 2/11/2026 : guichet.lu Klimabonus 2026 installations techniques (mise à jour du
+11/08/2026), communiqué gouvernement.lu du 16/07/2026, Klima-Agence « transition period » (17/12/2025),
+ILR (loi du 22/07/2026), projet de loi 8707 (amendement gouvernemental du 21/07/2026).
+- **HEMS** : case « Ajouter un système de gestion de l'énergie » (ids `hems`, `hcost` 1 000 € par
+  défaut = hypothèse SANS source, `haid` 500 € max), coût compté dans les deux options, aide en
+  option A seulement (cumul avec le tarif garanti non précisé par guichet.lu), aucun gain
+  d'autoconsommation modélisé. Factures du 1/10/2026 au 31/12/2030, hors préfinancement.
+- **Délais** : factures PV/batterie du 4/1/2026 au 31/12/2029, ou 31/12/2031 si commande au plus
+  tard le 31/12/2029 ; demande au plus tard le 31/12/2031. Condition toiture/façade/enveloppe, ≥ 2 kWc.
+- **Option B** : régime transitoire (offres signées du 1/10/2024 au 4/3/2026, 20 % ≤ 500 €/kWc + tarif,
+  facture finale ≤ 31/12/2026) cité, non simulé. Non vérifié : la disponibilité du tarif garanti SANS
+  aide pour une offre signée après le 4/3/2026 (aucune source relue ne le dit explicitement).
+- **Prix** : 0,16 € = août à décembre 2026 (aide ~4 c€/kWh, MDC −3,71 c€) ; 0,20 € = tarif de janvier à
+  juillet 2026 (MDC −0,10 c€, qui comprend déjà une contribution de l'État : 8707 couvre toute
+  l'année 2026, plafond 88 puis 107 M€). Les « 150 M€ » (presse, 12/2025) sont retirés.
+- **Rentabilité** : libellé « gain net sur 25 ans (non actualisé) », curseur `disc` (0 % par défaut)
+  qui n'actualise QUE le gain net ; retour sur investissement et figure 2 restent non actualisés.
+  Méthode : part autoconsommée = heuristique maison, batterie ni remplacée ni dégradée.
+- **Montants d'exemple** : jetons `__KB3__`, `__KB6__`, `__KB10__`, `__C6LO__`, `__C6HI__`,
+  `__NET6LO__`, `__NET6HI__`, `__TAR26__`, `__TAR27__` calculés par `sim_numbers()` (build.py, mêmes
+  formules que le JS) ; « 4 500 à 7 500 € » corrigé en 4 300 à 7 300 €. La légende du tableau 4 est
+  générée en JS (`aidNote1..3`).
+- Bogue préexistant NON corrigé : `.fld{display:grid}` l'emporte sur l'attribut `hidden`, donc le champ
+  « Coût de la batterie » (`#fld-bcost`) reste visible sans batterie.

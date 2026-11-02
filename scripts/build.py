@@ -612,6 +612,27 @@ def _q_label(label):
     return re.sub(r"^(\d{4}) ([TQ]\d)$", r"\2 \1", label)
 
 
+def sim_numbers(lang):
+    """Montants d'exemple de la FAQ du simulateur, calculés avec les MÊMES formules
+    que le JS de template_simulateur.html (bonusPV, tariff) : plus aucun montant
+    écrit à la main (corrigé le 2/11/2026 : « 4 500 à 7 500 € » valait 4 300 à 7 300 €)."""
+    kb = lambda p: 0 if p < 2 else (p * (1155 - 1155 / 35 * p) if p < 15 else 10000)
+    tar = lambda p, n: (165 if p <= 10 else 155) * 0.97 ** (n - 2019) / 1000   # €/kWh
+    c_lo, c_hi = round(1600 * 6, -3), round(2200 * 6, -3)   # devis 1 600 à 2 200 €/kWc, 6 kWc
+    net = lambda c: _jsround((c - kb(6)) / 100) * 100        # après Klimabonus, à la centaine
+    return {
+        "__KB3__": _thousands(_jsround(kb(3)), lang),
+        "__KB6__": _thousands(_jsround(kb(6)), lang),
+        "__KB10__": _thousands(_jsround(kb(10)), lang),
+        "__C6LO__": _thousands(c_lo, lang),
+        "__C6HI__": _thousands(c_hi, lang),
+        "__NET6LO__": _thousands(net(c_lo), lang),
+        "__NET6HI__": _thousands(net(c_hi), lang),
+        "__TAR26__": _dec1(tar(6, 2026) * 100, lang),
+        "__TAR27__": _dec1(tar(6, 2027) * 100, lang),
+    }
+
+
 def prose_numbers(d, lang):
     """Chiffres cités dans la prose de template.html, dérivés des mêmes données
     et arrondis comme les KPI équivalents rendus en JS (#k-growth, barre « Top 10
@@ -1393,6 +1414,9 @@ def render_all(data):
         # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
             html = html.replace(token, value)
+        if sim:
+            for token, value in sim_numbers(lang).items():
+                html = html.replace(token, value)
         # fragments prérendus (déjà localisés) : après traduction et jetons
         if not sim:
             for marker, frag in prerender(d, lang).items():

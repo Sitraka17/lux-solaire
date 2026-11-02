@@ -16,7 +16,7 @@
 "win:'la plus avantageuse', tie:'ex æquo',": "win:'die vorteilhaftere', tie:'gleichauf',",
 "vFast:'Rentable rapidement', vOk:'Rentable', vSlow:'Rentable, mais lentement', vNo:'Difficilement rentable',": "vFast:'Schnell rentabel', vOk:'Rentabel', vSlow:'Rentabel, aber langsam', vNo:'Kaum rentabel',",
 "vTextA:'L\\'option A (Klimabonus) rembourse l\\'installation en ', vTextB:'L\\'option B (tarif garanti) rembourse l\\'installation en ',": "vTextA:'Option A (Klimabonus): Amortisationszeit ', vTextB:'Option B (garantierter Tarif): Amortisationszeit ',",
-"vThen:' et laisse un gain net de ', vOver:' sur 25 ans. ', vDiff:'Elle devance l\\'autre option de ', vDiffEnd:' sur 25 ans.', vEq:'Les deux options se valent à 25 ans.',": "vThen:', Nettogewinn ', vOver:' über 25 Jahre. ', vDiff:'Ihr Vorsprung auf die andere Option: ', vDiffEnd:' über 25 Jahre.', vEq:'Nach 25 Jahren liegen beide Optionen gleichauf.',",
+"vThen:' et laisse un gain net de ', vOver:' sur 25 ans ', vDiff:'Elle devance l\\'autre option de ', vDiffEnd:' sur 25 ans.', vEq:'Les deux options se valent à 25 ans.',": "vThen:', Nettogewinn ', vOver:' über 25 Jahre ', vDiff:'Ihr Vorsprung auf die andere Option: ', vDiffEnd:' über 25 Jahre.', vEq:'Nach 25 Jahren liegen beide Optionen gleichauf.',",
 "vNever:'Avec ces hypothèses, aucune des deux options n\\'est remboursée en 25 ans : vérifiez le devis, l\\'orientation et la part autoconsommée.',": "vNever:'Mit diesen Annahmen zahlt sich keine der beiden Optionen in 25 Jahren zurück: prüfen Sie das Angebot, die Ausrichtung und den Eigenverbrauchsanteil.',",
 "never:'jamais (> 25 ans)',": "never:'nie (> 25 Jahre)',",
 "lcoe:'Coût moyen du kWh produit sur 25 ans (investissement net et onduleur, sans actualisation) : ', lcoeA:' avec le Klimabonus, ', lcoeB:' sans. À comparer aux ', lcoeEnd:' d\\'un kWh acheté.',": "lcoe:'Mittlere Kosten der erzeugten kWh über 25 Jahre (Nettoinvestition und Wechselrichter, ohne Abzinsung): ', lcoeA:' mit Klimabonus, ', lcoeB:' ohne. Zum Vergleich: ', lcoeEnd:' für eine gekaufte kWh.',",
@@ -24,11 +24,13 @@
 "costHint1:'soit ', costHint2:' €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.',": "costHint1:'also ', costHint2:' €/kWp. Beobachtete Angebote 2026: 1 600 bis 2 200 €/kWp für 6 bis 15 kWp, Montage inbegriffen.',",
 "bcostHint:' €/kWh utile.',": "bcostHint:' € je nutzbarer kWh.',",
 "thP:'Puissance', thBonus:'Klimabonus', thBonusKwc:'par kWc', thTariff10:'Tarif garanti ≤ 10 kW', thTariff30:'10 à 30 kW', thFirst:'1re injection',": "thP:'Leistung', thBonus:'Klimabonus', thBonusKwc:'je kWp', thTariff10:'Garantierter Tarif ≤ 10 kW', thTariff30:'10 bis 30 kW', thFirst:'Erste Einspeisung',",
-"aidNote:'Lecture : 6 kWc commandés en 2027 reçoivent 5 742 € de Klimabonus, ou un tarif garanti de 12,9 c€/kWh pendant 15 ans, pas les deux.',": "aidNote:'Lesebeispiel: 6 kWp mit erster Einspeisung 2027 erhalten 5 742 € Klimabonus oder einen garantierten Tarif von 12,9 c€/kWh über 15 Jahre, nicht beides.',",
+"aidNote1:'Lecture : 6 kWc dont la première injection a lieu en 2027 reçoivent ', aidNote2:' de Klimabonus, ou un tarif garanti de ', aidNote3:' pendant 15 ans, pas les deux.',": "aidNote1:'Lesebeispiel: 6 kWp mit erster Einspeisung 2027 erhalten ', aidNote2:' Klimabonus oder einen garantierten Tarif von ', aidNote3:' über 15 Jahre, nicht beides.',",
+"undisc:'(non actualisé)', discAt:'(actualisé à ', discEnd:' %)',": "undisc:'(nicht abgezinst)', discAt:'(abgezinst mit ', discEnd:' %)',",
 "gridAz:['Sud','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Est / Ouest 90°'], gridTilt:'Inclinaison',": "gridAz:['Süd','SSO / SSW 30°','SO / SW 45°','OSO / WSW 60°','Ost / West 90°'], gridTilt:'Neigung',",
 "+' %/an'": "+' %/Jahr'",
 "const pct = n => Math.round(n)+' %';": "const pct = n => Math.round(n)+' %';",
 "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';": "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';",
 "(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';": "(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';",
-"${p} kWc</th>": "${p} kWp</th>"
+"${p} kWc</th>": "${p} kWp</th>",
+"$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+' %';": "$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+' %';"
 }
