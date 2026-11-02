@@ -374,7 +374,7 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
     hcost, haid, hems, inv, year, price, growth, market, deg, disc}` (mêmes unités que les champs de
     la page) → `{P, cons, ey, prod, sc, self, inj, bonus, capexGross, tar, A, B, lcoeA, lcoeB}`,
     `A`/`B` = `{cum[26], pb, npv, irr, y1}` (A = Klimabonus, B = tarif garanti).
-- **Tests** : `node --test tests/sim-engine.test.mjs` (19 tests). `tests/fixtures/sim-reference.json`
+- **Tests** : `node --test tests/sim-engine.test.mjs` (19 tests à l'origine, 32 depuis le volet chauffage). `tests/fixtures/sim-reference.json`
   a été calculé AVANT l'extraction avec l'ancien code inline (commit d2cc47b) par
   `tests/gen_reference_old.mjs` sur les 10 cas de `tests/fixtures/sim-cases.json` ; le nouveau moteur
   les reproduit À L'IDENTIQUE (égalité stricte, pas de tolérance). Ne pas régénérer ces références
@@ -422,3 +422,90 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
   sur `/data/*` est passé dans `_headers` ; `Access-Control-Allow-Origin: *` est déjà envoyé par
   Cloudflare Pages (vérifié le 2/11/2026), donc pas répété. `.vercelignore` reste (relu par
   `scripts/make_dist.py` comme filet de sécurité : aucun de ses motifs ne doit se trouver dans le dist).
+
+## Moteur du simulateur : chauffage (`computeHeat`, 2/11/2026)
+
+`sim-engine.js` couvre aussi le remplacement d'une chaudière par une pompe à chaleur (PAC) air-eau,
+avec ou sans panneaux, batterie, HEMS et ballon tampon. Formules reprises de la maquette PAC privée
+du 1/11/2026 (`~/differdange-pilote/maquette-pac/`, non versionnée), simulation heure par heure sur
+une année météo type. **Partage public / privé** : le moteur ne contient que les règles NATIONALES
+(Klimabonus PAC, prix des énergies, CO2) ; une aide locale (commune) est un paramètre GÉNÉRIQUE
+(`aidesLocales`), aucun barème communal n'est écrit ici (un test le vérifie). Le barème de
+Differdange, l'habillage et les textes destinés à une Ville restent dans `~/sitraka-communes`.
+Aucune page publique n'utilise encore ce volet (rien d'affiché, aucune phrase traduite).
+
+- **Données** : le moteur ne lit AUCUN fichier. La série horaire est passée en paramètre :
+  `serie = { t2m_dixiemes[8760] (°C × 10), pv_w_par_kwc[8760] (W par kWc, plan sud 35°) }`. Celle du
+  site est `data/annee_type.json` (publiée, 55 Ko) : PVGIS 5.3 seriescalc, Luxembourg-Ville (même
+  point que `data/pvgis.json`), SARAH3 + ERA5, année 2017 = la plus proche de la moyenne 2005-2023 à
+  la fois en production (1 038 contre 1 049 kWh/kWc) et en degrés-jours base 15 (2 158 contre 2 167),
+  heure d'hiver toute l'année. Régénérer à la main, rarement : `/usr/bin/python3 scripts/fetch_annee_type.py`.
+- **Barèmes** (`scripts/baremes.json`, régénérés dans `BAREMES` APRÈS les clés PV, qui ne changent pas) :
+  - `klimabonus_pac` → `bar.klimabonusPAC` : maison unifamiliale, 10 000 € (12 000 € majoré)
+    si une chaudière fossile ou un chauffage électrique direct est remplacé, 6 000 € (8 000 €) sinon ;
+    majoration si commande du 1/1/2026 au 30/6/2027 et facture au plus tard le 31/12/2028 ; cuve à
+    mazout 1 500 € ; zone de protection d'eau 2 000 € (mazout) ; distribution 50 % au plus 2 000 € ;
+    ballon tampon ≥ 30 L/kWth sauf PAC à modulation ; COP ≥ 3,1 (A7/W35). guichet.lu, page du
+    11/08/2026, relue le 2/11/2026.
+  - `prix_mazout` (1,601 €/L TTC, prix maximum depuis le 27/10/2026, petrol.lu, relu le 2/11/2026),
+    `prix_gaz` (ILR : 9,14 c€/kWh en 2025 ; 0,095 retenu = hypothèse), `prix_electricite` (0,20 achat,
+    0,07 surplus, hausses 3 et 1 %/an : hypothèses de l'outil, `source: null`) → `bar.energie`
+    `{mazoutL, gaz, achat, surplus, hausseFossile, hausseElec}`.
+  - `co2_combustibles` (ADEME Base Carbone v23.9 via la Banque de France, 02/07/2026 : gaz
+    0,2154 kgCO2e/kWh **PCS**, unité des factures, donc sans conversion ; fioul 0,3247 kgCO2e/kWh PCI),
+    `co2_electricite` (Electricity Maps 2025 : 0,2122 consommé au Luxembourg, imports compris)
+    → `bar.co2 {gaz, mazout, elec}`.
+  - `cop_pac` → `bar.cop {a 6.08, b −0.09, c 0.0005, dTmin 10, f 0.85}` (Ruhnau et al., Scientific
+    Data 6, 189, 2019, when2heat).
+  - `modele_chaleur` → `bar.chaleur` (hypothèses, `source: null`) : horizon 20 ans, rendements
+    (gaz 0,85 PCS, mazout 0,80, électrique 1), 10,6 kWh/m³, 10 kWh/L, 800 kWh d'eau chaude par
+    personne (au plus 40 % de la chaleur utile), base 15 °C, départ 40 − T (radiateurs) ou
+    30 − 0,5 T (plancher), eau chaude 50 °C, puissance 100 % à 7 °C et −25 % pour 14 K (bornée
+    60-110 %), ballon 1,163 Wh/(L·K), surchauffe 15 K, pertes 1 %/h, batterie 90 % aller-retour,
+    0,5 C au plus 5 kW, profils journaliers (24 h) des usages et de l'eau chaude, besoin par époque
+    (TABULA DE arrondi : 190 … 40 kWh/m²), entretien (chaudière 200, PAC 150, électrique 0 €/an),
+    coût d'enlèvement de la cuve 1 500 €. `scripts/baremes.py` : `kb_pac()` (même règle que le JS).
+- **API** :
+  - `heatPumpCOP(ΔT, bar, f?)` ; `klimabonusPAC({commande, facture, remplacement, energie, zoneEau,
+    coutDistribution}, bar)` → `{pac, majore, cuve, zone, distribution, total}` (dates ISO ; sans date
+    de commande, pas de majoration) ; `minBufferLitres(kW, modulante, bar)` ;
+  - `localAid([{nom, base: 'pac'|'pv'|'batterie'|'hems', taux, plafond}], {pac, pv, batterie, hems})`
+    → `{lignes, parBase, total}` : taux × aide de l'État du poste, plafonné ;
+  - `heatDemand(I, serie, bar)` : besoin depuis `conso` + `unite` ('m3', 'L', 'kWh'), sinon `besoin`
+    (chaleur utile, kWh/an), sinon `surface` + `epoque` ; séries horaires ;
+  - `simulateHourly(S, I, {pv, hp, buffer, battery, direct}, bar, keep)` → `{imp, exp, pv, self, hpEl,
+    backupEl, scop, hpH, Emax}` ;
+  - `computeHeat(I, serie, bar, pvgis?)` : entrées décrites dans le commentaire de la fonction
+    (mêmes noms que `compute` pour le PV : `p, cost, batt, bcost, hems, hcost, haid, inv, price,
+    market, growth, disc` ; chauffage : `energie, conso, unite | besoin | surface, epoque, rendement,
+    occupants, emetteurs, elecBase, pac, pacCost, ballon, ballonCost, surchauffe, copF,
+    coutDistribution, coutCuve, chaudiereEvitee, commande, facture, remplacement, zoneEau,
+    aidesLocales, prixGaz, prixMazout, hausseFossile, horizon, co2Gaz, co2Mazout, co2Elec`). Avec
+    `pvgis` et `canton` (+ `az`, `tilt`), la série PV est remise à l'échelle de `yieldPerKwc`.
+    Renvoie `{S, sc: {A, B, C, D}, D0, ballon, horizon, fuelPrice, energie, aides}` ; A = situation
+    actuelle, B = panneaux (+ batterie), C = PAC seule, D = panneaux + PAC + ballon (+ batterie, HEMS),
+    D0 = D sans ballon. Par scénario : investissement, aides État / locale, reste à payer, facture de
+    la 1re année, CO2 (t/an) et baisse vs A, dépense cumulée `cum`, flux de l'écart avec A `cf`,
+    `pb` (retour sur investissement, `payback`), `gain` (`netGain`, actualisé si `disc` > 0), `irr`.
+  - Réutilise `bonusPV`, `bonusBattery`, `hemsAid`, `yieldPerKwc`, `cumulative`, `payback`,
+    `netGain`, `irr` SANS les modifier : les 10 références PV restent identiques.
+- **Ballon tampon, argument faible assumé** : cas type, 300 L chargés 15 K plus chaud = 5,2 kWh ;
+  part autoconsommée 31 % → 38 %, soit ≈ 88 € d'achats évités par an (`ballon.gainAchat`), ≈ 48 €
+  net du surplus qui n'est plus vendu (`ballon.gainNet`), pour 1 800 € : il ne se rembourse pas seul.
+  Le Klimabonus ne l'exige d'ailleurs pas pour une PAC à modulation.
+- **Cas type gaz** (maison de 140 m² des années 1980, 2 000 m³/an, 8 kWc à 1 800 €/kWc, PAC 9 kW à
+  22 000 €, ballon 300 L à 1 800 €, HEMS 1 000 € aidé 500 €, commande le 15/11/2026, aide locale
+  générique de 50 % de l'aide de l'État plafonnée à 5 000 € PAC et PV) : D remboursé en **5,6 ans**,
+  CO2 **−73 %** (série de Luxembourg-Ville : 5,60 ans, −73,1 %). Contrôle : sur la série de la
+  maquette, le moteur reproduit la maquette à 1e-10 près sur 7 variantes (gaz, mazout, batterie,
+  surface, plancher sans ballon, sans aide locale avec chaudière évitée, mazout avec distribution).
+  Écart expliqué : la maquette affiche −72 % parce qu'elle prend 0,227 kg/kWh PCI × 0,9 = 0,204 par
+  kWh PCS pour le gaz ; le facteur relu (Base Carbone v23.9) est 0,2154 par kWh PCS, d'où −73 %.
+  Sans aide locale, D se rembourse en ≈ 9,4 ans (9,3 sur la série de la maquette).
+- **Limites** : une seule année météo, pas de dégradation des panneaux ni de remplacement de la
+  batterie dans ce volet, factures non actualisées (seul `gain` l'est avec `disc`), maison
+  unifamiliale seulement pour le Klimabonus PAC, abonnement gaz supprimé non compté.
+- **Tests** : `node --test tests/sim-engine.test.mjs` (32 tests, dont 12 « chauffage ») ;
+  `tests/test_baremes.py` : structure, sources datées, valeurs et `kb_pac` comparé au moteur JS.
+- **Effet de bord** : l'objet `BAR` inliné dans les 4 pages du simulateur PV contient aussi ces
+  barèmes (≈ 1,6 Ko de plus) ; le simulateur PV ne les lit pas.

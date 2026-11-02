@@ -2,7 +2,7 @@
 
 - `engine_bar()` : l'objet de barèmes au format de sim-engine.js (BAREMES) ;
 - `engine_js()` / `sync_engine()` : régénère le bloc BAREMES de sim-engine.js ;
-- `kb_pv()`, `kb_batt()`, `tarif()` : mêmes formules que le moteur JS (FAQ du simulateur) ;
+- `kb_pv()`, `kb_batt()`, `tarif()`, `kb_pac()` : mêmes formules que le moteur JS (FAQ du simulateur, tests) ;
 - `kb_edges()`, `kb_labels()` : tranches du Klimabonus Gemengen (graphiques, CSV, pages communales) ;
 - `check_page()` / `check_pages()` : contrôle des chiffres de barème cités dans les pages rendues (phrases
   traduites restées dans les dictionnaires) : le build échoue si l'un d'eux ne correspond
@@ -16,7 +16,8 @@ from pathlib import Path
 PATH = Path(__file__).resolve().parent / "baremes.json"
 _REQUIRED = ("valeur", "source", "date_source", "date_verification")
 _ENTRIES = ("klimabonus_pv", "klimabonus_batterie", "aide_hems", "tarif_injection",
-            "klimabonus_gemengen", "modele")
+            "klimabonus_gemengen", "klimabonus_pac", "prix_mazout", "prix_gaz", "prix_electricite",
+            "co2_combustibles", "co2_electricite", "cop_pac", "modele_chaleur", "modele")
 
 
 def load(path=PATH):
@@ -45,6 +46,14 @@ def engine_bar(b=None):
         "horizon": m["horizon"],
         "anneeOnduleur": m["anneeOnduleur"],
         "autoconso": dict(m["autoconso"]),
+        # volet chauffage (2/11/2026) : ajouté APRÈS les clés du photovoltaïque, sans les modifier
+        "klimabonusPAC": dict(b["klimabonus_pac"]["valeur"]),
+        "energie": {"mazoutL": b["prix_mazout"]["valeur"]["eurParL"], "gaz": b["prix_gaz"]["valeur"]["retenu"],
+                    **{k: v for k, v in b["prix_electricite"]["valeur"].items()}},
+        "co2": {"gaz": b["co2_combustibles"]["valeur"]["gazPCS"], "mazout": b["co2_combustibles"]["valeur"]["mazoutPCI"],
+                "elec": b["co2_electricite"]["valeur"]["reseau"]},
+        "cop": dict(b["cop_pac"]["valeur"]),
+        "chaleur": dict(b["modele_chaleur"]["valeur"]),
     }
 
 
@@ -60,7 +69,7 @@ def engine_js(b=None):
            "  var BAREMES = Object.freeze({"]
     for k, v in eb.items():
         if isinstance(v, dict):
-            body = ", ".join(f"{kk}: {json.dumps(vv)}" for kk, vv in v.items())
+            body = ", ".join(f"{kk}: {json.dumps(vv, ensure_ascii=False)}" for kk, vv in v.items())
             out.append(f"    {k}: Object.freeze({{ {body} }}),")
         else:
             out.append(f"    {k}: {json.dumps(v, ensure_ascii=False)},")
@@ -91,6 +100,18 @@ def kb_pv(p, b=None):
 def kb_batt(q, b=None):
     k = (b or B)["klimabonus_batterie"]["valeur"]
     return 0 if q < k["qMin"] else (q * (k["a"] - k["a"] / k["b"] * q) if q < k["qCap"] else k["max"])
+
+
+def kb_pac(commande, facture=None, remplacement=True, mazout=False, zone_eau=False, cout_dist=0, b=None):
+    """Klimabonus PAC air-eau (maison unifamiliale), mêmes règles que klimabonusPAC() de sim-engine.js.
+    commande, facture : dates ISO « AAAA-MM-JJ » (facture facultative)."""
+    k = (b or B)["klimabonus_pac"]["valeur"]
+    maj = bool(commande) and k["majoreCommandeDe"] <= commande <= k["majoreCommandeA"] and \
+        (not facture or facture <= k["majoreFactureA"])
+    pac = (k["remplacementMajore"] if maj else k["remplacement"]) if remplacement else \
+        (k["sansRemplacementMajore"] if maj else k["sansRemplacement"])
+    return pac + (k["cuveMazout"] if mazout and remplacement else 0) + (k["zoneEau"] if mazout and zone_eau else 0) \
+        + min(k["distMax"], k["distTaux"] * max(0, cout_dist))
 
 
 def tarif(p, n, b=None):

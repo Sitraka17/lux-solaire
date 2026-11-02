@@ -1,11 +1,17 @@
 {
  "_doc": "Source UNIQUE des barèmes du site (aides, tarifs). Lue par scripts/build.py (montants de la FAQ, bloc BAREMES de sim-engine.js régénéré, objet inliné dans les pages du simulateur, tranches KB_EDGES, contrôle des chiffres cités dans les phrases traduites) et par scripts/communes.py (colonne « Aide » et note des pages communales). Pour chaque entrée : valeur, source (URL), date_source (date de mise à jour ou de publication de la source), date_verification (dernière relecture). Après toute modification : relancer /usr/bin/python3 scripts/build.py, qui échoue si une phrase des gabarits ou des dictionnaires cite encore l'ancien chiffre, puis mettre à jour ces phrases (template*.html et scripts/i18n_*.json).",
  "version": "2026-11-02",
- "sources_moteur": "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026)",
+ "sources_moteur": "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026), petrol.lu (prix maximum du mazout, 27/10/2026), ILR gaz (30/06/2026), ADEME Base Carbone v23.9, Electricity Maps 2025",
  "klimabonus_pv": {
   "libelle": "Klimabonus photovoltaïque (logement, autoconsommation, pose sur toiture ou façade)",
   "formule": "0 sous pMin kWc ; P × (a − a/b × P) € de pMin à pCap exclu (a/b = 33) ; max € à partir de pCap kWc",
-  "valeur": {"pMin": 2, "pCap": 15, "a": 1155, "b": 35, "max": 10000},
+  "valeur": {
+   "pMin": 2,
+   "pCap": 15,
+   "a": 1155,
+   "b": 35,
+   "max": 10000
+  },
   "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
   "source_titre": "guichet.lu, Klimabonus 2026, aide pour les installations techniques",
   "date_source": "2026-08-11",
@@ -14,7 +20,13 @@
  "klimabonus_batterie": {
   "libelle": "Klimabonus batterie (stockage raccordé à une installation PV en autoconsommation)",
   "formule": "0 sous qMin kWh ; Q × (a − a/b × Q) € de qMin à qCap exclu ; max € à partir de qCap kWh",
-  "valeur": {"qMin": 2, "qCap": 9, "a": 500, "b": 18, "max": 2250},
+  "valeur": {
+   "qMin": 2,
+   "qCap": 9,
+   "a": 500,
+   "b": 18,
+   "max": 2250
+  },
   "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
   "source_titre": "guichet.lu, Klimabonus 2026, aide pour les installations techniques",
   "date_source": "2026-08-11",
@@ -22,7 +34,9 @@
  },
  "aide_hems": {
   "libelle": "Klimabonus système de gestion de l'énergie (HEMS) pilotant au moins deux équipements, factures du 1/10/2026 au 31/12/2030",
-  "valeur": {"aideMax": 500},
+  "valeur": {
+   "aideMax": 500
+  },
   "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
   "source_titre": "guichet.lu, Klimabonus 2026 ; aussi gouvernement.lu, communiqué du 16/07/2026",
   "date_source": "2026-08-11",
@@ -31,7 +45,15 @@
  "tarif_injection": {
   "libelle": "Tarif d'injection garanti (RGD modifié du 1/8/2014, art. 17ter), selon l'année n de première injection",
   "formule": "(P ≤ seuilKw ? petit : grand) × baisse^(n − anneeBase) €/MWh, pendant duree ans, jusqu'à plafondKw kW",
-  "valeur": {"seuilKw": 10, "plafondKw": 30, "petit": 165, "grand": 155, "baisse": 0.97, "anneeBase": 2019, "duree": 15},
+  "valeur": {
+   "seuilKw": 10,
+   "plafondKw": 30,
+   "petit": 165,
+   "grand": 155,
+   "baisse": 0.97,
+   "anneeBase": 2019,
+   "duree": 15
+  },
   "source": "https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2019/05-mai/07-energie-solaire.html",
   "source_titre": "gouvernement.lu, communiqué du 7/5/2019 (RGD du 12/4/2019) ; valeurs 2026 recoupées avec le manuel des procédures Klima-Agence v1.5 (09/2025)",
   "date_source": "2019-05-07",
@@ -43,21 +65,267 @@
   "valeur": {
    "bareme": 2025,
    "tranches": [
-    {"deKwc": 30, "aKwc": 200, "taux": 50, "plafond": 675},
-    {"deKwc": 200, "aKwc": 500, "taux": 45, "plafond": 505},
-    {"deKwc": 500, "aKwc": 5000, "taux": 40, "plafond": 425}
+    {
+     "deKwc": 30,
+     "aKwc": 200,
+     "taux": 50,
+     "plafond": 675
+    },
+    {
+     "deKwc": 200,
+     "aKwc": 500,
+     "taux": 45,
+     "plafond": 505
+    },
+    {
+     "deKwc": 500,
+     "aKwc": 5000,
+     "taux": 40,
+     "plafond": 425
+    }
    ],
-   "ombriere": {"taux": 45, "plafond": 990}
+   "ombriere": {
+    "taux": 45,
+    "plafond": 990
+   }
   },
   "source": "https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf",
   "source_titre": "Guide pratique Klimabonus Gemengen, V1 05/2025 (dernier barème publié au 1/11/2026)",
   "date_source": "2025-05",
   "date_verification": "2026-11-01"
  },
+ "klimabonus_pac": {
+  "libelle": "Klimabonus pompe à chaleur air-eau, maison unifamiliale existante : montant selon le remplacement d'une chaudière fossile (ou d'un chauffage électrique direct) et la majoration « Tripartite » liée à la date de commande ; bonus cuve à mazout, zone de protection d'eau, adaptation de la distribution de chaleur",
+  "formule": "remplacement ? (majoré ? remplacementMajore : remplacement) : (majoré ? sansRemplacementMajore : sansRemplacement) ; majoré si majoreCommandeDe ≤ commande ≤ majoreCommandeA et facture ≤ majoreFactureA ; + cuveMazout (chaudière au mazout remplacée) + zoneEau (chaudière au mazout en zone de protection d'eau) + min(distMax, distTaux × coût de l'adaptation de la distribution). Ballon tampon d'au moins ballonLParKw L par kW thermique, sauf PAC à modulation de vitesse ou de puissance ; COP ≥ copMinA7W35 (EN 14511)",
+  "valeur": {
+   "remplacement": 10000,
+   "remplacementMajore": 12000,
+   "sansRemplacement": 6000,
+   "sansRemplacementMajore": 8000,
+   "majoreCommandeDe": "2026-01-01",
+   "majoreCommandeA": "2027-06-30",
+   "majoreFactureA": "2028-12-31",
+   "cuveMazout": 1500,
+   "zoneEau": 2000,
+   "distTaux": 0.5,
+   "distMax": 2000,
+   "ballonLParKw": 30,
+   "copMinA7W35": 3.1
+  },
+  "source": "https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html",
+  "source_titre": "guichet.lu, Klimabonus 2026, aide pour les installations techniques (pompe à chaleur air-eau) ; exemple maximal de 17 500 € dans la présentation gouvernement.lu du 16/07/2026",
+  "date_source": "2026-08-11",
+  "date_verification": "2026-11-02"
+ },
+ "prix_mazout": {
+  "libelle": "Prix maximum officiel du gasoil de chauffage (basse teneur en soufre, livraison d'au moins 1 500 L), TVA comprise",
+  "valeur": {
+   "eurParL": 1.601
+  },
+  "source": "https://www.petrol.lu/en/official-prices/",
+  "source_titre": "prix maxima officiels du ministère de l'Économie, relevé petrol.lu : 1,601 €/L TTC (1,4044 € HTVA) depuis le 27/10/2026, inchangé au 31/10/2026 (de 1,355 à 1,642 €/L en septembre et octobre 2026, prix très volatil)",
+  "date_source": "2026-10-27",
+  "date_verification": "2026-11-02"
+ },
+ "prix_gaz": {
+  "libelle": "Gaz naturel, client résidentiel moyen, fourniture intégrée (réseau, taxes et aides de l'État compris), par kWh facturé (PCS)",
+  "valeur": {
+   "ilr2025": 0.0914,
+   "retenu": 0.095
+  },
+  "source": "https://www.ilr.lu/wp-content/uploads/publication/ILR_-Statistiques_-COMMUNIQUE-DE-PRESSE_20260630_Chiffres-cles-Gaz-naturel.pdf",
+  "source_titre": "ILR, communiqué du 30/06/2026, chiffres clés du gaz naturel 2025 : 9,14 c€/kWh en 2025 ; 0,095 €/kWh retenu pour 2026 = hypothèse de l'outil (taxe CO2 en hausse)",
+  "date_source": "2026-06-30",
+  "date_verification": "2026-11-02"
+ },
+ "prix_electricite": {
+  "libelle": "Hypothèses de l'outil (PAS un barème officiel) : part variable de l'électricité achetée sans la contribution exceptionnelle de 2026 (0,16 € avec), prix du surplus vendu sans tarif garanti (contrats indexés sur le marché, 0,04 à 0,10 €/kWh observés en 2026), hausse annuelle des prix (gaz et mazout, électricité)",
+  "valeur": {
+   "achat": 0.2,
+   "surplus": 0.07,
+   "hausseFossile": 3,
+   "hausseElec": 1
+  },
+  "source": null,
+  "source_titre": "hypothèse de l'outil ; méthode des prix de l'électricité : simulateur solaire.sitraka.lu (ILR, Creos, Enovos), voir CONTEXT.md",
+  "date_source": null,
+  "date_verification": "2026-11-02"
+ },
+ "co2_combustibles": {
+  "libelle": "Facteurs d'émission, cycle de vie (amont + combustion) : gaz naturel par kWh PCS (unité des factures), mazout par kWh PCI",
+  "valeur": {
+   "gazPCS": 0.2154,
+   "mazoutPCI": 0.3247
+  },
+  "source": "https://www.banque-france.fr/system/files/2026-07/Methodologie_energie.pdf",
+  "source_titre": "ADEME, Base Carbone v23.9 (gaz naturel 2022, mix moyen France continentale : 215,4 gCO2e/kWh PCS ; fioul domestique, France continentale : 324,7 gCO2e/kWh PCI), cités par la Banque de France, méthodologie du poste énergie du BEGES 2025 (02/07/2026)",
+  "date_source": "2026-07-02",
+  "date_verification": "2026-11-02"
+ },
+ "co2_electricite": {
+  "libelle": "Intensité carbone de l'électricité CONSOMMÉE au Luxembourg en 2025, importations comprises (méthode flow-traced) ; production nationale seule : 0,0976",
+  "valeur": {
+   "reseau": 0.2122
+  },
+  "source": "https://www.electricitymaps.com/grid-in-review-2025/luxembourg",
+  "source_titre": "Electricity Maps, Grid in review 2025 : Luxembourg (212,2 gCO2e/kWh consommé, 97,6 produit)",
+  "date_source": "2026",
+  "date_verification": "2026-11-02"
+ },
+ "cop_pac": {
+  "libelle": "COP horaire d'une PAC air-eau : f × (a + b ΔT + c ΔT²), ΔT = température de départ − température extérieure (au moins dTmin K), au moins 1 ; f = correction pour les conditions réelles",
+  "valeur": {
+   "a": 6.08,
+   "b": -0.09,
+   "c": 0.0005,
+   "dTmin": 10,
+   "f": 0.85
+  },
+  "source": "https://doi.org/10.1038/s41597-019-0199-y",
+  "source_titre": "Ruhnau, Hirth et Praktiknjo, « Time series of heat demand and heat pump efficiency for energy system modeling », Scientific Data 6, 189 (2019), jeu when2heat (régression sur données constructeurs, f = 0,85)",
+  "date_source": "2019-10-03",
+  "date_verification": "2026-11-02"
+ },
+ "modele_chaleur": {
+  "libelle": "Hypothèses du volet chauffage (PAS un barème officiel) : horizon, rendements saisonniers de l'existant, pouvoirs calorifiques, eau chaude, températures de départ, puissance par grand froid, ballon, batterie, profils journaliers, besoin par époque de construction (ordres de grandeur arrondis de la typologie TABULA/EPISCOPE pour l'Allemagne, IWU 2015), entretien, coût d'enlèvement de la cuve",
+  "valeur": {
+   "horizon": 20,
+   "rendement": {
+    "gaz": 0.85,
+    "mazout": 0.8,
+    "electrique": 1.0
+   },
+   "pcGazKwhM3": 10.6,
+   "pciMazoutKwhL": 10,
+   "ecsParPersonne": 800,
+   "ecsPartMax": 0.4,
+   "tBase": 15,
+   "depart": {
+    "radiateurs": {
+     "t0": 40,
+     "pente": -1
+    },
+    "plancher": {
+     "t0": 30,
+     "pente": -0.5
+    },
+    "ecs": 50
+   },
+   "puissance": {
+    "tRef": 7,
+    "baisse": 0.25,
+    "surK": 14,
+    "min": 0.6,
+    "max": 1.1
+   },
+   "ballon": {
+    "whParLK": 1.163,
+    "surchauffe": 15,
+    "pertesParH": 0.01
+   },
+   "batterie": {
+    "rendement": 0.9,
+    "puissanceParKwh": 0.5,
+    "puissanceMax": 5
+   },
+   "saisonBase": 0.15,
+   "profilBase": [
+    0.55,
+    0.45,
+    0.4,
+    0.38,
+    0.38,
+    0.42,
+    0.6,
+    0.85,
+    0.95,
+    0.9,
+    0.88,
+    0.92,
+    1.0,
+    0.95,
+    0.85,
+    0.8,
+    0.85,
+    1.0,
+    1.25,
+    1.45,
+    1.4,
+    1.2,
+    0.95,
+    0.7
+   ],
+   "profilECS": [
+    0.2,
+    0.1,
+    0.1,
+    0.1,
+    0.2,
+    0.6,
+    1.8,
+    2.2,
+    1.6,
+    0.9,
+    0.7,
+    0.7,
+    0.9,
+    0.7,
+    0.5,
+    0.5,
+    0.6,
+    0.9,
+    1.4,
+    1.8,
+    1.7,
+    1.2,
+    0.7,
+    0.4
+   ],
+   "besoinParEpoque": [
+    190,
+    175,
+    165,
+    140,
+    105,
+    70,
+    40
+   ],
+   "epoques": [
+    "avant 1949",
+    "1949-1968",
+    "1969-1978",
+    "1979-1994",
+    "1995-2008",
+    "2009-2016",
+    "après 2016"
+   ],
+   "entretien": {
+    "gaz": 200,
+    "mazout": 200,
+    "electrique": 0,
+    "pac": 150
+   },
+   "coutCuve": 1500
+  },
+  "source": null,
+  "source_titre": "estimation simplifiée lux-solaire, reprise de la maquette PAC du 1/11/2026 (voir CONTEXT.md, « Moteur du simulateur : chauffage »)",
+  "date_source": null,
+  "date_verification": "2026-11-02"
+ },
  "modele": {
   "libelle": "Hypothèses du simulateur lux-solaire (PAS un barème officiel) : horizon, année de remplacement de l'onduleur (indice 0 = 1re année), heuristique d'autoconsommation",
-  "valeur": {"horizon": 25, "anneeOnduleur": 12,
-             "autoconso": {"base": 0.30, "expo": -0.6, "min": 0.1, "max": 0.9, "battGain": 0.35, "battJour": 0.5}},
+  "valeur": {
+   "horizon": 25,
+   "anneeOnduleur": 12,
+   "autoconso": {
+    "base": 0.3,
+    "expo": -0.6,
+    "min": 0.1,
+    "max": 0.9,
+    "battGain": 0.35,
+    "battJour": 0.5
+   }
+  },
   "source": null,
   "source_titre": "estimation simplifiée lux-solaire (voir CONTEXT.md)",
   "date_source": null,
