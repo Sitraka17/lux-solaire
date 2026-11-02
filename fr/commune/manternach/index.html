@@ -23,7 +23,7 @@
     /* ambre lisible : #C77F00 ne passe pas le contraste AA en texte (2,97:1 sur --paper) ;
        #8A5600 (5,6:1) pour le texte courant, #A86A00 (4,1:1) pour le grand titre */
     --amber-text:#8A5600; --amber-h1:#A86A00;
-    --wind:#4A90A4; --hydro:#2C6E91; --bio:#6B8F3D; --chp:#948D7B; --biogas:#8FA855;
+    --wind:#4A90A4; --hydro:#2C6E91; --bio:#6B8F3D; --chp:#948D7B; --biogas:#8FA855; --biogas-line:#4F6B25;
     --display:"Avenir Next","Futura","Segoe UI",system-ui,sans-serif;
     --body:system-ui,-apple-system,"Segoe UI",sans-serif;
     --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,monospace;
@@ -106,6 +106,9 @@
   /* WCAG 1.4.11 : l'ambre #EE9B05 n'a que 2,1:1 sur --paper ; un filet --amber-text (5,6:1) délimite
      barres et pastilles ambre sans changer la couleur de remplissage */
   .sw.am,.mixbar .am{box-shadow:inset 0 0 0 1px var(--amber-text)}
+  /* idem pour le biogaz #8FA855 (2,4:1 sur --paper, 2,7:1 sur blanc) : filet --biogas-line #4F6B25
+     (5,5:1 et 6,1:1) ; une teinte plus foncée à 3:1 se confondrait avec la biomasse #6B8F3D */
+  .sw.bg,.mixbar .bg{box-shadow:inset 0 0 0 1px var(--biogas-line)}
 
   /* ---------- horizontal bars ---------- */
   .hbars{display:grid;grid-template-columns:minmax(110px,max-content) 1fr max-content;gap:7px 12px;align-items:center;margin-top:10px}

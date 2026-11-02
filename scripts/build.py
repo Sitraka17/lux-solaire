@@ -920,7 +920,9 @@ def prerender(d, lang):
     names = {k: _js_lit(lang, f"name:'{fr}'") for k, fr, _ in TECH_ORDER}
     tot = sum(last[k] for k, _, _ in TECH_ORDER)
     E = html_mod.escape                        # noms de communes et de cantons : défense en profondeur
-    AM = ' class="am"'                         # segment PV de la barre du mix : filet de contraste
+    # filet de contraste (WCAG 1.4.11) : ambre du PV et vert clair du biogaz, mêmes classes que le JS
+    CL = {"pv": "am", "biogas": "bg"}
+    cls = lambda k: f' class="{CL[k]}"' if k in CL else ""   # noqa: E731
 
     def hb(rows, val, sub, mx):
         return "".join(
@@ -953,10 +955,10 @@ def prerender(d, lang):
 
     return {
         "<!--PRE_MIXBAR-->": "".join(
-            f'<div{AM if k == "pv" else ""} style="width:{last[k] / tot * 100}%;background:var({css})" title="{names[k]} {D1(last[k] / tot * 100)} %"></div>'
+            f'<div{cls(k)} style="width:{last[k] / tot * 100}%;background:var({css})" title="{names[k]} {D1(last[k] / tot * 100)} %"></div>'
             for k, _, css in TECH_ORDER),
         "<!--PRE_MIXLIST-->": "".join(
-            f'<div class="mixrow"><span class="sw{" am" if k == "pv" else ""}" style="background:var({css})"></span>{names[k]}'
+            f'<div class="mixrow"><span class="sw{" " + CL[k] if k in CL else ""}" style="background:var({css})"></span>{names[k]}'
             f'<span class="vv"><b>{D1(last[k] / tot * 100)} %</b> · {D1(last[k])} MW</span></div>'
             for k, _, css in TECH_ORDER),
         "<!--PRE_TOP_PV-->": hb(top15, lambda r: r["pv"],

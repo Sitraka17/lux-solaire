@@ -15,7 +15,9 @@ name: rebuild-weekly
 #   5. déploiement Cloudflare Pages (solaire.sitraka.lu).
 # ⚠️ wrangler 3.x obligatoire pour Pages (4.x convertit en Workers assets).
 # Versions figées le 2/11/2026 sur celles du poste local (Python 3.9 en local,
-# 3.12 ici : mêmes versions de paquets).
+# 3.12 ici : mêmes versions de paquets, arbre complet dans scripts/constraints.txt).
+# Actions épinglées par SHA de commit (tag en commentaire, vérifié avec `gh api
+# repos/actions/<nom>/git/matching-refs/tags/<tag>`) : un tag peut être déplacé, un SHA non.
 
 on:
   schedule:
@@ -41,26 +43,33 @@ jobs:
     # en production (déploiement --branch=main) : le job ne tourne que sur main
     # (le cron tourne toujours sur la branche par défaut, main).
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    # image figée (et non ubuntu-latest) : la version apt de fonts-dejavu-core ci-dessous en dépend
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
-      - run: sudo apt-get install -y fonts-dejavu-core
-      - name: Dépendances Python (versions exactes)
-        run: pip install pandas==2.3.3 requests==2.32.5 pillow==11.3.0 pytest==8.4.2
+      - name: Police DejaVu des images og (version de Ubuntu 24.04 « noble », Launchpad)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends fonts-dejavu-core=2.37-8
+      - name: Dépendances Python (arbre complet figé, numpy compris)
+        run: pip install -r scripts/requirements.txt -c scripts/constraints.txt
 
       - name: Build (échoue si un garde-fou saute, dont la fraîcheur Leneda)
         run: python3 scripts/build.py
 
+      # tests/ entier : test_arrondis, test_baremes, test_build_blanc, test_croise_baremes (formules
+      # Python = moteur JS sur une grille fine), test_fraicheur, test_leneda, test_make_dist, test_slug,
+      # test_tailles, test_veille (workflow fraicheur.yml)
       - name: Tests Python
         run: python3 -m pytest tests/ -q
       - name: Tests du moteur du simulateur

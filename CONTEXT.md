@@ -102,6 +102,23 @@ Versions figées sur celles du poste local au 2/11/2026 : pandas 2.3.3, requests
 pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.12 et Node 22 dans le workflow,
 Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, après un build local.
 
+**Versions figées, complément du 2/11/2026 (chantier B)** :
+- pip : `pip install -r scripts/requirements.txt -c scripts/constraints.txt`. `requirements.txt` =
+  dépendances directes ; `constraints.txt` = arbre COMPLET figé sur le poste local (numpy 2.0.2,
+  python-dateutil, pytz, tzdata, urllib3, certifi, pluggy, etc.), vérifié résoluble en roues binaires
+  pour Python 3.12 / Linux avec `uv pip compile` (commande en tête du fichier). Avant, numpy n'était pas
+  figé et le workflow prenait la dernière version. Pour monter une version : les deux fichiers + build
+  + tests en local (`tests/test_veille.py` vérifie qu'ils ne divergent pas).
+- Actions épinglées par SHA de commit, tag en commentaire, SHA vérifiés avec
+  `gh api repos/actions/<nom>/git/matching-refs/tags/<tag>` : checkout v4.4.0
+  `11d5960a326750d5838078e36cf38b85af677262`, setup-python v5.6.0
+  `a26af69be951a213d495a4c3e4e4022e16d87065`, setup-node v4.4.0
+  `49933ea5288caeca8642d1e84afbd3f7d6820020` (mêmes versions majeures qu'avant).
+- apt : `fonts-dejavu-core=2.37-8` (version de Ubuntu 24.04 « noble », poche Release, vérifiée sur
+  Launchpad), donc `runs-on: ubuntu-24.04` au lieu de `ubuntu-latest` (la version apt dépend de
+  l'image), précédé de `apt-get update`.
+- Restent non figés au patch près : Python « 3.12 » et Node « 22 » (dernière mineure de la branche).
+
 ### Garde-fou de fraîcheur (`check_freshness`, build.py)
 
 Avant tout téléchargement lourd, le build ÉCHOUE (exit 1, message « fraîcheur des données Leneda,
@@ -126,7 +143,27 @@ la poser dans le workflow. Tests : `tests/test_fraicheur.py`.
   que si les données changent) et une panne de Cloudflare après un déploiement réussi. D'où le
   contrôle externe ci-dessous.
 
-### Ajouter un contrôle Grafana / uptime sur `meta.date_iso` (rien n'est créé à ce jour)
+### Veille de fraîcheur externe : `.github/workflows/fraicheur.yml` (2/11/2026)
+
+Remplace le contrôle Grafana prévu (essai Grafana Cloud expiré, rien n'avait été créé). Workflow
+GitHub quotidien (`cron: "17 7 * * *"`, plus déclenchement manuel), lecture seule
+(`permissions: contents: read`, aucun secret, `persist-credentials: false`), checkout épinglé par SHA,
+5 minutes au plus. Il lance `scripts/veille_fraicheur.py` (bibliothèque standard seulement, Python 3
+de l'image) qui ÉCHOUE si :
+- `https://solaire.sitraka.lu/data/data.json` ne répond pas 200, n'est pas du JSON, ou si
+  `meta.date_iso` a plus de 10 jours (`MAX_AGE_DAYS`, égal à `build.MAX_AGE_DAYS`, testé) ou est
+  daté de plus d'un jour dans le futur ;
+- `/`, `/simulator/`, `/fr/` ou `/fr/simulateur/` ne répondent pas 200.
+L'échec envoie l'e-mail GitHub « Run failed: veille-fraicheur » (mêmes réglages que ci-dessus : il
+part vers la personne qui a modifié en dernier la ligne `cron` de CE workflow). Lancement local :
+`/usr/bin/python3 scripts/veille_fraicheur.py`. Tests hors réseau : `tests/test_veille.py` (logique,
+pages contrôlées existantes, actions épinglées par SHA dans les DEUX workflows, permissions, dépendances
+figées). Limite : GitHub désactive aussi ce `schedule` après 60 jours sans activité du dépôt ; le
+commit hebdomadaire du robot (données changées chaque lundi en pratique) suffit à l'éviter, mais un
+arrêt prolongé des relevés Leneda couperait les deux workflows : vérifier l'onglet Actions en cas de
+silence anormal.
+
+### Ajouter un contrôle Grafana / uptime sur `meta.date_iso` (non retenu : remplacé par `fraicheur.yml` le 2/11/2026, procédure gardée pour mémoire)
 
 Cible : `https://solaire.sitraka.lu/data/data.json`, champ `meta.date_iso` (ex. `"2026-11-02"`,
 date du relevé Leneda ; cache Cloudflare 1 h). Seuil conseillé : alerte au-delà de 10 jours, comme
@@ -231,7 +268,8 @@ Reste à faire (par priorité) :
 - ~~simulateur : HEMS, 2031, toiture/façade, régime transitoire B, prix 0,16/0,20, gain non actualisé~~
   FAIT le 2/11/2026 (voir « Simulateur mis à jour le 2/11/2026 » ci-dessous) ;
 - ~~alerte si le relevé Leneda a plus de 10 jours (build en échec) + versions figées dans le workflow~~
-  FAIT le 2/11/2026 (voir « Workflow du lundi et alertes ») ; reste à créer le contrôle Grafana externe ;
+  FAIT le 2/11/2026 (voir « Workflow du lundi et alertes ») ; contrôle externe FAIT le 2/11/2026 par un
+  workflow GitHub quotidien (`fraicheur.yml`) à la place de Grafana ;
 - ~~tests (slug Python/JS, arrondis, barèmes, build sur les archives) ; contrôle explicite des colonnes Leneda~~
   FAIT le 2/11/2026 (voir « Barèmes uniques et tests ») ;
 - ~~compteur /e : listes blanches (lang, chemins)~~ FAIT le 2/11/2026 (voir « Accessibilité et compteur /e » ci-dessous) ;
@@ -249,6 +287,13 @@ Reste à faire (par priorité) :
   `.minitr i`, les pastilles `.sw.am` et le segment PV de la barre du mix (`.mixbar .am`, classe posée par
   le JS ET par `prerender`). Simulateur : `stroke` `--amber-text` sur les barres ambre de la figure 1.
   La courbe de la figure 2 (#C77F00, 3,25:1 sur blanc) et le liseré de l'aire PV passaient déjà.
+- **Biogaz (2/11/2026, chantier B)** : `--biogas` #8FA855 ne fait que 2,43:1 sur `--paper` et 2,66:1 sur
+  blanc. Même traitement que l'ambre, couleur inchangée : filet `--biogas-line` #4F6B25 (5,54:1 sur
+  `--paper`, 6,07:1 sur blanc) sur les pastilles `.sw.bg`, le segment `.mixbar .bg` (classe posée par le
+  JS via `TECHS[].cl` ET par `prerender`, dict `CL` de build.py) et un liseré de 1,25 px sur le bord
+  supérieur de l'aire biogaz de la figure de trajectoire. Une teinte assez foncée pour 3:1 (#7B9644,
+  3,05:1) ne ferait que 1,12:1 avec la biomasse #6B8F3D : filières indiscernables, d'où le filet.
+  Vérifié à 375 et 1 280 px (pastilles, barre du mix, légende ; pas de défilement horizontal).
 - **Structure** : lien d'évitement `<a class="skip" href="#contenu">` (premier élément focalisable, visible
   au focus) avant la barre de série, puis `<main id="contenu" tabindex="-1">` jusqu'avant `<footer>`, sur les
   8 pages des gabarits ET les 404 pages de communes.py (`_shell`, libellés dans `SKIP`). Libellés : « Aller
@@ -417,6 +462,21 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
   format Leneda ; build « à blanc » (copie du dépôt en dossier temporaire, `.cache/` + archives, sans
   réseau, sauté proprement s'il manque une réponse en cache). Tests du moteur : `node --test
   tests/sim-engine.test.mjs`.
+- **Test croisé des formules (2/11/2026, chantier B)** : `tests/test_croise_baremes.py` exécute node sur
+  `sim-engine.js` et compare à 1e-9 près `kb_pv` / `kb_batt` / `tarif` / `kb_pac` (baremes.py) à
+  `bonusPV` / `bonusBattery` / `feedInTariff` / `klimabonusPAC` : puissances 0 à 40 kWc au pas de 0,01,
+  batteries 0 à 25 kWh au pas de 0,01, tarif sur 0 à 40 kW (pas de 0,1) × années 2019 à 2035, PAC sur
+  2 352 combinaisons (commandes dans et hors de la période majorée, bornes comprises, factures,
+  remplacement, gaz / mazout / électrique, zone d'eau, coûts de distribution autour du plafond). Les
+  deux copies des formules sont GARDÉES (faire lire le moteur par node au build aurait rendu le build
+  Python dépendant de node pour quatre formules d'une ligne) ; le test garantit leur égalité (vérifié :
+  un `<=` au lieu de `<` sur `pCap` côté Python est détecté à 15 kWc).
+- **Slug JS unique (2/11/2026, chantier B)** : `slugC` (template.html) est la SEULE fonction de slug
+  côté JS ; la copie locale `slug` du sélecteur « Voir une commune » (écrite avec des caractères
+  combinants LITTÉRAUX dans la classe `[...]`) est supprimée, le sélecteur, le lien « Page de la
+  commune » et `?commune=` appellent `slugC`. `tests/test_slug.py` vérifie l'égalité avec
+  `communes.slug` sur les 100 communes, qu'il n'y a qu'une définition, et qu'aucun caractère combinant
+  littéral (U+0300 à U+036F) ne reste dans les gabarits, `sim-engine.js`, `rt.js`, `ev.js`.
 - **`_jsround`** corrigé : `floor(x + 0.5)` donnait 1 pour 0.49999999999999994 (Math.round : 0).
 - **`vercel.json` supprimé** (inutile sur Cloudflare Pages) : son `Cache-Control: public, max-age=3600`
   sur `/data/*` est passé dans `_headers` ; `Access-Control-Allow-Origin: *` est déjà envoyé par

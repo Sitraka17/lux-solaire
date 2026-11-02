@@ -1,0 +1,25 @@
+# Arbre complet des dépendances Python, figé le 2/11/2026 sur le poste local (Python 3.9.6).
+# Vérifié résoluble en roues binaires pour Python 3.12 / Linux x86_64 (workflow) avec
+#   uv pip compile scripts/requirements.txt -c scripts/constraints.txt --python-version 3.12 \
+#     --python-platform x86_64-manylinux_2_28 --only-binary :all:
+# exceptiongroup, tomli et typing-extensions ne servent qu'avant Python 3.11 (pytest) : ignorés en 3.12.
+certifi==2026.5.20
+charset-normalizer==3.4.7
+exceptiongroup==1.3.1
+idna==3.18
+iniconfig==2.1.0
+numpy==2.0.2
+packaging==26.2
+pandas==2.3.3
+pillow==11.3.0
+pluggy==1.6.0
+pygments==2.20.0
+pytest==8.4.2
+python-dateutil==2.9.0.post0
+pytz==2026.2
+requests==2.32.5
+six==1.15.0
+tomli==2.5.0
+typing-extensions==4.15.0
+tzdata==2026.2
+urllib3==2.6.3

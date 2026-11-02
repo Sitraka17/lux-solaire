@@ -1,0 +1,8 @@
+# Dépendances directes du build et des tests (versions exactes). Installation :
+#   pip install -r scripts/requirements.txt -c scripts/constraints.txt
+# Le fichier de contraintes fige TOUT l'arbre (numpy compris). Pour monter une version :
+# changer les deux fichiers, la ligne « Versions figées » de CONTEXT.md, puis build + tests en local.
+pandas==2.3.3
+requests==2.32.5
+pillow==11.3.0
+pytest==8.4.2

@@ -34,7 +34,7 @@
     /* ambre lisible : #C77F00 ne passe pas le contraste AA en texte (2,97:1 sur --paper) ;
        #8A5600 (5,6:1) pour le texte courant, #A86A00 (4,1:1) pour le grand titre */
     --amber-text:#8A5600; --amber-h1:#A86A00;
-    --wind:#4A90A4; --hydro:#2C6E91; --bio:#6B8F3D; --chp:#948D7B; --biogas:#8FA855;
+    --wind:#4A90A4; --hydro:#2C6E91; --bio:#6B8F3D; --chp:#948D7B; --biogas:#8FA855; --biogas-line:#4F6B25;
     --display:"Avenir Next","Futura","Segoe UI",system-ui,sans-serif;
     --body:system-ui,-apple-system,"Segoe UI",sans-serif;
     --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,monospace;
@@ -117,6 +117,9 @@
   /* WCAG 1.4.11 : l'ambre #EE9B05 n'a que 2,1:1 sur --paper ; un filet --amber-text (5,6:1) délimite
      barres et pastilles ambre sans changer la couleur de remplissage */
   .sw.am,.mixbar .am{box-shadow:inset 0 0 0 1px var(--amber-text)}
+  /* idem pour le biogaz #8FA855 (2,4:1 sur --paper, 2,7:1 sur blanc) : filet --biogas-line #4F6B25
+     (5,5:1 et 6,1:1) ; une teinte plus foncée à 3:1 se confondrait avec la biomasse #6B8F3D */
+  .sw.bg,.mixbar .bg{box-shadow:inset 0 0 0 1px var(--biogas-line)}
 
   /* ---------- horizontal bars ---------- */
   .hbars{display:grid;grid-template-columns:minmax(110px,max-content) 1fr max-content;gap:7px 12px;align-items:center;margin-top:10px}
@@ -544,6 +547,8 @@
 const D = /*__DATA__*/;
 
 const fmt = n => n.toLocaleString('fr-FR');
+/* slug d'une commune : SEULE définition JS (table, sélecteur, ?commune=), identique à
+   communes.slug en Python (tests/test_slug.py) ; plage U+0300 à U+036F = diacritiques combinants */
 const slugC = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const fmt1 = n => n.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -551,12 +556,12 @@ const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).
 const escH = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
 
 const TECHS = [
-  {k:'pv',    name:'Photovoltaïque', c:css('--amber')},
+  {k:'pv',    name:'Photovoltaïque', c:css('--amber'), cl:'am'},
   {k:'wind',  name:'Éolien',         c:css('--wind')},
   {k:'biomass',name:'Biomasse',      c:css('--bio')},
   {k:'chp',   name:'Cogénération',   c:css('--chp')},
   {k:'hydro', name:'Hydroélectrique',c:css('--hydro')},
-  {k:'biogas',name:'Biogaz',         c:css('--biogas')},
+  {k:'biogas',name:'Biogaz',         c:css('--biogas'), cl:'bg'},   // cl : filet de contraste (WCAG 1.4.11)
 ];
 
 /* ---- KPIs ---- */
@@ -593,6 +598,7 @@ function drawArea(){
     stacks.forEach((s,i)=>{up+=`${i?'L':'M'}${x(i)},${y(s.vals[k][1])} `;});
     for(let i=stacks.length-1;i>=0;i--) down+=`L${x(i)},${y(stacks[i].vals[k][0])} `;
     g+=`<path d="${up}${down}Z" fill="${t.c}" fill-opacity="${k==='pv'?0.92:0.78}"/>`;
+    if(k==='biogas') g+=`<path d="${up}" fill="none" stroke="${css('--biogas-line')}" stroke-width="1.25"/>`;   // liseré de contraste
   });
   // top edge of pv emphasized + endpoint
   let edge=''; stacks.forEach((s,i)=>{edge+=`${i?'L':'M'}${x(i)},${y(s.total)} `;});
@@ -611,7 +617,7 @@ function drawArea(){
   document.getElementById('area').innerHTML =
     `<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="Capacité installée par filière, ${first.label} à aujourd'hui">${g}</svg>`;
   document.getElementById('area-legend').innerHTML =
-    [...TECHS].map(t=>`<span><span class="sw${t.k==='pv'?' am':''}" style="background:${t.c}"></span>${t.name} <b style="font-family:var(--mono);font-size:11.5px">${fmt1(last[t.k])} MW</b></span>`).join('');
+    [...TECHS].map(t=>`<span><span class="sw${t.cl?' '+t.cl:''}" style="background:${t.c}"></span>${t.name} <b style="font-family:var(--mono);font-size:11.5px">${fmt1(last[t.k])} MW</b></span>`).join('');
 }
 drawArea();
 { let areaW=innerWidth; addEventListener('resize',()=>{ if(Math.abs(innerWidth-areaW)>20){ areaW=innerWidth; drawArea(); } }); }
@@ -622,9 +628,9 @@ drawArea();
 (function(){
   const bar=document.getElementById('mixbar'), list=document.getElementById('mixlist');
   bar.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
-    return `<div${t.k==='pv'?' class="am"':''} style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`;}).join('');
+    return `<div${t.cl?` class="${t.cl}"`:''} style="width:${pct}%;background:${t.c}" title="${t.name} ${fmt1(pct)} %"></div>`;}).join('');
   list.innerHTML=TECHS.map(t=>{const pct=last[t.k]/totLast*100;
-    return `<div class="mixrow"><span class="sw${t.k==='pv'?' am':''}" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`;}).join('');
+    return `<div class="mixrow"><span class="sw${t.cl?' '+t.cl:''}" style="background:${t.c}"></span>${t.name}<span class="vv"><b>${fmt1(pct)} %</b> · ${fmt1(last[t.k])} MW</span></div>`;}).join('');
 })();
 
 /* ---- top bars ---- */
@@ -658,9 +664,8 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 (function(){
   const sel=document.getElementById('pc'), grp=document.getElementById('pg'), sum=document.getElementById('pc-sum'),
         note=document.getElementById('kb-note'), H=D.hist;
-  const slug=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const byName=[...D.communes].sort((a,b)=>a.c.localeCompare(b.c,'fr'));
-  byName.forEach(c=>sel.add(new Option(c.c, slug(c.c))));   // texte de l'option = textContent
+  byName.forEach(c=>sel.add(new Option(c.c, slugC(c.c))));   // texte de l'option = textContent
   const pct=x=>x<1?x.toFixed(1).replace('.',','):Math.round(x);
   const sg=n=>(n>0?'+':n<0?'−':'±')+fmt(Math.abs(n));
   function draw(c, kb){
@@ -681,13 +686,13 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
       `<tr><th scope="row">${s.bin}${unit(s)}</th><td>${fmt(s.count)}</td><td>${fmt1(s.count/nTot*100)} %</td><td>${fmt1(s.mw)}</td><td>${fmt1(s.mw/cTot*100)} %</td></tr>`).join('');
     const small=kb?1:4, sn=rows.slice(0,small).reduce((a,s)=>a+s.count,0)/nTot*100, sc=rows.slice(0,small).reduce((a,s)=>a+s.mw,0)/cTot*100;
     let t=c?`<b>${escH(c.c)} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.`:'';
-    if(c) t+=` <a href="__CPATH__${slug(c.c)}/">${'Page de la commune'} →</a>`;
+    if(c) t+=` <a href="__CPATH__${slugC(c.c)}/">${'Page de la commune'} →</a>`;
     if(h) t+=(t?' ':'')+`Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).`;
     sum.innerHTML=t;
     note.hidden=!kb;
   }
   function apply(v, k, push){
-    const c=byName.find(x=>slug(x.c)===v)||null, kb=k==='aides';
+    const c=byName.find(x=>slugC(x.c)===v)||null, kb=k==='aides';
     sel.value=c?v:''; grp.value=kb?'aides':'';
     draw(c, kb);
     if(push){const u=new URL(location.href);
@@ -698,7 +703,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   sel.addEventListener('change',()=>{apply(sel.value,grp.value,true); window.solEv&&solEv('commune',sel.value||'lux');});
   grp.addEventListener('change',()=>{apply(sel.value,grp.value,true); window.solEv&&solEv('classes',grp.value||'detail');});
   const P=new URLSearchParams(location.search), q0=P.get('commune');
-  apply(q0?slug(q0):'',P.get('classes')||'',false);
+  apply(q0?slugC(q0):'',P.get('classes')||'',false);
   if((q0&&sel.value)||P.get('classes')) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
 })();
 
