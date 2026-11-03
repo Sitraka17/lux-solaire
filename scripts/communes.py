@@ -31,6 +31,14 @@ SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", 
 SKIP = {"fr": "Aller au contenu", "en": "Skip to content", "de": "Zum Inhalt springen",
         "lb": "Op den Inhalt sprangen"}   # lien d'évitement (mêmes libellés que les dictionnaires des gabarits)
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
+# Appel à l'action vers la page de contact de sitraka.lu (mêmes textes et style .contact-cta
+# que les gabarits ; le paramètre from= fixe l'objet du courriel côté sitraka.lu)
+_CONTACT_TXT = {"fr": ("https://sitraka.lu/fr/contact/?from=solaire", "Vous voulez ça pour votre commune\u00a0? Parlons-en"),
+                "en": ("https://sitraka.lu/contact/?from=solaire", "Want this for your commune? Let's talk"),
+                "de": ("https://sitraka.lu/de/contact/?from=solaire", "Wollen Sie das für Ihre Gemeinde? Sprechen wir"),
+                "lb": ("https://sitraka.lu/contact/?from=solaire", "Wëllt Dir dat fir Är Gemeng? Schwätze mer driwwer")}
+CONTACT = {l: f'<p class="contact-cta"><a href="{u}">{s} <span aria-hidden="true">→</span></a></p>'
+           for l, (u, s) in _CONTACT_TXT.items()}
 
 # Klimabonus Gemengen : colonne « Aide » et note des pages, générées depuis baremes.json
 _KBG = baremes.gemengen()
@@ -556,7 +564,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<a href="{FORPATH[lang]}">{L["all"]}</a></p>'
                 f'<header><div class="eyebrow">{L["eyebrow"](kn)}</div><h1>{L["h1"](cn)}</h1>'
                 f'<p class="standfirst">{L["stand"](cn, mw, date, nn, wpc, med, gkw, gp, fq)}</p></header>'
-                f'<div class="kpis k6">{kpis}</div>'
+                f'<div class="kpis k6">{kpis}</div>{CONTACT[lang]}'
                 f'<section id="tailles"><div class="sec-head"><h2>{L["sizes_h"]}</h2></div>'
                 f'<p class="lede">{L["sizes_lede"](cn, sn, sc)}</p><div class="card">'
                 f'<div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> {L["k_cnt"]}</span>'
@@ -608,7 +616,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
         clist = "".join(f'<div><h3>{esc(k)}</h3>' + "".join(f'<a href="{CPATH[lang]}{slug(c["c"])}/">{esc(c["c"])}</a>' for c in cs)
                         + "</div>" for k, cs in sorted(by_k.items()))
         body = (f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a></p>'
-                f'<header><div class="eyebrow">{F["eyebrow"]}</div><h1>{F["h1"]}</h1></header>'
+                f'<header><div class="eyebrow">{F["eyebrow"]}</div><h1>{F["h1"]}</h1></header>{CONTACT[lang]}'
                 f'<section class="prose">{"".join(f"<p>{p}</p>" for p in F["paras"])}'
                 f'<h2>{F["limits_h"]}</h2><p>{F["limits"]}</p>'
                 f'<h2>{F["contact_h"]}</h2><p>{F["contact"]}</p></section>'

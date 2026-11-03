@@ -177,6 +177,10 @@
   .faq details p a{color:var(--amber-text)}
   .cta{display:inline-flex;align-items:center;gap:8px;font:600 13.5px var(--body);color:#fff;background:var(--ink);padding:9px 14px;border-radius:3px;text-decoration:none;margin-top:6px}
   .cta:hover{background:#2A3648}
+  .contact-cta{margin:16px 0 0;font:600 14px var(--body)}
+  .contact-cta a{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;padding:8px 12px;border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--card)}
+  .contact-cta a:hover{border-color:var(--amber)}
+  .contact-cta span{color:var(--amber-text)}
   footer{margin-top:56px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-2)}
   footer h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
   footer p{max-width:78ch;margin:0 0 10px}
@@ -208,7 +212,7 @@
   #tab-profils th,#tab-profils td{padding:5px 7px}
   #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.3}
   #tab-profils th[scope=row] a{color:var(--amber-text)}
-  @media print{.rt,.rt-a,.seriesbar,.cta{display:none}}
+  @media print{.rt,.rt-a,.seriesbar,.cta,.contact-cta{display:none}}
   @media(prefers-reduced-motion:no-preference){.bar rect{transition:height .35s ease,y .35s ease}}
 </style>
 
@@ -231,6 +235,7 @@
     <span class="badge">Tarifs réglementés au <b>1er août 2026</b></span>
     <span class="badge">Hypothèses <b>modifiables</b> et sourcées</span>
   </div>
+  <p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Vous voulez ça pour votre commune ? Parlons-en <span aria-hidden="true">→</span></a></p>
 </header>
 
 <section id="production">

@@ -63,6 +63,22 @@ allemands. Vouvoiement partout.
   `prerender()` (toutes langues) ; le JS, lui, utilise la clé `"' inst.'"`
   (DE : « Anl. »). Divergence statique/JS préexistante (LB : « Inst. »).
 
+## Appel à l'action vers sitraka.lu/contact (3/11/2026)
+
+Sur CHAQUE page du site (tableau de bord, simulateur, 400 pages communales, « Pour les communes »,
+4 langues), un seul lien `.contact-cta` vers la page de contact de sitraka.lu, dans la langue de la
+page : `https://sitraka.lu/contact/?from=solaire` (EN et LB), `/fr/contact/` (FR), `/de/contact/`
+(DE) ; le paramètre `from=solaire` fixe l'objet du courriel côté sitraka.lu. Textes : EN « Want this
+for your commune? Let's talk », FR « Vous voulez ça pour votre commune ? Parlons-en » (insécable
+avant « ? »), DE « Wollen Sie das für Ihre Gemeinde? Sprechen wir », LB « Wëllt Dir dat fir Är
+Gemeng? Schwätze mer driwwer ». Emplacement : sous la note des chiffres clés (tableau de bord et
+pages communales), sous les badges de l'en-tête (simulateur), sous le titre (« Pour les communes »).
+Mécanique : une clé par dictionnaire (`i18n_en/de/lb.json`, href compris) pour les deux gabarits ;
+textes dans `communes.CONTACT` pour les pages générées ; style `.contact-cta` dans les deux gabarits
+(hérité par les pages communales via le `<style>` du tableau de bord), masqué à l'impression.
+Tant que la branche `home-1103` de sitraka-lu n'est pas fusionnée, la cible répond 404 (constaté le
+3/11/2026).
+
 ## Déploiement
 
 Cloudflare Pages, projet `lux-solaire`, domaine solaire.sitraka.lu. Depuis le 2/11/2026, le dist
