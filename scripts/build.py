@@ -1386,9 +1386,9 @@ RT_TITLES_PT = {
     "solaire_tailles": "Instalações fotovoltaicas por classe de potência",
     "solaire_communes_tailles": "Instalações fotovoltaicas por município e por classe de potência",
     "solaire_communes_tranches_aides": "Instalações fotovoltaicas por município, escalões das ajudas municipais (Klimabonus Gemengen)",
-    "solaire_grandes_installations": "Linhas acima de 100 kW que surgiram ou desapareceram entre dois levantamentos ({n} linhas)",
+    "solaire_grandes_installations": "Instalações acima de 100 kW que surgiram ou desapareceram entre dois levantamentos ({n} registos)",
 }
-RT_JSON_PT = "Todos os dados do painel (JSON, rótulos em francês)"
+RT_JSON_PT = "Todos os dados do painel de dados (JSON, rótulos em francês)"
 
 
 def rt_downloads(manifest, lang):
@@ -1519,6 +1519,8 @@ def jsonld(final_html, lang, canonical, cdate, manifest, d):
 
 OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png", "de": "og.de.png"}
 OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE", "pt": "pt_PT"}
+# attribut lang de <html> : portugais du Portugal (césure, lecteurs d'écran) ; hreflang reste « pt »
+HTML_LANG = {"pt": "pt-PT"}
 _OG_TEXT = {
     "fr": ("LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", "Le photovoltaïque luxembourgeois,", "commune par commune",
            "de puissance PV raccordée", "installations photovoltaïques · capacité installée, pas énergie",
@@ -1676,7 +1678,7 @@ def jsonld_sim(final_html, lang, canonical, cdate, pv):
         sys.exit(f"{lang} : FAQ du simulateur incomplète ({len(qa)} questions)")
     graph = [
         {"@type": "WebSite", "@id": SITE + "/#website", "url": SITE + "/", "name": "Lux-Solaire",
-         "inLanguage": [c for c, _ in LANG_PATHS], "publisher": {"@id": PERSON["@id"]}},
+         "inLanguage": [c for c, _ in SIM_PATHS], "publisher": {"@id": PERSON["@id"]}},
         {"@type": "WebPage", "@id": canonical + "#webpage", "url": canonical, "name": title, "description": desc,
          "inLanguage": lang, "isPartOf": {"@id": SITE + "/#website"},
          "primaryImageOfPage": {"@type": "ImageObject", "url": og},
@@ -1753,9 +1755,14 @@ def render_all(data):
     pre_sim = sim_prerender()   # scénario par défaut + 3 profils, par le moteur JS (node)
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
+    # tableau de bord : ses seuls dictionnaires, sans ceux du simulateur (une clé ajoutée
+    # au simulateur ne doit pas rajeunir la date du jeu de données ni le manifeste)
+    dict_dash = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names
+                                            if not n.startswith("i18n_sim_"))
+                              for lang, names in I18N_FILES.items()}}
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb, "pt": data_pt}
     pv_txt = json.dumps(pv, sort_keys=True)
-    cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
+    cdates = {lang: content_date(lang, [tpl, dict_dash[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                         rt_js, KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
     cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, bar_txt, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
@@ -1807,7 +1814,7 @@ def render_all(data):
             for c, _ in paths if c != lang)
         html = (t.replace("/*__DATA__*/", blob)
                  .replace("/*__PVGIS__*/", json.dumps(pv, ensure_ascii=False).replace("<", "\\u003c"))
-                 .replace("__LANG__", lang)
+                 .replace("__LANG__", HTML_LANG.get(lang, lang))
                  .replace("__CANONICAL_ENC__", urllib.parse.quote(canonical, safe=""))
                  .replace("__CONTENT_DATE__", cdate)
                  .replace("__CANONICAL__", canonical)

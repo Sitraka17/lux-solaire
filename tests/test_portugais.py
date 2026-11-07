@@ -56,7 +56,7 @@ def page(root):
 
 
 def test_page_pt_metadonnees(page):
-    assert '<html lang="pt">' in page
+    assert '<html lang="pt-PT">' in page
     assert '<link rel="canonical" href="https://solaire.sitraka.lu/pt/simulador/">' in page
     assert 'hreflang="x-default" href="https://solaire.sitraka.lu/simulator/"' in page
     assert '<meta property="og:locale" content="pt_PT">' in page
