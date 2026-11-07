@@ -1,5 +1,70 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
+## i18n : le portugais, SIMULATEUR seulement (/pt/simulador/, 8/11/2026)
+
+Cinquième langue, limitée au simulateur (ni tableau de bord, ni pages communales, ni « Pour les
+communes »). Public : la communauté portugaise du Luxembourg (Differdange, Esch). Portugais
+européen, registre clair, 3e personne de politesse (« o seu telhado »). Commit local, pas encore
+déployé ni poussé.
+
+- **Dictionnaires** : `scripts/i18n_sim_pt.json` (HTML) + `scripts/i18n_sim_pt_js.json` (objet `L`),
+  clés = texte FRANÇAIS du gabarit comme pour EN/DE/LB. Contrôle `check_dict_pt` (build.py, appelé
+  juste après `check_dicts`) : PT doit couvrir EXACTEMENT les clés EN du simulateur
+  (`i18n_sim_en.json` + `i18n_sim_js.json`) PLUS les clés EN du tableau de bord présentes dans
+  `template_simulateur.html` (barre de série, boîte à outils `#rt`, lien d'évitement, appel à
+  l'action) ; aucune clé morte. Build en échec sinon. Clé ajoutée le 8/11 aux QUATRE dictionnaires
+  du simulateur : `">Option A · Klimabonus<"` (titre de l'option A et légende de la figure 2, restés
+  en dur parce qu'identiques en FR/EN/DE ; valeur identique en EN/DE/LB, « Opção A » en PT).
+- **Chemin** : `/pt/simulador/` (ajouté à `SIM_PATHS` ; `SIM_LANGS` = langues du simulateur,
+  `LANG_PATHS` inchangé). Données : blob `data_pt = translate_data(data, _tr_str_pt)` en mémoire
+  seulement, AUCUN `data.pt.json` publié.
+- **Nombres** : virgule décimale, milliers séparés par une espace insécable FINE U+202F
+  (`_thousands(…, "pt")`). La locale JS `'fr-FR'` est gardée telle quelle dans la page PT :
+  `toLocaleString('fr-FR')` produit exactement ce format (U+202F), donc pré-rendu Python et recalcul
+  JS sont identiques (test `test_milliers_comme_tolocalestring`). Les milliers écrits à la main dans
+  les valeurs PT utilisent aussi U+202F. « 30 % » avec espace, comme le JS (`' %'`).
+- **Dates** : `_tr_str_pt` (mois, abréviations, « 1er » → « 1 ») puis « 2 de novembro de 2026 »
+  (`_PT_DATE_RE`). Trimestres « 2025 T1 » inchangés (T = trimestre en portugais).
+- **SEO** : hreflang `pt` codé en dur dans `template_simulateur.html` (donc sur les 5 pages du
+  simulateur), x-default inchangé (EN `/simulator/`) ; sitemap généré via `SIM_PATHS` ; og:locale
+  `pt_PT`, les `og:locale:alternate` des pages simulateur suivent désormais `SIM_PATHS` (ceux du
+  tableau de bord restent sur `LANG_PATHS`) ; image `og.sim.pt.png` (make_og_sim) ; FAQ JSON-LD
+  relue dans la page traduite (portugais). Sélecteur de langue du simulateur : EN · FR · DE · LU · PT,
+  drapeau `F_PT` simplifié (vert, rouge, disque jaune).
+- **Liens sans version portugaise** : le fil d'Ariane et le lien « tableau de bord » pointent vers
+  `/fr/` avec la mention « (em francês) » ; `__FORPATH__` / `__CPATH__` retombent sur les chemins FR
+  (`CPATH.get(lang, CPATH["fr"])`), texte « a página para os municípios (em francês) » ; appel à
+  l'action vers `sitraka.lu/fr/contact/?from=solaire` (pas de page de contact en portugais).
+  Sources (guichet.lu, PVGIS, Klima-Agence) : liens FR gardés, titres de documents traduits en
+  description portugaise (« página em francês » quand utile) ; licence CC BY : `deed.pt`.
+- **Boîte à outils** : `rt_downloads(…, "pt")` prend les titres de `RT_TITLES_PT` (build.py, hors
+  manifeste : `data/manifest.json` reste en en/fr/de/lb) et le JSON français (`data.json`, libellé
+  « rótulos em francês »). `rt.js` NON modifié (kit commun à la série) : la ligne `language` du
+  BibTeX vaut donc `pt`.
+- **Termes** : non traduits : Klimabonus, Klima-Agence, Leneda, Diff Primes (absent de la page
+  publique), HEMS, PVGIS, guichet.lu, noms de cantons (« No cantão de Luxembourg » : nom officiel
+  du canton, comme en DE). Traduits : pompe à chaleur → bomba de calor ; panneaux → painéis
+  fotovoltaicos ; batterie → bateria ; tarif d'injection → tarifa de injeção (garantida) ; ballon
+  tampon → depósito de inércia ; onduleur → inversor ; devis → orçamento ; mazout → gasóleo de
+  aquecimento ; plancher chauffant → piso radiante ; commune → município ; canton → cantão ;
+  relevé → levantamento ; non actualisé → não atualizado ; TRI → TIR ; kWc → kWp.
+- **Barèmes** : `baremes.check_page` reconnaît les tournures PT (« a partir de », « até »,
+  « para uma encomenda », « L por kW ») ; la page PT est contrôlée comme les autres (413 pages).
+- **Dist et compteur** : `pt` dans `PUBLIC_DIRS`, `og.sim.pt.png` dans `PUBLIC_FILES`
+  (`scripts/make_dist.py`). Compteur `/e` : rien à changer (le simulateur ne charge pas `ev.js`,
+  `functions/e.js` ne liste aucun chemin de simulateur ; `pt` absent de `LANGS` à dessein).
+- **Tests** : `tests/test_portugais.py` (parité et détection d'une clé manquante, formats, dates,
+  métadonnées, hreflang sur les 5 pages + sitemap, absence de mots français dans le texte visible,
+  les attributs, la FAQ JSON-LD et les littéraux JS, contrôle des barèmes) ; `test_build_blanc.py`
+  vérifie aussi `pt/simulador/index.html`.
+- **Vérifié le 8/11/2026** (Chrome sans tête, dist par liste blanche servi en local) : 375 et
+  1 280 px × 3 cas (PV seul 6 kWp ; PV 10 kWp + batterie 7 kWh + HEMS, canton d'Esch ; outil 3 gaz
+  2 000 m³, PAC 9 kW, PV 8 kWp) : aucune erreur JS (hors balise Cloudflare en local), aucun
+  défilement horizontal, nombres de tous les résultats (outils 1 à 3, tableaux 1 à 7, verdicts)
+  identiques à la page FR pour les mêmes paramètres d'URL.
+- **À faire** : relecture par un locuteur natif portugais (Portugal) avant mise en ligne ; Search
+  Console après déploiement ; envisager des liens vers le simulateur PT depuis les pages FR.
+
 ## i18n : l'allemand (/de), ajouté le 26/10/2026
 
 Quatrième langue du site, calquée sur la recette /de d'index-lu (build.py
@@ -96,7 +161,7 @@ npx --yes wrangler@3.114.17 pages deploy /tmp/lux-solaire-dist --project-name=lu
 - wrangler 3.x OBLIGATOIRE (4.x convertit en Workers assets) ; version exacte 3.114.17, la même
   que le workflow (`WRANGLER_VERSION`).
 - `make_dist.py` copie `PUBLIC_FILES` (racine : pages, `_headers`, og, scripts JS servis, fichiers
-  de vérification GSC et IndexNow) et `PUBLIC_DIRS` (`data`, `fr`, `de`, `lb`, `simulator`,
+  de vérification GSC et IndexNow) et `PUBLIC_DIRS` (`data`, `fr`, `de`, `lb`, `pt`, `simulator`,
   `municipality`, `for-municipalities`). Il ÉCHOUE si une entrée publique manque, si une entrée
   suivie par git à la racine n'est ni publique ni dans `INTERNAL` (tout NOUVEAU fichier servi doit
   être ajouté à la liste, sinon il ne serait jamais publié), ou si un fichier interne se retrouve

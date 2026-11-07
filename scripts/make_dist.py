@@ -28,14 +28,14 @@ PUBLIC_FILES = [
     "index.html", "404.html", "_headers", "robots.txt", "sitemap.xml",
     "favicon.svg", "vignette.png",
     "og.png", "og.en.png", "og.de.png", "og.lb.png",
-    "og.sim.png", "og.sim.en.png", "og.sim.de.png", "og.sim.lb.png",
+    "og.sim.png", "og.sim.en.png", "og.sim.de.png", "og.sim.lb.png", "og.sim.pt.png",
     "rt.js", "ev.js", "sim-engine.js",
     "google525f5d72f5a60fbe.html",                 # vérification Google Search Console
     "078ba8d6c1483f19b0aff325f01647a8.txt",        # clé IndexNow
 ]
 # Dossiers servis (copiés entiers, hors fichiers système).
 PUBLIC_DIRS = [
-    "data", "fr", "de", "lb", "simulator", "municipality", "for-municipalities",
+    "data", "fr", "de", "lb", "pt", "simulator", "municipality", "for-municipalities",
 ]
 # Entrées suivies par git qui ne doivent JAMAIS être publiées.
 INTERNAL = {

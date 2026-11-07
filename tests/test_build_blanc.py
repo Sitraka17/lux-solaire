@@ -37,6 +37,6 @@ def test_build_a_blanc(root, tmp_path):
     assert r.returncode == 0, (r.stdout[-2000:], r.stderr[-3000:])
     assert "pages contrôlées contre scripts/baremes.json" in r.stdout
     for p in ("index.html", "fr/index.html", "de/index.html", "lb/index.html", "simulator/index.html",
-              "fr/simulateur/index.html", "de/rechner/index.html", "lb/rechner/index.html",
+              "fr/simulateur/index.html", "de/rechner/index.html", "lb/rechner/index.html", "pt/simulador/index.html",
               "municipality/differdange/index.html", "lb/gemeng/differdange/index.html"):
         assert (dst / p).stat().st_size > 10_000, p

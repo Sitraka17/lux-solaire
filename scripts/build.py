@@ -555,6 +555,21 @@ _DE_ORD_RE = re.compile(
                     key=len, reverse=True)) + r"))")
 
 
+# Portugais européen (/pt/simulador/, ajouté le 8/11/2026) : SIMULATEUR seulement (ni
+# tableau de bord, ni pages communales). Public : la communauté portugaise du Luxembourg
+# (Differdange, Esch…). Nombres : virgule décimale, milliers séparés par une espace
+# insécable FINE (U+202F, celle que toLocaleString('fr-FR') produit : la locale JS
+# 'fr-FR' est gardée telle quelle). Dates : « 2 de novembro de 2026 ».
+MONTHS_PT = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
+             "agosto", "setembro", "outubro", "novembro", "dezembro"]
+_FR2PT_MONTH = {fr: MONTHS_PT[i] for i, fr in enumerate(MONTHS_FR)}
+_ABBR_PT_SHORT = ["jan.", "fev.", "mar.", "abr.", "maio", "jun.", "jul.",
+                  "ago.", "set.", "out.", "nov.", "dez."]
+_ABBR_PT = {(MONTHS_FR[i][:4] + "."): _ABBR_PT_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+# « 2 novembro 2026 » → « 2 de novembro de 2026 » (après substitution des mois)
+_PT_DATE_RE = re.compile(r"\b(\d{1,2})(?:er)? (" + "|".join(MONTHS_PT) + r")(?: (\d{4}))?\b")
+
+
 def _load_i18n(*names):
     """Fusionne plusieurs dictionnaires (texte HTML du tableau de bord, littéraux
     JS, puis les mêmes pour la page simulateur) ; une clé en double est une
@@ -572,10 +587,14 @@ def _load_i18n(*names):
 
 I18N_FILES = {"en": ("i18n_en.json", "i18n_js.json", "i18n_sim_en.json", "i18n_sim_js.json"),
               "lb": ("i18n_lb.json", "i18n_lb_js.json", "i18n_sim_lb.json", "i18n_sim_lb_js.json"),
-              "de": ("i18n_de.json", "i18n_de_js.json", "i18n_sim_de.json", "i18n_sim_de_js.json")}
+              "de": ("i18n_de.json", "i18n_de_js.json", "i18n_sim_de.json", "i18n_sim_de_js.json"),
+              # portugais : simulateur seulement (les clés du tableau de bord que la page
+              # simulateur contient aussi, barre de série, boîte à outils, sont dans i18n_sim_pt.json)
+              "pt": ("i18n_sim_pt.json", "i18n_sim_pt_js.json")}
 I18N, I18N_PAIRS = _load_i18n(*I18N_FILES["en"])
 I18N_LB, I18N_LB_PAIRS = _load_i18n(*I18N_FILES["lb"])
 I18N_DE, I18N_DE_PAIRS = _load_i18n(*I18N_FILES["de"])
+I18N_PT, I18N_PT_PAIRS = _load_i18n(*I18N_FILES["pt"])
 
 
 def check_dicts(tpl):
@@ -596,6 +615,30 @@ def check_dicts(tpl):
             problems.append(f"parité EN/{other_name} : {len(only_en)} clés EN sans {other_name}, "
                             f"{len(only_x)} clés {other_name} sans EN :\n  "
                             + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_x)))
+    if problems:
+        sys.exit("i18n : " + "\n".join(problems))
+
+
+def check_dict_pt(tpl_sim):
+    """Parité du dictionnaire portugais (simulateur seul) : exactement les clés EN du
+    simulateur (i18n_sim_en.json + i18n_sim_js.json) PLUS les clés EN du tableau de bord
+    présentes dans template_simulateur.html (barre de série, boîte à outils, lien
+    d'évitement, contact), c.-à-d. tout ce que to_en traduit sur cette page ; aucune clé
+    morte."""
+    sim_en = set()
+    for name in I18N_FILES["en"][2:]:
+        sim_en |= set(json.loads((ROOT / "scripts" / name).read_text()))
+    dash_en = set(I18N) - sim_en
+    expected = sim_en | {k for k in dash_en if k in tpl_sim}
+    missing, extra = expected - set(I18N_PT), set(I18N_PT) - expected
+    dead = [k for k in I18N_PT if k not in tpl_sim]
+    problems = []
+    if missing or extra:
+        problems.append(f"parité EN/PT (simulateur) : {len(missing)} clés sans PT, {len(extra)} clés PT en trop :\n  "
+                        + "\n  ".join(repr(k[:90]) for k in sorted(missing | extra)))
+    if dead:
+        problems.append(f"clés PT absentes du gabarit du simulateur ({len(dead)}) :\n  "
+                        + "\n  ".join(repr(k[:90]) for k in dead))
     if problems:
         sys.exit("i18n : " + "\n".join(problems))
 
@@ -634,6 +677,16 @@ def _tr_str_de(s):
         s = s.replace(fr, de)
     s = _MONTH_RE.sub(lambda m: _FR2DE_MONTH[m.group(1)], s)  # « juillet » → « Juli »
     return _DE_ORD_RE.sub(r"\1. ", s)                        # « 6 Juli » → « 6. Juli »
+
+
+def _tr_str_pt(s):
+    """Variante portugaise (simulateur) : trimestres gardés (« 2025 T1 », T = trimestre),
+    abréviations et noms de mois, puis « 2 de novembro de 2026 » ; « 1er » → « 1 ».
+    Formats numériques français conservés (virgule décimale)."""
+    for fr, pt in _ABBR_PT.items():                          # « juil. » → « jul. »
+        s = s.replace(fr, pt)
+    s = _MONTH_RE.sub(lambda m: _FR2PT_MONTH[m.group(1)], s)  # « juillet » → « julho »
+    return _PT_DATE_RE.sub(lambda m: f"{m.group(1)} de {m.group(2)}" + (f" de {m.group(3)}" if m.group(3) else ""), s)
 
 
 def translate_data(obj, tr=_tr_str):
@@ -676,12 +729,24 @@ def to_de(html):
     return html
 
 
+def to_pt(html):
+    """HTML portugais (simulateur seul) : dictionnaire seul, comme to_de. La locale JS
+    'fr-FR' reste intacte : elle produit exactement le format portugais voulu (virgule
+    décimale, milliers séparés par U+202F)."""
+    for fr, pt in I18N_PT_PAIRS:
+        if fr in html:
+            html = html.replace(fr, pt)
+    return html
+
+
 from communes import CPATH, FORPATH, slug as _slug   # noqa: E402  (pages communales)
 
 
 LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
 # page simulateur (template_simulateur.html) : mêmes langues, chemins propres
-SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechner/"), ("lb", "/lb/rechner/"))
+SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechner/"), ("lb", "/lb/rechner/"),
+             ("pt", "/pt/simulador/"))   # portugais : simulateur seulement (8/11/2026)
+SIM_LANGS = tuple(c for c, _ in SIM_PATHS)
 
 
 def _jsround(x):
@@ -695,9 +760,9 @@ def _jsround(x):
 
 def _thousands(n, lang):
     """Séparateur de milliers de toLocaleString : virgule en anglais, espace
-    en FR/LB."""
+    en FR/LB/DE, espace insécable fine U+202F en portugais (celle de toLocaleString('fr-FR'))."""
     s = format(int(n), ",")
-    return s if lang == "en" else s.replace(",", " ")
+    return s if lang == "en" else s.replace(",", "\u202f" if lang == "pt" else " ")
 
 
 def _dec1(x, lang):
@@ -770,7 +835,7 @@ def _jsl(lang, name, tpl_sim):
     pat = _JSL_RE.get(name)
     if pat is None:
         pat = _JSL_RE[name] = re.compile(r"(?<![A-Za-z0-9_])" + re.escape(name) + r":'((?:[^'\\]|\\.)*)'")
-    sources = [tpl_sim] if lang == "fr" else {"en": I18N, "de": I18N_DE, "lb": I18N_LB}[lang].values()
+    sources = [tpl_sim] if lang == "fr" else {"en": I18N, "de": I18N_DE, "lb": I18N_LB, "pt": I18N_PT}[lang].values()
     for src in sources:
         m = pat.search(src)
         if m:
@@ -1312,14 +1377,35 @@ def write_exports(tables, cdate):
     return manifest
 
 
+# Titres portugais de la boîte à outils du simulateur PT : propres à cette page, hors du
+# manifeste (data/manifest.json reste en en/fr/de/lb, aucun fichier de données en PT).
+RT_TITLES_PT = {
+    "solaire_communes": "Potência fotovoltaica por município ({n} municípios)",
+    "solaire_cantons": "Potência fotovoltaica por cantão ({n} cantões)",
+    "solaire_filieres": "Potência instalada por tecnologia e por levantamento",
+    "solaire_tailles": "Instalações fotovoltaicas por classe de potência",
+    "solaire_communes_tailles": "Instalações fotovoltaicas por município e por classe de potência",
+    "solaire_communes_tranches_aides": "Instalações fotovoltaicas por município, escalões das ajudas municipais (Klimabonus Gemengen)",
+    "solaire_grandes_installations": "Linhas acima de 100 kW que surgiram ou desapareceram entre dois levantamentos ({n} linhas)",
+}
+RT_JSON_PT = "Todos os dados do painel (JSON, rótulos em francês)"
+
+
 def rt_downloads(manifest, lang):
-    """Liste <li> de la boîte à outils : les CSV et le JSON de la locale."""
+    """Liste <li> de la boîte à outils : les CSV et le JSON de la locale (en portugais :
+    titres de RT_TITLES_PT et JSON français, il n'y a pas de data.pt.json)."""
     items = []
     for f in manifest["files"]:
-        if f.get("lang") and f["lang"] != lang:
+        flang = "fr" if lang == "pt" else lang
+        if f.get("lang") and f["lang"] != flang:
             continue
         kind = "CSV" if f["format"] == "text/csv" else "JSON"
-        items.append(f'<li><a href="{f["path"]}" download>{f["title"][lang]}</a> <small>{kind}</small></li>')
+        if lang == "pt":
+            slug = f["path"].rsplit("/", 1)[-1].removesuffix(".csv")
+            title = RT_JSON_PT if kind == "JSON" else RT_TITLES_PT[slug].replace("{n}", str(f["rows"]))
+        else:
+            title = f["title"][lang]
+        items.append(f'<li><a href="{f["path"]}" download>{title}</a> <small>{kind}</small></li>')
     return "".join(items)
 
 
@@ -1432,7 +1518,7 @@ def jsonld(final_html, lang, canonical, cdate, manifest, d):
 
 
 OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png", "de": "og.de.png"}
-OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE"}
+OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE", "pt": "pt_PT"}
 _OG_TEXT = {
     "fr": ("LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", "Le photovoltaïque luxembourgeois,", "commune par commune",
            "de puissance PV raccordée", "installations photovoltaïques · capacité installée, pas énergie",
@@ -1517,7 +1603,7 @@ def check_output(html, lang, dct):
 
 # ──────────────── page simulateur : JSON-LD, og:image ──────────────────────
 SIM_PUBLISHED = "2026-10-23"   # première mise en ligne du simulateur
-OG_SIM_FILES = {"fr": "og.sim.png", "en": "og.sim.en.png", "lb": "og.sim.lb.png", "de": "og.sim.de.png"}
+OG_SIM_FILES = {"fr": "og.sim.png", "en": "og.sim.en.png", "lb": "og.sim.lb.png", "de": "og.sim.de.png", "pt": "og.sim.pt.png"}
 _OG_SIM_TEXT = {
     "fr": ("LUX-SOLAIRE · SIMULATEUR GRATUIT · SANS INSCRIPTION", "Panneaux solaires au Luxembourg :",
            "est-ce rentable chez vous ?", "par kWc et par an, plein sud à 35° (PVGIS)",
@@ -1535,6 +1621,10 @@ _OG_SIM_TEXT = {
            "lohnt es sich bei Ihnen?", "pro kWp und Jahr, Südausrichtung, 35° (PVGIS)",
            "Ertrag · Klimabonus 2026 · garantierter Tarif · Amortisation",
            "solaire.sitraka.lu/de/rechner/ · DE · FR · EN · LU"),
+    "pt": ("LUX-SOLAIRE · SIMULADOR GRATUITO · SEM REGISTO", "Painéis solares no Luxemburgo:",
+           "compensa na sua casa?", "por kWp e por ano, virado a sul, 35° (PVGIS)",
+           "Produção · Klimabonus 2026 · tarifa de injeção · retorno do investimento",
+           "solaire.sitraka.lu/pt/simulador/ · PT · FR · EN · DE · LU"),
 }
 
 
@@ -1638,13 +1728,16 @@ def render_all(data):
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
     data_de = translate_data(data, _tr_str_de)
     (ROOT / "data" / "data.de.json").write_text(json.dumps(data_de, ensure_ascii=False))
+    data_pt = translate_data(data, _tr_str_pt)   # simulateur PT seulement : aucun fichier publié
     pv = json.loads((ROOT / "data" / "pvgis.json").read_text())
     for lang in ("fr", "en", "de", "lb"):
         make_og(data, lang)
+    for lang in SIM_LANGS:
         make_og_sim(pv, lang)
     tpl = (ROOT / "template.html").read_text()
     tpl_sim = (ROOT / "template_simulateur.html").read_text()
     check_dicts(tpl + "\n" + tpl_sim)
+    check_dict_pt(tpl_sim)
     for name, t in (("template.html", tpl), ("template_simulateur.html", tpl_sim)):
         if "—" in t:
             sys.exit(f"{name} contient un tiret cadratin (U+2014)")
@@ -1660,14 +1753,14 @@ def render_all(data):
     pre_sim = sim_prerender()   # scénario par défaut + 3 profils, par le moteur JS (node)
     dict_txt = {"fr": "", **{lang: "".join((ROOT / "scripts" / n).read_text() for n in names)
                             for lang, names in I18N_FILES.items()}}
-    blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb}
+    blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb, "pt": data_pt}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_txt[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                         rt_js, KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
     cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, bar_txt, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
-                                                     rt_js, KIT_VERSION]) for lang in ("fr", "en", "de", "lb")}
+                                                     rt_js, KIT_VERSION]) for lang in SIM_LANGS}
     manifest = write_exports(exports(data), max(cdates.values()))
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)])
 
@@ -1689,7 +1782,13 @@ def render_all(data):
             '<rect width="60" height="15" fill="#000"/>'
             '<rect y="15" width="60" height="14" fill="#DD0000"/>'
             '<rect y="29" width="60" height="15" fill="#FFCE00"/></svg>')
-    _FLAG = {"en": F_GB, "fr": F_FR, "de": F_DE, "lb": F_LU}
+    # drapeau portugais simplifié (vert 2/5, rouge 3/5, sphère armillaire réduite à un disque jaune)
+    F_PT = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+            '<rect width="24" height="44" fill="#046A38"/>'
+            '<rect x="24" width="36" height="44" fill="#DA291C"/>'
+            '<circle cx="24" cy="22" r="9" fill="#FFE900"/>'
+            '<circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>')
+    _FLAG = {"en": F_GB, "fr": F_FR, "de": F_DE, "lb": F_LU, "pt": F_PT}
 
     def render(d, lang, sim):
         t, paths = (tpl_sim, SIM_PATHS) if sim else (tpl, LANG_PATHS)
@@ -1705,7 +1804,7 @@ def render_all(data):
             for code, path in paths)
         og_locale = f'<meta property="og:locale" content="{OG_LOCALE[lang]}">' + "".join(
             f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
-            for c, _ in LANG_PATHS if c != lang)
+            for c, _ in paths if c != lang)
         html = (t.replace("/*__DATA__*/", blob)
                  .replace("/*__PVGIS__*/", json.dumps(pv, ensure_ascii=False).replace("<", "\\u003c"))
                  .replace("__LANG__", lang)
@@ -1715,8 +1814,9 @@ def render_all(data):
                  .replace("__OGIMAGE__", (OG_SIM_FILES if sim else OG_FILES)[lang])
                  .replace("<!--OGLOCALE-->", og_locale)
                  .replace("<!--LANGTOGGLE-->", toggle)
-                 .replace("__CPATH__", CPATH[lang])
-                 .replace("__FORPATH__", FORPATH[lang]))
+                 # pas de pages communales en portugais : liens vers la version française
+                 .replace("__CPATH__", CPATH.get(lang, CPATH["fr"]))
+                 .replace("__FORPATH__", FORPATH.get(lang, FORPATH["fr"])))
         dct = None
         if lang == "en":
             html, dct = to_en(html), I18N
@@ -1724,6 +1824,8 @@ def render_all(data):
             html, dct = to_lb(html), I18N_LB
         elif lang == "de":
             html, dct = to_de(html), I18N_DE
+        elif lang == "pt":
+            html, dct = to_pt(html), I18N_PT
         # jetons de prose (dont __DATE__) : APRÈS traduction, pour que les clés
         # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
@@ -1780,7 +1882,7 @@ def render_all(data):
     print(f"barèmes : {len(checked)} pages contrôlées contre scripts/baremes.json (version {baremes.B['version']})")
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)] + groups_c)
     print(f"{len(groups_c) * 4} pages communales et « pour les communes » écrites")
-    print(f"8 pages rebuilt (tableau de bord + simulateur × en/fr/de/lb) : "
+    print(f"9 pages rebuilt (tableau de bord × en/fr/de/lb, simulateur × en/fr/de/lb/pt) : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
           f"as of {data_en['meta']['date']} / Stand (DE) {data_de['meta']['date']} / "
           f"Stand (LB) {data_lb['meta']['date']}")

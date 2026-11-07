@@ -199,7 +199,7 @@ def check_page(html, lang, kind, b=None):
             seen.add("batt_formule")
             if not (_eq(n(m.group(1)), bt["a"]) and _eq(n(m.group(2)), bt["a"]) and _eq(n(m.group(3)), bt["b"])):
                 bad("Klimabonus batterie", m, f"a = {bt['a']}, b = {bt['b']}")
-        for m in re.finditer(_CUR_L + _N + _CUR_R + r" (?:à partir de|from|ab) " + _N + r" (kWc|kWp|kWh)\b", t):
+        for m in re.finditer(_CUR_L + _N + _CUR_R + r" (?:à partir de|a partir de|from|ab) " + _N + r" (kWc|kWp|kWh)\b", t):
             amount, thr = n(m.group(1)), n(m.group(2))
             if m.group(3) == "kWh":
                 seen.add("batt_max")
@@ -216,7 +216,7 @@ def check_page(html, lang, kind, b=None):
             if not ((_eq(v, tr["petit"]) or _eq(v, tr["grand"])) and _eq(n(m.group(2)), tr["baisse"], 1e-9)
                     and int(m.group(3)) == tr["anneeBase"]):
                 bad("tarif d'injection", m, f"{tr['petit']} ou {tr['grand']} × {tr['baisse']}^(n−{tr['anneeBase']})")
-        for m in re.finditer(r"n\s?[−-]\s?\d{4} ?€/MWh (?:jusqu'à|up to|bis) " + _N + r" kW", t):
+        for m in re.finditer(r"n\s?[−-]\s?\d{4} ?€/MWh (?:jusqu'à|up to|bis|até) " + _N + r" kW", t):
             seen.add("tarif_seuil")
             if not _eq(n(m.group(1)), tr["seuilKw"]):
                 bad("seuil du tarif d'injection", m, f"{tr['seuilKw']} kW")
@@ -231,11 +231,11 @@ def check_page(html, lang, kind, b=None):
         kp = b["klimabonus_pac"]["valeur"]
         pairs = {(kp["remplacement"], kp["remplacementMajore"]), (kp["sansRemplacement"], kp["sansRemplacementMajore"])}
         for m in re.finditer(_CUR_L + _N + _CUR_R + r" \(" + _CUR_L + _N + _CUR_R +
-                             r" (?:pour une commande|for an order|bei Bestellung|bei enger Bestellung)", t):
+                             r" (?:pour une commande|for an order|bei Bestellung|bei enger Bestellung|para uma encomenda)", t):
             seen.add("pac_montant")
             if (n(m.group(1)), n(m.group(2))) not in pairs:
                 bad("Klimabonus pompe à chaleur", m, f"{sorted(pairs)}")
-        for m in re.finditer(_N + r" L (?:par|per|pro) kW", t):
+        for m in re.finditer(_N + r" L (?:par|per|pro|por) kW", t):
             seen.add("pac_ballon")
             if not _eq(n(m.group(1)), kp["ballonLParKw"]):
                 bad("ballon tampon exigé", m, f"{kp['ballonLParKw']} L par kW thermique")
