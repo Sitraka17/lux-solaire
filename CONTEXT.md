@@ -1,5 +1,48 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
+## Lot 3 du cahier des charges UX/UI : simulateur, 5 langues (9/11/2026)
+
+- **Parcours** : sommaire numéroté `nav.toc` (Production, Rentabilité, Chauffage) sous les badges ; dans chaque outil,
+  les résultats (`div.res`) précèdent le formulaire dans le DOM (lecture et tabulation sur mobile), suivis d'un lien
+  « Modifier les hypothèses ↓ » (masqué au-dessus de 860 px) ; en bureau (≥ 1 024 px) la colonne de résultats couvre
+  la hauteur de l'outil et son 1er bloc (indicateurs ou verdict) reste collé en haut. Ordre : outils 1-3, profils
+  types, Repères (déplacés après l'outil 3), FAQ, appel « Vous voulez ça pour votre commune ? » (déplacé), Méthode.
+- **Tableaux** : `<caption>` « Tableau n. » au-dessus (style L1.11), numérotés dans l'ordre du DOM : 1 détail 1re
+  année, 2 trésorerie année par année (nouvelle légende), 3 scénarios de chauffage, 4 aides de l'État, 5 profils
+  types (ex-7), 6 productible (ex-2), 7 valeur du kWh (ex-3), 8 Klimabonus et tarif (ex-4) ; renvois du texte mis à
+  jour (« tableau 7 », « tableau 4 »). Tableaux remplis en JS par `setT()` (garde la légende) ; conteneurs
+  `.tblscroll` focalisables seulement s'ils défilent (`scrollable()`). Figures 1 à 3 inchangées en numérotation.
+- **Verdict (L3.4)** : `SimEngine.pickOption(A, B)` (sim-engine.js, présentation seulement, aucun calcul modifié) :
+  écart à 25 ans < 100 € ou < 2 % = options équivalentes, étiquette « retour le plus rapide » sur l'option qui se
+  rembourse le plus vite et phrase « apport initial » (reste à payer A et B) ; sinon « la plus avantageuse ». Même
+  règle dans `build.sim_static` (pré-rendu). Tests node : `verdict : …` (34 tests).
+- **Indicateur « Gain la première année »** : A et B à poids égal (`.val.ab`). TRI à une décimale. Libellés de ligne
+  des tableaux en texte normal, mono réservé aux nombres ; montants sans coupure (`td` en nowrap, sauf tableau 1
+  sous 560 px).
+- **Figures** : figure 1 avec légende à deux entrées, unité kWh et infobulles (`<title>`) ; figures 2 et 3 : titre
+  d'axe « ans », étiquettes de fin de courbe écartées de leur hauteur + 4 px à l'écran, halo couleur papier.
+- **Formulaires** : 21 curseurs avec `aria-valuetext` (unités, mis à jour avec les `<output>`, objet `VT`) et
+  `aria-describedby` vers l'aide ; curseurs de 32 px, cases de 20 px ; consommation d'électricité (outil 1,
+  `#cons-in`) et de chauffage (outil 3, `#hconso`) saisissables (`inputmode="decimal"`, pas de type number, `num()`
+  accepte « 3 900 », « 3.900 », « 3,900 »), message de plage (`checkField`). La consommation de chauffage exacte
+  est tenue par `HC` (le curseur suit, arrondi à son pas). Aides de plus d'une phrase : 1re phrase visible, la suite
+  dans `details.more` (« En savoir plus ») ; réglages secondaires repliés (`details.adv` : hypothèses avancées de
+  l'outil 2, aides et coûts annexes de l'outil 3) ; détail du ballon, explications des tableaux 7 et 8 repliés.
+  Textes inchangés (clés des dictionnaires coupées à la même phrase dans les 4 langues). Aucun texte < 12 px à
+  375 px hors SVG et ossature.
+- **Méthode** : 1er paragraphe visible, « Calcul » (`#m-calc`) et « Sources 1 à 13 » (`#m-src`, `li#src-n`) repliés ;
+  une ancre dans un `<details>` fermé l'ouvre (`openHash`, `hashchange`).
+- **Aides locales (L3.11, à valider par Sitraka)** : « Certaines communes ajoutent leur propre prime à celle de
+  l'État : renseignez-vous auprès de la vôtre ; elle n'est pas comptée ici. » Le lien « Voir Pour les communes » de
+  cette phrase est retiré (la page reste liée par le colophon).
+- **URL courte (L3.12)** : `writeUrl` n'écrit que les réglages différents des valeurs par défaut (`DEF` lu avant
+  l'URL ; défauts dérivés : coût = kWc × 1 800 €, batterie × 900 €, chauffage selon l'énergie) ; les anciennes URL
+  complètes sont toujours lues.
+- **Mesures** (script hors dépôt, scratchpad de la session du 9/11, `pw/lot3/accept.mjs`, `nums.mjs` + `cmp.py`) :
+  1 840 valeurs comparées avant/après (5 langues × 8 scénarios) sans aucun écart ; production de l'outil 1 à
+  1 299 px à 375 px (2 215 avant), verdict de l'outil 3 à 7 166 px (12 404 avant), méthode fermée 344 px (4 034),
+  page de 28,6 à 22,3 écrans de 812 px (cible du cahier : 20, non atteinte). Tests : `tests/test_lot3.py`.
+
 ## Lot 2 du cahier des charges UX/UI : tableau de bord, pages communales, « Pour les communes » (9/11/2026)
 
 - **Tableau de bord** : Figures 1 à 7 (`<figure class="card">`, `<figcaption><b>Figure n.</b> constat. <span class="u">ancien
@@ -619,7 +662,7 @@ ILR (loi du 22/07/2026), projet de loi 8707 devenu la loi du 22/07/2026 (exposé
   l'objet `L` du gabarit (FR) ou dans la valeur traduite de `i18n_sim_*_js.json` (EN/DE/LB). Les
   formats imitent le JS (`_thousands`/`_jsround`, `_dec1`, `maximumFractionDigits: 1` → `dmax1`,
   `%` collé en anglais).
-- Section `#profils` (template_simulateur.html, entre l'outil 3 et la FAQ) : « Tableau 7 », trois
+- Section `#profils` (template_simulateur.html, entre l'outil 3 et la FAQ) : « Tableau 7 » (« Tableau 5 » depuis le lot 3), trois
   profils (3 kWc sud-est 2 500 kWh ; 6 kWc sud 4 500 kWh ; 10 kWc + batterie 7 kWh 10 000 kWh),
   jetons `__P1_…__` à `__P3_…__`, liens `?p=…&cons=…` qui chargent le profil dans la page.
   Les cas sont définis dans `sim_prerender.mjs` (coût = kWc × 1 800 €, batterie × 900 €, comme

@@ -860,12 +860,19 @@ def sim_static(html, lang, d, tpl_sim, pre):
     cts = lambda x: _dec1(x * 100, lang) + " c€/kWh"   # noqa: E731
     ctsS = lambda x: _dec1(x * 100, lang) + " c€"   # noqa: E731
     pb_txt = lambda pb: L("never") if pb is None else ("< 1" + L("year1") if pb < 1 else dmax1(pb) + L("years"))   # noqa: E731
-    irr_txt = lambda r: "–" if r is None else dmax1(r * 100) + pct_sfx   # noqa: E731
+    irr_txt = lambda r: "–" if r is None else _dec1(r * 100, lang) + pct_sfx   # noqa: E731  (TRI à une décimale)
 
     R, I = pre["defaut"], pre["defaut"]["I"]
     A, B = R["A"], R["B"]
-    a_wins = A["npv"] >= B["npv"]
-    best, diff = (A if a_wins else B), abs(A["npv"] - B["npv"])
+    # même règle que SimEngine.pickOption (sim-engine.js) : écart < 2 % (ou < 100 €) = les options se valent,
+    # étiquette au retour le plus rapide ; sinon à l'option qui rapporte le plus
+    diff = abs(A["npv"] - B["npv"])
+    tie = diff < 100 or diff < 0.02 * max(abs(A["npv"]), abs(B["npv"]))
+    a_fast = A["pb"] is not None and (B["pb"] is None or A["pb"] <= B["pb"])
+    b_fast = B["pb"] is not None and not a_fast
+    tag = ("A" if a_fast else "B" if b_fast else None) if tie else ("A" if A["npv"] >= B["npv"] else "B")
+    a_tag, b_tag = tag == "A", tag == "B"
+    best = B if tag == "B" else A
     pb = best["pb"]
     if pb is None:
         cls, title = "bad", L("vNo")
@@ -878,9 +885,11 @@ def sim_static(html, lang, d, tpl_sim, pre):
     else:
         cls, title = "bad", L("vNo")
     verdict = L("vNever") if pb is None else (
-        (L("vTextA") if a_wins else L("vTextB")) + "<strong>" + pb_txt(pb) + "</strong>" + L("vThen")
+        (L("vTextA") if best is A else L("vTextB")) + "<strong>" + pb_txt(pb) + "</strong>" + L("vThen")
         + "<strong>" + eurS(best["npv"]) + "</strong>" + L("vOver") + L("undisc") + ". "
-        + (L("vEq") if diff < 100 else L("vDiff") + "<strong>" + eur(diff) + "</strong>" + L("vDiffEnd")))
+        + (L("vEq") + L("vOut1") + "<strong>" + eur(R["capexGross"] - R["bonus"]) + "</strong>" + L("vOut2")
+           + "<strong>" + eur(R["capexGross"]) + "</strong>" + L("vOut3") if tie
+           else L("vDiff") + "<strong>" + eur(diff) + "</strong>" + L("vDiffEnd")))
     K = next(k for k in d["cantons"] if k["k"] == I["canton"])
     canton = ((L("cantonLineV") if re.match(r"[aeiouyéè]", K["k"], re.I) else L("cantonLine")) + K["k"] + L("cantonMid")
               + T(K["n"]) + L("cantonInst") + T(K["wpc"]) + L("cantonWpc") + _dec1(K["ipk"], lang) + L("cantonIpk")
@@ -892,8 +901,8 @@ def sim_static(html, lang, d, tpl_sim, pre):
         "r-self-sub": pct(R["self"] / R["prod"] * 100) + L("selfSub") + pct(R["self"] / R["cons"] * 100) + L("ofCons"),
         "r-inj": T(R["inj"]) + L("kwh"),
         "r-inj-sub": pct(R["inj"] / R["prod"] * 100) + L("injSub"),
-        "r-gain": T(A["y1"]) + L("eurYear"),
-        "r-gain-sub": L("gainA") + eur(A["y1"]) + " · " + L("gainB") + eur(B["y1"]),
+        "r-gain": "<span>" + eur(A["y1"]) + "<i>A</i></span><span>" + eur(B["y1"]) + "<i>B</i></span>",
+        "r-gain-sub": L("gainSub"),
         "r-cover": L("cover") + pct(R["prod"] / R["cons"] * 100) + L("coverOf"),
         "r-canton": canton,
         "a-bonus": "<b>" + eur(R["bonus"]) + "</b>", "a-capex": "<b>" + eur(R["capexGross"] - R["bonus"]) + "</b>",
@@ -911,14 +920,15 @@ def sim_static(html, lang, d, tpl_sim, pre):
     if html.count(old) != 1:
         sys.exit(f"{lang} : pré-rendu du simulateur, bloc verdict introuvable")
     html = html.replace(old, f'<div class="verdict {cls}" id="verdict"><div class="big">{title}</div><p>{verdict}</p></div>')
-    win = L("win")
-    html = html.replace('<span class="tag" id="tag-a"></span>', f'<span class="tag{" win" if a_wins else ""}" id="tag-a">{win if a_wins else ""}</span>')
-    html = html.replace('<span class="tag" id="tag-b"></span>', f'<span class="tag{"" if a_wins else " win"}" id="tag-b">{"" if a_wins else win}</span>')
-    old = '<table class="mini" id="tab-detail"></table>'
-    if html.count(old) != 1:
+    win = L("fast") if tie else L("win")
+    html = html.replace('<span class="tag" id="tag-a"></span>', f'<span class="tag{" win" if a_tag else ""}" id="tag-a">{win if a_tag else ""}</span>')
+    html = html.replace('<span class="tag" id="tag-b"></span>', f'<span class="tag{" win" if b_tag else ""}" id="tag-b">{win if b_tag else ""}</span>')
+    m = re.search(r'<table class="mini" id="tab-detail"><caption id="cap-detail">.*?</caption></table>', html, re.S)
+    if not m or html.count('id="tab-detail"') != 1:
         sys.exit(f"{lang} : pré-rendu du simulateur, tableau 1 introuvable")
+    old, cap = m.group(0), m.group(0)[len('<table class="mini" id="tab-detail">'):-len("</table>")]
     price, market, tar = I["price"], I["market"], R["tar"]
-    tab = (f'<table class="mini" id="tab-detail"><thead><tr><th scope="col">{L("thItem")}</th><th scope="col">{L("thA")}</th><th scope="col">{L("thB")}</th></tr></thead><tbody>'
+    tab = (f'<table class="mini" id="tab-detail">{cap}<thead><tr><th scope="col">{L("thItem")}</th><th scope="col">{L("thA")}</th><th scope="col">{L("thB")}</th></tr></thead><tbody>'
            f'<tr><th scope="row">{L("rowSelf")}</th><td>{T(R["self"])} × {ctsS(price)} = {eur(R["self"] * price)}</td><td>{T(R["self"])} × {ctsS(price)} = {eur(R["self"] * price)}</td></tr>'
            f'<tr><th scope="row">{L("rowInj")}</th><td>{T(R["inj"])} × {ctsS(market)} = {eur(R["inj"] * market)}</td><td>{T(R["inj"])} × {ctsS(tar)} = {eur(R["inj"] * tar)}</td></tr>'
            f'<tr><th scope="row"><strong>{L("rowTotal")}</strong></th><td class="{"best" if A["y1"] >= B["y1"] else ""}"><strong>{eur(A["y1"])}</strong></td><td class="{"best" if B["y1"] > A["y1"] else ""}"><strong>{eur(B["y1"])}</strong></td></tr>'

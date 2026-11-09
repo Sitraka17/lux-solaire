@@ -256,3 +256,33 @@ test('chauffage : barèmes et série viennent des paramètres (déterministe)', 
   assert.ok(b.sc.C.energie.scop > a.sc.C.energie.scop);          // hiver plus doux : meilleur SCOP
   assert.ok(Math.abs(b.S.useful - a.S.useful) < 1e-9);           // même besoin (tiré de la facture)
 });
+
+// L3.4 (lot 3, 9/11/2026) : l'étiquette de l'option ne contredit jamais le verdict
+test('verdict : profil par défaut, options à égalité (< 2 %), étiquette au retour le plus rapide', () => {
+  const R = run('6kwc_2027_defaut');
+  const V = E.pickOption(R.A, R.B);
+  assert.equal(V.tie, true);                       // +6 975 € contre +6 950 € : écart de 0,4 %
+  assert.equal(V.label, 'fast');
+  assert.equal(V.tag, 'A');                        // 9,5 ans contre 11,7 ans
+  assert.ok(R.A.pb <= R.B.pb);
+  assert.equal(V.lead, V.tag);
+});
+
+test('verdict : sur tous les cas de référence et une grille de réglages, étiquette cohérente avec le verdict', () => {
+  const base = CASES.find(c => c.name === '6kwc_2027_defaut').inputs;
+  const inputs = CASES.map(c => c.inputs);
+  for (const p of [2, 3, 6, 10, 15, 20, 30]) for (const cons of [2000, 3900, 8000]) for (const market of [0.02, 0.05, 0.1])
+    inputs.push({ ...base, p, cons, market, cost: p * 1800 });
+  for (const I of inputs) {
+    const R = E.compute(I, G, E.BAREMES), V = E.pickOption(R.A, R.B);
+    const T = V.tag === 'A' ? R.A : V.tag === 'B' ? R.B : null, O = V.tag === 'A' ? R.B : R.A;
+    if (V.tag) assert.equal(V.lead, V.tag);
+    if (!V.tie) { assert.equal(V.label, 'win'); assert.ok(T.npv >= O.npv); assert.ok(V.diff >= 100); }
+    else {
+      assert.equal(V.label, 'fast');
+      assert.ok(V.diff < 100 || V.diff < 0.02 * Math.max(Math.abs(R.A.npv), Math.abs(R.B.npv)));
+      if (T) assert.ok(O.pb === null || T.pb <= O.pb);
+      else assert.ok(R.A.pb === null && R.B.pb === null);
+    }
+  }
+});

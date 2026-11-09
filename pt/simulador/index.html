@@ -61,11 +61,35 @@
   .sec-note{font-size:13px;color:var(--ink-3);font-family:var(--mono)}
   .lede{font-size:14.5px;color:var(--ink-2);max-width:72ch;margin:4px 0 18px}
   .lede a{color:var(--amber-text)}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:22px}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   .grid-tool{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
   .grid-2>*,.grid-tool>*{min-width:0}
-  @media(max-width:860px){.grid-2,.grid-tool{grid-template-columns:1fr}}
+  /* L3.3 : résultats d'abord dans le DOM (lecture et tabulation sur mobile), formulaire à gauche en bureau */
+  .grid-tool>.res{grid-column:2;grid-row:1}
+  .grid-tool>form{grid-column:1;grid-row:1}
+  @media(max-width:860px){.grid-2,.grid-tool{grid-template-columns:1fr}.grid-tool>.res,.grid-tool>form{grid-column:1;grid-row:auto}}
+  /* en bureau, la colonne de résultats couvre toute la hauteur de l'outil et son premier bloc (indicateurs ou verdict)
+     reste collé en haut de l'écran pendant qu'on règle les curseurs ; l'ombre couleur papier masque ce qui défile dessous */
+  @media(min-width:1024px){
+    .grid-tool>.res{align-self:stretch;display:flex;flex-direction:column}
+    .grid-tool>.res>#h-res{flex:1}
+    .res>.kpis:first-child,.res>.verdict,#h-res>.verdict{position:sticky;top:12px;z-index:2;box-shadow:0 -12px 0 var(--paper)}
+  }
+  .to-form{margin:14px 0 0;font:600 14px var(--body)}
+  .to-form a{display:inline-flex;align-items:center;gap:6px;min-height:32px;color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
+  @media(min-width:861px){.to-form{display:none}}
+  /* L3.1 : sommaire des trois outils, numéroté en mono, filets verticaux */
+  .toc{margin-top:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .toc ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;counter-reset:toc}
+  .toc li{counter-increment:toc;display:flex}
+  .toc li+li{border-left:1px solid var(--line)}
+  .toc a{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 18px 0 0;color:var(--ink);font:600 14.5px var(--body);text-decoration:none}
+  .toc li+li a{padding-left:18px}
+  .toc a::before{content:counter(toc);font:650 11.5px var(--mono);color:var(--amber-text);letter-spacing:.06em}
+  .toc a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:4px}
+  @media(max-width:420px){.toc ol{flex-wrap:nowrap}.toc a{gap:5px;padding-right:8px;font-size:13px}.toc li+li a{padding-left:8px}}
+  @media(max-width:360px){.toc a{gap:4px;padding-right:5px;font-size:12.5px}.toc li+li a{padding-left:5px}}
 
   /* ---------- formulaires ---------- */
   .form{display:grid;gap:14px}
@@ -75,21 +99,40 @@
   .fld[hidden]{display:none}  /* sinon display:grid l'emporte sur hidden (coût batterie « 0 € » sans batterie) */
   .fld label{font-size:13.5px;color:var(--ink);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
   .fld label output{font-family:var(--mono);font-size:12.5px;color:var(--amber-text);font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .fld small{font-size:12px;color:var(--ink-3);line-height:1.4}
+  .fld small{font-size:13px;color:var(--ink-3);line-height:1.45}
+  /* L3.9 : première phrase visible, la suite repliée (texte inchangé) */
+  .fld details.more{margin:-2px 0 0;font-size:13px;color:var(--ink-3);line-height:1.45}
+  .fld details.more summary{min-height:24px;display:inline-flex;align-items:center;gap:6px;font:600 12px var(--body);color:var(--amber-text);list-style:none}
+  .fld details.more summary::-webkit-details-marker{display:none}
+  .fld details.more summary::before{content:"+"/"";font:650 12px var(--mono);width:10px}
+  .fld details.more[open] summary::before{content:"−"/""}
+  .fld details.more p{margin:2px 0 0}
+  .fld details.more a{color:var(--amber-text)}
+  /* réglages secondaires repliés (texte et valeurs par défaut inchangés) */
+  .form details.adv{border-top:1px solid var(--line)}
+  .form details.adv>summary{display:flex;align-items:center;cursor:pointer;min-height:44px;font:600 13.5px/1.35 var(--body);color:var(--ink);list-style:none;gap:10px;justify-content:space-between}
+  .form details.adv>summary::-webkit-details-marker{display:none}
+  .form details.adv>summary::after{content:"+"/"";font:650 14px var(--mono);color:var(--amber-text);flex:none}
+  .form details.adv[open]>summary::after{content:"−"/""}
+  .form .adv-in{display:grid;gap:14px;padding:6px 0 4px}
+  .fld .err{margin:0;font-size:13px;color:var(--red);font-weight:600}
+  .fld .err[hidden]{display:none}
   .fld small a{color:var(--amber-text)}
-  .fld input[type=number],.fld select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink);width:100%;font-variant-numeric:tabular-nums}
-  .fld input[type=number]:focus,.fld select:focus,.fld input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
-  .fld input[type=range]{width:100%;accent-color:var(--amber-deep);margin:2px 0}
+  .fld input[type=number],.fld input[type=text],.fld select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:var(--card);color:var(--ink);width:100%;font-variant-numeric:tabular-nums}
+  .fld input[type=number]:focus,.fld input[type=text]:focus,.fld select:focus,.fld input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+  .fld input[type=range]{width:100%;height:32px;accent-color:var(--amber-deep);margin:0}
   .fld .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
   .fld .row .num{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--ink-2)}
-  .fld .row input[type=number]{width:96px;text-align:right}
+  .fld .row input[type=number],.fld .row input[type=text]{width:96px;text-align:right}
+  .fld input[aria-invalid=true]{border-color:var(--red);outline-color:var(--red)}
   .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
   .seg button{all:unset;cursor:pointer;font:600 12.5px/1.2 var(--body);padding:6px 10px;color:var(--ink-2);background:var(--card);border:1px solid var(--line);border-radius:3px}
   .seg button[aria-pressed=true]{background:var(--ink);color:#fff}
   .seg button:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
   .chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2)}
   .fld label.chk{justify-content:flex-start}  /* .fld label (space-between) écartait la case de son libellé */
-  .chk input{accent-color:var(--amber-deep);width:15px;height:15px}
+  .chk input{accent-color:var(--amber-deep);width:20px;height:20px;margin:0;flex:none}
+  .fld label.chk{min-height:32px}
   .hint{font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
   .hint a{color:var(--amber-text)}
   .hems-in{display:grid;gap:6px}
@@ -107,20 +150,32 @@
   .kpi.hero .val{color:var(--amber)}
   .kpi .sub{font-size:12.5px;color:var(--ink-2);margin-top:4px}
   .kpi.hero .sub{color:#9AA5B4}
-  @media(max-width:440px){.kpis{grid-template-columns:1fr}}
+  @media(max-width:440px){.kpi{padding:12px 12px 11px}.kpi .val{font-size:22px}}
+  /* L3.5 : gain de la 1re année, options A et B à poids égal */
+  .kpi .val.ab{display:flex;flex-wrap:wrap;gap:0 14px;font-size:22px}
+  .kpi .val.ab span{white-space:nowrap}
+  .kpi .val.ab i{font:650 11.5px var(--mono);font-style:normal;color:var(--ink-3);margin-left:5px;letter-spacing:.04em}
   .fig{margin-top:18px}
-  .fig figcaption,.tab figcaption{font-size:12.5px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45;caption-side:bottom}
-  .fig figcaption b,.tab figcaption b{font-family:var(--mono);color:var(--amber-text);font-weight:650}
+  .fig figcaption{font-size:13px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45}
+  /* L3.7 : « Tableau n. » dans un <caption> au-dessus (style commun L1.11), lisible au bord gauche du conteneur défilant */
+  .tab{margin-top:18px}
+  .tblscroll caption{padding:0 0 8px;line-height:1.45}
+  .tblscroll caption .capin{display:block;position:sticky;left:0;max-width:min(100%,calc(100vw - 32px))}
+  .card .tblscroll caption .capin{max-width:min(100%,calc(100vw - 84px))}
+  table.mini caption{font-family:var(--body);font-variant-numeric:normal;font-size:13px}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:520px}
   table.mini{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
   table.mini th,table.mini td{padding:6px 10px;text-align:right;border:1px solid var(--line)}
-  table.mini th{background:var(--paper);color:var(--ink-2);font-weight:600}
+  table.mini th{background:var(--paper);color:var(--ink-2);font-weight:600;font-family:var(--body)}
+  table.mini th[scope=row]{font-weight:500;color:var(--ink)}
+  table.mini th[scope=row] strong{font-weight:650}
   table.mini th[scope=row],table.mini td:first-child,table.mini th:first-child{text-align:left}
   table.mini td.best{color:var(--green);font-weight:650}
+  table.mini td{white-space:nowrap}   /* un montant ne se coupe pas ; le tableau défile dans son conteneur */
+  @media(max-width:560px){#tab-detail td{white-space:normal}}
   table.mini td.hi{background:var(--amber-soft)}
-  .tab{margin-top:18px}
-  .verdict{border-left:4px solid var(--amber);padding:14px 18px;background:var(--amber-soft);border-radius:0 4px 4px 0;margin-top:0}
+  .verdict{border-left:4px solid var(--amber);padding:14px 18px;background:var(--amber-soft);border-radius:0;margin-top:0}
   .verdict.good{border-color:var(--green);background:var(--green-soft)}
   .verdict.bad{border-color:var(--red);background:var(--red-soft)}
   .verdict .big{font-family:var(--display);font-size:22px;font-weight:700;line-height:1.2}
@@ -128,7 +183,8 @@
   .verdict p strong{color:var(--ink)}
   .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
   .cmp>div{background:var(--card);padding:16px 18px}
-  .cmp h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .cmp h3{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 10px}
+  .cmp h3 .tag{white-space:nowrap}
   .cmp h3 .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
   .cmp h3 .tag.win{color:var(--green)}
   .cmp dl{margin:10px 0 0;display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-size:13.5px}
@@ -137,7 +193,9 @@
   .cmp dd b{color:var(--ink)}
   @media(max-width:560px){.cmp{grid-template-columns:1fr}}
   details.alt{margin-top:12px;font-size:13px;overflow-x:auto}
-  .card.refs,figure.tab{overflow-x:auto}  /* tableaux larges : défilent dans leur bloc sur mobile, pas la page */
+  .card.refs{overflow-x:auto}  /* tableaux larges : défilent dans leur bloc (.tblscroll) sur mobile, pas la page */
+  .res .tblscroll,details.alt .tblscroll{--sc-bg:var(--paper)}
+  .card .tblscroll{--sc-bg:var(--card)}
   details.alt summary{cursor:pointer;color:var(--ink-3);font-family:var(--mono);font-size:12px}
   details.alt table.mini{margin-top:8px}
   .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
@@ -167,6 +225,16 @@
   .contact-cta span{color:var(--amber-text)}
   .method ol{margin:0 0 12px;padding-left:22px;max-width:78ch}
   .method li{margin:0 0 6px}
+  .method li[id]{scroll-margin-top:72px}
+  /* L3.14 : calcul et sources repliés, résumé en question */
+  .method details{border-top:1px solid var(--line)}
+  .method details:last-of-type{border-bottom:1px solid var(--line)}
+  .method details>summary{display:flex;align-items:center;cursor:pointer;min-height:48px;font:600 15.5px var(--display);list-style:none;justify-content:space-between;gap:12px}
+  .method details>summary::-webkit-details-marker{display:none}
+  .method details>summary::after{content:"+"/"";font-family:var(--mono);color:var(--amber-text);flex:none}
+  .method details[open]>summary::after{content:"−"/""}
+  .method details>p,.method details>ol{margin-top:4px}
+  .method details>ol{margin-bottom:16px}
   .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
     margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
@@ -188,12 +256,23 @@
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
-  #tab-profils{font-size:11.5px}
+  #tab-profils{font-size:12px}
   #tab-profils th,#tab-profils td{padding:5px 7px}
-  #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.3}
+  #tab-profils th[scope=row]{min-width:150px;font-family:var(--body);font-size:13px;font-weight:500;line-height:1.3}
   #tab-profils th[scope=row] a{color:var(--amber-text)}
   @media print{.rt,.rt-a,.cta,.contact-cta{display:none}}
   @media(prefers-reduced-motion:no-preference){.bar rect{transition:height .35s ease,y .35s ease}}
+  /* L3.9 : aucun texte sous 12 px sur mobile ; aide en 14 px, légendes en 13 px */
+  @media(max-width:767px){
+    .fld small,.fld details.more,.hint{font-size:14px}
+    .kpi .lbl,.form legend,.cmp h3 .tag{font-size:12px}
+    .badge,.eyebrow{font-size:12px}
+    .rt h3{font-size:12px}
+    main caption b,main figcaption b,.kpi .val.ab i{font-size:12px}
+    .rt-dl small{font-size:12px}
+    #tab-heat th[scope=row]{min-width:12em}   /* libellés sur une ligne : le tableau défile, les lignes restent basses */
+    .rt-cite{max-height:9em}
+  }
 
   /* ==== OSSATURE (lot 1, scripts/ossature.py) : base, bandeau, en-tête, tableaux, colophon ==== */
   body{margin:0;background:var(--paper)}
@@ -352,7 +431,7 @@
     <span class="badge">Tarifas reguladas em <b>1 de agosto de 2026</b></span>
     <span class="badge">Hipóteses <b>alteráveis</b> e com fontes</span>
   </div>
-  <p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Quer isto para o seu município? Vamos falar (em francês) <span aria-hidden="true">→</span></a></p>
+  <nav class="toc" aria-label="As três ferramentas"><ol><li><a href="#production">Produção</a></li><li><a href="#rentabilite">Rentabilidade</a></li><li><a href="#chauffage">Aquecimento</a></li></ol></nav>
 </header>
 
 <section id="production">
@@ -362,13 +441,33 @@
   </div>
   <p class="lede">Descreva o seu telhado e o seu consumo: a produção vem da base <strong>PVGIS</strong> do Centro Comum de Investigação da Comissão Europeia (irradiação SARAH3, 2005-2023, perdas do sistema de 14 %), calculada para a cidade do Luxemburgo e depois corrigida por cantão. A parte autoconsumida é estimada a partir da relação entre produção e consumo; pode indicar outro valor.</p>
   <div class="grid-tool">
+    <div class="res">
+      <div class="kpis">
+        <div class="kpi hero"><div class="lbl">Produção anual</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh por kWp, ou seja, 1,6 vezes o consumo de uma casa média (3 900 kWh)</div></div>
+        <div class="kpi"><div class="lbl">Autoconsumido</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % da sua produção · cobre 37 % do seu consumo</div></div>
+        <div class="kpi"><div class="lbl">Injetado na rede</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % da produção</div></div>
+        <div class="kpi"><div class="lbl">Ganho no primeiro ano</div><div class="val ab" id="r-gain"><span>534 €<i>A</i></span><span>929 €<i>B</i></span></div><div class="sub" id="r-gain-sub">por ano · A: Klimabonus · B: tarifa garantida</div></div>
+      </div>
+      <p class="hint" id="r-cover">A sua instalação produz o equivalente a 164 % do seu consumo anual, mas o sol e os seus usos não coincidem: só a parte autoconsumida evita a compra de kWh.</p>
+      <figure class="fig">
+        <div class="svgwrap bar" id="fig-months"></div>
+        <div class="legend"><span><span class="sw" style="background:#1D2734;opacity:.82"></span>Produção injetada na rede</span><span><span class="sw am" style="background:var(--amber)"></span>Parte autoconsumida</span></div>
+        <figcaption><b>Figura 1.</b> Produção mensal estimada (kWh) e parte autoconsumida. Perfil PVGIS da cidade do Luxemburgo à escala da sua instalação; a parte autoconsumida é repartida em proporção da produção.</figcaption>
+      </figure>
+      <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-detail">
+        <table class="mini" id="tab-detail"><caption id="cap-detail"><span class="capin"><b>Quadro 1.</b> Detalhe do primeiro ano segundo a forma de remuneração. Opção A: Klimabonus e excedente vendido a preço de mercado. Opção B: tarifa de injeção garantida durante 15 anos, sem Klimabonus. Os preços são os da ferramenta 2.</span></caption><thead><tr><th scope="col">Rubrica</th><th scope="col">Opção A · Klimabonus</th><th scope="col">Opção B · tarifa garantida</th></tr></thead><tbody><tr><th scope="row">kWh autoconsumidos × valor do kWh evitado</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">kWh injetados × preço de venda</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Ganho no primeiro ano</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus deduzido da fatura</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Valor a pagar</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
+      </div>
+      <p class="hint" id="r-canton">No cantão de Luxembourg: 6 943 instalações fotovoltaicas ligadas à rede, 514 W de fotovoltaico por habitante, 32,1 instalações por 1 000 habitantes (Leneda, 9 de novembro de 2026).</p>
+      <p class="to-form"><a href="#f1">Alterar as hipóteses <span aria-hidden="true">↓</span></a></p>
+    </div>
     <form class="card form" id="f1" autocomplete="off">
       <fieldset>
         <legend>O seu telhado</legend>
         <div class="fld">
           <label for="p">Potência de pico <output id="p-out">6 kWp</output></label>
-          <input type="range" id="p" min="2" max="30" step="0.5" value="6">
-          <small>1 kWp ≈ 2 a 3 painéis ≈ 5 m² de telhado. Uma casa tem geralmente 3 a 10 kWp; o Klimabonus exige pelo menos 2 kWp e uma instalação colocada no telhado ou na fachada, ou integrada na envolvente do edifício.</small>
+          <input type="range" id="p" min="2" max="30" step="0.5" value="6" aria-describedby="p-h">
+          <small id="p-h">1 kWp ≈ 2 a 3 painéis ≈ 5 m² de telhado.</small>
+          <details class="more"><summary>Saber mais</summary><p>Uma casa tem geralmente 3 a 10 kWp; o Klimabonus exige pelo menos 2 kWp e uma instalação colocada no telhado ou na fachada, ou integrada na envolvente do edifício.</p></details>
         </div>
         <div class="fld">
           <label for="az">Orientação</label>
@@ -396,48 +495,32 @@
         </div>
         <div class="fld">
           <label for="canton">Cantão</label>
-          <select id="canton"></select>
-          <small>Diferença máxima entre cantões: cerca de 5 % (Clervaux e Wiltz no norte; Esch e Capellen no sul).</small>
+          <select id="canton" aria-describedby="canton-h"></select>
+          <small id="canton-h">Diferença máxima entre cantões: cerca de 5 % (Clervaux e Wiltz no norte; Esch e Capellen no sul).</small>
         </div>
       </fieldset>
       <fieldset>
         <legend>O seu consumo</legend>
         <div class="fld">
           <label for="cons">Consumo anual da casa <output id="cons-out">3 900 kWh</output></label>
-          <input type="range" id="cons" min="1500" max="15000" step="100" value="3900">
-          <small>3 900 kWh: agregado familiar médio considerado pelo Ministério da Economia; cerca de 13 000 kWh com bomba de calor e carro elétrico.</small>
+          <div class="row"><input type="range" id="cons" min="1500" max="15000" step="100" value="3900" aria-describedby="cons-h"><span class="num"><input type="text" inputmode="decimal" id="cons-in" value="3900" aria-label="Consumo anual da casa, em kWh por ano" aria-describedby="cons-h cons-in-err" spellcheck="false">kWh/ano</span></div>
+          <p class="err" id="cons-in-err" aria-live="polite" hidden></p>
+          <small id="cons-h">3 900 kWh: agregado familiar médio considerado pelo Ministério da Economia; cerca de 13 000 kWh com bomba de calor e carro elétrico.</small>
         </div>
         <div class="fld">
           <label for="batt">Bateria <output id="batt-out">nenhuma</output></label>
-          <input type="range" id="batt" min="0" max="15" step="0.5" value="0">
-          <small>Capacidade útil em kWh. O Klimabonus apoia-a a partir de 2 kWh.</small>
+          <input type="range" id="batt" min="0" max="15" step="0.5" value="0" aria-describedby="batt-h">
+          <small id="batt-h">Capacidade útil em kWh. O Klimabonus apoia-a a partir de 2 kWh.</small>
         </div>
         <div class="fld">
           <label for="sc">Parte autoconsumida <output id="sc-out">30 %</output></label>
-          <input type="range" id="sc" min="10" max="90" step="1" value="30">
+          <input type="range" id="sc" min="10" max="90" step="1" value="30" aria-describedby="sc-h">
           <label class="chk"><input type="checkbox" id="sc-auto" checked> Estimar automaticamente</label>
-          <small>Sem bateria, uma casa autoconsome tipicamente 30 % quando a produção é igual ao consumo; a parte baixa quando a instalação cresce e sobe com uma bateria. Estimativa feita com uma fórmula simplificada própria deste simulador (ver o método), não retirada de um estudo publicado.</small>
+          <small id="sc-h">Sem bateria, uma casa autoconsome tipicamente 30 % quando a produção é igual ao consumo; a parte baixa quando a instalação cresce e sobe com uma bateria.</small>
+          <details class="more"><summary>Saber mais</summary><p>Estimativa feita com uma fórmula simplificada própria deste simulador (ver o método), não retirada de um estudo publicado.</p></details>
         </div>
       </fieldset>
     </form>
-    <div>
-      <div class="kpis">
-        <div class="kpi hero"><div class="lbl">Produção anual</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh por kWp, ou seja, 1,6 vezes o consumo de uma casa média (3 900 kWh)</div></div>
-        <div class="kpi"><div class="lbl">Autoconsumido</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % da sua produção · cobre 37 % do seu consumo</div></div>
-        <div class="kpi"><div class="lbl">Injetado na rede</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % da produção</div></div>
-        <div class="kpi"><div class="lbl">Ganho no primeiro ano</div><div class="val" id="r-gain">534 €/ano</div><div class="sub" id="r-gain-sub">opção A: 534 € · opção B: 929 €</div></div>
-      </div>
-      <p class="hint" id="r-cover">A sua instalação produz o equivalente a 164 % do seu consumo anual, mas o sol e os seus usos não coincidem: só a parte autoconsumida evita a compra de kWh.</p>
-      <figure class="fig">
-        <div class="svgwrap bar" id="fig-months"></div>
-        <figcaption><b>Figura 1.</b> Produção mensal estimada (kWh) e parte autoconsumida. Perfil PVGIS da cidade do Luxemburgo à escala da sua instalação; a parte autoconsumida é repartida em proporção da produção.</figcaption>
-      </figure>
-      <figure class="tab">
-        <table class="mini" id="tab-detail"><thead><tr><th scope="col">Rubrica</th><th scope="col">Opção A · Klimabonus</th><th scope="col">Opção B · tarifa garantida</th></tr></thead><tbody><tr><th scope="row">kWh autoconsumidos × valor do kWh evitado</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">kWh injetados × preço de venda</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Ganho no primeiro ano</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus deduzido da fatura</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Valor a pagar</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
-        <figcaption><b>Quadro 1.</b> Detalhe do primeiro ano segundo a forma de remuneração. Opção A: Klimabonus e excedente vendido a preço de mercado. Opção B: tarifa de injeção garantida durante 15 anos, sem Klimabonus. Os preços são os da ferramenta 2.</figcaption>
-      </figure>
-      <p class="hint" id="r-canton">No cantão de Luxembourg: 6 943 instalações fotovoltaicas ligadas à rede, 514 W de fotovoltaico por habitante, 32,1 instalações por 1 000 habitantes (Leneda, 9 de novembro de 2026).</p>
-    </div>
   </div>
 </section>
 
@@ -448,76 +531,11 @@
   </div>
   <p class="lede">A ferramenta retoma a produção da ferramenta 1 e compara os dois regimes abertos aos particulares em 2026: <strong>opção A</strong>, Klimabonus (deduzido da fatura ou pedido depois) com autoconsumo e excedente vendido a preço de mercado; <strong>opção B</strong>, sem ajuda, mas com o excedente pago à tarifa de injeção garantida durante 15 anos. As duas não se acumulam: pedir o Klimabonus é renunciar à tarifa garantida. Para uma proposta assinada entre 1 de outubro de 2024 e 4 de março de 2026, um regime transitório combina a tarifa garantida e uma ajuda de 20 % (no máximo 500 €/kWp), com fatura final até 31 de dezembro de 2026: não é simulado aqui.</p>
   <div class="grid-tool">
-    <form class="card form" id="f2" autocomplete="off">
-      <fieldset>
-        <legend>O seu orçamento</legend>
-        <div class="fld">
-          <label for="cost">Custo da instalação fotovoltaica, IVA de 3 % incluído</label>
-          <div class="row"><input type="range" id="cost-r" aria-label="Custo por kWp da instalação fotovoltaica" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
-          <small id="cost-hint">ou seja, 1 800 €/kWp. Orçamentos de 2026 observados: 1 600 a 2 200 €/kWp para 6 a 15 kWp, montagem incluída.</small>
-        </div>
-        <div class="fld" id="fld-bcost" hidden>
-          <label for="bcost">Custo da bateria, instalada</label>
-          <div class="row"><input type="range" id="bcost-r" aria-label="Custo da bateria por kWh" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
-          <small id="bcost-hint">ou seja, 900 €/kWh útil.</small>
-        </div>
-        <div class="fld">
-          <label class="chk"><input type="checkbox" id="hems"> Acrescentar um sistema de gestão de energia (HEMS)</label>
-          <div class="hems-in" id="hems-in" hidden>
-            <div class="row"><label for="hcost">Custo do HEMS, instalado</label><span class="num"><input type="number" id="hcost" min="0" max="20000" step="50" value="1000">€</span></div>
-            <div class="row"><label for="haid">Ajuda Klimabonus HEMS (opção A)</label><span class="num"><input type="number" id="haid" min="0" max="500" step="50" value="500">€</span></div>
-          </div>
-          <small>Klimabonus de 500 € para um sistema que controla pelo menos dois equipamentos entre: painéis, bateria, bomba de calor, posto de carregamento, resistência de imersão controlável; faturas de 1 de outubro de 2026 a 31 de dezembro de 2030, sem pré-financiamento. Custo por defeito (1 000 €): hipótese sem fonte, a substituir pelo seu orçamento. A ajuda só é contada na opção A, porque a acumulação com a tarifa garantida não está esclarecida; o ganho de autoconsumo do HEMS não é modelado.</small>
-        </div>
-        <div class="fld">
-          <label for="inv">Substituição do inversor (ano 13)</label>
-          <div class="row"><input type="range" id="inv-r" aria-label="Custo da substituição do inversor" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
-          <small>Um inversor dura 10 a 15 anos; 800 a 2 000 € conforme a potência.</small>
-        </div>
-        <div class="fld">
-          <label for="year">Ano da primeira injeção</label>
-          <select id="year"><option value="2026">2026</option><option value="2027" selected>2027</option><option value="2028">2028</option><option value="2029">2029</option></select>
-          <small>Fixa a tarifa garantida da opção B (desce 3 % por ano); o Klimabonus vale para faturas de 4 de janeiro de 2026 a 31 de dezembro de 2029, ou até 31 de dezembro de 2031 se a instalação for encomendada até 31 de dezembro de 2029 (pedido de ajuda até 31 de dezembro de 2031).</small>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>O preço da eletricidade</legend>
-        <div class="fld">
-          <label for="price">Valor de um kWh que deixa de comprar <output id="price-out">0,20 €</output></label>
-          <input type="range" id="price" min="0.10" max="0.40" step="0.005" value="0.20">
-          <div class="seg" role="group" aria-label="Valores de referência">
-            <button type="button" data-price="0.16">0,16 € · agosto a dezembro de 2026, com a ajuda do Estado</button>
-            <button type="button" data-price="0.20" aria-pressed="true">0,20 € · tarifa de janeiro a julho de 2026</button>
-          </div>
-          <small>Parte variável da fatura (energia, rede, taxas, IVA de 8 %): quadro 3. O valor de 0,16 € só vale de agosto a dezembro de 2026 (ajuda temporária do Estado); 0,20 € corresponde à tarifa de janeiro a julho de 2026, que ainda inclui uma contribuição do Estado. A tarifa de 2027 ainda não foi publicada. As taxas fixas continuam a ser pagas, com ou sem painéis.</small>
-        </div>
-        <div class="fld">
-          <label for="growth">Aumento anual do preço da eletricidade <output id="growth-out">1 %</output></label>
-          <input type="range" id="growth" min="0" max="5" step="0.5" value="1">
-          <small>Hipótese nominal, aplicada aos kWh autoconsumidos. 0 % = máxima prudência.</small>
-        </div>
-        <div class="fld">
-          <label for="market">Preço de venda do excedente (opção A) <output id="market-out">0,05 €</output></label>
-          <input type="range" id="market" min="0.01" max="0.12" step="0.005" value="0.05">
-          <small>Preço variável fixado por contrato com o fornecedor, indexado ao mercado; 0,04 a 0,10 €/kWh observados em 2026.</small>
-        </div>
-        <div class="fld">
-          <label for="deg">Degradação dos painéis <output id="deg-out">0,5 %/ano</output></label>
-          <input type="range" id="deg" min="0" max="1.5" step="0.1" value="0.5">
-          <small>Perda anual de rendimento; as garantias dos fabricantes prometem geralmente 0,4 a 0,6 %.</small>
-        </div>
-        <div class="fld">
-          <label for="disc">Taxa de atualização <output id="disc-out">0 %</output></label>
-          <input type="range" id="disc" min="0" max="8" step="0.5" value="0">
-          <small>0 %: ganho líquido em euros correntes, não atualizado, como na figura 2. Acima de 0 %, só o ganho líquido em 25 anos é atualizado; o retorno do investimento e a figura 2 continuam não atualizados.</small>
-        </div>
-      </fieldset>
-    </form>
-    <div>
-      <div class="verdict good" id="verdict"><div class="big">Rentável</div><p>A opção A (Klimabonus) paga a instalação em <strong>9,5 anos</strong> e deixa um ganho líquido de <strong>+6 975 €</strong> em 25 anos (não atualizado). As duas opções equivalem-se ao fim de 25 anos.</p></div>
+    <div class="res">
+      <div class="verdict good" id="verdict"><div class="big">Rentável</div><p>A opção A (Klimabonus) paga a instalação em <strong>9,5 anos</strong> e deixa um ganho líquido de <strong>+6 975 €</strong> em 25 anos (não atualizado). As duas opções equivalem-se ao fim de 25 anos. Investimento inicial: opção A <strong>5 058 €</strong>, opção B <strong>10 800 €</strong>.</p></div>
       <div class="cmp">
         <div>
-          <h3>Opção A · Klimabonus<span class="tag win" id="tag-a">a mais vantajosa</span></h3>
+          <h3>Opção A · Klimabonus<span class="tag win" id="tag-a">retorno mais rápido</span></h3>
           <dl>
             <dt>Klimabonus (painéis, bateria, HEMS)</dt><dd id="a-bonus"><b>5 742 €</b></dd>
             <dt>Valor a pagar</dt><dd id="a-capex"><b>5 058 €</b></dd>
@@ -535,7 +553,7 @@
             <dt>Ganho no primeiro ano</dt><dd id="b-y1">929 €</dd>
             <dt>Retorno do investimento</dt><dd id="b-pb"><b>11,7 anos</b></dd>
             <dt>Ganho líquido em 25 anos <span class="npvq">(não atualizado)</span></dt><dd id="b-npv"><b>+6 950 €</b></dd>
-            <dt>Rendimento anual (TIR)</dt><dd id="b-irr">5 %</dd>
+            <dt>Rendimento anual (TIR)</dt><dd id="b-irr">5,0 %</dd>
           </dl>
         </div>
       </div>
@@ -546,48 +564,86 @@
       </figure>
       <details class="alt">
         <summary>Saldo ano a ano</summary>
-        <table class="mini" id="tab-cash"></table>
+        <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-cash">
+          <table class="mini" id="tab-cash"><caption id="cap-cash"><span class="capin"><b>Quadro 2.</b> Saldo das opções A e B em euros correntes: ganho do ano e saldo acumulado, anos 0, 1, 5, 10, 13 (inversor), 15, 16 (após a tarifa garantida), 20 e 25.</span></caption></table>
+        </div>
       </details>
       <p class="hint" id="r-lcoe">Custo médio do kWh produzido em 25 anos (investimento líquido e inversor, sem atualização): 4,3 c€/kWh com o Klimabonus, 8,1 c€/kWh sem ele. Para comparação: 20,0 c€/kWh de um kWh comprado.</p>
+      <p class="to-form"><a href="#f2">Alterar as hipóteses <span aria-hidden="true">↓</span></a></p>
     </div>
-  </div>
-</section>
-
-<section id="reperes">
-  <div class="sec-head">
-    <h2><span class="num">Referências</span>Os números por trás das ferramentas</h2>
-    <span class="sec-note">fontes oficiais, datadas</span>
-  </div>
-  <div class="grid-2">
-    <div class="card refs">
-      <h3>Quadro 2. Produção segundo a orientação e a inclinação</h3>
-      <p>kWh por kWp e por ano na cidade do Luxemburgo, PVGIS SARAH3 2005-2023, perdas do sistema de 14 %. O ótimo é virado a sul a 35°; um telhado este-oeste produz cerca de 20 % menos, uma fachada vertical 30 a 50 % menos.</p>
-      <table class="mini" id="tab-grid"></table>
-      <p style="margin-top:12px">Fatores por cantão (plano sul a 35°): <span id="cantons-line"></span>.</p>
-    </div>
-    <div>
-      <div class="card refs">
-        <h3>Quadro 3. Quanto vale um kWh que deixa de comprar (2026)</h3>
-        <p>Componentes variáveis da fatura de uma casa (categoria A, menos de 25 000 kWh/ano), tarifas em vigor em 1 de agosto de 2026. O mecanismo de compensação vale −3,71 c€/kWh de 1 de agosto a 31 de dezembro de 2026: é a ajuda temporária da ordem de 4 c€/kWh prevista na lei de 22 de julho de 2026 sobre a contribuição do Estado para 2026. De janeiro a julho de 2026 valia −0,10 c€/kWh, taxa que já incluía uma contribuição do Estado. A taxa de 2027 ainda não estava publicada em 2 de novembro de 2026.</p>
-        <table class="mini">
-          <thead><tr><th scope="col">Componente</th><th scope="col">agosto a dezembro de 2026</th><th scope="col">janeiro a julho de 2026</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Energia (oferta residencial corrente)</th><td>13,2 c€</td><td>13,2 c€</td></tr>
-            <tr><th scope="row">Rede, taxa volumétrica (ILR)</th><td>5,10 c€</td><td>5,10 c€</td></tr>
-            <tr><th scope="row">Mecanismo de compensação, cat. A</th><td>−3,71 c€</td><td>−0,10 c€</td></tr>
-            <tr><th scope="row">Imposto sobre a eletricidade, cat. A</th><td>0,10 c€</td><td>0,10 c€</td></tr>
-            <tr><th scope="row">IVA de 8 %</th><td>1,18 c€</td><td>1,46 c€</td></tr>
-            <tr><th scope="row"><strong>Total por kWh</strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card refs" style="margin-top:20px">
-        <h3>Quadro 4. Klimabonus 2026 e tarifa de injeção garantida</h3>
-        <p>Klimabonus (guichet.lu, página atualizada em 11 de agosto de 2026): instalação de pelo menos 2 kWp em autoconsumo, colocada no telhado ou na fachada ou integrada na envolvente do edifício; P × (1 155 − 33 × P) € para uma potência P inferior a 15 kWp, 10 000 € a partir de 15 kWp; bateria Q × (500 − 500/18 × Q) €, 2 250 € a partir de 9 kWh; faturas de 4 de janeiro de 2026 a 31 de dezembro de 2029, ou até 31 de dezembro de 2031 para uma encomenda feita até 31 de dezembro de 2029. Sistema de gestão de energia (HEMS) ligado a pelo menos dois equipamentos: 500 €, faturas de 1 de outubro de 2026 a 31 de dezembro de 2030. Tarifa garantida (regulamento grão-ducal alterado de 1 de agosto de 2014, art. 17ter): 165 × 0,97<sup>n−2019</sup> €/MWh até 10 kW, 155 × 0,97<sup>n−2019</sup> acima disso e até 30 kW, sendo n o ano da primeira injeção.</p>
-        <table class="mini" id="tab-aid" aria-describedby="aid-note"></table>
-        <p class="hint" id="aid-note"></p>
-      </div>
-    </div>
+    <form class="card form" id="f2" autocomplete="off">
+      <fieldset>
+        <legend>O seu orçamento</legend>
+        <div class="fld">
+          <label for="cost">Custo da instalação fotovoltaica, IVA de 3 % incluído</label>
+          <div class="row"><input type="range" id="cost-r" aria-describedby="cost-hint" aria-label="Custo por kWp da instalação fotovoltaica" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
+          <small id="cost-hint">ou seja, 1 800 €/kWp. Orçamentos de 2026 observados: 1 600 a 2 200 €/kWp para 6 a 15 kWp, montagem incluída.</small>
+        </div>
+        <div class="fld" id="fld-bcost" hidden>
+          <label for="bcost">Custo da bateria, instalada</label>
+          <div class="row"><input type="range" id="bcost-r" aria-describedby="bcost-hint" aria-label="Custo da bateria por kWh" min="400" max="1600" step="50" value="900"><span class="num"><input type="number" id="bcost" min="0" max="50000" step="50" value="0">€</span></div>
+          <small id="bcost-hint">ou seja, 900 €/kWh útil.</small>
+        </div>
+        <div class="fld">
+          <label class="chk"><input type="checkbox" id="hems"> Acrescentar um sistema de gestão de energia (HEMS)</label>
+          <div class="hems-in" id="hems-in" hidden>
+            <div class="row"><label for="hcost">Custo do HEMS, instalado</label><span class="num"><input type="number" id="hcost" min="0" max="20000" step="50" value="1000">€</span></div>
+            <div class="row"><label for="haid">Ajuda Klimabonus HEMS (opção A)</label><span class="num"><input type="number" id="haid" min="0" max="500" step="50" value="500">€</span></div>
+          </div>
+          <small>Klimabonus de 500 € para um sistema que controla pelo menos dois equipamentos entre: painéis, bateria, bomba de calor, posto de carregamento, resistência de imersão controlável; faturas de 1 de outubro de 2026 a 31 de dezembro de 2030, sem pré-financiamento.</small>
+          <details class="more"><summary>Saber mais</summary><p>Custo por defeito (1 000 €): hipótese sem fonte, a substituir pelo seu orçamento. A ajuda só é contada na opção A, porque a acumulação com a tarifa garantida não está esclarecida; o ganho de autoconsumo do HEMS não é modelado.</p></details>
+        </div>
+        <div class="fld">
+          <label for="inv">Substituição do inversor (ano 13)</label>
+          <div class="row"><input type="range" id="inv-r" aria-describedby="inv-h" aria-label="Custo da substituição do inversor" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
+          <small id="inv-h">Um inversor dura 10 a 15 anos; 800 a 2 000 € conforme a potência.</small>
+        </div>
+        <div class="fld">
+          <label for="year">Ano da primeira injeção</label>
+          <select id="year" aria-describedby="year-h"><option value="2026">2026</option><option value="2027" selected>2027</option><option value="2028">2028</option><option value="2029">2029</option></select>
+          <small id="year-h">Fixa a tarifa garantida da opção B (desce 3 % por ano); o Klimabonus vale para faturas de 4 de janeiro de 2026 a 31 de dezembro de 2029, ou até 31 de dezembro de 2031 se a instalação for encomendada até 31 de dezembro de 2029 (pedido de ajuda até 31 de dezembro de 2031).</small>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>O preço da eletricidade</legend>
+        <div class="fld">
+          <label for="price">Valor de um kWh que deixa de comprar <output id="price-out">0,20 €</output></label>
+          <input type="range" id="price" min="0.10" max="0.40" step="0.005" value="0.20" aria-describedby="price-h">
+          <div class="seg" role="group" aria-label="Valores de referência">
+            <button type="button" data-price="0.16">0,16 € · agosto a dezembro de 2026, com a ajuda do Estado</button>
+            <button type="button" data-price="0.20" aria-pressed="true">0,20 € · tarifa de janeiro a julho de 2026</button>
+          </div>
+          <small id="price-h">Parte variável da fatura (energia, rede, taxas, IVA de 8 %): quadro 7.</small>
+          <details class="more"><summary>Saber mais</summary><p>O valor de 0,16 € só vale de agosto a dezembro de 2026 (ajuda temporária do Estado); 0,20 € corresponde à tarifa de janeiro a julho de 2026, que ainda inclui uma contribuição do Estado. A tarifa de 2027 ainda não foi publicada. As taxas fixas continuam a ser pagas, com ou sem painéis.</p></details>
+        </div>
+        <details class="adv">
+        <summary>Hipóteses avançadas: aumento dos preços, preço do excedente, envelhecimento, atualização</summary>
+        <div class="adv-in">
+        <div class="fld">
+          <label for="growth">Aumento anual do preço da eletricidade <output id="growth-out">1 %</output></label>
+          <input type="range" id="growth" min="0" max="5" step="0.5" value="1" aria-describedby="growth-h">
+          <small id="growth-h">Hipótese nominal, aplicada aos kWh autoconsumidos. 0 % = máxima prudência.</small>
+        </div>
+        <div class="fld">
+          <label for="market">Preço de venda do excedente (opção A) <output id="market-out">0,05 €</output></label>
+          <input type="range" id="market" min="0.01" max="0.12" step="0.005" value="0.05" aria-describedby="market-h">
+          <small id="market-h">Preço variável fixado por contrato com o fornecedor, indexado ao mercado; 0,04 a 0,10 €/kWh observados em 2026.</small>
+        </div>
+        <div class="fld">
+          <label for="deg">Degradação dos painéis <output id="deg-out">0,5 %/ano</output></label>
+          <input type="range" id="deg" min="0" max="1.5" step="0.1" value="0.5" aria-describedby="deg-h">
+          <small id="deg-h">Perda anual de rendimento; as garantias dos fabricantes prometem geralmente 0,4 a 0,6 %.</small>
+        </div>
+        <div class="fld">
+          <label for="disc">Taxa de atualização <output id="disc-out">0 %</output></label>
+          <input type="range" id="disc" min="0" max="8" step="0.5" value="0" aria-describedby="disc-h">
+          <small id="disc-h">0 %: ganho líquido em euros correntes, não atualizado, como na figura 2.</small>
+          <details class="more"><summary>Saber mais</summary><p>Acima de 0 %, só o ganho líquido em 25 anos é atualizado; o retorno do investimento e a figura 2 continuam não atualizados.</p></details>
+        </div>
+        </div>
+        </details>
+      </fieldset>
+    </form>
   </div>
 </section>
 
@@ -598,6 +654,36 @@
   </div>
   <p class="lede">Se aquece a gás, a gasóleo de aquecimento ou com aquecimento elétrico direto, a ferramenta compara o seu aquecimento atual com uma <strong>bomba de calor ar-água</strong>, sozinha ou com os painéis das ferramentas 1 e 2, hora a hora ao longo de um ano meteorológico típico (PVGIS, cidade do Luxemburgo, ano de 2017, próximo da média 2005-2023). Um <strong>depósito de inércia</strong> aquecido com o excedente solar do dia guarda esse calor para a noite. Só são contadas as ajudas do Estado (Klimabonus).</p>
   <div class="grid-tool">
+    <div class="res">
+      <p class="hint" id="h-status" role="status">A carregar o ano meteorológico típico…</p>
+      <div id="h-res" hidden>
+        <div class="verdict" id="h-verdict"><div class="big">–</div><p>–</p></div>
+        <div class="kpis" style="margin-top:18px">
+          <div class="kpi hero"><div class="lbl">Custo anual hoje</div><div class="val" id="h-a">–</div><div class="sub" id="h-a-sub">–</div></div>
+          <div class="kpi"><div class="lbl">Custo anual depois</div><div class="val" id="h-m">–</div><div class="sub" id="h-m-sub">–</div></div>
+          <div class="kpi"><div class="lbl">Valor a pagar</div><div class="val" id="h-net">–</div><div class="sub" id="h-net-sub">–</div></div>
+          <div class="kpi"><div class="lbl">CO₂ por ano</div><div class="val" id="h-co2">–</div><div class="sub" id="h-co2-sub">–</div></div>
+        </div>
+        <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat">
+          <table class="mini" id="tab-heat"><caption id="cap-heat"><span class="capin"><b>Quadro 3.</b> Os cenários comparados com o seu aquecimento atual. Fatura do 1.º ano = combustível + eletricidade comprada (casa e aquecimento) − excedente vendido + manutenção. Retorno do investimento e ganho líquido: diferença de despesa face ao aquecimento atual, em euros correntes.</span></caption></table>
+        </div>
+        <figure class="fig">
+          <div class="svgwrap" id="fig-heat"></div>
+          <div class="legend" id="leg-heat"></div>
+          <figcaption><b>Figura 3.</b> Despesa acumulada em 20 anos, em euros correntes: valor a pagar no início, depois faturas anuais (energia, manutenção, inversor no ano 13 com painéis). A curva mais baixa à direita é a mais barata no período.</figcaption>
+        </figure>
+        <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat-aid">
+          <table class="mini" id="tab-heat-aid"><caption id="cap-heat-aid"><span class="capin"><b>Quadro 4.</b> Ajudas do Estado contadas (Klimabonus, guichet.lu, página atualizada em 11 de agosto de 2026), moradia unifamiliar existente.</span></caption></table>
+        </div>
+        <p class="hint">Alguns municípios acrescentam o seu próprio subsídio ao do Estado: informe-se junto do seu; não é contado aqui.</p>
+        <details class="alt">
+          <summary>Depósito de inércia e necessidade de calor: o detalhe</summary>
+          <p class="hint" id="h-buffer">–</p>
+          <p class="hint" id="h-demand">–</p>
+        </details>
+      </div>
+      <p class="to-form"><a href="#f3">Alterar as hipóteses <span aria-hidden="true">↓</span></a></p>
+    </div>
     <form class="card form" id="f3" autocomplete="off">
       <fieldset>
         <legend>O seu aquecimento atual</legend>
@@ -608,7 +694,8 @@
             <option value="mazout">Caldeira a gasóleo</option>
             <option value="electrique">Aquecimento elétrico direto</option>
           </select>
-          <small id="hen-h">Aquecimento e água quente. Substituir um destes três sistemas dá direito ao montante mais elevado do Klimabonus (quadro 6).</small>
+          <small id="hen-h">Aquecimento e água quente.</small>
+          <details class="more"><summary>Saber mais</summary><p>Substituir um destes três sistemas dá direito ao montante mais elevado do Klimabonus (quadro 4).</p></details>
         </div>
         <div class="fld">
           <label for="hmode">Conheço</label>
@@ -619,7 +706,8 @@
         </div>
         <div class="fld" id="fld-hconso">
           <label for="hconso">Consumo anual <output id="hconso-out">–</output></label>
-          <div class="row"><input type="range" id="hconso-r" min="300" max="6000" step="50" value="2000" aria-label="Consumo anual"><span class="num"><input type="number" id="hconso" min="0" max="100000" step="50" value="2000" aria-describedby="hconso-h"></span></div>
+          <div class="row"><input type="range" id="hconso-r" min="300" max="6000" step="50" value="2000" aria-describedby="hconso-h" aria-label="Consumo anual"><span class="num"><input type="text" inputmode="decimal" id="hconso" value="2000" aria-describedby="hconso-h hconso-err" spellcheck="false"><span id="hconso-u"></span></span></div>
+          <p class="err" id="hconso-err" aria-live="polite" hidden></p>
           <small id="hconso-h">Aquecimento e água quente, segundo as suas faturas: m³ de gás, litros de gasóleo ou kWh de eletricidade para aquecimento (sem outros usos).</small>
         </div>
         <div class="fld" id="fld-hsurf" hidden>
@@ -668,12 +756,14 @@
         <div class="fld">
           <label for="hpac">Potência térmica <output id="hpac-out">9 kW</output></label>
           <input type="range" id="hpac" min="4" max="20" step="1" value="9" aria-describedby="hpac-h">
-          <small id="hpac-h">Dimensionada pelo instalador segundo as perdas térmicas. Hipótese da ferramenta: potência total a 7 °C, reduzida em um quarto por cada 14 °C a menos; um apoio elétrico direto cobre o resto quando faz muito frio.</small>
+          <small id="hpac-h">Dimensionada pelo instalador segundo as perdas térmicas.</small>
+          <details class="more"><summary>Saber mais</summary><p>Hipótese da ferramenta: potência total a 7 °C, reduzida em um quarto por cada 14 °C a menos; um apoio elétrico direto cobre o resto quando faz muito frio.</p></details>
         </div>
         <div class="fld">
           <label for="hpcost">Custo da bomba de calor, instalada, IVA de 3 % incluído</label>
-          <div class="row"><input type="range" id="hpcost-r" min="10000" max="45000" step="500" value="22000" aria-label="Custo da bomba de calor"><span class="num"><input type="number" id="hpcost" min="0" max="100000" step="100" value="22000" aria-describedby="hpcost-h">€</span></div>
-          <small id="hpcost-h">Orçamentos observados para uma bomba de calor ar-água de 9 kW: 18 000 a 28 000 € (Renov.lu, outubro de 2026); custo médio dos processos apoiados de 10 a 14 kW: 32 300 € (Ministério do Ambiente, citado pelo L'essentiel em 9 de junho de 2026). 22 000 € por defeito: hipótese da ferramenta, a substituir pelo seu orçamento.</small>
+          <div class="row"><input type="range" id="hpcost-r" min="10000" max="45000" step="500" value="22000" aria-describedby="hpcost-h" aria-label="Custo da bomba de calor"><span class="num"><input type="number" id="hpcost" min="0" max="100000" step="100" value="22000" aria-describedby="hpcost-h">€</span></div>
+          <small id="hpcost-h">Orçamentos observados para uma bomba de calor ar-água de 9 kW: 18 000 a 28 000 € (Renov.lu, outubro de 2026); custo médio dos processos apoiados de 10 a 14 kW: 32 300 € (Ministério do Ambiente, citado pelo L'essentiel em 9 de junho de 2026).</small>
+          <details class="more"><summary>Saber mais</summary><p>22 000 € por defeito: hipótese da ferramenta, a substituir pelo seu orçamento.</p></details>
         </div>
         <div class="fld">
           <label class="chk"><input type="checkbox" id="hmod" checked aria-describedby="hmod-h"> Bomba de calor com modulação de potência (inverter)</label>
@@ -685,8 +775,12 @@
             <div class="row"><label for="hbuf">Volume do depósito</label><span class="num"><input type="number" id="hbuf" min="50" max="2000" step="50" value="300">L</span></div>
             <div class="row"><label for="hbufc">Custo do depósito, instalado</label><span class="num"><input type="number" id="hbufc" min="0" max="20000" step="50" value="1800">€</span></div>
           </div>
-          <small id="hbufon-h">Quando os painéis produzem mais do que a casa consome, a bomba de calor aquece o depósito 15 °C acima da sua temperatura de ida; o calor é depois usado à noite. Preço instalado: 1 000 a 3 500 € (referência alemã, Reduco, 2026); 1 800 € por defeito, hipótese da ferramenta.</small>
+          <small id="hbufon-h">Quando os painéis produzem mais do que a casa consome, a bomba de calor aquece o depósito 15 °C acima da sua temperatura de ida; o calor é depois usado à noite.</small>
+          <details class="more"><summary>Saber mais</summary><p>Preço instalado: 1 000 a 3 500 € (referência alemã, Reduco, 2026); 1 800 € por defeito, hipótese da ferramenta.</p></details>
         </div>
+        <details class="adv">
+        <summary>Outros apoios e custos: data da encomenda, depósito de gasóleo, distribuição, caldeira evitada</summary>
+        <div class="adv-in">
         <div class="fld">
           <label for="hmaj">Data da encomenda</label>
           <select id="hmaj" aria-describedby="hmaj-h">
@@ -699,7 +793,8 @@
           <label for="hcuve">Remoção do depósito de gasóleo</label>
           <div class="row"><span></span><span class="num"><input type="number" id="hcuve" min="0" max="20000" step="50" value="1500" aria-describedby="hcuve-h">€</span></div>
           <label class="chk"><input type="checkbox" id="hzone"> Casa em zona de proteção de águas</label>
-          <small id="hcuve-h">Custo por defeito: hipótese da ferramenta. O Klimabonus acrescenta 1 500 € quando uma caldeira a gasóleo é substituída, e 2 000 € em zona de proteção de águas.</small>
+          <small id="hcuve-h">Custo por defeito: hipótese da ferramenta.</small>
+          <details class="more"><summary>Saber mais</summary><p>O Klimabonus acrescenta 1 500 € quando uma caldeira a gasóleo é substituída, e 2 000 € em zona de proteção de águas.</p></details>
         </div>
         <div class="fld">
           <label for="hdist">Adaptação dos radiadores ou da distribuição</label>
@@ -711,6 +806,8 @@
           <div class="row"><span></span><span class="num"><input type="number" id="hevit" min="0" max="50000" step="100" value="0" aria-describedby="hevit-h">€</span></div>
           <small id="hevit-h">Se a sua caldeira está em fim de vida, indique o preço de uma caldeira nova: é deduzido do investimento na bomba de calor.</small>
         </div>
+        </div>
+        </details>
       </fieldset>
       <fieldset>
         <legend>Preços e painéis</legend>
@@ -721,7 +818,8 @@
         <div class="fld" id="fld-hpg">
           <label for="hpg">Preço do gás <output id="hpg-out">–</output></label>
           <input type="range" id="hpg" min="0.05" max="0.20" step="0.005" value="0.095" aria-describedby="hpg-h">
-          <small id="hpg-h">Por kWh faturado, rede e taxas incluídas. ILR: 9,14 c€/kWh em média para uma casa em 2025; 9,5 c€ por defeito, hipótese da ferramenta.</small>
+          <small id="hpg-h">Por kWh faturado, rede e taxas incluídas.</small>
+          <details class="more"><summary>Saber mais</summary><p>ILR: 9,14 c€/kWh em média para uma casa em 2025; 9,5 c€ por defeito, hipótese da ferramenta.</p></details>
         </div>
         <div class="fld" id="fld-hpo" hidden>
           <label for="hpo">Preço do gasóleo de aquecimento <output id="hpo-out">–</output></label>
@@ -731,38 +829,11 @@
         <div class="fld" id="fld-hgf">
           <label for="hgf">Aumento anual do gás ou do gasóleo <output id="hgf-out">3 %</output></label>
           <input type="range" id="hgf" min="0" max="8" step="0.5" value="3" aria-describedby="hgf-h">
-          <small id="hgf-h">Hipótese da ferramenta. Preço da eletricidade comprada e vendida, aumento da eletricidade e taxa de atualização: os da ferramenta 2.</small>
+          <small id="hgf-h">Hipótese da ferramenta.</small>
+          <details class="more"><summary>Saber mais</summary><p>Preço da eletricidade comprada e vendida, aumento da eletricidade e taxa de atualização: os da ferramenta 2.</p></details>
         </div>
       </fieldset>
     </form>
-    <div>
-      <p class="hint" id="h-status" role="status">A carregar o ano meteorológico típico…</p>
-      <div id="h-res" hidden>
-        <div class="verdict" id="h-verdict"><div class="big">–</div><p>–</p></div>
-        <div class="kpis" style="margin-top:18px">
-          <div class="kpi hero"><div class="lbl">Custo anual hoje</div><div class="val" id="h-a">–</div><div class="sub" id="h-a-sub">–</div></div>
-          <div class="kpi"><div class="lbl">Custo anual depois</div><div class="val" id="h-m">–</div><div class="sub" id="h-m-sub">–</div></div>
-          <div class="kpi"><div class="lbl">Valor a pagar</div><div class="val" id="h-net">–</div><div class="sub" id="h-net-sub">–</div></div>
-          <div class="kpi"><div class="lbl">CO₂ por ano</div><div class="val" id="h-co2">–</div><div class="sub" id="h-co2-sub">–</div></div>
-        </div>
-        <figure class="tab">
-          <table class="mini" id="tab-heat"></table>
-          <figcaption><b>Quadro 5.</b> Os cenários comparados com o seu aquecimento atual. Fatura do 1.º ano = combustível + eletricidade comprada (casa e aquecimento) − excedente vendido + manutenção. Retorno do investimento e ganho líquido: diferença de despesa face ao aquecimento atual, em euros correntes.</figcaption>
-        </figure>
-        <figure class="fig">
-          <div class="svgwrap" id="fig-heat"></div>
-          <div class="legend" id="leg-heat"></div>
-          <figcaption><b>Figura 3.</b> Despesa acumulada em 20 anos, em euros correntes: valor a pagar no início, depois faturas anuais (energia, manutenção, inversor no ano 13 com painéis). A curva mais baixa à direita é a mais barata no período.</figcaption>
-        </figure>
-        <figure class="tab">
-          <table class="mini" id="tab-heat-aid"></table>
-          <figcaption><b>Quadro 6.</b> Ajudas do Estado contadas (Klimabonus, guichet.lu, página atualizada em 11 de agosto de 2026), moradia unifamiliar existente.</figcaption>
-        </figure>
-        <p class="hint">Alguns municípios acrescentam o seu próprio subsídio ao do Estado; não é contado aqui. Ver <a href="/pt/para-os-municipios/">a página para os municípios</a>.</p>
-        <p class="hint" id="h-buffer">–</p>
-        <p class="hint" id="h-demand">–</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -772,9 +843,9 @@
     <span class="sec-note">hipóteses por defeito da ferramenta 2</span>
   </div>
   <p class="lede">Três casas típicas, calculadas com as hipóteses por defeito (virado a sul a 35°, cantão de Luxembourg, 1 800 €/kWp instalado, kWh evitado a 0,20 €, excedente vendido a 0,05 €, primeira injeção em 2027). Clique num perfil para o carregar no simulador e o adaptar ao seu caso.</p>
-  <figure class="tab" style="margin-top:0">
-    <div class="card" style="overflow-x:auto">
+  <div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-profils">
       <table class="mini" id="tab-profils">
+      <caption id="cap-profils"><span class="capin"><b>Quadro 5.</b> Três perfis calculados pelo motor do simulador com as hipóteses por defeito da ferramenta 2; opção A = Klimabonus e excedente a preço de mercado, opção B = tarifa de injeção garantida durante 15 anos sem ajuda; ganho líquido em 25 anos não atualizado. Os seus números dependem do seu telhado, do seu consumo e do seu orçamento.</span></caption>
       <thead><tr><th scope="col">Perfil</th><th scope="col">Produção</th><th scope="col">Autoconsumido</th><th scope="col">Klimabonus</th><th scope="col">Valor a pagar (A)</th><th scope="col">Retorno (A)</th><th scope="col">Retorno (B)</th><th scope="col">Ganho líquido 25 anos (A)</th><th scope="col">Ganho líquido 25 anos (B)</th></tr></thead>
       <tbody>
         <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Telhado pequeno: 3 kWp a sudeste, 2 500 kWh/ano</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 anos</td><td>15,5 anos</td><td>+3 263 €</td><td>+2 634 €</td></tr>
@@ -782,9 +853,55 @@
         <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Casa com bomba de calor e carro elétrico: 10 kWp, bateria de 7 kWh, 10 000 kWh/ano</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 anos</td><td>15,1 anos</td><td>+16 146 €</td><td>+12 763 €</td></tr>
       </tbody>
       </table>
+  </div></div>
+</section>
+
+<section id="reperes">
+  <div class="sec-head">
+    <h2><span class="num">Referências</span>Os números por trás das ferramentas</h2>
+    <span class="sec-note">fontes oficiais, datadas</span>
+  </div>
+  <div class="grid-2">
+    <div class="card refs">
+      <p>kWh por kWp e por ano na cidade do Luxemburgo, PVGIS SARAH3 2005-2023, perdas do sistema de 14 %. O ótimo é virado a sul a 35°; um telhado este-oeste produz cerca de 20 % menos, uma fachada vertical 30 a 50 % menos.</p>
+      <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-grid">
+        <table class="mini" id="tab-grid"><caption id="cap-grid"><span class="capin"><b>Quadro 6.</b> Produção segundo a orientação e a inclinação</span></caption></table>
+      </div>
+      <p style="margin-top:12px">Fatores por cantão (plano sul a 35°): <span id="cantons-line"></span>.</p>
     </div>
-    <figcaption><b>Quadro 7.</b> Três perfis calculados pelo motor do simulador com as hipóteses por defeito da ferramenta 2; opção A = Klimabonus e excedente a preço de mercado, opção B = tarifa de injeção garantida durante 15 anos sem ajuda; ganho líquido em 25 anos não atualizado. Os seus números dependem do seu telhado, do seu consumo e do seu orçamento.</figcaption>
-  </figure>
+    <div>
+      <div class="card refs">
+        <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-price">
+        <table class="mini">
+          <caption id="cap-price"><span class="capin"><b>Quadro 7.</b> Quanto vale um kWh que deixa de comprar (2026)</span></caption>
+          <thead><tr><th scope="col">Componente</th><th scope="col">agosto a dezembro de 2026</th><th scope="col">janeiro a julho de 2026</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Energia (oferta residencial corrente)</th><td>13,2 c€</td><td>13,2 c€</td></tr>
+            <tr><th scope="row">Rede, taxa volumétrica (ILR)</th><td>5,10 c€</td><td>5,10 c€</td></tr>
+            <tr><th scope="row">Mecanismo de compensação, cat. A</th><td>−3,71 c€</td><td>−0,10 c€</td></tr>
+            <tr><th scope="row">Imposto sobre a eletricidade, cat. A</th><td>0,10 c€</td><td>0,10 c€</td></tr>
+            <tr><th scope="row">IVA de 8 %</th><td>1,18 c€</td><td>1,46 c€</td></tr>
+            <tr><th scope="row"><strong>Total por kWh</strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <details class="alt">
+          <summary>Componentes, taxas e datas</summary>
+          <p>Componentes variáveis da fatura de uma casa (categoria A, menos de 25 000 kWh/ano), tarifas em vigor em 1 de agosto de 2026. O mecanismo de compensação vale −3,71 c€/kWh de 1 de agosto a 31 de dezembro de 2026: é a ajuda temporária da ordem de 4 c€/kWh prevista na lei de 22 de julho de 2026 sobre a contribuição do Estado para 2026. De janeiro a julho de 2026 valia −0,10 c€/kWh, taxa que já incluía uma contribuição do Estado. A taxa de 2027 ainda não estava publicada em 2 de novembro de 2026.</p>
+        </details>
+      </div>
+      <div class="card refs" style="margin-top:20px">
+        <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-aid">
+          <table class="mini" id="tab-aid" aria-describedby="aid-note"><caption id="cap-aid"><span class="capin"><b>Quadro 8.</b> Klimabonus 2026 e tarifa de injeção garantida</span></caption></table>
+        </div>
+        <p class="hint" id="aid-note"></p>
+        <details class="alt">
+          <summary>Condições e fórmulas</summary>
+          <p>Klimabonus (guichet.lu, página atualizada em 11 de agosto de 2026): instalação de pelo menos 2 kWp em autoconsumo, colocada no telhado ou na fachada ou integrada na envolvente do edifício; P × (1 155 − 33 × P) € para uma potência P inferior a 15 kWp, 10 000 € a partir de 15 kWp; bateria Q × (500 − 500/18 × Q) €, 2 250 € a partir de 9 kWh; faturas de 4 de janeiro de 2026 a 31 de dezembro de 2029, ou até 31 de dezembro de 2031 para uma encomenda feita até 31 de dezembro de 2029. Sistema de gestão de energia (HEMS) ligado a pelo menos dois equipamentos: 500 €, faturas de 1 de outubro de 2026 a 31 de dezembro de 2030. Tarifa garantida (regulamento grão-ducal alterado de 1 de agosto de 2014, art. 17ter): 165 × 0,97<sup>n−2019</sup> €/MWh até 10 kW, 155 × 0,97<sup>n−2019</sup> acima disso e até 30 kW, sendo n o ano da primeira injeção.</p>
+        </details>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="faq" class="faq">
@@ -838,26 +955,34 @@
   <p class="hint" style="margin-top:14px">As 38 332 instalações já ligadas à rede, município a município: <a href="/pt/">o painel de dados lux-solaire</a>.</p>
 </section>
 
+<p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Quer isto para o seu município? Vamos falar (em francês) <span aria-hidden="true">→</span></a></p>
+
 <section id="methode" class="method" aria-labelledby="methode-h">
   <h2 id="methode-h">Método e fontes</h2>
   <p>Este simulador é uma ajuda à decisão, não um orçamento: não conhece o sombreamento do seu telhado, nem o seu perfil horário de consumo, nem o seu contrato. Não vende nada e não transmite nenhum dado: tudo é calculado no seu navegador. As hipóteses estão visíveis, são alteráveis e datadas; informe-nos de qualquer alteração regulamentar.</p>
+  <details id="m-calc">
+  <summary>Como são calculados os resultados?</summary>
   <p><strong>Cálculo.</strong> Produção = potência × produção PVGIS (orientação, inclinação) × fator do cantão, repartida por mês segundo o perfil PVGIS da cidade do Luxemburgo. Parte autoconsumida sem bateria = 30 % × (produção ÷ consumo)<sup>−0,6</sup>, limitada entre 10 e 90 %; uma bateria de Q kWh acrescenta 35 % × (1 − e<sup>−Q ÷ (0,5 × consumo diário)</sup>). Ganho anual = kWh autoconsumidos × valor do kWh evitado (indexado ao aumento escolhido) + kWh injetados × preço do excedente (opção A) ou tarifa garantida durante 15 anos e depois preço do excedente (opção B). A produção desce à taxa de envelhecimento escolhida; o inversor é substituído no ano 13. Retorno do investimento = primeiro ano em que o saldo acumulado volta a ser positivo (interpolado); ganho líquido = saldo acumulado a 25 anos em euros correntes, não atualizado por defeito (com uma taxa de atualização: soma dos fluxos atualizados; o retorno do investimento e a figura 2 continuam não atualizados); TIR = taxa que anula o valor atual dos fluxos. Não são contados custos de manutenção nem de seguro. A fórmula da parte autoconsumida é uma heurística própria deste simulador, ajustada à ordem de grandeza de 30 % sem bateria, sem referência publicada. A bateria não é substituída nem se degrada em 25 anos: com bateria, o resultado é otimista. O HEMS opcional é contado como um custo e, apenas na opção A, com a respetiva ajuda; o seu efeito na parte autoconsumida não é modelado.</p>
   <p><strong>Cálculo da ferramenta 3 (aquecimento).</strong> Hipóteses da ferramenta, salvo indicação em contrário. Necessidade de calor útil = consumo × rendimento da instalação atual (gás: 10,6 kWh por m³ faturado; gasóleo: 10 kWh por litro), ou área × necessidade por m² segundo a época de construção; água quente: 800 kWh por pessoa e por ano, no máximo 40 % do total. O aquecimento é repartido hora a hora em proporção dos graus-hora abaixo de 15 °C do ano meteorológico típico, a água quente e os outros usos segundo perfis diários fixos. COP horário da bomba de calor = 0,85 × (6,08 − 0,09 ΔT + 0,0005 ΔT²), pelo menos 1, sendo ΔT a diferença entre a temperatura de ida e a temperatura exterior T, de pelo menos 10 °C (limiar: hipótese da ferramenta, Ruhnau et al. usam 15 °C; fórmula de Ruhnau et al., 2019, fator de correção incluído); ida a 40 − T °C (radiadores) ou 30 − 0,5 × T °C (piso radiante), água quente a 50 °C; um apoio elétrico direto cobre o que a potência disponível não cobre. O depósito de inércia é aquecido 15 °C acima da ida com o excedente solar (1,163 Wh por litro e por °C, perdas de 1 % por hora) e devolve o calor quando os painéis já não chegam. Bateria: 90 % de rendimento ida e volta, 0,5 kW por kWh, no máximo 5 kW. Fatura = combustível + eletricidade comprada − excedente vendido + manutenção (caldeira 200 €/ano, bomba de calor 150 €/ano); o combustível aumenta segundo o aumento escolhido, a eletricidade segundo a ferramenta 2; com painéis, o inversor é substituído no ano 13. Retorno do investimento e ganho líquido = diferença de despesa face ao aquecimento atual em 20 anos. Limites: um único ano meteorológico, sem envelhecimento dos painéis nem substituição da bateria nesta ferramenta, apenas moradias unifamiliares, assinatura de gás eliminada não contada, subsídios municipais não contados.</p>
+  </details>
+  <details id="m-src">
+  <summary>De onde vêm os números? As 13 fontes datadas</summary>
   <ol>
-    <li>Produção: <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centro Comum de Investigação (JRC), Comissão Europeia, base de irradiação SARAH3 (2005-2023), sistema fixo, perdas de 14 %, horizonte calculado; pedidos de 23 de outubro de 2026 para a cidade do Luxemburgo (49,61 N; 6,13 E) e o centro de cada cantão (<a href="/data/pvgis.json">dados</a>).</li>
-    <li>Klimabonus: <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">ajuda financeira às instalações técnicas que aproveitam fontes de energia renovável (Klimabonus regime 2026, página em francês)</a>, guichet.lu, página atualizada em 11 de agosto de 2026, consultada em 2 de novembro de 2026; lei de 24 de julho de 2026 relativa ao regime de ajudas para a promoção da sustentabilidade, da utilização racional da energia e das energias renováveis na habitação.</li>
-    <li>Ajuda HEMS: montante (500 €) e condição (pelo menos dois equipamentos controlados) segundo a <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">página Klimabonus do guichet.lu</a> (atualizada em 11 de agosto de 2026); data de efeito (faturas a partir de 1 de outubro de 2026) segundo a <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">apresentação do «Klimabonus Wunnen» 2026-2030</a>, gouvernement.lu, 16 de julho de 2026; consultadas em 2 de novembro de 2026. Regime transitório da opção B (propostas assinadas de 1 de outubro de 2024 a 4 de março de 2026): <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">período de transição do Klimabonus fotovoltaico</a>, Klima-Agence, 17 de dezembro de 2025, consultado em 2 de novembro de 2026.</li>
-    <li>Tarifa de injeção garantida: regulamento grão-ducal alterado de 1 de agosto de 2014 relativo à produção de eletricidade a partir de fontes de energia renováveis, art. 17ter (versão do regulamento de 12 de abril de 2019), <a href="https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo" target="_blank" rel="noopener">Legilux</a>; fatores de redução X = 1 na falta de fixação ministerial.</li>
-    <li>Tarifas de rede e taxas: <a href="https://www.ilr.lu/wp-content/uploads/ilr-elc-dec-2025-12-22-E25-41-44-Tariff-sheet-GRD-elec-2026.pdf" target="_blank" rel="noopener">tarifas de utilização da rede 2026</a> (ILR, Creos, versão de 26 de novembro de 2025); grelha de tarifas de rede e taxas reguladas da Enovos válida a partir de 1 de agosto de 2026 (mecanismo de compensação −3,71 c€/kWh, imposto 0,10 c€/kWh); preço da energia: ofertas residenciais de outubro de 2026, 10,9 a 13,8 c€/kWh, oferta corrente da Enovos 13,2 c€/kWh sem IVA desde 1 de janeiro de 2026.</li>
-    <li>Preço da eletricidade em 2026: <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">lei de 22 de julho de 2026 relativa à contribuição do Estado no âmbito do mecanismo de compensação para o ano de 2026</a> (ILR; texto resultante da proposta de lei n.º 8707, ver a <a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">exposição da alteração do Governo</a> para a ajuda da ordem de 4 c€/kWh da categoria A de 1 de agosto a 31 de dezembro de 2026), consultados em 2 de novembro de 2026. Fatura típica (3 900 kWh/ano): apresentação do ministro da Economia de 2 de dezembro de 2025, noticiada pelo jornal Le Quotidien de 3 de dezembro de 2025.</li>
-    <li>Custos de instalação, de bateria e de inversor, preço do excedente: intervalos recolhidos nos sítios de instaladores e comparadores luxemburgueses em outubro de 2026; valores indicativos, a substituir pelo seu orçamento.</li>
-    <li>Fiscalidade: <a href="https://www.klima-agence.lu/sites/default/files/2025-09/Traitement%20fiscal%20PV_FR_Sep25_VF.pdf" target="_blank" rel="noopener">tratamento fiscal de uma pessoa singular que explora uma instalação fotovoltaica (em francês)</a>, Klima-Agence, setembro de 2025.</li>
-    <li>Bomba de calor (ferramenta 3): montantes do Klimabonus, majoração, depósito de gasóleo, zona de proteção de águas, distribuição, depósito de inércia e COP mínimo segundo a <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">página Klimabonus do guichet.lu</a> (atualizada em 11 de agosto de 2026, consultada em 2 de novembro de 2026). Preço de uma bomba de calor instalada: <a href="https://renov.lu/en/heating/heat-pump/simulator/" target="_blank" rel="noopener">Renov.lu</a>, outubro de 2026 (18 000 a 28 000 € com IVA); custo médio de 32 300 € dos processos apoiados de 10 a 14 kW, número do Ministério do Ambiente publicado pelo <a href="https://www.lessentiel.lu/de/story/luxemburg-waermepumpen-foerderung-was-sich-fuer-eigentuemer-aendert-103579077" target="_blank" rel="noopener">L'essentiel</a> em 9 de junho de 2026; depósito de inércia instalado: 1 000 a 3 500 € (referência alemã, Reduco, 2026). Valores por defeito (22 000 €, 1 800 €, remoção do depósito de gasóleo 1 500 €): hipóteses da ferramenta.</li>
-    <li>Preço dos combustíveis: gasóleo de aquecimento, <a href="https://www.petrol.lu/en/official-prices/" target="_blank" rel="noopener">preços máximos oficiais</a> recolhidos pelo petrol.lu, 1,601 €/L com IVA desde 27 de outubro de 2026, consultados em 2 de novembro de 2026; gás natural, <a href="https://www.ilr.lu/wp-content/uploads/publication/ILR_-Statistiques_-COMMUNIQUE-DE-PRESSE_20260630_Chiffres-cles-Gaz-naturel.pdf" target="_blank" rel="noopener">números-chave do gás natural 2025</a>, ILR, 30 de junho de 2026: 9,14 c€/kWh em média para uma casa; 9,5 c€ considerados para 2026, hipótese da ferramenta.</li>
-    <li>Emissões: gás natural 215,4 g CO₂e por kWh faturado (poder calorífico superior), gasóleo 324,7 g CO₂e por kWh (poder calorífico inferior), ADEME Base Carbone v23.9, citados pelo <a href="https://www.banque-france.fr/system/files/2026-07/Methodologie_energie.pdf" target="_blank" rel="noopener">Banco de França</a> (metodologia de 2 de julho de 2026); eletricidade consumida no Luxemburgo em 2025, importações incluídas: 212,2 g CO₂e por kWh, <a href="https://www.electricitymaps.com/grid-in-review-2025/luxembourg" target="_blank" rel="noopener">Electricity Maps</a>; consultados em 2 de novembro de 2026.</li>
-    <li>COP: Ruhnau, Hirth e Praktiknjo, «Time series of heat demand and heat pump efficiency for energy system modeling», Scientific Data 6, 189 (2019), <a href="https://doi.org/10.1038/s41597-019-0199-y" target="_blank" rel="noopener">doi:10.1038/s41597-019-0199-y</a>. Necessidade por época: ordens de grandeza arredondadas da tipologia TABULA para a Alemanha (IWU, 2015). Ano meteorológico típico: PVGIS 5.3 (série horária SARAH3 e ERA5, cidade do Luxemburgo), ano de 2017, o mais próximo da média 2005-2023 tanto na produção solar como nos graus-dia (<a href="/data/annee_type.json">dados</a>).</li>
-    <li>Instalações ligadas à rede: conjunto de dados <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">sobre a produção de energia elétrica no Luxemburgo</a> (Leneda, CC0), levantamento de 9 de novembro de 2026.</li>
+    <li id="src-1">Produção: <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centro Comum de Investigação (JRC), Comissão Europeia, base de irradiação SARAH3 (2005-2023), sistema fixo, perdas de 14 %, horizonte calculado; pedidos de 23 de outubro de 2026 para a cidade do Luxemburgo (49,61 N; 6,13 E) e o centro de cada cantão (<a href="/data/pvgis.json">dados</a>).</li>
+    <li id="src-2">Klimabonus: <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">ajuda financeira às instalações técnicas que aproveitam fontes de energia renovável (Klimabonus regime 2026, página em francês)</a>, guichet.lu, página atualizada em 11 de agosto de 2026, consultada em 2 de novembro de 2026; lei de 24 de julho de 2026 relativa ao regime de ajudas para a promoção da sustentabilidade, da utilização racional da energia e das energias renováveis na habitação.</li>
+    <li id="src-3">Ajuda HEMS: montante (500 €) e condição (pelo menos dois equipamentos controlados) segundo a <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">página Klimabonus do guichet.lu</a> (atualizada em 11 de agosto de 2026); data de efeito (faturas a partir de 1 de outubro de 2026) segundo a <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">apresentação do «Klimabonus Wunnen» 2026-2030</a>, gouvernement.lu, 16 de julho de 2026; consultadas em 2 de novembro de 2026. Regime transitório da opção B (propostas assinadas de 1 de outubro de 2024 a 4 de março de 2026): <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">período de transição do Klimabonus fotovoltaico</a>, Klima-Agence, 17 de dezembro de 2025, consultado em 2 de novembro de 2026.</li>
+    <li id="src-4">Tarifa de injeção garantida: regulamento grão-ducal alterado de 1 de agosto de 2014 relativo à produção de eletricidade a partir de fontes de energia renováveis, art. 17ter (versão do regulamento de 12 de abril de 2019), <a href="https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo" target="_blank" rel="noopener">Legilux</a>; fatores de redução X = 1 na falta de fixação ministerial.</li>
+    <li id="src-5">Tarifas de rede e taxas: <a href="https://www.ilr.lu/wp-content/uploads/ilr-elc-dec-2025-12-22-E25-41-44-Tariff-sheet-GRD-elec-2026.pdf" target="_blank" rel="noopener">tarifas de utilização da rede 2026</a> (ILR, Creos, versão de 26 de novembro de 2025); grelha de tarifas de rede e taxas reguladas da Enovos válida a partir de 1 de agosto de 2026 (mecanismo de compensação −3,71 c€/kWh, imposto 0,10 c€/kWh); preço da energia: ofertas residenciais de outubro de 2026, 10,9 a 13,8 c€/kWh, oferta corrente da Enovos 13,2 c€/kWh sem IVA desde 1 de janeiro de 2026.</li>
+    <li id="src-6">Preço da eletricidade em 2026: <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">lei de 22 de julho de 2026 relativa à contribuição do Estado no âmbito do mecanismo de compensação para o ano de 2026</a> (ILR; texto resultante da proposta de lei n.º 8707, ver a <a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">exposição da alteração do Governo</a> para a ajuda da ordem de 4 c€/kWh da categoria A de 1 de agosto a 31 de dezembro de 2026), consultados em 2 de novembro de 2026. Fatura típica (3 900 kWh/ano): apresentação do ministro da Economia de 2 de dezembro de 2025, noticiada pelo jornal Le Quotidien de 3 de dezembro de 2025.</li>
+    <li id="src-7">Custos de instalação, de bateria e de inversor, preço do excedente: intervalos recolhidos nos sítios de instaladores e comparadores luxemburgueses em outubro de 2026; valores indicativos, a substituir pelo seu orçamento.</li>
+    <li id="src-8">Fiscalidade: <a href="https://www.klima-agence.lu/sites/default/files/2025-09/Traitement%20fiscal%20PV_FR_Sep25_VF.pdf" target="_blank" rel="noopener">tratamento fiscal de uma pessoa singular que explora uma instalação fotovoltaica (em francês)</a>, Klima-Agence, setembro de 2025.</li>
+    <li id="src-9">Bomba de calor (ferramenta 3): montantes do Klimabonus, majoração, depósito de gasóleo, zona de proteção de águas, distribuição, depósito de inércia e COP mínimo segundo a <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">página Klimabonus do guichet.lu</a> (atualizada em 11 de agosto de 2026, consultada em 2 de novembro de 2026). Preço de uma bomba de calor instalada: <a href="https://renov.lu/en/heating/heat-pump/simulator/" target="_blank" rel="noopener">Renov.lu</a>, outubro de 2026 (18 000 a 28 000 € com IVA); custo médio de 32 300 € dos processos apoiados de 10 a 14 kW, número do Ministério do Ambiente publicado pelo <a href="https://www.lessentiel.lu/de/story/luxemburg-waermepumpen-foerderung-was-sich-fuer-eigentuemer-aendert-103579077" target="_blank" rel="noopener">L'essentiel</a> em 9 de junho de 2026; depósito de inércia instalado: 1 000 a 3 500 € (referência alemã, Reduco, 2026). Valores por defeito (22 000 €, 1 800 €, remoção do depósito de gasóleo 1 500 €): hipóteses da ferramenta.</li>
+    <li id="src-10">Preço dos combustíveis: gasóleo de aquecimento, <a href="https://www.petrol.lu/en/official-prices/" target="_blank" rel="noopener">preços máximos oficiais</a> recolhidos pelo petrol.lu, 1,601 €/L com IVA desde 27 de outubro de 2026, consultados em 2 de novembro de 2026; gás natural, <a href="https://www.ilr.lu/wp-content/uploads/publication/ILR_-Statistiques_-COMMUNIQUE-DE-PRESSE_20260630_Chiffres-cles-Gaz-naturel.pdf" target="_blank" rel="noopener">números-chave do gás natural 2025</a>, ILR, 30 de junho de 2026: 9,14 c€/kWh em média para uma casa; 9,5 c€ considerados para 2026, hipótese da ferramenta.</li>
+    <li id="src-11">Emissões: gás natural 215,4 g CO₂e por kWh faturado (poder calorífico superior), gasóleo 324,7 g CO₂e por kWh (poder calorífico inferior), ADEME Base Carbone v23.9, citados pelo <a href="https://www.banque-france.fr/system/files/2026-07/Methodologie_energie.pdf" target="_blank" rel="noopener">Banco de França</a> (metodologia de 2 de julho de 2026); eletricidade consumida no Luxemburgo em 2025, importações incluídas: 212,2 g CO₂e por kWh, <a href="https://www.electricitymaps.com/grid-in-review-2025/luxembourg" target="_blank" rel="noopener">Electricity Maps</a>; consultados em 2 de novembro de 2026.</li>
+    <li id="src-12">COP: Ruhnau, Hirth e Praktiknjo, «Time series of heat demand and heat pump efficiency for energy system modeling», Scientific Data 6, 189 (2019), <a href="https://doi.org/10.1038/s41597-019-0199-y" target="_blank" rel="noopener">doi:10.1038/s41597-019-0199-y</a>. Necessidade por época: ordens de grandeza arredondadas da tipologia TABULA para a Alemanha (IWU, 2015). Ano meteorológico típico: PVGIS 5.3 (série horária SARAH3 e ERA5, cidade do Luxemburgo), ano de 2017, o mais próximo da média 2005-2023 tanto na produção solar como nos graus-dia (<a href="/data/annee_type.json">dados</a>).</li>
+    <li id="src-13">Instalações ligadas à rede: conjunto de dados <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">sobre a produção de energia elétrica no Luxemburgo</a> (Leneda, CC0), levantamento de 9 de novembro de 2026.</li>
   </ol>
+  </details>
 </section>
 
 <aside class="rt" id="rt" aria-labelledby="rt-h"
@@ -931,7 +1056,7 @@
 </footer>
 </div>
 
-<script src="/sim-engine.js?v=8ada632755"></script>
+<script src="/sim-engine.js?v=350753f233"></script>
 <script>
 const G = {"source": "PVGIS 5.3, JRC (Commission européenne)", "url": "https://re.jrc.ec.europa.eu/pvg_tools/fr/", "radiation_db": "PVGIS-SARAH3", "years": [2005, 2023], "system_loss_pct": 14, "center": {"name": "Luxembourg-Ville", "lat": 49.61, "lon": 6.13}, "azimuths": [-90, -60, -45, -30, 0, 30, 45, 60, 90], "tilts": [0, 10, 20, 30, 35, 40, 50, 60, 90], "grid": {"-90:10": 908, "-90:20": 897, "-90:30": 880, "-90:35": 868, "-90:40": 853, "-90:50": 815, "-90:60": 765, "-90:90": 549, "-60:10": 946, "-60:20": 968, "-60:30": 976, "-60:35": 974, "-60:40": 967, "-60:50": 941, "-60:60": 897, "-60:90": 665, "-45:10": 962, "-45:20": 996, "-45:30": 1013, "-45:35": 1014, "-45:40": 1010, "-45:50": 988, "-45:60": 944, "-45:90": 707, "-30:10": 974, "-30:20": 1017, "-30:30": 1040, "-30:35": 1044, "-30:40": 1042, "-30:50": 1022, "-30:60": 980, "-30:90": 730, "0:0": 912, "0:10": 983, "0:20": 1033, "0:30": 1061, "0:35": 1067, "0:40": 1066, "0:50": 1047, "0:60": 1004, "0:90": 741, "30:10": 972, "30:20": 1014, "30:30": 1036, "30:35": 1039, "30:40": 1036, "30:50": 1014, "30:60": 971, "30:90": 721, "45:10": 960, "45:20": 992, "45:30": 1006, "45:35": 1006, "45:40": 1001, "45:50": 977, "45:60": 933, "45:90": 696, "60:10": 944, "60:20": 963, "60:30": 968, "60:35": 964, "60:40": 957, "60:50": 928, "60:60": 884, "60:90": 655, "90:10": 905, "90:20": 890, "90:30": 869, "90:35": 856, "90:40": 840, "90:50": 801, "90:60": 751, "90:90": 540}, "monthly_ref": [35, 55, 96, 122, 129, 130, 132, 120, 107, 71, 37, 32], "cantons": {"Capellen": {"E_y": 1084, "factor": 1.016}, "Clervaux": {"E_y": 1034, "factor": 0.969}, "Diekirch": {"E_y": 1066, "factor": 0.999}, "Echternach": {"E_y": 1065, "factor": 0.998}, "Esch": {"E_y": 1086, "factor": 1.018}, "Grevenmacher": {"E_y": 1072, "factor": 1.005}, "Luxembourg": {"E_y": 1067, "factor": 1.0}, "Mersch": {"E_y": 1061, "factor": 0.994}, "Redange": {"E_y": 1073, "factor": 1.006}, "Remich": {"E_y": 1078, "factor": 1.01}, "Vianden": {"E_y": 1050, "factor": 0.984}, "Wiltz": {"E_y": 1036, "factor": 0.971}}};
 const D = {"meta": {"pv_mw": 827.5, "total_mw": 1277.5, "pv_n": 38332, "growth12_mw": 175.5, "since_year_end": {"base": "2025 T4", "pv_mw": 82.1, "pv_n": 5082}, "date": "9 de novembro de 2026", "date_iso": "2026-11-09", "median_share": 93.2, "full_pv_communes": 23, "top_records": [{"c": "Junglinster", "kw": 4999.7}, {"c": "Differdange", "kw": 4999.2}, {"c": "Käerjeng", "kw": 4998.0}, {"c": "Sanem", "kw": 4996.5}]}, "cantons": [{"k": "Clervaux", "pv": 85477.0, "n": 2514, "pop": 22423, "tot": 189964.9, "wpc": 3812, "ipk": 112.1, "share": 45.0}, {"k": "Vianden", "pv": 16681.6, "n": 488, "pop": 5856, "tot": 24119.6, "wpc": 2849, "ipk": 83.3, "share": 69.2}, {"k": "Redange", "pv": 59812.0, "n": 2819, "pop": 21812, "tot": 89177.4, "wpc": 2742, "ipk": 129.2, "share": 67.1}, {"k": "Grevenmacher", "pv": 77924.8, "n": 2973, "pop": 34461, "tot": 93169.3, "wpc": 2261, "ipk": 86.3, "share": 83.6}, {"k": "Mersch", "pv": 82935.7, "n": 2952, "pop": 37424, "tot": 101741.4, "wpc": 2216, "ipk": 78.9, "share": 81.5}, {"k": "Wiltz", "pv": 35818.9, "n": 1729, "pop": 20623, "tot": 66073.7, "wpc": 1737, "ipk": 83.8, "share": 54.2}, {"k": "Echternach", "pv": 34822.0, "n": 1705, "pop": 20736, "tot": 44024.0, "wpc": 1679, "ipk": 82.2, "share": 79.1}, {"k": "Remich", "pv": 37244.9, "n": 1894, "pop": 24844, "tot": 65742.9, "wpc": 1499, "ipk": 76.2, "share": 56.7}, {"k": "Capellen", "pv": 84397.3, "n": 4665, "pop": 57336, "tot": 99606.1, "wpc": 1472, "ipk": 81.4, "share": 84.7}, {"k": "Diekirch", "pv": 41851.9, "n": 2119, "pop": 36670, "tot": 90773.3, "wpc": 1141, "ipk": 57.8, "share": 46.1}, {"k": "Esch", "pv": 159546.8, "n": 7531, "pop": 198114, "tot": 261817.0, "wpc": 805, "ipk": 38.0, "share": 60.9}, {"k": "Luxembourg", "pv": 110967.3, "n": 6943, "pop": 215968, "tot": 151293.9, "wpc": 514, "ipk": 32.1, "share": 73.3}]};
@@ -966,6 +1091,9 @@ const L = {
   aidNote1:'Leitura: 6 kWp com primeira injeção em 2027 recebem ', aidNote2:' € de Klimabonus, ou uma tarifa garantida de ', aidNote3:' durante 15 anos, não as duas coisas.',
   undisc:'(não atualizado)', discAt:'(atualizado a ', discEnd:' %)',
   gridAz:['Sul','SSE / SSO 30°','SE / SO 45°','ESE / OSO 60°','Este / Oeste 90°'], gridTilt:'Inclinação',
+  fast:'retorno mais rápido', vOut1:' Investimento inicial: opção A ', vOut2:', opção B ', vOut3:'.',
+  gainSub:'por ano · A: Klimabonus · B: tarifa garantida', tipSep:': ', tipOf:', dos quais ', tipSelf:' kWh autoconsumidos', tipPb:'retorno do investimento em ',
+  errRange:'Introduza um valor entre ', errAnd:' e ', vtYear:' por ano', vtKwc:' € por kWp', vtKwh:' € por kWh útil', vtPerKwh:' por kWh', vtPers:' pessoas', vtNoBatt:'0 kWh, sem bateria',
 };
 
 const fmt = n => Math.round(n).toLocaleString('fr-FR');
@@ -976,6 +1104,19 @@ const cts = n => (n*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximum
 const ctsS = n => (n*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' c€';
 const pct = n => Math.round(n)+' %';
 const $ = id => document.getElementById(id);
+// tableau rempli en JS : la légende (<caption>) écrite dans le HTML est conservée
+const setT = (id, h) => { const t=$(id), c=t.caption; t.innerHTML=h; if(c) t.prepend(c); };
+// saisie libre (facture) : espaces ignorés, « 3.900 » ou « 3,900 » = milliers, sinon virgule décimale
+const num = s => { s=String(s).trim().replace(/[\s\u00a0\u202f']/g,'');
+  s = /^\d{1,3}([.,]\d{3})+$/.test(s) ? s.replace(/[.,]/g,'') : s.replace(',','.');
+  return s!=='' && isFinite(+s) ? +s : NaN; };
+// champ texte lié à un curseur : vrai si la valeur est dans la plage du curseur, sinon message d'erreur
+function checkField(inp, rng, unit){
+  const v=num($(inp).value), lo=+$(rng).min, hi=+$(rng).max, ok=isFinite(v)&&v>=lo&&v<=hi, e=$(inp+'-err');
+  $(inp).setAttribute('aria-invalid', ok?'false':'true');
+  e.hidden=ok; e.textContent=ok?'':L.errRange+fmt(lo)+L.errAnd+fmt(hi)+unit+'.';
+  return ok;
+}
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 /* ---- moteur de calcul : /sim-engine.js (fonctions pures, barèmes en paramètre) ---- */
@@ -1037,13 +1178,13 @@ function render(){
   $('r-self-sub').textContent = pct(R.self/R.prod*100)+L.selfSub+pct(R.self/R.cons*100)+L.ofCons;
   $('r-inj').textContent = fmt(R.inj)+L.kwh;
   $('r-inj-sub').textContent = pct(R.inj/R.prod*100)+L.injSub;
-  $('r-gain').textContent = fmt(R.A.y1)+L.eurYear;
-  $('r-gain-sub').textContent = L.gainA+eur(R.A.y1)+' · '+L.gainB+eur(R.B.y1);
+  $('r-gain').innerHTML = '<span>'+eur(R.A.y1)+'<i>A</i></span><span>'+eur(R.B.y1)+'<i>B</i></span>';
+  $('r-gain-sub').textContent = L.gainSub;
   $('r-cover').textContent = L.cover+pct(R.prod/R.cons*100)+L.coverOf;
 
   // figure 1 : production mensuelle
   (function(){
-    const W=figW('fig-months',720,520), nar=W<720, H=nar?220:250, mL=nar?40:46,mR=nar?4:10,mT=16,mB=30, iw=W-mL-mR, ih=H-mT-mB;
+    const W=figW('fig-months',720,520), nar=W<720, H=nar?230:260, mL=nar?40:46,mR=nar?4:10,mT=26,mB=30, iw=W-mL-mR, ih=H-mT-mB;
     const tot=G.monthly_ref.reduce((a,b)=>a+b,0);
     const m=G.monthly_ref.map(v=>R.prod*v/tot);
     const maxY=Math.ceil(Math.max(...m)/100)*100;
@@ -1053,24 +1194,25 @@ function render(){
       g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?'#B9BCB2':'#E7E8E1'}"/>`;
       g+=`<text x="${mL-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
     }
+    g+=`<text x="${mL-6}" y="11" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">kWh</text>`;
     m.forEach((v,i)=>{
       const x=mL+iw*(i+0.16)/12, hs=ih*v/maxY*R.sc;
-      g+=`<rect x="${x}" y="${y(v)}" width="${bw}" height="${ih*v/maxY-hs}" fill="#1D2734" fill-opacity=".82"/>`;
+      g+=`<g><title>${L.months[i]}${L.tipSep}${fmt(v)}${L.kwh}${L.tipOf}${fmt(v*R.sc)}${L.tipSelf}</title><rect x="${x}" y="${y(v)}" width="${bw}" height="${ih*v/maxY-hs}" fill="#1D2734" fill-opacity=".82"/>`;
       g+=`<rect x="${x}" y="${y(v*R.sc)}" width="${bw}" height="${hs}" fill="${css('--amber')}" stroke="${css('--amber-text')}" stroke-width="1"/>`;
       g+=`<text x="${x+bw/2}" y="${y(v)-5}" text-anchor="middle" font-size="${nar?8.5:10.5}" fill="#1D2734" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
-      g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${nar?L.months[i].charAt(0).toUpperCase():L.months[i]}</text>`;
+      g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${nar?L.months[i].charAt(0).toUpperCase():L.months[i]}</text></g>`;
     });
     $('fig-months').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figMonths}">${g}</svg>`;
   })();
 
   // tableau 1
-  $('tab-detail').innerHTML =
+  setT('tab-detail',
     `<thead><tr><th scope="col">${L.thItem}</th><th scope="col">${L.thA}</th><th scope="col">${L.thB}</th></tr></thead><tbody>
      <tr><th scope="row">${L.rowSelf}</th><td>${fmt(R.self)} × ${ctsS(I.price)} = ${eur(R.self*I.price)}</td><td>${fmt(R.self)} × ${ctsS(I.price)} = ${eur(R.self*I.price)}</td></tr>
      <tr><th scope="row">${L.rowInj}</th><td>${fmt(R.inj)} × ${ctsS(I.market)} = ${eur(R.inj*I.market)}</td><td>${fmt(R.inj)} × ${ctsS(R.tar)} = ${eur(R.inj*R.tar)}</td></tr>
      <tr><th scope="row"><strong>${L.rowTotal}</strong></th><td class="${R.A.y1>=R.B.y1?'best':''}"><strong>${eur(R.A.y1)}</strong></td><td class="${R.B.y1>R.A.y1?'best':''}"><strong>${eur(R.B.y1)}</strong></td></tr>
      <tr><th scope="row">${L.rowBonus}</th><td>${eur(R.bonus)}</td><td>0 €</td></tr>
-     <tr><th scope="row">${L.rowCapex}</th><td>${eur(R.capexGross-R.bonus)}</td><td>${eur(R.capexGross)}</td></tr></tbody>`;
+     <tr><th scope="row">${L.rowCapex}</th><td>${eur(R.capexGross-R.bonus)}</td><td>${eur(R.capexGross)}</td></tr></tbody>`);
 
   // canton
   const K = D.cantons.find(k=>k.k===I.canton);
@@ -1078,14 +1220,15 @@ function render(){
 
   /* outil 2 */
   const pbTxt = pb => pb===null ? L.never : (pb<1 ? '< 1'+L.year1 : pb.toLocaleString('fr-FR',{maximumFractionDigits:1})+L.years);
-  const irrTxt = r => r===null ? '–' : (r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';
+  const irrTxt = r => r===null ? '–' : (r*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
   $('a-bonus').innerHTML='<b>'+eur(R.bonus)+'</b>'; $('a-capex').innerHTML='<b>'+eur(R.capexGross-R.bonus)+'</b>';
   $('a-y1').textContent=eur(R.A.y1); $('a-pb').innerHTML='<b>'+pbTxt(R.A.pb)+'</b>'; $('a-npv').innerHTML='<b>'+eurS(R.A.npv)+'</b>'; $('a-irr').textContent=irrTxt(R.A.irr);
   $('b-tariff').innerHTML='<b>'+cts(R.tar)+'</b>'; $('b-capex').innerHTML='<b>'+eur(R.capexGross)+'</b>';
   $('b-y1').textContent=eur(R.B.y1); $('b-pb').innerHTML='<b>'+pbTxt(R.B.pb)+'</b>'; $('b-npv').innerHTML='<b>'+eurS(R.B.npv)+'</b>'; $('b-irr').textContent=irrTxt(R.B.irr);
-  const aWins = R.A.npv >= R.B.npv, best = aWins?R.A:R.B, diff=Math.abs(R.A.npv-R.B.npv);
-  $('tag-a').textContent = aWins ? L.win : ''; $('tag-a').className='tag'+(aWins?' win':'');
-  $('tag-b').textContent = aWins ? '' : L.win; $('tag-b').className='tag'+(aWins?'':' win');
+  // L3.4 : écart à 25 ans de moins de 2 % (ou de 100 €) : les options se valent, l'étiquette va à celle qui se rembourse le plus vite
+  const V = E.pickOption(R.A, R.B), tie = V.tie, diff = V.diff, best = V.lead==='A' ? R.A : R.B, tagL = tie ? L.fast : L.win;
+  $('tag-a').textContent = V.tag==='A' ? tagL : ''; $('tag-a').className='tag'+(V.tag==='A'?' win':'');
+  $('tag-b').textContent = V.tag==='B' ? tagL : ''; $('tag-b').className='tag'+(V.tag==='B'?' win':'');
   const v=$('verdict'), pb=best.pb;
   let cls='', title;
   if(pb===null){ cls='bad'; title=L.vNo; }
@@ -1096,12 +1239,13 @@ function render(){
   v.className='verdict '+cls;
   v.querySelector('.big').textContent=title;
   v.querySelector('p').innerHTML = pb===null ? L.vNever :
-    (aWins?L.vTextA:L.vTextB)+'<strong>'+pbTxt(pb)+'</strong>'+L.vThen+'<strong>'+eurS(best.npv)+'</strong>'+L.vOver+npvq+'. '+
-    (diff<100 ? L.vEq : L.vDiff+'<strong>'+eur(diff)+'</strong>'+L.vDiffEnd);
+    (best===R.A?L.vTextA:L.vTextB)+'<strong>'+pbTxt(pb)+'</strong>'+L.vThen+'<strong>'+eurS(best.npv)+'</strong>'+L.vOver+npvq+'. '+
+    (tie ? L.vEq+L.vOut1+'<strong>'+eur(R.capexGross-R.bonus)+'</strong>'+L.vOut2+'<strong>'+eur(R.capexGross)+'</strong>'+L.vOut3
+         : L.vDiff+'<strong>'+eur(diff)+'</strong>'+L.vDiffEnd);
 
   // figure 2 : trésorerie cumulée
   (function(){
-    const W=figW('fig-cash',720,520), nar=W<720, H=nar?260:280, mL=nar?50:56,mR=nar?8:14,mT=14,mB=30, iw=W-mL-mR, ih=H-mT-mB;
+    const W=figW('fig-cash',720,520), nar=W<720, H=nar?274:294, mL=nar?50:56,mR=nar?8:14,mT=14,mB=44, iw=W-mL-mR, ih=H-mT-mB;
     const all=[...R.A.cum,...R.B.cum], lo=Math.min(0,...all), hi=Math.max(0,...all);
     const step=niceStep(lo,hi,8);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
@@ -1111,15 +1255,20 @@ function render(){
       g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${Math.abs(v)<1e-6?'#1D2734':'#E7E8E1'}" stroke-width="${Math.abs(v)<1e-6?1.5:1}"/>`;
       g+=`<text x="${mL-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${fmt(v/1000)} k€</text>`;
     }
-    for(let i=0;i<=25;i+=5) g+=`<text x="${x(i)}" y="${H-10}" text-anchor="${i===0?'start':i===25?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}${i===0?'':''}</text>`;
+    for(let i=0;i<=25;i+=5) g+=`<text x="${x(i)}" y="${H-24}" text-anchor="${i===0?'start':i===25?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}</text>`;
+    g+=`<text x="${mL+iw/2}" y="${H-5}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${L.years.trim()}</text>`;
     const path=(cum,c,w)=>`<path d="${cum.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
     g+=path(R.B.cum,'#1D2734',2.2)+path(R.A.cum,css('--amber-deep'),2.6);
-    // valeurs finales A et B : si elles se chevauchent, la plus basse passe sous sa courbe
-    const close=Math.abs(y(R.A.cum[25])-y(R.B.cum[25]))<16, lowB=R.B.cum[25]<R.A.cum[25];
-    [[R.A,css('--amber-deep')],[R.B,'#1D2734']].forEach(([r,c])=>{
-      if(r.pb!==null && r.pb>0) g+=`<circle cx="${x(r.pb)}" cy="${y(0)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
-      const last=r.cum[25], below=close && ((r===R.B)===lowB);
-      g+=`<text x="${x(25)-6}" y="${y(last)+(below?18:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${r===R.A?css('--amber-text'):c}" font-family="ui-monospace,Menlo,monospace">${eurS(last)}</text>`;
+    // valeurs finales A et B au-dessus de leur courbe ; si les deux étiquettes sont à moins de leur hauteur
+    // plus 4 px À L'ÉCRAN (le SVG est mis à l'échelle), la plus basse passe sous sa courbe
+    const cw=$('fig-cash').clientWidth, sc=cw>0?Math.min(1,cw/W):1, fs=12, lh=fs*1.2+4/sc;
+    const lab=[[R.A,css('--amber-deep')],[R.B,'#1D2734']].map(([r,c])=>({r,c,yy:y(r.cum[25])-8}));
+    const [hiL,loL]=lab[0].yy<=lab[1].yy?lab:[lab[1],lab[0]];
+    if(loL.yy-hiL.yy<lh){ loL.yy=Math.max(y(loL.r.cum[25])+fs+6, hiL.yy+lh); }
+    if(hiL.yy<fs+2){ const d=fs+2-hiL.yy; hiL.yy+=d; if(loL.yy-hiL.yy<lh) loL.yy=hiL.yy+lh; }
+    lab.forEach(({r,c,yy})=>{
+      if(r.pb!==null && r.pb>0) g+=`<circle cx="${x(r.pb)}" cy="${y(0)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="2"><title>${r===R.A?L.thA:L.thB}${L.tipSep}${L.tipPb}${r.pb.toLocaleString('fr-FR',{maximumFractionDigits:1})}${L.years}</title></circle>`;
+      g+=`<text class="endlab" stroke="#F4F5F1" stroke-width="3" paint-order="stroke" stroke-linejoin="round" x="${x(25)-6}" y="${yy}" text-anchor="end" font-size="${fs}" font-weight="700" fill="${r===R.A?css('--amber-text'):c}" font-family="ui-monospace,Menlo,monospace">${eurS(r.cum[25])}</text>`;
     });
     $('fig-cash').innerHTML=`<svg viewBox="0 0 ${W} ${H}"${nar?' style="min-width:0"':''} role="img" aria-label="${L.figCash}">${g}</svg>`;
   })();
@@ -1130,13 +1279,22 @@ function render(){
     if(yv>0 && yv%5 && yv!==1 && yv!==13 && yv!==15 && yv!==16) continue;
     rows+=`<tr><th scope="row">${yv}</th><td>${yv?eur(R.A.cum[yv]-R.A.cum[yv-1]):'–'}</td><td>${eurS(R.A.cum[yv])}</td><td>${yv?eur(R.B.cum[yv]-R.B.cum[yv-1]):'–'}</td><td>${eurS(R.B.cum[yv])}</td></tr>`;
   }
-  $('tab-cash').innerHTML=`<thead><tr><th scope="col">${L.thYear}</th><th scope="col">${L.thGainA}</th><th scope="col">${L.thCashA}</th><th scope="col">${L.thGainB}</th><th scope="col">${L.thCashB}</th></tr></thead><tbody>${rows}</tbody>`;
+  setT('tab-cash',`<thead><tr><th scope="col">${L.thYear}</th><th scope="col">${L.thGainA}</th><th scope="col">${L.thCashA}</th><th scope="col">${L.thGainB}</th><th scope="col">${L.thCashB}</th></tr></thead><tbody>${rows}</tbody>`);
   $('r-lcoe').textContent = L.lcoe+cts(R.lcoeA)+L.lcoeA+cts(R.lcoeB)+L.lcoeB+cts(I.price)+L.lcoeEnd;
 
   /* outil 3 */
   renderHeat(R, npvq);
+  if(document.activeElement!==$('cons-in')) $('cons-in').value=fmt(R.cons);
+  const o=id=>$(id+'-out').textContent;
+  const VT={p:o('p'), cons:o('cons')+L.vtYear, batt:I.batt>0?o('batt'):L.vtNoBatt, sc:o('sc'),
+    'cost-r':fmt(+$('cost-r').value)+L.vtKwc, 'bcost-r':fmt(+$('bcost-r').value)+L.vtKwh, 'inv-r':eur(+$('inv-r').value),
+    price:o('price')+L.vtPerKwh, growth:o('growth')+L.vtYear, market:o('market')+L.vtPerKwh, deg:o('deg'), disc:o('disc'),
+    'hconso-r':o('hconso'), hsurf:o('hsurf'), heta:o('heta'), hocc:o('hocc')+L.vtPers, hpac:o('hpac'), 'hpcost-r':eur(+$('hpcost-r').value),
+    hpg:o('hpg'), hpo:o('hpo'), hgf:o('hgf')+L.vtYear};
+  Object.entries(VT).forEach(([k,s])=>$(k).setAttribute('aria-valuetext',s));
 
   writeUrl();
+  scrollable();
 }
 
 /* ---- tableaux de repères (statiques) ---- */
@@ -1144,13 +1302,13 @@ function render(){
   const az=[0,30,45,60,90], tilts=G.tilts;
   let h=`<thead><tr><th scope="col">${L.gridTilt}</th>${az.map((a,i)=>`<th scope="col">${L.gridAz[i]}</th>`).join('')}</tr></thead><tbody>`;
   tilts.forEach(t=>{ h+=`<tr><th scope="row">${t}°</th>${az.map(a=>{const v=yieldKwc(a,t);return `<td class="${v===G.grid['0:35']?'hi':''}">${fmt(v)}</td>`;}).join('')}</tr>`; });
-  $('tab-grid').innerHTML=h+'</tbody>';
+  setT('tab-grid',h+'</tbody>');
   let a=`<thead><tr><th scope="col">${L.thP}</th><th scope="col">${L.thBonus}</th><th scope="col">${L.thBonusKwc}</th><th scope="col">${L.thFirst}</th><th scope="col">${L.thTariff10}</th><th scope="col">${L.thTariff30}</th></tr></thead><tbody>`;
   [[3,2026],[6,2027],[10,2028],[15,2029],[20,2029]].forEach(([p,n])=>{
     a+=`<tr><th scope="row">${p} kWp</th><td>${eur(bonusPV(p))}</td><td>${fmt(bonusPV(p)/p)} €</td><td>${n}</td><td>${cts(tariff(10,n))}</td><td>${cts(tariff(30,n))}</td></tr>`;
   });
   // lecture générée par les mêmes formules que le tableau (plus de montant écrit à la main)
-  $('tab-aid').innerHTML=a+'</tbody>';
+  setT('tab-aid',a+'</tbody>');
   // note de lecture HORS du tableau : une légende de tableau (caption) prend la largeur du tableau et défile avec lui sur mobile
   $('aid-note').textContent=L.aidNote1+fmt(bonusPV(6))+L.aidNote2+cts(tariff(6,2027))+L.aidNote3;
 })();
@@ -1184,19 +1342,21 @@ const HDEF = {gaz:{c:2000,r:[300,6000,50]}, mazout:{c:2000,r:[300,6000,50]}, ele
 const HUNIT = {gaz:'m3', mazout:'L', electrique:'kWh'};
 const hids = ['hen','hmode','hconso','hsurf','hep','heta','hocc','hemit','hbase','hpac','hpcost','hbuf','hbufc','hmaj','hcuve','hdist','hevit','hpg','hpo','hgf'];
 const hchk = {hmod:true, hbufon:true, hzone:false, hpv:true};   // cases à cocher : valeur par défaut
+let HC = HDEF.gaz.c;   // consommation de chauffage exacte (facture) : le curseur la suit, arrondie à son pas
 function heatUnit(reset){
   const en=$('hen').value, d=HDEF[en], r=$('hconso-r');
   r.min=d.r[0]; r.max=d.r[1]; r.step=d.r[2];
-  if(reset){ $('hconso').value=d.c; $('heta').value=Math.round(BAR.chaleur.rendement[en]*100); }
-  r.value=$('hconso').value;
+  if(reset){ HC=d.c; $('hconso').value=fmt(HC); $('heta').value=Math.round(BAR.chaleur.rendement[en]*100); checkField('hconso','hconso-r',LH.units[en]); }
+  r.value=HC;
 }
 function renderHeat(R, npvq){
-  const H={}; hids.forEach(k=>{ const v=$(k).value; H[k]=isNaN(+v)||v===''?v:+v; });
+  const H={}; hids.forEach(k=>{ const v=$(k).value; H[k]=isNaN(+v)||v===''?v:+v; }); H.hconso=HC;
   const en=H.hen, oil=en==='mazout', el=en==='electrique', pv=$('hpv').checked, buf=$('hbufon').checked, conso=H.hmode==='conso';
   $('fld-hconso').hidden=!conso; $('fld-hsurf').hidden=conso; $('fld-hep').hidden=conso;
   $('fld-hpg').hidden=en!=='gaz'; $('fld-hpo').hidden=!oil; $('fld-hgf').hidden=el; $('fld-hcuve').hidden=!oil;
   $('hbuf-in').hidden=!buf;
-  $('hconso-out').textContent=fmt(H.hconso)+LH.units[en];
+  $('hconso-out').textContent=fmt(H.hconso)+LH.units[en]; $('hconso-u').textContent=LH.units[en];
+  if(document.activeElement!==$('hconso')) $('hconso').value=fmt(HC);
   $('hsurf-out').textContent=fmt(H.hsurf)+' m²';
   $('heta-out').textContent=pct(H.heta);
   $('hocc-out').textContent=H.hocc;
@@ -1242,7 +1402,7 @@ function renderHeat(R, npvq){
   const best=cols.filter(k=>k!=='A').reduce((b,k)=>S[k].gain>S[b].gain?k:b, cols[1]);
   const row=(lbl,f,strong)=>`<tr><th scope="row">${strong?'<strong>'+lbl+'</strong>':lbl}</th>${cols.map(k=>`<td${strong&&k===best?' class="best"':''}>${f(S[k],k)}</td>`).join('')}</tr>`;
   const dash='–';
-  $('tab-heat').innerHTML=`<thead><tr><th scope="col">${LH.thScen}</th>${cols.map(k=>`<th scope="col">${name[k]}</th>`).join('')}</tr></thead><tbody>`+
+  setT('tab-heat',`<thead><tr><th scope="col">${LH.thScen}</th>${cols.map(k=>`<th scope="col">${name[k]}</th>`).join('')}</tr></thead><tbody>`+
     row(LH.rowInv,(s,k)=>k==='A'?dash:eur(s.inv))+
     row(LH.rowAid,(s,k)=>k==='A'?dash:eur(s.aideEtat))+
     (H.hevit>0?row(LH.rowEvit,(s,k)=>s.evite>0?eur(s.evite):dash):'')+
@@ -1254,12 +1414,12 @@ function renderHeat(R, npvq){
     row(LH.rowCO2,s=>t1(s.co2))+
     row(LH.rowCO2b,(s,k)=>k==='A'?dash:(s.co2Baisse>=0?'−':'+')+pct(Math.abs(s.co2Baisse*100)))+
     (pv?row(LH.rowSelf,(s,k)=>s.energie.pv>0?pct(s.energie.self/s.energie.pv*100):dash):'')+
-    row(LH.rowScop,s=>s.energie.scop?fmt1(s.energie.scop):dash)+'</tbody>';
+    row(LH.rowScop,s=>s.energie.scop?fmt1(s.energie.scop):dash)+'</tbody>');
   // figure 3 : dépense cumulée
   const COL={A:'#5A6472',B:css('--hydro'),C:css('--green'),D:css('--amber-deep')};
   (function(){
     // marge droite réservée aux montants finaux, hors des courbes
-    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?260:280, mL=nar?50:56,mR=nar?68:80,mT=14,mB=30, iw=W-mL-mR, ih=H2-mT-mB;
+    const W=figW('fig-heat',720,520), nar=W<720, H2=nar?274:294, mL=nar?50:56,mR=nar?68:80,mT=14,mB=44, iw=W-mL-mR, ih=H2-mT-mB;
     const all=cols.flatMap(k=>S[k].cum), lo=Math.min(0,...all), hi=Math.max(0,...all);
     const step=niceStep(lo,hi,7);
     const y0=Math.floor(lo/step)*step, y1=Math.ceil(hi/step)*step;
@@ -1269,16 +1429,17 @@ function renderHeat(R, npvq){
       g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(vv)}" y2="${y(vv)}" stroke="${Math.abs(vv)<1e-6?'#1D2734':'#E7E8E1'}" stroke-width="${Math.abs(vv)<1e-6?1.5:1}"/>`;
       g+=`<text x="${mL-6}" y="${y(vv)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${fmt(vv/1000)} k€</text>`;
     }
-    for(let i=0;i<=Y;i+=5) g+=`<text x="${x(i)}" y="${H2-10}" text-anchor="${i===0?'start':i===Y?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}</text>`;
+    for(let i=0;i<=Y;i+=5) g+=`<text x="${x(i)}" y="${H2-24}" text-anchor="${i===0?'start':i===Y?'end':'middle'}" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${i}</text>`;
+    g+=`<text x="${mL+iw/2}" y="${H2-5}" text-anchor="middle" font-size="11" fill="#5A6472" font-family="ui-monospace,Menlo,monospace">${L.years.trim()}</text>`;
     cols.forEach(k=>{ g+=`<path d="${S[k].cum.map((vv,i)=>(i?'L':'M')+x(i)+','+y(vv)).join(' ')}" fill="none" stroke="${COL[k]}" stroke-width="${k==='A'?2:2.4}"${k==='A'?' stroke-dasharray="6 4"':''} stroke-linejoin="round"/>`; });
     // valeurs finales dans la marge droite : écart minimal de 15 px À L'ÉCRAN (le SVG est mis à l'échelle)
-    const cw=$('fig-heat').clientWidth, sc=cw>0?Math.min(1,cw/W):1, gap=15/sc, fs=nar?11:12;
+    const cw=$('fig-heat').clientWidth, sc=cw>0?Math.min(1,cw/W):1, fs=nar?11:12, gap=fs*1.2+4/sc;
     const lab=cols.map(k=>[k,S[k].cum[Y]]).sort((a,b)=>b[1]-a[1]).map(([k,vv])=>({k,vv,yy:y(vv)+4}));
     lab.forEach((l,i)=>{ if(i&&l.yy<lab[i-1].yy+gap) l.yy=lab[i-1].yy+gap; });
-    for(let i=lab.length-1, lim=H2-mB+12;i>=0;i--){ if(lab[i].yy>lim) lab[i].yy=lim; lim=lab[i].yy-gap; }
+    for(let i=lab.length-1, lim=H2-mB+4;i>=0;i--){ if(lab[i].yy>lim) lab[i].yy=lim; lim=lab[i].yy-gap; }
     lab.forEach(({k,vv,yy})=>{
       g+=`<line x1="${x(Y)}" x2="${x(Y)+4}" y1="${y(vv)}" y2="${yy-4}" stroke="${COL[k]}" stroke-width="1"/>`;
-      g+=`<text x="${x(Y)+6}" y="${yy}" text-anchor="start" font-size="${fs}" font-weight="700" fill="${k==='D'?css('--amber-text'):COL[k]}" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
+      g+=`<text class="endlab" stroke="#F4F5F1" stroke-width="3" paint-order="stroke" stroke-linejoin="round" x="${x(Y)+6}" y="${yy}" text-anchor="start" font-size="${fs}" font-weight="700" fill="${k==='D'?css('--amber-text'):COL[k]}" font-family="ui-monospace,Menlo,monospace">${eur(vv)}</text>`;
     });
     $('fig-heat').innerHTML=`<svg viewBox="0 0 ${W} ${H2}"${nar?' style="min-width:0"':''} role="img" aria-label="${LH.figHeat}">${g}</svg>`;
     $('leg-heat').innerHTML=cols.map(k=>`<span><span class="sw" style="background:${COL[k]}"></span>${name[k]}</span>`).join('');
@@ -1290,9 +1451,9 @@ function renderHeat(R, npvq){
   if(kp.distribution) lines.push([LH.aidDist+Math.round(K.distTaux*100)+LH.aidDistMax+eur(K.distMax)+')',kp.distribution]);
   if(pv){ lines.push([LH.aidPv,ai.kbPV]); if(I.batt>0) lines.push([LH.aidBatt,ai.kbBatt]); if(I.hems) lines.push([LH.aidHems,ai.kbHems]); }
   const tot=lines.reduce((a,l)=>a+l[1],0);
-  $('tab-heat-aid').innerHTML=`<thead><tr><th scope="col">${LH.thAid}</th><th scope="col">${LH.thAmt}</th></tr></thead><tbody>`+
+  setT('tab-heat-aid',`<thead><tr><th scope="col">${LH.thAid}</th><th scope="col">${LH.thAmt}</th></tr></thead><tbody>`+
     lines.map(l=>`<tr><th scope="row">${l[0]}</th><td>${eur(l[1])}</td></tr>`).join('')+
-    `<tr><th scope="row"><strong>${LH.aidTot}</strong></th><td><strong>${eur(tot)}</strong></td></tr></tbody>`;
+    `<tr><th scope="row"><strong>${LH.aidTot}</strong></th><td><strong>${eur(tot)}</strong></td></tr></tbody>`);
   // ballon tampon
   const b=X.ballon, minL=E.minBufferLitres(H.hpac,$('hmod').checked,BAR);
   let bt;
@@ -1313,16 +1474,24 @@ fetch('/data/annee_type.json').then(r=>{ if(!r.ok) throw new Error(r.status); re
   .then(j=>{ SERIE=j; render(); }).catch(()=>{ SERIE_ERR=true; render(); });
 
 /* ---- liaisons ---- */
+// conteneurs de tableaux : focalisables au clavier seulement s'ils défilent (sans JS, ils le restent tous)
+function scrollable(){ document.querySelectorAll('.tblscroll').forEach(d=>{ if(d.scrollWidth>d.clientWidth+1) d.setAttribute('tabindex','0'); else d.removeAttribute('tabindex'); }); }
+const DEF={};   // valeurs par défaut du HTML, lues avant l'application des paramètres d'URL
+// défauts qui dépendent d'un autre réglage : coût = kWc × 1 800 €, batterie × 900 €, chauffage selon l'énergie
+const defOf=k=>k==='cost'?String(Math.round(+$('p').value*1800/50)*50):k==='bcost'?String(Math.round(+$('batt').value*900/50)*50)
+  :k==='hconso'?String(HDEF[$('hen').value].c):k==='heta'?String(Math.round(BAR.chaleur.rendement[$('hen').value]*100)):DEF[k];
 function writeUrl(){
-  const q=new URLSearchParams();
-  ids.forEach(k=>q.set(k,$(k).value));
+  const q=new URLSearchParams(), val=k=>k==='hconso'?String(HC):$(k).value;
+  ids.forEach(k=>{ if(k==='sc'&&I.scAuto) return; if(+val(k)!==+defOf(k)&&val(k)!==defOf(k)) q.set(k,val(k)); });
   if(!I.scAuto) q.set('scm','1');
   if(I.hems) q.set('hems','1');
-  hids.forEach(k=>q.set(k,$(k).value));
+  hids.forEach(k=>{ const v=val(k), d=defOf(k); if(v!==d && !(v!==''&&d!==''&&+v===+d)) q.set(k,v); });
   Object.entries(hchk).forEach(([k,d])=>{ if($(k).checked!==d) q.set(k,d?'0':'1'); });
-  history.replaceState(null,'','?'+q.toString()+location.hash);
+  const s=q.toString();
+  history.replaceState(null,'',(s?'?'+s:location.pathname)+location.hash);
 }
 (function init(){
+  [...ids,...hids].forEach(k=>{ DEF[k]=$(k).value; });
   const q=new URLSearchParams(location.search);
   [...ids,...hids].forEach(k=>{
     if(!q.has(k)) return;
@@ -1335,8 +1504,9 @@ function writeUrl(){
   if(q.get('scm')==='1') $('sc-auto').checked=false;
   if(q.get('hems')==='1') $('hems').checked=true;
   Object.keys(hchk).forEach(k=>{ if(q.has(k)) $(k).checked=q.get(k)==='1'; });
+  HC = q.has('hconso') && isFinite(num(q.get('hconso'))) ? Math.min(100000,Math.max(0,num(q.get('hconso')))) : HDEF[$('hen').value].c;
+  $('hconso').value=fmt(HC);
   heatUnit(false);
-  if(!q.has('hconso')){ $('hconso').value=HDEF[$('hen').value].c; $('hconso-r').value=$('hconso').value; }
   if(!q.has('heta')) $('heta').value=Math.round(BAR.chaleur.rendement[$('hen').value]*100);
   $('hpcost-r').value=$('hpcost').value;
   if(!q.has('cost')) $('cost').value=Math.round(+$('p').value*1800/50)*50;
@@ -1358,8 +1528,13 @@ function writeUrl(){
   $('hems').addEventListener('change',render);
   ['az','tilt','canton','cons','year','price','growth','market','deg','disc','hcost','haid'].forEach(k=>$(k).addEventListener('input',render));
   $('hen').addEventListener('change',()=>{ heatUnit(true); render(); });
-  $('hconso-r').addEventListener('input',()=>{ $('hconso').value=$('hconso-r').value; render(); });
-  $('hconso').addEventListener('input',()=>{ $('hconso-r').value=$('hconso').value; render(); });
+  $('hconso-r').addEventListener('input',()=>{ HC=+$('hconso-r').value; $('hconso').value=fmt(HC); checkField('hconso','hconso-r',LH.units[$('hen').value]); render(); });
+  $('hconso').addEventListener('input',()=>{ if(checkField('hconso','hconso-r',LH.units[$('hen').value])){ HC=num($('hconso').value); $('hconso-r').value=HC; render(); } });
+  $('hconso').addEventListener('change',()=>{ if(checkField('hconso','hconso-r',LH.units[$('hen').value])) $('hconso').value=fmt(HC); });
+  // consommation d'électricité (outil 1) : champ texte synchronisé avec le curseur (pas de 100 kWh)
+  $('cons-in').addEventListener('input',()=>{ if(checkField('cons-in','cons',L.kwhYear)){ $('cons').value=num($('cons-in').value); render(); } });
+  $('cons-in').addEventListener('change',()=>{ if(checkField('cons-in','cons',L.kwhYear)) $('cons-in').value=fmt(+$('cons').value); });
+  $('cons').addEventListener('input',()=>{ $('cons-in').value=fmt(+$('cons').value); checkField('cons-in','cons',L.kwhYear); });
   $('hpcost-r').addEventListener('input',()=>{ $('hpcost').value=$('hpcost-r').value; render(); });
   $('hpcost').addEventListener('input',()=>{ $('hpcost-r').value=$('hpcost').value; render(); });
   hids.filter(k=>!['hen','hconso','hpcost'].includes(k)).forEach(k=>$(k).addEventListener('input',render));
@@ -1368,7 +1543,13 @@ function writeUrl(){
   render();
   // rotation ou redimensionnement : figures redessinées à la nouvelle largeur
   let lastW=innerWidth;
-  addEventListener('resize',()=>{ if(Math.abs(innerWidth-lastW)>20){ lastW=innerWidth; render(); } });
+  addEventListener('resize',()=>{ if(Math.abs(innerWidth-lastW)>20){ lastW=innerWidth; render(); } scrollable(); });
+  // une ancre (#src-3, #m-calc…) dans un <details> fermé l'ouvre (L3.14)
+  const openHash=()=>{ const h=location.hash.slice(1), el=h&&document.getElementById(h); if(!el) return;
+    let d=el.closest('details'); while(d){ d.open=true; d=d.parentElement.closest('details'); }
+    if(el.tagName==='DETAILS') el.open=true; el.scrollIntoView(); };
+  addEventListener('hashchange',openHash); openHash();
+  document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',scrollable));
 })();
 </script>
 <script defer src="/rt.js"></script>

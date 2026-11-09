@@ -30,7 +30,7 @@
 "+' %/an'": "+' %/ano'",
 "const pct = n => Math.round(n)+' %';": "const pct = n => Math.round(n)+' %';",
 "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';": "$('growth-out').textContent = I.growth.toLocaleString('fr-FR')+' %';",
-"(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';": "(r*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';",
+"(r*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';": "(r*100).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';",
 "${p} kWc</th>": "${p} kWp</th>",
 "$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+' %';": "$('disc-out').textContent = I.disc.toLocaleString('fr-FR')+' %';",
 "units:{gaz:' m³/an', mazout:' L/an', electrique:' kWh/an'},": "units:{gaz:' m³/ano', mazout:' L/ano', electrique:' kWh/ano'},",
@@ -53,5 +53,8 @@
 "minBuf1:' Pompe à chaleur sans modulation : le Klimabonus exige un ballon tampon d\\'au moins ', minBuf2:' L ici.',": "minBuf1:' Bomba de calor sem modulação: o Klimabonus exige aqui um depósito de inércia de pelo menos ', minBuf2:' L.',",
 "dem1:'Besoin de chaleur utile ', demEst:'estimé par la surface : ', demFac:'déduit de la consommation : ', dem2:' kWh/an, dont ', dem3:' kWh d\\'eau chaude. Électricité de la pompe à chaleur seule : ',": "dem1:'Necessidade de calor útil ', demEst:'estimada pela área: ', demFac:'deduzida do consumo: ', dem2:' kWh/ano, dos quais ', dem3:' kWh de água quente. Eletricidade só da bomba de calor: ',",
 "dem4:' kWh/an, dont ', dem5:' kWh d\\'appoint électrique par grand froid.', demNote:' Une estimation par la surface n\\'est qu\\'un ordre de grandeur.', dem6:' kWh/an.',": "dem4:' kWh/ano, dos quais ', dem5:' kWh de apoio elétrico quando faz muito frio.', demNote:' Uma estimativa pela área é apenas uma ordem de grandeza.', dem6:' kWh/ano.',",
-"figHeat:'Dépense cumulée par scénario, en euros courants',": "figHeat:'Despesa acumulada por cenário, em euros correntes',"
+"figHeat:'Dépense cumulée par scénario, en euros courants',": "figHeat:'Despesa acumulada por cenário, em euros correntes',",
+"fast:'retour le plus rapide', vOut1:' L\\'option A demande un apport initial de ', vOut2:', l\\'option B de ', vOut3:'.',": "fast:'retorno mais rápido', vOut1:' Investimento inicial: opção A ', vOut2:', opção B ', vOut3:'.',",
+"gainSub:'par an · A : Klimabonus · B : tarif garanti', tipSep:' : ', tipOf:', dont ', tipSelf:' kWh autoconsommés', tipPb:'retour sur investissement en ',": "gainSub:'por ano · A: Klimabonus · B: tarifa garantida', tipSep:': ', tipOf:', dos quais ', tipSelf:' kWh autoconsumidos', tipPb:'retorno do investimento em ',",
+"errRange:'Entrez une valeur entre ', errAnd:' et ', vtYear:' par an', vtKwc:' € par kWc', vtKwh:' € par kWh utile', vtPerKwh:' par kWh', vtPers:' personnes', vtNoBatt:'0 kWh, sans batterie',": "errRange:'Introduza um valor entre ', errAnd:' e ', vtYear:' por ano', vtKwc:' € por kWp', vtKwh:' € por kWh útil', vtPerKwh:' por kWh', vtPers:' pessoas', vtNoBatt:'0 kWh, sem bateria',"
 }

@@ -41,22 +41,22 @@
  },
  "sim_de": {
   "date": "2026-11-09",
-  "hash": "823aca2e4d348db1961b19ac60d8e117dfd4345f01eadd19081a825ba6256b54"
+  "hash": "233d9b63cd0cac8080c54a2d6d2253078c614d35a6a59a443e486baa63441ef1"
  },
  "sim_en": {
   "date": "2026-11-09",
-  "hash": "c3f381c0cd66bef428309dfb2012fb8a5977f00fbd1bc313023fc5df685a6a65"
+  "hash": "79e72e19221caca4491feb22740304ad622c3e11a05c5bdac57c3d2a9f25b8f7"
  },
  "sim_fr": {
   "date": "2026-11-09",
-  "hash": "2b6fc641f3048937725bcf69aacbf7b30fc5638468459e6cc3bd8bfe6497d1ed"
+  "hash": "9fc2c7852a1873e222a34e229e31c071a46c8684be548282ecbb6f21a93aa0a5"
  },
  "sim_lb": {
   "date": "2026-11-09",
-  "hash": "fbde053ac2ddf9d2c96eddf5f95a2ed74e400aa52283c2763f1b421674217b69"
+  "hash": "11797cafbe72914df9b82357bfeecd4424828480eaffacda1b1a94296e862b31"
  },
  "sim_pt": {
   "date": "2026-11-09",
-  "hash": "c2bfdb9a9c46d874b11b7a7c14920a85709ef395214c1b8dd3dbc395b715d157"
+  "hash": "8ec3e09a47bcf63ec6256f1bff592920013c8666306511f9553b79b43daf3bee"
  }
 }

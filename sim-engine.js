@@ -444,8 +444,20 @@
              aides: { kbPV: kbPV, kbBatt: kbBat, kbHems: kbH, pac: kp, kbPAC: kbPAC, locales: loc } };
   }
 
+  // Verdict de l'outil 2 (présentation, aucun calcul) : A et B = sorties de compute() (npv, pb).
+  // Écart à 25 ans de moins de 100 € ou de 2 % du plus grand gain : les options se valent, l'étiquette
+  // va à celle qui se rembourse le plus vite (« fast ») ; sinon à celle qui rapporte le plus (« win »).
+  // lead = option décrite en tête du verdict, toujours celle qui porte l'étiquette quand il y en a une.
+  function pickOption(A, B) {
+    var diff = Math.abs(A.npv - B.npv);
+    var tie = diff < 100 || diff < 0.02 * Math.max(Math.abs(A.npv), Math.abs(B.npv));
+    var aFast = A.pb !== null && (B.pb === null || A.pb <= B.pb), bFast = B.pb !== null && !aFast;
+    var tag = tie ? (aFast ? 'A' : (bFast ? 'B' : null)) : (A.npv >= B.npv ? 'A' : 'B');
+    return { tie: tie, diff: diff, tag: tag, label: tie ? 'fast' : 'win', lead: tag || 'A' };
+  }
+
   return Object.freeze({
-    BAREMES: BAREMES,
+    BAREMES: BAREMES, pickOption: pickOption,
     gridYield: gridYield, yieldPerKwc: yieldPerKwc, selfShare: selfShare,
     bonusPV: bonusPV, bonusBattery: bonusBattery, hemsAid: hemsAid, feedInTariff: feedInTariff,
     annualFlows: annualFlows, cumulative: cumulative, npvAt: npvAt, netGain: netGain,
