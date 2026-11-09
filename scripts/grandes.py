@@ -398,7 +398,8 @@ def dashboard_section(b, lang, cpath, slug):
         th = "".join(f'<th scope="col">{c}</th>' for c in L["cols"])
         more = f'<p class="bignote">{L["more"](len(ups))}</p>' if len(ups) > DASH_MAX or downs else ""
         body = (f'<h3 class="bigh">{L["latest"]}</h3>'
-                f'<table class="bigtab" aria-label="{L["list_aria"]}"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table>{more}')
+                f'<div class="tblscroll" role="region" tabindex="0" aria-label="{L["list_aria"]}">'
+                f'<table class="bigtab" aria-label="{L["list_aria"]}"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>{more}')
     else:
         body = f'<p class="bignone">{L["none_dash"](first, last)}</p>'
     return (f'{head}<p class="lede">{lede}</p><div class="card">{body}'
@@ -422,7 +423,8 @@ def commune_section(b, lang, lau2, cname_html, home):
             + (f'<small>{_remark(x, lang)}</small>' if _remark(x, lang) else "")
             + f'</td><td>{TYPE_NAMES[lang].get(x["t"], _esc(x["t"]))}</td><td>{fmt_kw(x["kw"], lang)}</td></tr>'
             for x in mine)
-        body = f'<p class="bigh2">{L["c_some"]}</p><table class="bigtab"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table>'
+        body = (f'<p class="bigh2" id="bigtab-h">{L["c_some"]}</p><div class="tblscroll" role="region" tabindex="0" '
+                f'aria-labelledby="bigtab-h"><table class="bigtab"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>')
     else:
         body = f'<p class="bignone">{L["c_none"](first, last)}</p>'
     return (f'<section id="{DASH_ANCHOR}">{head}<p class="lede">{lede}</p><div class="card">{body}'

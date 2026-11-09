@@ -15,7 +15,7 @@ PAGE = "pt/simulador/index.html"
 def test_parite_dictionnaire_pt():
     """Quatre dictionnaires PT (tableau de bord, JS, simulateur, JS du simulateur) : exactement les
     clés EN, fichier par fichier ; aucune clé morte (check_dicts sort en erreur sinon)."""
-    tpl = (build.ROOT / "template.html").read_text() + "\n" + (build.ROOT / "template_simulateur.html").read_text()
+    tpl = "\n".join(build.load_templates())   # gabarits, ossature commune insérée
     build.check_dicts(tpl)
     assert build.I18N_FILES["pt"] == ("i18n_pt.json", "i18n_pt_js.json", "i18n_sim_pt.json", "i18n_sim_pt_js.json")
     for en, pt in zip(build._dict_parts("en"), build._dict_parts("pt")):
@@ -24,7 +24,7 @@ def test_parite_dictionnaire_pt():
 
 @pytest.mark.parametrize("idx", [0, 1, 2, 3])
 def test_parite_detecte_une_cle_manquante(idx):
-    tpl = (build.ROOT / "template.html").read_text() + "\n" + (build.ROOT / "template_simulateur.html").read_text()
+    tpl = "\n".join(build.load_templates())   # gabarits, ossature commune insérée
     parts = {lang: build._dict_parts(lang) for lang in build.I18N_FILES}
     parts["pt"][idx].pop(next(iter(parts["pt"][idx])))
     with pytest.raises(SystemExit):

@@ -33,21 +33,6 @@
   .wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
 
   /* ---------- header ---------- */
-  /* series bar (top, prominent) : homogénéise la série open-data */
-  .seriesbar{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:12px 8px 12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 1px 2px rgba(20,25,35,.06);margin-bottom:36px}
-  .seriesbar .sb-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:650;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-  .seriesbar .sb-label::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
-  .seriesbar nav{display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin-left:auto}
-  .seriesbar a{font-family:var(--body);font-size:12.5px;font-weight:600;color:var(--ink-2);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s;white-space:nowrap}
-  .seriesbar a:hover{color:var(--amber-text);border-color:var(--line);background:var(--paper)}
-  .seriesbar a.cur{color:var(--amber-text);background:var(--amber-soft);border-color:var(--amber)}
-  .seriesbar .arw{color:var(--ink-3);opacity:.55;font-size:12px}
-  .seriesbar .langtoggle{display:inline-flex;gap:2px;align-items:center;font-family:var(--mono);font-size:11px;font-weight:650;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--paper)}
-  .seriesbar .langtoggle a{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;color:var(--ink-3);text-decoration:none;letter-spacing:.05em;border:none}
-  .seriesbar .langtoggle svg{display:block;border-radius:2px}
-  .seriesbar .langtoggle a:hover{background:var(--amber-soft);color:var(--amber-text)}
-  .seriesbar .langtoggle a.cur{background:#8A5600;color:#fff}
-  @media(max-width:640px){.seriesbar{border-radius:14px}.seriesbar nav{margin-left:0;width:100%}.seriesbar .arw{display:none}.seriesbar .langtoggle{margin-left:auto}}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .eyebrow::before{content:"";width:26px;height:2px;background:var(--amber)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.015em;margin:0 0 0;text-wrap:balance;max-width:20ch}
@@ -181,7 +166,7 @@
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .tblwrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:4px;background:var(--card)}
-  table{border-collapse:collapse;width:100%;min-width:900px;font-size:13.5px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
   table.cantons{min-width:520px}
   table.cantons thead th{cursor:default}
   table.cantons tbody td:nth-child(2){font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right}
@@ -208,11 +193,7 @@
   .minitr i{display:block;height:100%;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .pos{color:#3E7A2E!important}
 
-  /* ---------- footer ---------- */
-  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-2)}
-  footer h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
-  footer p{max-width:75ch;margin:0 0 10px}
-  footer a,.kbnote a,.refs a{color:var(--amber-text)}
+  .kbnote a,.refs a{color:var(--amber-text)}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:620px}
   @media(prefers-reduced-motion:no-preference){
@@ -220,13 +201,13 @@
   }
   /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
   .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:10px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
   .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
   .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
   .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
-  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:999px;background:none;text-decoration:none;cursor:pointer}
+  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:2px;background:none;text-decoration:none;cursor:pointer}
   .rt-row a:hover,.rt button:hover{border-color:var(--rt-accent)}
   .rt :focus-visible,.rt-a:focus-visible{outline:2px solid var(--rt-accent);outline-offset:2px}
   .rt [hidden]{display:none}
@@ -258,7 +239,135 @@
     .pair .b i,.pair .b.in i,.pair .b.cap.in i{left:0;right:auto;top:12px;color:var(--ink-3)}
   }
 
-  .crumb{font-size:13px;color:var(--ink-3);margin:0 0 14px}.crumb a{color:var(--amber-text)}
+  /* ==== OSSATURE (lot 1, scripts/ossature.py) : base, bandeau, en-tête, tableaux, colophon ==== */
+  body{margin:0;background:var(--paper)}
+  .wrap{padding:16px 24px 72px}
+  @media(max-width:480px){.wrap{padding:12px 16px 56px}}
+  html{scroll-padding-top:56px}
+  :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  /* bandeau de la série */
+  .masthead{border-top:3px solid var(--amber);border-bottom:1px solid var(--line);padding:5px 0 6px;margin:0 0 24px;font-size:13px}
+  .wrap:has(.crumbs) .masthead{margin-bottom:4px}
+  .mh-row{display:flex;align-items:center;justify-content:space-between;gap:4px 16px}
+  .mh-label{margin:0;font:600 14.5px/26px var(--body);font-variant-caps:all-small-caps;letter-spacing:.07em;color:var(--amber-text)}
+  .series{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center}
+  .series li{display:inline-flex;align-items:center}
+  .series li:not(:last-child)::after{content:"·"/"";color:var(--ink-3);padding:0 7px;font-weight:700}
+  .series a{display:inline-flex;align-items:center;min-height:26px;color:var(--ink-2);text-decoration:none;font-size:13.5px}
+  .series a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
+  .series a[aria-current]{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:4px}
+  .mh-desk{margin-top:2px}
+  .langs{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font:600 11.5px var(--mono);letter-spacing:.04em}
+  .langs li{display:flex}
+  .langs a{display:inline-flex;align-items:center;gap:5px;min-height:28px;min-width:24px;padding:0 4px;color:var(--ink-3);text-decoration:none}
+  .langs a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:5px}
+  .langs a[aria-current]{color:var(--ink);text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:5px}
+  .langs svg{display:block;width:16px;height:11px;flex:none;box-shadow:0 0 0 .5px rgba(29,39,52,.35)}
+  .langs .lg-note{font:500 11px var(--body);letter-spacing:0;color:var(--ink-3)}
+  .mh-series{display:none}
+  .mh-series summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0;font:600 13.5px var(--body);font-variant-caps:all-small-caps;letter-spacing:.05em;color:var(--amber-text);white-space:nowrap}
+  .mh-series summary::-webkit-details-marker{display:none}
+  .mh-series summary::before{content:"▸"/"";font-variant-caps:normal;width:10px}
+  .mh-series[open] summary::before{content:"▾"/""}
+  .mh-series .count{font-variant-caps:normal;font-variant-numeric:tabular-nums;color:var(--ink-3);font-weight:500;letter-spacing:0}
+  .mh-short{display:none}
+  @media(max-width:767px){
+    .masthead{margin-bottom:16px;padding:2px 0 4px}
+    .wrap:has(.crumbs) .masthead{margin-bottom:4px}
+    .mh-label,.mh-desk{display:none}
+    .mh-row{display:grid;grid-template-columns:1fr auto;align-items:start;column-gap:8px}
+    .mh-series{display:block;grid-column:1/-1;grid-row:1}
+    .mh-row>.langs{grid-column:2;grid-row:1}
+    .mh-series .series{padding:2px 0 6px 16px}
+    .mh-series .series a{min-height:32px}
+    .langs a{min-height:32px;padding:0 3px}
+    .langs .lg-note{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  }
+  @media(max-width:539px){.langs svg{display:none}}
+  @media(max-width:459px){.mh-long{display:none}.mh-short{display:inline}}
+  /* en-tête de page : fil d'Ariane, surtitre, H1 */
+  .crumbs ol{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-wrap:wrap;font:11.5px/1.5 var(--mono);color:var(--ink-3)}
+  .crumbs li{display:flex;align-items:center}
+  .crumbs li:not(:last-child)::after{content:"›"/"";margin:0 8px}
+  .crumbs a{color:var(--amber-text);text-decoration:none;display:inline-block;padding:4px 0}
+  .crumbs a:hover{text-decoration:underline}
+  .crumbs li[aria-current]{padding:4px 0}
+  /* téléphone : fil d'Ariane sur une ligne ; le premier libellé, long, est tronqué à l'écran (texte complet dans le DOM) */
+  @media(max-width:767px){
+    .crumbs ol{flex-wrap:nowrap}
+    .crumbs li{flex:none;min-width:0}
+    .crumbs li:first-child{flex:0 1 auto}
+    .crumbs li:first-child a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  }
+  header>.eyebrow{margin:0}
+  h1{max-width:20ch;margin-top:10px}
+  /* tableaux : conteneur défilant (indices d'ombre seulement si le tableau dépasse), légendes */
+  .tblscroll{--sc-bg:var(--card);overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-padding-left:120px;
+    background:linear-gradient(to right,var(--sc-bg) 30%,transparent) left/24px 100% no-repeat local,
+               linear-gradient(to left,var(--sc-bg) 30%,transparent) right/24px 100% no-repeat local,
+               linear-gradient(to right,rgba(29,39,52,.12),transparent) left/10px 100% no-repeat scroll,
+               linear-gradient(to left,rgba(29,39,52,.12),transparent) right/10px 100% no-repeat scroll}
+  .tblscroll:focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .tblwrap{scroll-padding-top:44px}
+  #tbl{min-width:900px}
+  table.bigtab th,table.bigtab td{white-space:normal}
+  table.bigtab td:first-child,table.bigtab td:last-child{white-space:nowrap}
+  table.bigtab small{white-space:normal;overflow-wrap:anywhere}
+  td.num,th.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-2);padding:0 0 8px}
+  caption b,figcaption b{font:650 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
+  figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
+  .src{font:11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+  table.booktabs{border-collapse:collapse;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+  table.booktabs thead th{border-bottom:1px solid var(--ink)}
+  table.booktabs td,table.booktabs th{border-left:0;border-right:0}
+  /* cibles d'au moins 24 px (WCAG 2.5.8) */
+  :where(summary){padding-block:5px}
+  .pn a{display:inline-flex;align-items:center;min-height:32px}
+  /* section Méthode (sortie du pied de page) */
+  .method{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+  .method h2{margin:0 0 10px}
+  .method p,.method ol{max-width:75ch;margin:0 0 10px}
+  .method a{color:var(--amber-text)}
+  /* colophon commun */
+  .colophon{margin-top:48px;padding-top:14px;border-top:1px solid var(--ink);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 40px;align-items:start;font-size:13px;color:var(--ink-2)}
+  .colophon h2{grid-column:1/-1;margin:0 0 4px;font:650 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .colophon p{margin:0 0 8px;max-width:75ch}
+  .colophon a{color:var(--amber-text)}
+  .colophon .co-series{grid-column:1/-1;margin-top:10px}
+  .colophon .tblscroll{--sc-bg:var(--paper)}
+  table.series-t{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:13px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+  table.series-t th,table.series-t td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal}
+  table.series-t thead th{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);background:none;position:static;border-bottom:1px solid var(--ink);cursor:default}
+  table.series-t td.n{font-family:var(--mono);font-size:12px;color:var(--ink-3);width:2.5em;text-align:right;padding-right:14px}
+  table.series-t th[scope=row]{font-weight:650;white-space:nowrap}
+  table.series-t th[scope=row] a{display:inline-block;padding:3px 0;color:var(--ink);text-decoration-color:var(--line);text-underline-offset:3px}
+  table.series-t th[scope=row] a:hover{color:var(--amber-text);text-decoration-color:currentColor}
+  table.series-t td.url{font-family:var(--mono);font-size:12px;color:var(--ink-3);white-space:nowrap}
+  table.series-t tr.cur{background:var(--amber-soft)}
+  table.series-t tr.cur td.n{box-shadow:inset 3px 0 0 var(--amber)}
+  table.series-t tbody tr:hover,table.series-t thead th:hover{background:none}
+  table.series-t tbody tr.cur:hover{background:var(--amber-soft)}
+  table.series-t tbody td{font-family:var(--body);font-size:13px;color:var(--ink-2)}
+  table.series-t tbody td.n,table.series-t tbody td.url{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  @media(max-width:640px){
+    .colophon{grid-template-columns:minmax(0,1fr)}
+    table.series-t thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    table.series-t tr{display:grid;grid-template-columns:34px minmax(0,1fr);border-bottom:1px solid var(--line)}
+    table.series-t th,table.series-t td{display:block;border:0;padding:0 10px 0 0}
+    table.series-t td.n{grid-column:1;grid-row:1/4;width:auto;padding:8px 0 0 10px;text-align:left}
+    table.series-t th[scope=row],table.series-t td:not(.n){grid-column:2}
+    table.series-t th[scope=row]{padding-top:4px;white-space:normal}
+    table.series-t td.url{padding-bottom:7px;font-size:11.5px}
+    table.series-t tr.cur td.n{box-shadow:none}
+    table.series-t tr.cur{box-shadow:inset 3px 0 0 var(--amber)}
+  }
+  /* mode réunion (grand écran projeté) et impression */
+  @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
+  @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
+
+
   .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}
   table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
   table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -273,8 +382,6 @@
   .links a:hover{border-color:var(--amber)}
   .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;font-size:14px}
   .pn a{color:var(--amber-text)}
-  .cfoot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
-  .cfoot p{margin:0 0 8px;max-width:90ch}.cfoot a{color:var(--amber-text)}
   #aides table.mini td{text-align:right}
   #aides table.mini td:last-child{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
   #aides table.mini th{white-space:nowrap}
@@ -282,6 +389,7 @@
   .clist div{break-inside:avoid}
   .kbnote2{font-size:13px;color:var(--ink-2);margin:10px 0 0;max-width:90ch}
   .prose p{font-size:15.5px;max-width:70ch;color:var(--ink)}
+  .contact-cta+.prose{margin-top:28px}
   .clist{columns:4 190px;column-gap:24px;font-size:14px;margin-top:10px}
   .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px;break-after:avoid}
   .clist a{display:block;color:var(--ink);text-decoration:none;padding:2px 0}.clist a:hover{color:var(--amber-text)}
@@ -290,15 +398,35 @@
 </style>
 <a class="skip" href="#contenu">Skip to content</a>
 <div class="wrap">
-<div class="seriesbar">
-  <span class="sb-label">Open-data series · Luxembourg</span>
-  <nav aria-label="The dashboard series"><a class="cur" aria-current="page" href="https://solaire.sitraka.lu">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a><span class="arw" aria-hidden="true">→</span><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a><span class="arw" aria-hidden="true">→</span><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></nav>
-  <span class="langtoggle"><a href="/municipality/parc-hosingen/" class="cur"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN</a><a href="/fr/commune/parc-hosingen/"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR</a><a href="/de/gemeinde/parc-hosingen/"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE</a><a href="/lb/gemeng/parc-hosingen/"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LU</a><a href="/pt/municipio/parc-hosingen/"><svg width="15" height="11" viewBox="0 0 60 44"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT</a></span>
+<!--MASTHEAD-->
+<div class="masthead">
+  <div class="mh-row">
+    <p class="mh-label" id="mh-l">Open-data series · Luxembourg</p>
+    <details class="mh-series">
+      <summary aria-label="Open-data series (8)"><span class="mh-long" aria-hidden="true">Open-data series</span><span class="mh-short" aria-hidden="true">Series</span> <span class="count" aria-hidden="true">(8)</span></summary>
+      <nav aria-label="Open-data series · Luxembourg"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Solar PV: grid-connected capacity by municipality">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Business creations, survival and bankruptcies">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Starting an IT services firm: a costed market study">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="The next wage indexation">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Public debt and state finances">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Heat, municipality by municipality">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Health map: beds, staff, waiting times">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="India and Luxembourg in figures">lux-india</a></li></ul></nav>
+    </details>
+    <ul class="langs" aria-label="Page language"><li><a href="/municipality/parc-hosingen/" lang="en" hreflang="en" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/commune/parc-hosingen/" lang="fr" hreflang="fr"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/gemeinde/parc-hosingen/" lang="de" hreflang="de"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/gemeng/parc-hosingen/" lang="lb" hreflang="lb"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/municipio/parc-hosingen/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul>
+  </div>
+  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Solar PV: grid-connected capacity by municipality">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Business creations, survival and bankruptcies">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Starting an IT services firm: a costed market study">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="The next wage indexation">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Public debt and state finances">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Heat, municipality by municipality">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Health map: beds, staff, waiting times">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="India and Luxembourg in figures">lux-india</a></li></ul></nav>
 </div>
+<!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
-<p class="crumb"><a href="/">Solar PV in Luxembourg</a> · <a href="/for-municipalities/">All municipalities</a></p><header><div class="eyebrow">Municipality · canton of Clervaux</div><h1>Solar PV in <span class="sun">Parc Hosingen</span></h1><p class="standfirst"><strong>14.2 MW</strong> of solar PV connected as of 9 November 2026 across <strong>575 installations</strong>, or 3,158 W per inhabitant (municipal median: 1,700 W). Since the 2025 Q1 reading: <strong>+2,663 kW</strong> (+23%).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">PV capacity</div><div class="val">14.2 MW</div><div class="sub">575 installations</div></div><div class="kpi"><div class="lbl">PV share</div><div class="val">43.0 %</div><div class="sub">of decentralised capacity (33.0 MW all technologies)</div></div><div class="kpi"><div class="lbl">W per inhabitant</div><div class="val">3,158</div><div class="sub">15th of 100 · median 1,700</div></div><div class="kpi"><div class="lbl">Installations / 1,000 inh.</div><div class="val">128.0</div><div class="sub">14th of 100 · rooftops of 30 kW or less: 119.1 / 1,000</div></div><div class="kpi"><div class="lbl">Added since 2025 Q1</div><div class="val">+2,663 kW</div><div class="sub">30th of 100 · +23 %</div></div><div class="kpi"><div class="lbl">Since 14 September 2026</div><div class="val">+10 inst.</div><div class="sub">+0.2 MW · weekly tracking</div></div></div><p class="contact-cta"><a href="https://sitraka.lu/contact/?from=solaire">Want this for your commune? Let's talk <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Installation sizes</h2></div><p class="lede">In Parc Hosingen, <strong>93% of installations are 30 kW or less</strong> (mostly rooftops), for <strong>58% of capacity</strong>.</p><div class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> share of installations</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> share of capacity</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:5.04%"><i>5 % · 29 inst. <em>(−1)</em></i></div><div class="b cap" style="width:0.72%"><i>0.7 % · 102 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:28.35%"><i>28 % · 163 inst. <em>(+3)</em></i></div><div class="b cap" style="width:9.43%"><i>9 % · 1.3 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:22.61%"><i>23 % · 130 inst. <em>(+3)</em></i></div><div class="b cap" style="width:11.00%"><i>11 % · 1.6 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:37.04%"><i>37 % · 213 inst. <em>(+4)</em></i></div><div class="b cap" style="width:36.99%"><i>37 % · 5.2 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:2.61%"><i>3 % · 15 inst. <em>(+1)</em></i></div><div class="b cap" style="width:6.54%"><i>7 % · 928 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:4.35%"><i>4 % · 25 inst.</i></div><div class="b cap" style="width:35.33%"><i>35 % · 5.0 MW</i></div></div><div class="bin">0.5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0.0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0.0 % · 0.0 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0.0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0.0 % · 0.0 MW</i></div></div></div><p class="kbnote2">In brackets: net change since 14 September 2026.</p></div></section><section id="grandes-installations"><div class="sec-head"><h2>Large installations: rows that appeared</h2><span class="sec-note">over 100 kW, from one archived reading to the next</span></div><p class="lede">In Parc Hosingen, Leneda's per-installation file lists <strong>30 installations over 100 kW</strong> as of the 9 November 2026 reading, all technologies (30 on 14 September 2026).</p><div class="card"><p class="bignone">No row over 100 kW appeared or disappeared in this municipality between 14 September 2026 and 9 November 2026.</p><p class="kbnote2"><strong>Method.</strong> Every week Leneda publishes a file with one row per installation: municipality, technology and installed capacity, with no identifier, no commissioning date and no operator. It replaces this file without keeping any history; lux-solaire archives a copy at each reading. Without an identifier, an installation cannot be followed from one reading to the next: rows over 100 kW (exactly 100 kW excluded) of two consecutive copies are compared municipality by municipality and technology by technology. A row that appears may be a new installation, but also an installation extended beyond 100 kW, a corrected value or a row assigned to another municipality; the file does not say which. Copies compared: 14 September 2026, 26 October 2026 (42 days after the previous one), 2 November 2026, 9 November 2026.</p><p class="kbnote2"><a href="/#grandes-installations">National list</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Rows that appeared and disappeared (CSV)</a></p></div></section><section id="aides"><div class="sec-head"><h2>By municipal subsidy band</h2></div><div class="card"><div class="tw"><table class="mini"><thead><tr><th scope="col">Band</th><th scope="col">Installations</th><th scope="col">Capacity</th><th scope="col">Subsidy for a municipal plant</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td>535</td><td>8.2 MW</td><td>no municipal aid (household Klimabonus: housing only)</td></tr><tr><th scope="row">30–200 kW</th><td>35</td><td>4.4 MW</td><td>50% (cap €675/kWp)</td></tr><tr><th scope="row">200–500 kW</th><td>5</td><td>1.5 MW</td><td>45% (€505/kWp)</td></tr><tr><th scope="row">0.5–5 MW</th><td>0</td><td>0.0 MW</td><td>40% (€425/kWp)</td></tr></tbody></table></div><p class="kbnote2">2025 Klimabonus Gemengen scale (practical guide, revised every year); a car-park canopy gets 45% (€990/kWp). The Leneda data do not say whether an installation is municipal or private.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparison</h2></div><p class="lede">Ranked by W per inhabitant. “Added”: capacity added since the 2025 Q1 reading.</p><h3 class="refs" style="font-size:15px;margin:18px 0 6px">Municipalities in the canton of Clervaux</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Municipality</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/inh.</th><th scope="col">Inst./1,000 inh.</th><th scope="col">Added (kW)</th></tr></thead><tbody><tr><td><a href="/municipality/wincrange/">Wincrange</a></td><td>Clervaux</td><td>25.8</td><td>711</td><td>5,138</td><td>141.4</td><td>+3,142</td></tr><tr><td><a href="/municipality/troisvierges/">Troisvierges</a></td><td>Clervaux</td><td>14.4</td><td>348</td><td>3,827</td><td>92.7</td><td>+2,004</td></tr><tr><td><a href="/municipality/clervaux/">Clervaux</a></td><td>Clervaux</td><td>22.9</td><td>626</td><td>3,585</td><td>98.1</td><td>+3,503</td></tr><tr class="me"><td><a href="/municipality/parc-hosingen/">Parc Hosingen</a></td><td>Clervaux</td><td>14.2</td><td>575</td><td>3,158</td><td>128.0</td><td>+2,663</td></tr><tr><td><a href="/municipality/weiswampach/">Weiswampach</a></td><td>Clervaux</td><td>8.2</td><td>254</td><td>2,968</td><td>91.9</td><td>+2,308</td></tr></tbody></table></div><h3 class="refs" style="font-size:15px;margin:22px 0 6px">Municipalities of similar size</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Municipality</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/inh.</th><th scope="col">Inst./1,000 inh.</th><th scope="col">Added (kW)</th></tr></thead><tbody><tr class="me"><td><a href="/municipality/parc-hosingen/">Parc Hosingen</a></td><td>Clervaux</td><td>14.2</td><td>575</td><td>3,158</td><td>128.0</td><td>+2,663</td></tr><tr><td><a href="/municipality/betzdorf/">Betzdorf</a></td><td>Grevenmacher</td><td>13.0</td><td>514</td><td>3,081</td><td>121.9</td><td>+3,314</td></tr><tr><td><a href="/municipality/dippach/">Dippach</a></td><td>Capellen</td><td>9.7</td><td>417</td><td>2,032</td><td>87.1</td><td>+5,202</td></tr><tr><td><a href="/municipality/schuttrange/">Schuttrange</a></td><td>Luxembourg</td><td>8.7</td><td>491</td><td>1,944</td><td>110.3</td><td>+3,031</td></tr><tr><td><a href="/municipality/lorentzweiler/">Lorentzweiler</a></td><td>Mersch</td><td>4.7</td><td>314</td><td>972</td><td>65.6</td><td>+1,438</td></tr><tr><td><a href="/municipality/kopstal/">Kopstal</a></td><td>Capellen</td><td>3.0</td><td>248</td><td>642</td><td>52.4</td><td>+1,213</td></tr><tr><td><a href="/municipality/remich/">Remich</a></td><td>Remich</td><td>1.7</td><td>132</td><td>412</td><td>31.6</td><td>+766</td></tr></tbody></table></div></section><section><div class="sec-head"><h2>Go further</h2></div><div class="links"><a href="/?commune=parc-hosingen#paradoxe">Interactive chart for this municipality</a><a href="/simulator/?canton=Clervaux">Calculator: is solar worth it on your roof?</a><a href="/for-municipalities/">For municipalities: what this page shows</a><a href="/data/csv/solaire_communes_tailles.csv">Installation sizes, all 100 municipalities (CSV)</a></div><nav class="pn" aria-label="All municipalities"><a href="/municipality/nommern/">← Previous municipality : Nommern</a><a href="/municipality/petange/">Next municipality : Pétange →</a></nav></section>
+<header><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Solar PV in Luxembourg</a></li><li><a href="/for-municipalities/">All municipalities</a></li><li aria-current="page">Parc Hosingen</li></ol></nav><div class="eyebrow">Municipality · canton of Clervaux</div><h1>Solar PV in <span class="sun">Parc Hosingen</span></h1><p class="standfirst"><strong>14.2 MW</strong> of solar PV connected as of 9 November 2026 across <strong>575 installations</strong>, or 3,158 W per inhabitant (municipal median: 1,700 W). Since the 2025 Q1 reading: <strong>+2,663 kW</strong> (+23%).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">PV capacity</div><div class="val">14.2 MW</div><div class="sub">575 installations</div></div><div class="kpi"><div class="lbl">PV share</div><div class="val">43.0 %</div><div class="sub">of decentralised capacity (33.0 MW all technologies)</div></div><div class="kpi"><div class="lbl">W per inhabitant</div><div class="val">3,158</div><div class="sub">15th of 100 · median 1,700</div></div><div class="kpi"><div class="lbl">Installations / 1,000 inh.</div><div class="val">128.0</div><div class="sub">14th of 100 · rooftops of 30 kW or less: 119.1 / 1,000</div></div><div class="kpi"><div class="lbl">Added since 2025 Q1</div><div class="val">+2,663 kW</div><div class="sub">30th of 100 · +23 %</div></div><div class="kpi"><div class="lbl">Since 14 September 2026</div><div class="val">+10 inst.</div><div class="sub">+0.2 MW · weekly tracking</div></div></div><p class="contact-cta"><a href="https://sitraka.lu/contact/?from=solaire">Want this for your commune? Let's talk <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Installation sizes</h2></div><p class="lede">In Parc Hosingen, <strong>93% of installations are 30 kW or less</strong> (mostly rooftops), for <strong>58% of capacity</strong>.</p><div class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> share of installations</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> share of capacity</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:5.04%"><i>5 % · 29 inst. <em>(−1)</em></i></div><div class="b cap" style="width:0.72%"><i>0.7 % · 102 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:28.35%"><i>28 % · 163 inst. <em>(+3)</em></i></div><div class="b cap" style="width:9.43%"><i>9 % · 1.3 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:22.61%"><i>23 % · 130 inst. <em>(+3)</em></i></div><div class="b cap" style="width:11.00%"><i>11 % · 1.6 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:37.04%"><i>37 % · 213 inst. <em>(+4)</em></i></div><div class="b cap" style="width:36.99%"><i>37 % · 5.2 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:2.61%"><i>3 % · 15 inst. <em>(+1)</em></i></div><div class="b cap" style="width:6.54%"><i>7 % · 928 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:4.35%"><i>4 % · 25 inst.</i></div><div class="b cap" style="width:35.33%"><i>35 % · 5.0 MW</i></div></div><div class="bin">0.5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0.0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0.0 % · 0.0 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0.0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0.0 % · 0.0 MW</i></div></div></div><p class="kbnote2">In brackets: net change since 14 September 2026.</p></div></section><section id="grandes-installations"><div class="sec-head"><h2>Large installations: rows that appeared</h2><span class="sec-note">over 100 kW, from one archived reading to the next</span></div><p class="lede">In Parc Hosingen, Leneda's per-installation file lists <strong>30 installations over 100 kW</strong> as of the 9 November 2026 reading, all technologies (30 on 14 September 2026).</p><div class="card"><p class="bignone">No row over 100 kW appeared or disappeared in this municipality between 14 September 2026 and 9 November 2026.</p><p class="kbnote2"><strong>Method.</strong> Every week Leneda publishes a file with one row per installation: municipality, technology and installed capacity, with no identifier, no commissioning date and no operator. It replaces this file without keeping any history; lux-solaire archives a copy at each reading. Without an identifier, an installation cannot be followed from one reading to the next: rows over 100 kW (exactly 100 kW excluded) of two consecutive copies are compared municipality by municipality and technology by technology. A row that appears may be a new installation, but also an installation extended beyond 100 kW, a corrected value or a row assigned to another municipality; the file does not say which. Copies compared: 14 September 2026, 26 October 2026 (42 days after the previous one), 2 November 2026, 9 November 2026.</p><p class="kbnote2"><a href="/#grandes-installations">National list</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Rows that appeared and disappeared (CSV)</a></p></div></section><section id="aides"><div class="sec-head"><h2>By municipal subsidy band</h2></div><div class="card"><div class="tw"><table class="mini"><thead><tr><th scope="col">Band</th><th scope="col">Installations</th><th scope="col">Capacity</th><th scope="col">Subsidy for a municipal plant</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td>535</td><td>8.2 MW</td><td>no municipal aid (household Klimabonus: housing only)</td></tr><tr><th scope="row">30–200 kW</th><td>35</td><td>4.4 MW</td><td>50% (cap €675/kWp)</td></tr><tr><th scope="row">200–500 kW</th><td>5</td><td>1.5 MW</td><td>45% (€505/kWp)</td></tr><tr><th scope="row">0.5–5 MW</th><td>0</td><td>0.0 MW</td><td>40% (€425/kWp)</td></tr></tbody></table></div><p class="kbnote2">2025 Klimabonus Gemengen scale (practical guide, revised every year); a car-park canopy gets 45% (€990/kWp). The Leneda data do not say whether an installation is municipal or private.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparison</h2></div><p class="lede">Ranked by W per inhabitant. “Added”: capacity added since the 2025 Q1 reading.</p><h3 class="refs" style="font-size:15px;margin:18px 0 6px">Municipalities in the canton of Clervaux</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Municipality</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/inh.</th><th scope="col">Inst./1,000 inh.</th><th scope="col">Added (kW)</th></tr></thead><tbody><tr><td><a href="/municipality/wincrange/">Wincrange</a></td><td>Clervaux</td><td>25.8</td><td>711</td><td>5,138</td><td>141.4</td><td>+3,142</td></tr><tr><td><a href="/municipality/troisvierges/">Troisvierges</a></td><td>Clervaux</td><td>14.4</td><td>348</td><td>3,827</td><td>92.7</td><td>+2,004</td></tr><tr><td><a href="/municipality/clervaux/">Clervaux</a></td><td>Clervaux</td><td>22.9</td><td>626</td><td>3,585</td><td>98.1</td><td>+3,503</td></tr><tr class="me"><td><a href="/municipality/parc-hosingen/">Parc Hosingen</a></td><td>Clervaux</td><td>14.2</td><td>575</td><td>3,158</td><td>128.0</td><td>+2,663</td></tr><tr><td><a href="/municipality/weiswampach/">Weiswampach</a></td><td>Clervaux</td><td>8.2</td><td>254</td><td>2,968</td><td>91.9</td><td>+2,308</td></tr></tbody></table></div><h3 class="refs" style="font-size:15px;margin:22px 0 6px">Municipalities of similar size</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Municipality</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/inh.</th><th scope="col">Inst./1,000 inh.</th><th scope="col">Added (kW)</th></tr></thead><tbody><tr class="me"><td><a href="/municipality/parc-hosingen/">Parc Hosingen</a></td><td>Clervaux</td><td>14.2</td><td>575</td><td>3,158</td><td>128.0</td><td>+2,663</td></tr><tr><td><a href="/municipality/betzdorf/">Betzdorf</a></td><td>Grevenmacher</td><td>13.0</td><td>514</td><td>3,081</td><td>121.9</td><td>+3,314</td></tr><tr><td><a href="/municipality/dippach/">Dippach</a></td><td>Capellen</td><td>9.7</td><td>417</td><td>2,032</td><td>87.1</td><td>+5,202</td></tr><tr><td><a href="/municipality/schuttrange/">Schuttrange</a></td><td>Luxembourg</td><td>8.7</td><td>491</td><td>1,944</td><td>110.3</td><td>+3,031</td></tr><tr><td><a href="/municipality/lorentzweiler/">Lorentzweiler</a></td><td>Mersch</td><td>4.7</td><td>314</td><td>972</td><td>65.6</td><td>+1,438</td></tr><tr><td><a href="/municipality/kopstal/">Kopstal</a></td><td>Capellen</td><td>3.0</td><td>248</td><td>642</td><td>52.4</td><td>+1,213</td></tr><tr><td><a href="/municipality/remich/">Remich</a></td><td>Remich</td><td>1.7</td><td>132</td><td>412</td><td>31.6</td><td>+766</td></tr></tbody></table></div></section><section><div class="sec-head"><h2>Go further</h2></div><div class="links"><a href="/?commune=parc-hosingen#paradoxe">Interactive chart for this municipality</a><a href="/simulator/?canton=Clervaux">Calculator: is solar worth it on your roof?</a><a href="/for-municipalities/">For municipalities: what this page shows</a><a href="/data/csv/solaire_communes_tailles.csv">Installation sizes, all 100 municipalities (CSV)</a></div><nav class="pn" aria-label="All municipalities"><a href="/municipality/nommern/">← Previous municipality : Nommern</a><a href="/municipality/petange/">Next municipality : Pétange →</a></nav></section>
 </main>
-<footer class="cfoot"><p>Data: “La production d'énergie électrique au Luxembourg” published by Leneda on data.public.lu (CC0), reading of 9 November 2026; population: RNPP (CC0). Connected capacity (kW), not energy produced. Derived data under CC BY 4.0.</p><p>Sources: <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/">Leneda (data.public.lu)</a> · <a href="https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-population-par-commune-population-per-municipality/">RNPP</a> (population Parc Hosingen: 4,492 inhabitants as of 1 October 2026) · <a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf">Klimabonus Gemengen</a></p><p>Cookie-free audience measurement: Cloudflare Web Analytics and anonymous click counters (no IP address or identifier stored).</p><p>Analysis: Sitraka Forler · <a href="https://sitraka.lu">sitraka.lu</a> · <a href="https://github.com/Sitraka17/lux-solaire">source code</a></p></footer>
+<footer class="colophon" aria-labelledby="colophon-h"><h2 id="colophon-h">Colophon</h2><div class="co-a"><p>Data: “La production d'énergie électrique au Luxembourg” published by Leneda on data.public.lu (CC0), reading of 9 November 2026; population: RNPP (CC0). Connected capacity (kW), not energy produced. Derived data under CC BY 4.0.</p><p>Sources: <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/">Leneda (data.public.lu)</a> · <a href="https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-population-par-commune-population-per-municipality/">RNPP</a> (population Parc Hosingen: 4,492 inhabitants as of 1 October 2026) · <a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf">Klimabonus Gemengen</a></p><p>Cookie-free audience measurement: Cloudflare Web Analytics and anonymous click counters (no IP address or identifier stored).</p></div><!--COLOPHON_COMMON-->
+<div class="co-b">
+  <p><a href="/for-municipalities/">For municipalities</a>: one page per municipality, with its data.</p>
+  <p>Contact: <a href="https://sitraka.lu/contact/?from=solaire">write to the author</a></p>
+  <p>Analysis and visualisation: <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + native SVG, no library · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">source code</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
+  <p>Agenda, newsletter and other work: <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
+  <p>From the same author, for your break: <a href="https://ratrace.sitraka.lu/">Rat Race</a>, the cross-border commuter game (65 cities, a daily course).</p>
+</div>
+<div class="co-series">
+  <p>This site is part of a series of reuses of Luxembourg public data.</p>
+  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Table A.</b> The open-data series · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">No.</span></th><th scope="col">Site</th><th scope="col">Topic</th><th scope="col">Address</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="page">lux-solaire</a></th><td>Solar PV: grid-connected capacity by municipality</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Business creations, survival and bankruptcies</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Starting an IT services firm: a costed market study</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>The next wage indexation</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Public debt and state finances</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>Heat, municipality by municipality</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Health map: beds, staff, waiting times</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>India and Luxembourg in figures</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+</div>
+<!--/COLOPHON_COMMON--></footer>
 </div>
 <script defer src="/ev.js"></script>
 </html>

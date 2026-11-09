@@ -10,28 +10,31 @@
     --mono:ui-monospace,"SF Mono",Menlo,monospace;--body:system-ui,-apple-system,"Segoe UI",sans-serif;--display:"Avenir Next","Futura","Segoe UI",system-ui,sans-serif}
   *{box-sizing:border-box}html{background:var(--paper)}
   body{margin:0;font-family:var(--body);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px 16px}
-  .card{max-width:560px;width:100%;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:0 4px 4px 0;padding:30px 32px}
+  .card{max-width:560px;width:100%;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--amber);border-radius:0;padding:30px 32px}
+  @media(max-width:480px){.card{padding:22px 18px}}
+  :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-text);display:flex;align-items:center;gap:10px}
   .eyebrow::before{content:"";width:24px;height:2px;background:var(--amber)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,32px);line-height:1.1;margin:12px 0 4px}
   .alts{font-size:14px;color:var(--ink-2);margin:0 0 18px}
   nav{display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:12px}
-  nav a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 2px;font-size:14.5px;font-weight:600;color:var(--amber-text);text-decoration:none}
+  nav a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 2px;min-height:24px;font-size:14.5px;font-weight:600;color:var(--amber-text);text-decoration:none}
   nav a:hover{background:var(--amber-soft)}
   nav span{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em}
-  .foot{margin-top:18px;font-size:12px;color:var(--ink-3)}
+  .foot{margin-top:18px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)}
+  .foot a{color:var(--amber-text)}
 </style>
 <div class="card">
   <div class="eyebrow">404 · solaire.sitraka.lu</div>
   <h1>Page not found</h1>
   <p class="alts">Page introuvable · Seite nicht gefunden · Säit net fonnt · <span lang="pt-PT">Página não encontrada</span></p>
   <nav aria-label="Homepages">
-    <a href="/">Solar PV in Luxembourg, municipality by municipality <span>EN</span></a>
-    <a href="/fr/">Le photovoltaïque au Luxembourg, commune par commune <span>FR</span></a>
-    <a href="/de/">Photovoltaik in Luxemburg, Gemeinde für Gemeinde <span>DE</span></a>
-    <a href="/lb/">Photovoltaik zu Lëtzebuerg, Gemeng fir Gemeng <span>LU</span></a>
+    <a href="/" hreflang="en" lang="en">Solar PV in Luxembourg, municipality by municipality <span>EN</span></a>
+    <a href="/fr/" hreflang="fr" lang="fr">Le photovoltaïque au Luxembourg, commune par commune <span>FR</span></a>
+    <a href="/de/" hreflang="de" lang="de">Photovoltaik in Luxemburg, Gemeinde für Gemeinde <span>DE</span></a>
+    <a href="/lb/" hreflang="lb" lang="lb">Photovoltaik zu Lëtzebuerg, Gemeng fir Gemeng <span>LB</span></a>
     <a href="/pt/" hreflang="pt" lang="pt-PT">A energia fotovoltaica no Luxemburgo, município a município <span>PT</span></a>
   </nav>
-  <p class="foot">Sitraka Forler · Leneda (CC0)</p>
+  <p class="foot">Sitraka Forler · Leneda (CC0) · <a href="https://github.com/Sitraka17/lux-solaire">GitHub</a></p>
 </div>
 </html>

@@ -80,11 +80,14 @@ def test_selecteur_avec_pt_sur_chaque_type_de_page(built, groups):
     for kind, paths in groups:
         for lang, p in paths.items():
             h = _file(built, p).read_text()
-            tog = re.search(r'<span class="langtoggle">(.*?)</span>', h, re.S).group(1)
-            links = re.findall(r'<a href="([^"]+)"( class="cur")?>.*?(EN|FR|DE|LU|PT)</a>', tog, re.S)
-            code = {"EN": "en", "FR": "fr", "DE": "de", "LU": "lb", "PT": "pt"}
-            assert [(code[c], href) for href, _, c in links] == [(l, paths[l]) for l in LANGS], (kind, p, links)
-            assert [code[c] for _, cur, c in links if cur] == [lang], (kind, p)
+            assert h.count('<ul class="langs"') == 1, (kind, p)
+            tog = re.search(r'<ul class="langs"[^>]*>(.*?)</ul>', h, re.S).group(1)
+            links = re.findall(r'<a href="([^"]+)" lang="[^"]+" hreflang="([a-z]+)"( aria-current="page")?>'
+                               r'.*?(EN|FR|DE|LB|PT)<span class="vh"> [^<]+</span></a>', tog, re.S)
+            code = {"EN": "en", "FR": "fr", "DE": "de", "LB": "lb", "PT": "pt"}
+            assert [(code[c], href) for href, _, _, c in links] == [(l, paths[l]) for l in LANGS], (kind, p, links)
+            assert all(code[c] == hl for _, hl, _, c in links), (kind, p)
+            assert [code[c] for _, _, cur, c in links if cur] == [lang], (kind, p)
 
 
 def test_sitemap_contient_les_pages_pt(built, groups):
@@ -99,7 +102,7 @@ def test_liens_internes_pt_vers_pt(built):
     """Hors sélecteur de langue : aucun lien interne d'une page PT vers une autre langue, et
     plus de « (em francês) » vers une page qui existe en portugais."""
     for p in _pt_pages(built):
-        h = re.sub(r'<span class="langtoggle">.*?</span>', "", p.read_text(), count=1, flags=re.S)
+        h = re.sub(r'<ul class="langs".*?</ul>', "", p.read_text(), count=1, flags=re.S)
         bad = [u for u in re.findall(r'href="(/[^"#?]*)', h)
                if not u.startswith(("/pt/", "/data/", "/favicon"))]
         assert not bad, (p, bad[:5])

@@ -1,5 +1,45 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
+## Ossature commune, lot 1 du cahier des charges UX/UI (9/11/2026)
+
+Une seule source pour le haut et le bas de TOUS les types de pages (tableau de bord, simulateur,
+pages communales, « Pour les communes ») : `scripts/ossature.py`.
+- **Insertion** : `build.load_templates()` remplace dans les deux gabarits `/*@OSSATURE_CSS*/`,
+  `<!--@MASTHEAD-->` et `<!--@COLOPHON_COMMON-->` par les fragments FRANÇAIS d'ossature.py, AVANT
+  traduction ; leurs traductions sont des clés de `i18n_{en,de,lb,pt}.json` (parité et clés mortes
+  contrôlées par `check_dicts`, qui lit les gabarits ÉTENDUS ; les tests aussi). communes.py reprend
+  le bandeau (`<!--MASTHEAD-->…<!--/MASTHEAD-->`), le titre du colophon et le bloc commun
+  (`<!--COLOPHON_COMMON-->…`) des tableaux de bord déjà rendus, donc traduits.
+- **Bandeau** (`.masthead`, prototype A) : filet ambre de 3 px, libellé « Série open-data ·
+  Luxembourg », 8 sites en une ligne (bureau) ou repliés dans un `<details>` (« ▸ Série (8) », sous
+  768 px), sujet de chaque site en `title` (SERIES, à confirmer par Sitraka). Sélecteur
+  `ossature.lang_nav` : `<ul class="langs">`, EN · FR · DE · LB · PT (« LB » = code de langue,
+  plus « LU »), `lang`/`hreflang`, `aria-current`, nom natif en texte masqué, drapeaux
+  `aria-hidden` masqués sous 540 px. Inséré APRÈS traduction ; `check_output` l'ignore.
+- **En-tête** : fil d'Ariane `<nav class="crumbs"><ol>` (simulateur, communes, « Pour les
+  communes » ; tronqué sur une ligne sous 768 px), surtitre (« Tableau de bord · données Leneda »
+  sur le tableau de bord), H1 à 20ch partout. « Pour les communes » : 1er paragraphe en chapô, puis
+  l'appel à l'action. `jsonld_sim` lit le nouveau fil d'Ariane.
+- **Bas de page** : la méthode sort du pied de page sans changement de texte (`<section id="methode"
+  class="method">` en fin de `<main>`, ancre conservée) ; `footer.colophon` commun : colonne
+  « données et licences » propre à la page, colonne « auteur » commune (Pour les communes, contact,
+  auteur, sitraka.lu, Rat Race), « Tableau A. » de la série. La ligne « Analyse : Sitraka Forler ·
+  sitraka.lu · code source » des pages communales est remplacée par la ligne auteur commune (même
+  information) ; « Ce tableau de bord fait partie » devient « Ce site fait partie ».
+- **Débordement mobile corrigé** : `min-width:900px` réservé à `#tbl` (il fuyait sur `bigtab` et
+  `cmp`), `bigtab` dans un conteneur `.tblscroll` (indices d'ombre si le tableau dépasse),
+  `body{margin:0}`, gouttière de 16 px sous 480 px. Avant : 1 131 px de large à 375 px sur /fr/,
+  955 px sur les pages communales, 1 302 px à 1 280 px sur /de/.
+- **Divers** : mois abrégés `MONTHS_FR_ABBR` (« nov. », plus « nove. ») ; boutons `.rt` rayon 2 px ;
+  focus ambre visible et `scroll-padding` ; mode réunion (≥ 1 600 px) ; impression sans bandeau ;
+  classes de légende `caption`, `figcaption`, `.src`, `table.booktabs` prêtes pour les lots 2 et 3 ;
+  404 à filet supérieur, codes LB/PT.
+- **Contrôles** : `tests/test_ossature.py` (statique) ; mesures navigateur (débordement à 320, 360,
+  375, 414, 767, 768, 1 280 et 1 920 px, cibles ≥ 24 px, une ligne sur mobile, clavier sans JS) :
+  script playwright hors dépôt (scratchpad de la session du 9/11, `pw/lot1/accept.mjs`).
+- **Non fait dans ce lot** : typographie française fine (L1.8 : espaces insécables des milliers,
+  avant « : » et dans les guillemets) ; curseurs et cases du simulateur de 16 px (lot 3, L3.8).
+
 ## i18n : le portugais sur TOUT le site (9/11/2026)
 
 Extension du simulateur PT (8/11, section suivante) au tableau de bord `/pt/`, aux 100 pages

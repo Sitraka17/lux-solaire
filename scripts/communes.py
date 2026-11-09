@@ -13,6 +13,7 @@ import urllib.parse
 
 import baremes   # scripts/baremes.json : taux et plafonds du Klimabonus Gemengen (source unique)
 import grandes   # nouvelles grandes installations (> 100 kW) : détection et textes
+import ossature  # bandeau, sélecteur de langue, fil d'Ariane et colophon communs à tous les types de pages
 
 CPATH = {"en": "/municipality/", "fr": "/fr/commune/", "de": "/de/gemeinde/", "lb": "/lb/gemeng/",
          "pt": "/pt/municipio/"}
@@ -23,7 +24,7 @@ SIM = {"en": "/simulator/", "fr": "/fr/simulateur/", "de": "/de/rechner/", "lb":
        "pt": "/pt/simulador/"}
 LANGS = ("en", "fr", "de", "lb", "pt")
 ORDER = ("en", "fr", "de", "lb", "pt")
-FLAG_LABEL = {"en": "EN", "fr": "FR", "de": "DE", "lb": "LU", "pt": "PT"}
+FLAG_LABEL = ossature.CODE   # codes du sélecteur de langue (« LB » = code de langue ISO 639-1)
 # attribut lang de <html> (pages communales ET gabarits, importé par build.py) : portugais du
 # Portugal (césure, lecteurs d'écran) ; hreflang, og:locale et JSON-LD gardent « pt »
 HTML_LANG = {"pt": "pt-PT"}
@@ -151,9 +152,7 @@ S = {
             f"(kW), pas d'énergie produite. Données dérivées sous licence CC BY 4.0."),
         "privacy": ("Mesure d'audience sans cookie : Cloudflare Web Analytics et des compteurs de clics anonymes "
                     "(aucune adresse IP ni identifiant enregistrés)."),
-        "by": "Analyse : Sitraka Forler",
         "crumb_home": "Le photovoltaïque au Luxembourg",
-        "src": "code source",
     },
     "en": {
         "rank": lambda r, n: f"{_ord(r, 'en')} of {n}",
@@ -199,9 +198,7 @@ S = {
             f"data under CC BY 4.0."),
         "privacy": ("Cookie-free audience measurement: Cloudflare Web Analytics and anonymous click counters "
                     "(no IP address or identifier stored)."),
-        "by": "Analysis: Sitraka Forler",
         "crumb_home": "Solar PV in Luxembourg",
-        "src": "source code",
     },
     "de": {
         "rank": lambda r, n: f"Platz {r} von {n}",
@@ -248,9 +245,7 @@ S = {
             f"nicht erzeugte Energie. Abgeleitete Daten unter CC BY 4.0."),
         "privacy": ("Reichweitenmessung ohne Cookies: Cloudflare Web Analytics und anonyme Klickzähler "
                     "(keine IP-Adresse, keine Kennung gespeichert)."),
-        "by": "Analyse: Sitraka Forler",
         "crumb_home": "Photovoltaik in Luxemburg",
-        "src": "Quellcode",
     },
     "lb": {
         "rank": lambda r, n: f"Plaz {r} vun {n}",
@@ -298,9 +293,7 @@ S = {
             f"net produzéiert Energie. Ofgeleet Donnéeën ënner CC BY 4.0."),
         "privacy": ("Moossung ouni Cookien: Cloudflare Web Analytics an anonym Klickzieler "
                     "(keng IP-Adress, keen Identifiant gespäichert)."),
-        "by": "Analyse: Sitraka Forler",
         "crumb_home": "Photovoltaik zu Lëtzebuerg",
-        "src": "Quellcode",
     },
     "pt": {
         "rank": lambda r, n: f"{_ord(r, 'pt')} de {n}",
@@ -348,9 +341,7 @@ S = {
             f"à rede (kW), não de energia produzida. Dados derivados sob a licença CC BY 4.0."),
         "privacy": ("Medição de audiência sem cookies: Cloudflare Web Analytics e contadores de cliques anónimos "
                     "(nenhum endereço IP nem identificador registado)."),
-        "by": "Análise: Sitraka Forler",
         "crumb_home": "A energia fotovoltaica no Luxemburgo",
-        "src": "código-fonte",
     },
 }
 
@@ -493,7 +484,6 @@ FOR = {
 }
 
 EXTRA_CSS = """
-  .crumb{font-size:13px;color:var(--ink-3);margin:0 0 14px}.crumb a{color:var(--amber-text)}
   .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}
   table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
   table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -508,8 +498,6 @@ EXTRA_CSS = """
   .links a:hover{border-color:var(--amber)}
   .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;font-size:14px}
   .pn a{color:var(--amber-text)}
-  .cfoot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
-  .cfoot p{margin:0 0 8px;max-width:90ch}.cfoot a{color:var(--amber-text)}
   #aides table.mini td{text-align:right}
   #aides table.mini td:last-child{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
   #aides table.mini th{white-space:nowrap}
@@ -517,6 +505,7 @@ EXTRA_CSS = """
   .clist div{break-inside:avoid}
   .kbnote2{font-size:13px;color:var(--ink-2);margin:10px 0 0;max-width:90ch}
   .prose p{font-size:15.5px;max-width:70ch;color:var(--ink)}
+  .contact-cta+.prose{margin-top:28px}
   .clist{columns:4 190px;column-gap:24px;font-size:14px;margin-top:10px}
   .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px;break-after:avoid}
   .clist a{display:block;color:var(--ink);text-decoration:none;padding:2px 0}.clist a:hover{color:var(--amber-text)}
@@ -526,10 +515,10 @@ EXTRA_CSS = """
 
 
 # ──────────────── rendu ───────────────────────────────────────────────────
-def _shell(lang, title, desc, canonical, alternates, style, seriesbar, body, jsonld):
+def _shell(lang, title, desc, canonical, alternates, style, masthead, body, jsonld):
     if lang != "en":   # « 45 % » ne se coupe pas avant le signe
         body = body.replace(" %", "\u202f%")
-    i = body.rindex('<footer class="cfoot">')          # le pied de page reste hors de <main>
+    i = body.rindex('<footer class="colophon"')        # le colophon reste hors de <main>
     main, foot = body[:i], body[i:]
     alt = "".join(f'<link rel="alternate" hreflang="{c}" href="{u}">' for c, u in alternates)
     alt += f'<link rel="alternate" hreflang="x-default" href="{dict(alternates)["en"]}">'
@@ -546,14 +535,15 @@ def _shell(lang, title, desc, canonical, alternates, style, seriesbar, body, jso
             f"<script defer src=\"https://static.cloudflareinsights.com/beacon.min.js\" "
             f"data-cf-beacon='{{\"token\": \"48047aeb049d4a6ba27a197d274297a7\"}}'></script>\n"
             f"<style>{style}{EXTRA_CSS}</style>\n<a class=\"skip\" href=\"#contenu\">{SKIP[lang]}</a>\n"
-            f"<div class=\"wrap\">\n{seriesbar}\n<main id=\"contenu\" tabindex=\"-1\">\n{main}\n</main>\n{foot}\n</div>\n"
+            f"<div class=\"wrap\">\n{masthead}\n<main id=\"contenu\" tabindex=\"-1\">\n{main}\n</main>\n{foot}\n</div>\n"
             f'<script defer src="/ev.js"></script>\n</html>\n')
 
 
-def _toggle(paths, lang, flags):
-    cur = ' class="cur"'
-    return "".join(f'<a href="{p}"{cur if c == lang else ""}>{flags[c]}{FLAG_LABEL[c]}</a>'
-                   for c, p in paths)
+def _colophon(h, common, paras):
+    """Colophon commun : titre et bloc commun repris du tableau de bord rendu (donc traduits), colonne
+    « données et licences » propre à la page."""
+    return (f'<footer class="colophon" aria-labelledby="colophon-h">{h}<div class="co-a">'
+            + "".join(f"<p>{p}</p>" for p in paras) + f'</div>{common}</footer>')
 
 
 def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg, flags, jsround=round):
@@ -569,7 +559,13 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
         main = (root / HOME[lang].strip("/") / "index.html") if HOME[lang] != "/" else root / "index.html"
         src = main.read_text()
         pages[lang] = (re.search(r"<style>(.*?)</style>", src, re.S).group(1),
-                       re.search(r'<div class="seriesbar">.*?</div>', src, re.S).group(0))
+                       re.search(r"<!--MASTHEAD-->.*?<!--/MASTHEAD-->", src, re.S).group(0),
+                       re.search(r'<h2 id="colophon-h">.*?</h2>', src, re.S).group(0),
+                       re.search(r"<!--COLOPHON_COMMON-->.*?<!--/COLOPHON_COMMON-->", src, re.S).group(0))
+
+    def masthead(lang, paths):   # bandeau du tableau de bord rendu, sélecteur pointant vers CETTE page
+        return re.sub(r'<ul class="langs".*?</ul>', lambda m: ossature.lang_nav(paths, lang, flags),
+                      pages[lang][1], count=1, flags=re.S)
     groups = []
 
     def T(n, lang):   # espace insécable fine : « +6 719 kW » ne se coupe pas en fin de ligne
@@ -660,9 +656,8 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             prev_c, next_c = communes[i - 1], communes[(i + 1) % n_all]
             colon = ":" if lang == "pt" else " :"   # portugais : pas d'espace avant les deux-points
             body = (
-                f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a> · '
-                f'<a href="{FORPATH[lang]}">{L["all"]}</a></p>'
-                f'<header><div class="eyebrow">{L["eyebrow"](kn)}</div><h1>{L["h1"](cn)}</h1>'
+                f'<header>{ossature.crumbs([(L["crumb_home"], HOME[lang]), (L["all"], FORPATH[lang]), (cn, None)], lang)}'
+                f'<div class="eyebrow">{L["eyebrow"](kn)}</div><h1>{L["h1"](cn)}</h1>'
                 f'<p class="standfirst">{L["stand"](cn, mw, date, nn, wpc, med, gkw, gp, fq)}</p></header>'
                 f'<div class="kpis k6">{kpis}</div>{CONTACT[lang]}'
                 f'<section id="tailles"><div class="sec-head"><h2>{L["sizes_h"]}</h2></div>'
@@ -685,21 +680,18 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"].replace("{N}", str(n_all))}</a></div>'
                 f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]}{colon} {esc(prev_c["c"])}</a>'
                 f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]}{colon} {esc(next_c["c"])} →</a></nav></section>'
-                f'<footer class="cfoot"><p>{L["foot"](date)}</p>'
-                f'<p>{SRC_LABEL[lang][0]}{" :" if lang == "fr" else ":"} <a href="{SRC_LENEDA}">Leneda (data.public.lu)</a> · '
-                f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {cn}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
-                f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a></p>'
-                f'<p>{L["privacy"]}</p>'
-                f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a> · '
-                f'<a href="https://github.com/Sitraka17/lux-solaire">{L["src"]}</a></p></footer>')
+                + _colophon(pages[lang][2], pages[lang][3], [
+                    L["foot"](date),
+                    f'{SRC_LABEL[lang][0]}{" :" if lang == "fr" else ":"} <a href="{SRC_LENEDA}">Leneda (data.public.lu)</a> · '
+                    f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {cn}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
+                    f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a>',
+                    L["privacy"]]))
             canonical = site + CPATH[lang] + s + "/"
             jsonld = {"@context": "https://schema.org", "@type": "WebPage", "@id": canonical, "url": canonical,
                       "name": title, "description": desc, "inLanguage": lang, "dateModified": cdate[lang],
                       "isPartOf": {"@id": site + HOME[lang]}, "author": person,
                       "about": {"@type": "Place", "name": c["c"], "containedInPlace": luxembourg}}
-            sb = re.sub(r'(<span class="langtoggle">).*?(</span>)',
-                        lambda m: m.group(1) + _toggle([(l, CPATH[l] + s + "/") for l in ORDER], lang, flags) + m.group(2),
-                        pages[lang][1], count=1, flags=re.S)
+            sb = masthead(lang, [(l, CPATH[l] + s + "/") for l in ORDER])
             out = root / CPATH[lang].strip("/") / s / "index.html"
             out.parent.mkdir(parents=True, exist_ok=True)
             html = _shell(lang, title, desc, canonical, alternates, pages[lang][0], sb, body, jsonld)
@@ -715,21 +707,21 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             by_k.setdefault(c["k"], []).append(c)
         clist = "".join(f'<div><h3>{esc(k)}</h3>' + "".join(f'<a href="{CPATH[lang]}{slug(c["c"])}/">{esc(c["c"])}</a>' for c in cs)
                         + "</div>" for k, cs in sorted(by_k.items()))
-        body = (f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a></p>'
-                f'<header><div class="eyebrow">{F["eyebrow"]}</div><h1>{F["h1"]}</h1></header>{CONTACT[lang]}'
-                f'<section class="prose">{"".join(f"<p>{p}</p>" for p in F["paras"])}'
+        # en-tête commun : fil d'Ariane, surtitre, H1, chapô (1er paragraphe), puis l'appel à l'action
+        body = (f'<header>{ossature.crumbs([(L["crumb_home"], HOME[lang]), (F["eyebrow"], None)], lang)}'
+                f'<div class="eyebrow">{F["eyebrow"]}</div><h1>{F["h1"]}</h1>'
+                f'<p class="standfirst">{F["paras"][0]}</p></header>{CONTACT[lang]}'
+                f'<section class="prose">{"".join(f"<p>{p}</p>" for p in F["paras"][1:])}'
                 f'<h2>{F["limits_h"]}</h2><p>{F["limits"]}</p>'
                 f'<h2>{F["contact_h"]}</h2><p>{F["contact"]}</p></section>'
                 f'<section id="liste"><div class="sec-head"><h2>{F["list_h"].replace("{N}", str(n_all))}</h2></div><div class="clist">{clist}</div></section>'
-                f'<footer class="cfoot"><p>{L["foot"](blobs[lang]["meta"]["date"])}</p><p>{L["privacy"]}</p>'
-                f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a></p></footer>')
+                + _colophon(pages[lang][2], pages[lang][3], [L["foot"](blobs[lang]["meta"]["date"]), L["privacy"]]))
         alternates = [(l, site + FORPATH[l]) for l in ORDER]
         canonical = site + FORPATH[lang]
         jsonld = {"@context": "https://schema.org", "@type": "WebPage", "@id": canonical, "url": canonical,
                   "name": F["title"], "description": F["desc"], "inLanguage": lang, "dateModified": cdate[lang],
                   "isPartOf": {"@id": site + HOME[lang]}, "author": person}
-        sb = re.sub(r'(<span class="langtoggle">).*?(</span>)',
-                    lambda m: m.group(1) + _toggle(for_paths, lang, flags) + m.group(2), pages[lang][1], count=1, flags=re.S)
+        sb = masthead(lang, for_paths)
         out = root / FORPATH[lang].strip("/") / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
         html = _shell(lang, F["title"], F["desc"], canonical, alternates, pages[lang][0], sb, body, jsonld)

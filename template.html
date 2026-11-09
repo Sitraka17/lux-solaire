@@ -45,21 +45,6 @@
   .wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
 
   /* ---------- header ---------- */
-  /* series bar (top, prominent) : homogénéise la série open-data */
-  .seriesbar{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:12px 8px 12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 1px 2px rgba(20,25,35,.06);margin-bottom:36px}
-  .seriesbar .sb-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:650;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-  .seriesbar .sb-label::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
-  .seriesbar nav{display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin-left:auto}
-  .seriesbar a{font-family:var(--body);font-size:12.5px;font-weight:600;color:var(--ink-2);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s;white-space:nowrap}
-  .seriesbar a:hover{color:var(--amber-text);border-color:var(--line);background:var(--paper)}
-  .seriesbar a.cur{color:var(--amber-text);background:var(--amber-soft);border-color:var(--amber)}
-  .seriesbar .arw{color:var(--ink-3);opacity:.55;font-size:12px}
-  .seriesbar .langtoggle{display:inline-flex;gap:2px;align-items:center;font-family:var(--mono);font-size:11px;font-weight:650;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--paper)}
-  .seriesbar .langtoggle a{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;color:var(--ink-3);text-decoration:none;letter-spacing:.05em;border:none}
-  .seriesbar .langtoggle svg{display:block;border-radius:2px}
-  .seriesbar .langtoggle a:hover{background:var(--amber-soft);color:var(--amber-text)}
-  .seriesbar .langtoggle a.cur{background:#8A5600;color:#fff}
-  @media(max-width:640px){.seriesbar{border-radius:14px}.seriesbar nav{margin-left:0;width:100%}.seriesbar .arw{display:none}.seriesbar .langtoggle{margin-left:auto}}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .eyebrow::before{content:"";width:26px;height:2px;background:var(--amber)}
   h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.015em;margin:0 0 0;text-wrap:balance;max-width:20ch}
@@ -193,7 +178,7 @@
   .toolbar input:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
   .count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .tblwrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:4px;background:var(--card)}
-  table{border-collapse:collapse;width:100%;min-width:900px;font-size:13.5px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
   table.cantons{min-width:520px}
   table.cantons thead th{cursor:default}
   table.cantons tbody td:nth-child(2){font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-align:right}
@@ -220,11 +205,7 @@
   .minitr i{display:block;height:100%;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .pos{color:#3E7A2E!important}
 
-  /* ---------- footer ---------- */
-  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-2)}
-  footer h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
-  footer p{max-width:75ch;margin:0 0 10px}
-  footer a,.kbnote a,.refs a{color:var(--amber-text)}
+  .kbnote a,.refs a{color:var(--amber-text)}
   .svgwrap{margin-top:6px;overflow-x:auto}
   .svgwrap svg{display:block;width:100%;height:auto;min-width:620px}
   @media(prefers-reduced-motion:no-preference){
@@ -232,13 +213,13 @@
   }
   /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
   .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:10px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
   .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
   .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
   .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
-  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:999px;background:none;text-decoration:none;cursor:pointer}
+  .rt-row a,.rt button{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border:1px solid var(--rt-line);border-radius:2px;background:none;text-decoration:none;cursor:pointer}
   .rt-row a:hover,.rt button:hover{border-color:var(--rt-accent)}
   .rt :focus-visible,.rt-a:focus-visible{outline:2px solid var(--rt-accent);outline-offset:2px}
   .rt [hidden]{display:none}
@@ -269,17 +250,15 @@
     .pair .b{margin-bottom:15px}
     .pair .b i,.pair .b.in i,.pair .b.cap.in i{left:0;right:auto;top:12px;color:var(--ink-3)}
   }
+/*@OSSATURE_CSS*/
 </style>
 
 <a class="skip" href="#contenu">Aller au contenu</a>
 <div class="wrap">
-<div class="seriesbar">
-  <span class="sb-label">Série open-data · Luxembourg</span>
-  <nav aria-label="La série de tableaux de bord"><a class="cur" aria-current="page" href="https://solaire.sitraka.lu">lux-solaire</a><span class="arw" aria-hidden="true">→</span><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a><span class="arw" aria-hidden="true">→</span><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a><span class="arw" aria-hidden="true">→</span><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a><span class="arw" aria-hidden="true">→</span><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a><span class="arw" aria-hidden="true">→</span><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a><span class="arw" aria-hidden="true">→</span><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></nav>
-  <span class="langtoggle"><!--LANGTOGGLE--></span>
-</div>
+<!--@MASTHEAD-->
 <main id="contenu" tabindex="-1">
 <header>
+  <p class="eyebrow">Tableau de bord · données Leneda</p>
   <h1>Le <span class="sun">photovoltaïque</span> au Luxembourg, commune par commune</h1>
   <p class="standfirst"><strong>__PVMW__ MW</strong> de photovoltaïque raccordés au __DATE__, soit +__PVGROWTHPCT__ % depuis le relevé __FIRSTQ__ : le solaire pèse <strong>__PVSHARE__ %</strong> de la capacité de production décentralisée. Le portail Open Data demandait <em>la part du photovoltaïque dans la production électrique par commune</em> ; les fichiers Leneda donnant la capacité raccordée et non l'énergie produite, ce tableau de bord mesure la part du PV dans la <strong>capacité installée</strong>, commune par commune.</p>
   <div class="badges">
@@ -493,6 +472,13 @@
   </div>
 </section>
 
+<section id="methode" class="method" aria-labelledby="methode-h">
+  <h2 id="methode-h">Méthode & source</h2>
+  <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
+  <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
+  <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
+</section>
+
 <aside class="rt" id="rt" aria-labelledby="rt-h"
   data-rt-version="__CONTENT_DATE__"
   data-l-copied="Lien copié"
@@ -542,28 +528,13 @@
 </aside>
 </main>
 
-<footer>
-  <h3 id="methode">Méthode & source</h3>
-  <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
-  <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
-  <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
+<footer class="colophon" aria-labelledby="colophon-h">
+  <h2 id="colophon-h">Colophon</h2>
+<div class="co-a">
   <p>Les données dérivées de cette page (tableaux, CSV et JSON) sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a> ; les fichiers source Leneda et RNPP restent sous licence CC0.</p>
   <p>Mesure d'audience sans cookie : Cloudflare Web Analytics et des compteurs de clics anonymes (aucune adresse IP ni identifiant enregistrés).</p>
-  <div style="margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--card)">
-    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-text);font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>La série open-data · Sitraka Forler</div>
-    <p style="margin:9px 0 0">Ce tableau de bord fait partie d'une série de réutilisations des données publiques luxembourgeoises :
-      <strong>lux-solaire</strong> ·
-      <a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a> ·
-      <a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a> ·
-      <a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a> ·
-      <a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a> ·
-      <a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a> ·
-      <a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a> ·
-      <a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a>.</p>
-    <p style="margin:10px 0 0;font-size:14px">Agenda, newsletter et autres travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
-  </div>
-  <p style="margin:14px 0 10px">Du même auteur, pour la pause : <a href="https://ratrace.sitraka.lu/">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).</p>
-  <p>Analyse et visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + SVG natif, sans bibliothèque · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
+</div>
+<!--@COLOPHON_COMMON-->
 </footer>
 </div>
 

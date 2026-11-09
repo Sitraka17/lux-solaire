@@ -39,6 +39,7 @@ import requests
 
 import baremes   # scripts/baremes.json : source UNIQUE des barèmes (aides, tarifs)
 import grandes   # nouvelles grandes installations (> 100 kW) d'une copie archivée à la suivante
+import ossature  # bandeau, sélecteur de langue, colophon et styles communs à tous les types de pages
 
 ROOT = Path(__file__).resolve().parent.parent
 DATASET_API = "https://data.public.lu/api/1/datasets/la-production-denergie-electrique-au-luxembourg/"
@@ -70,6 +71,8 @@ PV = "Installation photovoltaïque"
 
 MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
              "août", "septembre", "octobre", "novembre", "décembre"]
+# abréviations usuelles (Imprimerie nationale) : « nov. », pas « nove. » ; mars, mai, juin et août entiers
+MONTHS_FR_ABBR = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
 
 # ──────────────── repères officiels (constantes à rafraîchir chaque année) ────
 # Chaque bloc porte son URL et sa date de publication ; les dates sont rendues
@@ -177,10 +180,9 @@ def check_leneda(frames, ng):
 
 
 def _label_fr(d):
-    """Libellé court d'un relevé hebdomadaire : « 14 sept. 2026 ». Règle
-    typographique française : mars, mai, juin et août ne s'abrègent pas."""
-    m = MONTHS_FR[d.month - 1]
-    return f"{d.day} {m if len(m) <= 4 else m[:4] + '.'} {d.year}"
+    """Libellé court d'un relevé hebdomadaire : « 14 sept. 2026 », « 9 nov. 2026 ». Abréviations
+    usuelles (MONTHS_FR_ABBR) ; mars, mai, juin et août ne s'abrègent pas."""
+    return f"{d.day} {MONTHS_FR_ABBR[d.month - 1]} {d.year}"
 
 
 MAX_AGE_DAYS = 10      # relevé hebdomadaire plus vieux : build en échec (Leneda n'a pas publié)
@@ -518,9 +520,9 @@ MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July",
              "August", "September", "October", "November", "December"]
 _FR2EN_MONTH = {fr: MONTHS_EN[i] for i, fr in enumerate(MONTHS_FR)}
 _MONTH_RE = re.compile(r"\b(" + "|".join(MONTHS_FR) + r")\b")
-# abréviations produites par _label_fr : MONTHS_FR[m-1][:4] + "." pour les mois
-# de plus de 4 lettres ; mars, mai, juin et août restent entiers (gérés par _MONTH_RE)
-_ABBR = {(MONTHS_FR[i][:4] + "."): MONTHS_EN[i][:3] for i in range(12) if len(MONTHS_FR[i]) > 4}
+# abréviations produites par _label_fr (MONTHS_FR_ABBR) ; mars, mai, juin et août
+# restent entiers (gérés par _MONTH_RE)
+_ABBR = {MONTHS_FR_ABBR[i]: MONTHS_EN[i][:3] for i in range(12) if MONTHS_FR_ABBR[i] != MONTHS_FR[i]}
 
 # Lëtzebuergesch : mêmes mécanismes, mais les conventions numériques FRANÇAISES
 # sont conservées (virgule décimale, espace des milliers, locale fr-FR).
@@ -529,7 +531,7 @@ MONTHS_LB = ["Januar", "Februar", "Mäerz", "Abrëll", "Mee", "Juni", "Juli",
 _FR2LB_MONTH = {fr: MONTHS_LB[i] for i, fr in enumerate(MONTHS_FR)}
 _ABBR_LB_SHORT = ["Jan.", "Feb.", "Mäe.", "Abr.", "Mee", "Jun.", "Jul.",
                   "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
-_ABBR_LB = {(MONTHS_FR[i][:4] + "."): _ABBR_LB_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+_ABBR_LB = {MONTHS_FR_ABBR[i]: _ABBR_LB_SHORT[i] for i in range(12) if MONTHS_FR_ABBR[i] != MONTHS_FR[i]}
 # date-jour luxembourgeoise : ordinal avec point : « 6 Juli » → « 6. Juli »
 # (« 1er juillet » FR → « 1er Juli » → « 1. Juli ») ; s'applique après la
 # substitution des mois, sur noms complets et abréviations.
@@ -547,7 +549,7 @@ MONTHS_DE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
 _FR2DE_MONTH = {fr: MONTHS_DE[i] for i, fr in enumerate(MONTHS_FR)}
 _ABBR_DE_SHORT = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli",
                   "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
-_ABBR_DE = {(MONTHS_FR[i][:4] + "."): _ABBR_DE_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+_ABBR_DE = {MONTHS_FR_ABBR[i]: _ABBR_DE_SHORT[i] for i in range(12) if MONTHS_FR_ABBR[i] != MONTHS_FR[i]}
 # date-jour allemande : ordinal avec point : « 6 Juli » → « 6. Juli »
 # (« 1er juillet » FR → « 1er Juli » → « 1. Juli »), après substitution des mois.
 _DE_ORD_RE = re.compile(
@@ -567,7 +569,7 @@ MONTHS_PT = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho"
 _FR2PT_MONTH = {fr: MONTHS_PT[i] for i, fr in enumerate(MONTHS_FR)}
 _ABBR_PT_SHORT = ["jan.", "fev.", "mar.", "abr.", "maio", "jun.", "jul.",
                   "ago.", "set.", "out.", "nov.", "dez."]
-_ABBR_PT = {(MONTHS_FR[i][:4] + "."): _ABBR_PT_SHORT[i] for i in range(12) if len(MONTHS_FR[i]) > 4}
+_ABBR_PT = {MONTHS_FR_ABBR[i]: _ABBR_PT_SHORT[i] for i in range(12) if MONTHS_FR_ABBR[i] != MONTHS_FR[i]}
 # « 2 novembro 2026 » → « 2 de novembro de 2026 » (après substitution des mois)
 _PT_DATE_RE = re.compile(r"\b(\d{1,2})(?:er)? (" + "|".join(MONTHS_PT) + r")(?: (\d{4}))?\b")
 
@@ -600,6 +602,13 @@ I18N_PT, I18N_PT_PAIRS = _load_i18n(*I18N_FILES["pt"])
 def _dict_parts(lang):
     """Les quatre dictionnaires d'une langue, fichier par fichier, dans l'ordre de I18N_FILES."""
     return [json.loads((ROOT / "scripts" / n).read_text()) for n in I18N_FILES[lang]]
+
+
+def load_templates():
+    """template.html et template_simulateur.html, ossature commune (bandeau, colophon, styles :
+    scripts/ossature.py) insérée AVANT traduction : les clés des dictionnaires la couvrent aussi."""
+    return (ossature.expand((ROOT / "template.html").read_text()),
+            ossature.expand((ROOT / "template_simulateur.html").read_text()))
 
 
 def check_dicts(tpl, parts=None):
@@ -1594,7 +1603,7 @@ def check_output(html, lang, dct):
         sys.exit(f"{lang} : tiret cadratin (U+2014) dans la page rendue, vers : {html[max(0, i-60):i+40]!r}")
     if dct:
         # le sélecteur de langue lie volontairement les autres langues (href="/fr/simulateur/")
-        html = re.sub(r'<span class="langtoggle">.*?</span>', "", html, count=1, flags=re.S)
+        html = re.sub(r'<ul class="langs".*?</ul>', "", html, count=1, flags=re.S)
         leaks = [k for k, v in dct.items() if v != k and k in html]
         if leaks:
             sys.exit(f"{lang} : {len(leaks)} clés non traduites subsistent :\n  " +
@@ -1668,7 +1677,8 @@ def jsonld_sim(final_html, lang, canonical, cdate, pv):
     title = _grab(r"<title>(.*?)</title>", final_html)
     desc = _grab(r'<meta\s+name="description"\s+content="([^"]*)"', final_html)
     og = _grab(r'<meta\s+property="og:image"\s+content="([^"]*)"', final_html)
-    m = re.search(r'<p class="crumbs"><a href="([^"]*)">(.*?)</a> › (.*?)</p>', final_html, re.S)
+    m = re.search(r'<nav class="crumbs"[^>]*><ol><li><a href="([^"]*)">(.*?)</a></li><li aria-current="page">(.*?)</li></ol></nav>',
+                  final_html, re.S)
     home_path, home_name, here = m.group(1), _text(m.group(2)), _text(m.group(3))
     faq_sec = re.search(r'<section id="faq".*?</section>', final_html, re.S).group(0)
     qa = re.findall(r"<summary>(.*?)</summary>\s*<p>(.*?)</p>", faq_sec, re.S)
@@ -1735,8 +1745,7 @@ def render_all(data):
         make_og(data, lang)
     for lang in SIM_LANGS:
         make_og_sim(pv, lang)
-    tpl = (ROOT / "template.html").read_text()
-    tpl_sim = (ROOT / "template_simulateur.html").read_text()
+    tpl, tpl_sim = load_templates()
     check_dicts(tpl + "\n" + tpl_sim)
     for name, t in (("template.html", tpl), ("template_simulateur.html", tpl_sim)):
         if "—" in t:
@@ -1769,26 +1778,26 @@ def render_all(data):
     manifest = write_exports(exports(data), max(cdates.values()))
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)])
 
-    F_GB = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+    F_GB = ('<svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false">'
             '<rect width="60" height="44" fill="#012169"/>'
             '<path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/>'
             '<path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/>'
             '<path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/>'
             '<path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>')
-    F_FR = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+    F_FR = ('<svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false">'
             '<rect width="20" height="44" fill="#0055A4"/>'
             '<rect x="20" width="20" height="44" fill="#fff"/>'
             '<rect x="40" width="20" height="44" fill="#EF4135"/></svg>')
-    F_LU = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+    F_LU = ('<svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false">'
             '<rect width="60" height="15" fill="#EF3340"/>'
             '<rect y="15" width="60" height="14" fill="#fff"/>'
             '<rect y="29" width="60" height="15" fill="#00A2E1"/></svg>')
-    F_DE = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+    F_DE = ('<svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false">'
             '<rect width="60" height="15" fill="#000"/>'
             '<rect y="15" width="60" height="14" fill="#DD0000"/>'
             '<rect y="29" width="60" height="15" fill="#FFCE00"/></svg>')
     # drapeau portugais simplifié (vert 2/5, rouge 3/5, sphère armillaire réduite à un disque jaune)
-    F_PT = ('<svg width="15" height="11" viewBox="0 0 60 44">'
+    F_PT = ('<svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false">'
             '<rect width="24" height="44" fill="#046A38"/>'
             '<rect x="24" width="36" height="44" fill="#DA291C"/>'
             '<circle cx="24" cy="22" r="9" fill="#FFE900"/>'
@@ -1802,11 +1811,7 @@ def render_all(data):
         # le simulateur n'embarque que le nécessaire (relevé et cantons), pas les 100 communes
         blob = json.dumps({"meta": d["meta"], "cantons": d["cantons"]} if sim else d,
                           ensure_ascii=False).replace("<", "\\u003c")
-        toggle = "".join(
-            '<a href="{}"{}>{}{}</a>'.format(
-                path, ' class="cur"' if code == lang else '', _FLAG[code],
-                {"lb": "LU"}.get(code, code.upper()))
-            for code, path in paths)
+        toggle = ossature.lang_nav(paths, lang, _FLAG)
         og_locale = f'<meta property="og:locale" content="{OG_LOCALE[lang]}">' + "".join(
             f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">'
             for c, _ in paths if c != lang)
@@ -1871,7 +1876,7 @@ def render_all(data):
             checked.append((str(out.relative_to(ROOT)), page, lang, "sim" if sim else "dash"))
     # pages par commune et « Pour les communes » (reprennent le style des pages rendues)
     import communes
-    csrc = (ROOT / "scripts" / "communes.py").read_text()
+    csrc = (ROOT / "scripts" / "communes.py").read_text() + (ROOT / "scripts" / "ossature.py").read_text()
     cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
                                                         KIT_VERSION, bar_txt, grandes_src]) for lang in DASH_LANGS}
     groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG, _jsround)
