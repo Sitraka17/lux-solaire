@@ -77,7 +77,7 @@ def test_detect_paires_et_comptes():
 
 def test_rendu_quatre_langues_sans_entree():
     b = grandes.detect([(date(2026, 9, 14), _df(BASE)), (date(2026, 10, 26), _df(BASE))], lambda d: d.isoformat())
-    for lang in ("fr", "en", "de", "lb"):
+    for lang in ("fr", "en", "de", "lb", "pt"):
         h = grandes.dashboard_section(b, lang, "/x/", lambda n: n.lower())
         assert 'class="bignone"' in h and "<table" not in h and "—" not in h
         c = grandes.commune_section(b, lang, 202, "Differdange", "/")
@@ -91,7 +91,7 @@ def test_lede_dit_la_periode_reelle():
     s3 = _df(BASE + [(202, "Differdange", PV, 999.6), (304, "Luxembourg", PV, 4623.84)])
     b = grandes.detect([(date(2026, 9, 14), s1), (date(2026, 10, 26), s2), (date(2026, 11, 2), s3)],
                        lambda d: d.isoformat())
-    for lang in ("fr", "en", "de", "lb"):
+    for lang in ("fr", "en", "de", "lb", "pt"):
         h = grandes.dashboard_section(b, lang, "/x/", lambda n: n.lower())
         lede = h.split('class="lede">')[1].split("</p>")[0]
         assert lede.count("2026-09-14") == 2 and "2026-11-02" in lede and " 3 " in lede, (lang, lede)
@@ -104,7 +104,7 @@ def test_lede_dit_la_periode_reelle():
 
 def test_parite_des_textes():
     keys = set(grandes.S["fr"])
-    assert all(set(grandes.S[l]) == keys for l in ("en", "de", "lb"))
+    assert all(set(grandes.S[l]) == keys for l in ("en", "de", "lb", "pt"))
     assert all(set(grandes.TYPE_NAMES[l]) == set(grandes.TYPE_CODE) for l in grandes.TYPE_NAMES)
 
 
@@ -112,7 +112,8 @@ def test_noms_des_filieres_alignes_sur_le_mix(root):
     fr = {"Installation photovoltaïque": "Photovoltaïque", "Eolienne": "Éolien", "Biomasse": "Biomasse",
           "Cogénération": "Cogénération", "Installation hydroélectrique": "Hydroélectrique", "Biogaz": "Biogaz"}
     assert grandes.TYPE_NAMES["fr"] == fr
-    for lang, f in (("en", "i18n_js.json"), ("de", "i18n_de_js.json"), ("lb", "i18n_lb_js.json")):
+    for lang, f in (("en", "i18n_js.json"), ("de", "i18n_de_js.json"), ("lb", "i18n_lb_js.json"),
+                    ("pt", "i18n_pt_js.json")):
         d = json.loads((root / "scripts" / f).read_text())
         for t, name in fr.items():
             assert d[f"name:'{name}'"] == f"name:'{grandes.TYPE_NAMES[lang][t]}'", (lang, t)

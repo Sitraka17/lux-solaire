@@ -1,6 +1,37 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
-## i18n : le portugais, SIMULATEUR seulement (/pt/simulador/, 8/11/2026)
+## i18n : le portugais sur TOUT le site (9/11/2026)
+
+Extension du simulateur PT (8/11, section suivante) au tableau de bord `/pt/`, aux 100 pages
+communales `/pt/municipio/<slug>/` et à « Pour les communes » `/pt/para-os-municipios/` : 103 pages
+PT. Ce bloc REMPLACE les points « simulateur seulement » de la section suivante (liens vers `/fr/`
+« (em francês) », `check_dict_pt`, `RT_TITLES_PT`, pas de `data.pt.json`, `pt` absent de `/e`).
+
+- **Dictionnaires** : `i18n_pt.json` + `i18n_pt_js.json` (tableau de bord), `i18n_sim_pt*.json`
+  (simulateur, clés du tableau de bord retirées). `check_dicts` contrôle désormais la parité FICHIER
+  PAR FICHIER pour LB, DE et PT contre EN (`I18N_FILES`, `_dict_parts`) ; `check_dict_pt` supprimé.
+  Clés ajoutées le 9/11 aux quatre dictionnaires du tableau de bord : badges « Source <b>Leneda</b> »
+  et « Licence <b>CC0</b> » (restés en français en DE/LB/PT jusque-là).
+- **Pages communales** : `S["pt"]`, `FOR["pt"]` (communes.py), `S["pt"]` et `TYPE_NAMES["pt"]`
+  (grandes.py, noms des filières = i18n_pt_js.json). `HTML_LANG = {"pt": "pt-PT"}` vit dans
+  communes.py (importé par build.py). Trimestre en prose : « T1 2025 » (`_q_pt`), rang « 86.º ».
+- **Données** : `data/data.pt.json` publié, titres PT dans le manifeste, `og.pt.png`.
+- **Sélecteur** : substitué APRÈS traduction (avant, la clé `href="/fr/simulateur/"` réécrivait le
+  lien FR du sélecteur des simulateurs EN/DE/LB/PT vers la page elle-même : bogue corrigé le 9/11).
+  `check_output` ignore le sélecteur.
+- **SEO** : hreflang `pt` dans `template.html`, x-default inchangé ; sitemap via `LANG_PATHS` et
+  les groupes communaux.
+- **Compteur `/e`** : `functions/e.js` accepte `pt` (et `pt-PT`, ce qu'envoie `ev.js`, ramené à `pt`)
+  et les chemins `/pt/`, `/pt/municipio/…`, `/pt/para-os-municipios/`.
+- **Barèmes** : `check_page` reconnaît « dos custos », « e », « máx. », « cobertura de parque de
+  estacionamento », « tabela de AAAA ».
+- **404** : lien PT ajouté. **Contact** : `sitraka.lu/fr/contact/` « (em francês) », seul lien
+  interne-à-la-marque encore signalé en français.
+- **Tests** : `tests/test_portugais_site.py` (103 pages, hreflang réciproques, sélecteur sur chaque
+  type de page, sitemap, liens PT vers PT, français résiduel via `tests/francais_residuel.py`,
+  métadonnées, manifeste, `/e` dans node).
+
+## i18n : le portugais, SIMULATEUR d'abord (/pt/simulador/, 8/11/2026, historique)
 
 Cinquième langue, limitée au simulateur (ni tableau de bord, ni pages communales, ni « Pour les
 communes »). Public : la communauté portugaise du Luxembourg (Differdange, Esch). Portugais

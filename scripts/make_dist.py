@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_FILES = [
     "index.html", "404.html", "_headers", "robots.txt", "sitemap.xml",
     "favicon.svg", "vignette.png",
-    "og.png", "og.en.png", "og.de.png", "og.lb.png",
+    "og.png", "og.en.png", "og.de.png", "og.lb.png", "og.pt.png",
     "og.sim.png", "og.sim.en.png", "og.sim.de.png", "og.sim.lb.png", "og.sim.pt.png",
     "rt.js", "ev.js", "sim-engine.js",
     "google525f5d72f5a60fbe.html",                 # vérification Google Search Console
@@ -126,7 +126,7 @@ def main():
     if bad:
         sys.exit(f"dist : {len(bad)} fichier(s) interne(s) publié(s), déploiement refusé :\n  " +
                  "\n  ".join(bad[:30]))
-    for must in ("index.html", "fr/index.html", "de/index.html", "lb/index.html", "simulator/index.html",
+    for must in ("index.html", "fr/index.html", "de/index.html", "lb/index.html", "pt/index.html", "simulator/index.html",
                  "data/data.json", "sim-engine.js", "_headers"):
         if not (dist / must).is_file():
             sys.exit(f"dist : {must} absent")

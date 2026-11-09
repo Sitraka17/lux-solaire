@@ -245,9 +245,9 @@ def check_page(html, lang, kind, b=None):
         tranches = {(x["taux"], x["plafond"]) for x in gm["tranches"]}
         full = {(x["taux"], x["deKwc"], x["aKwc"], x["plafond"]) for x in gm["tranches"]}
         omb = (gm["ombriere"]["taux"], gm["ombriere"]["plafond"])
-        for m in re.finditer(_N + r"\s?% (?:des coûts |of costs |der Kosten |vun de Käschten )?"
-                             r"(?:entre|between|zwischen|tëscht) " + _N + r" (?:et|and|und|an|a) " + _N +
-                             r" (kWc|kWp|MWc|MWp) \((?:plafond |cap |Obergrenze |Plafong |max\. )?"
+        for m in re.finditer(_N + r"\s?% (?:des coûts |of costs |der Kosten |vun de Käschten |dos custos )?"
+                             r"(?:entre|between|zwischen|tëscht) " + _N + r" (?:et|and|und|an|a|e) " + _N +
+                             r" (kWc|kWp|MWc|MWp) \((?:plafond |cap |Obergrenze |Plafong |max\. |máx\. )?"
                              + _CUR_L + _N + r"\s?€?/kW[cp]\)", t):
             seen.add("gem_tranche")
             f = 1000 if m.group(4).startswith("M") else 1
@@ -257,16 +257,16 @@ def check_page(html, lang, kind, b=None):
                     f"{x['taux']} % de {x['deKwc']} à {x['aKwc']} kWc ≤ {x['plafond']} €/kWc" for x in gm["tranches"]))
             else:
                 seen.add(("gem", key))
-        for m in re.finditer(_N + r"\s?% \((?:plafond |cap |Obergrenze |Plafong |max\. )?" + _CUR_L + _N + r"\s?€?/kW[cp]\)", t):
+        for m in re.finditer(_N + r"\s?% \((?:plafond |cap |Obergrenze |Plafong |max\. |máx\. )?" + _CUR_L + _N + r"\s?€?/kW[cp]\)", t):
             seen.add("gem_taux")
             if (n(m.group(1)), n(m.group(2))) not in tranches | {omb}:
                 bad("taux et plafond Gemengen", m, f"{sorted(tranches)} ou ombrière {omb}")
-        for m in re.finditer(r"(?:ombrière|canopy|Parkplatzüberdachung|Parkplazendaach)[^.]{0,40}?" + _N +
+        for m in re.finditer(r"(?:ombrière|canopy|Parkplatzüberdachung|Parkplazendaach|cobertura de parque de estacionamento)[^.]{0,40}?" + _N +
                              r"\s?% \(" + _CUR_L + _N + r"\s?€?/kW[cp]\)", t):
             seen.add("gem_omb")
             if (n(m.group(1)), n(m.group(2))) != omb:
                 bad("ombrière Gemengen", m, f"{omb[0]} % ≤ {omb[1]} €/kWc")
-        for m in re.finditer(r"(?:[Bb]arème|Bareem|Stand) (\d{4})|(\d{4}) (?:Klimabonus Gemengen )?scale", t):
+        for m in re.finditer(r"(?:[Bb]arème|Bareem|Stand|[Tt]abela de) (\d{4})|(\d{4}) (?:Klimabonus Gemengen )?scale", t):
             ctx = t[max(0, m.start() - 160):m.end() + 160]
             if "Gemengen" not in ctx:
                 continue

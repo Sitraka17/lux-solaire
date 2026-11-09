@@ -8,13 +8,15 @@
 // d'hôte). La limite de débit reste une règle Cloudflare (aucune IP stockée ici).
 import { SLUGS, FILES } from "./_allow.js";   // généré par scripts/build.py (write_ev_allowlist)
 
-const LANGS = new Set(["en", "fr", "de", "lb"]);
+const LANGS = new Set(["en", "fr", "de", "lb", "pt"]);
+// ev.js envoie document.documentElement.lang : « pt-PT » sur les pages portugaises, ramené à « pt »
+const LANG_ALIAS = { "pt-PT": "pt" };
 const MAX_BODY = 1024;   // un événement réel fait moins de 200 octets
 // Pages qui chargent /ev.js : tableau de bord, pages communales, « Pour les communes »
 // (le simulateur ne charge pas ev.js : aucun événement n'en vient).
-const HOME = /^\/(?:(?:fr|de|lb)\/)?$/;
-const COMMUNE = /^\/(?:municipality|fr\/commune|de\/gemeinde|lb\/gemeng)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
-const FORM = /^\/(?:for-municipalities|fr\/pour-les-communes|de\/fuer-gemeinden|lb\/fir-gemengen)\/$/;
+const HOME = /^\/(?:(?:fr|de|lb|pt)\/)?$/;
+const COMMUNE = /^\/(?:municipality|fr\/commune|de\/gemeinde|lb\/gemeng|pt\/municipio)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
+const FORM = /^\/(?:for-municipalities|fr\/pour-les-communes|de\/fuer-gemeinden|lb\/fir-gemengen|pt\/para-os-municipios)\/$/;
 const HOST = /^(?=.{1,60}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
 const COPY = new Set(["rt-copy", "rt-copy-txt", "rt-copy-bib"]);
 
@@ -69,7 +71,8 @@ export async function onRequestPost({ request, env }) {
     b = JSON.parse(raw);
   } catch { return done(); }
   if (!b || typeof b !== "object" || !env.DB) return done();
-  const type = String(b.t ?? ""), lang = String(b.l ?? ""), page = String(b.p ?? "");
+  const type = String(b.t ?? ""), page = String(b.p ?? "");
+  const rawLang = String(b.l ?? ""), lang = LANG_ALIAS[rawLang] ?? rawLang;
   const x = String(b.x ?? ""), r = String(b.r ?? "").toLowerCase();
   if (!Object.hasOwn(TARGET, type) || !LANGS.has(lang) || page.length > 80 || !pageOk(page) || !TARGET[type](x)) {
     return done();

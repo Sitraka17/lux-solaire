@@ -38,6 +38,8 @@ TYPE_NAMES = {
            "Cogénération": "KWK", "Installation hydroélectrique": "Wasserkraft", "Biogaz": "Biogas"},
     "lb": {"Installation photovoltaïque": "Photovoltaik", "Eolienne": "Wandenergie", "Biomasse": "Biomass",
            "Cogénération": "Cogeneratioun", "Installation hydroélectrique": "Waasserkraaft", "Biogaz": "Biogas"},
+    "pt": {"Installation photovoltaïque": "Fotovoltaica", "Eolienne": "Eólica", "Biomasse": "Biomassa",
+           "Cogénération": "Cogeração", "Installation hydroélectrique": "Hídrica", "Biogaz": "Biogás"},
 }
 TYPE_CODE = {"Installation photovoltaïque": "pv", "Eolienne": "wind", "Biomasse": "biomass",
              "Cogénération": "chp", "Installation hydroélectrique": "hydro", "Biogaz": "biogas"}
@@ -283,6 +285,47 @@ S = {
         "gap": lambda days: f"{days} Deeg no der viregter",
         "csv": "Nei an ewechgefall Zeilen (CSV)", "nat": "Nationall Lëscht",
         "list_aria": "Nei Zeilen iwwer 100 kW",
+    },
+    "pt": {
+        "h": "Grandes instalações: linhas surgidas",
+        "note": "acima de 100 kW, de um levantamento arquivado para o seguinte",
+        "dash_lede": lambda n, n0, first, last, a, d, k, al: (
+            f"No levantamento de {last}, o ficheiro da Leneda por instalação conta <strong>{_int(n, 'pt')} "
+            f"{'instalação' if n == 1 else 'instalações'} acima de 100 kW</strong>, todas as tecnologias "
+            f"({_int(n0, 'pt')} em {first}). De {first} a {last}, em {k} levantamentos arquivados, cada um "
+            f"comparado com o anterior, <strong>{a} "
+            f"{'linha acima de 100 kW surgiu' if a == 1 else 'linhas acima de 100 kW surgiram'}</strong> e {d} "
+            f"{'desapareceu' if d == 1 else 'desapareceram'}"
+            + (f" ({al} das linhas surgidas no último levantamento, o de {last})" if k > 2 else "") + "."),
+        "latest": "Últimas linhas surgidas",
+        "cols": ("Levantamento", "Município", "Tecnologia", "Potência (kW)"),
+        "ccols": ("Levantamento", "Movimento", "Tecnologia", "Potência (kW)"),
+        "more": lambda n: f"{n} linhas surgidas no total; a lista completa, incluindo as linhas desaparecidas, está no CSV.",
+        "none_dash": lambda first, last: f"Nenhuma linha acima de 100 kW surgiu entre {first} e {last}.",
+        "up": "surgida", "down": "desaparecida",
+        "r_up": "uma linha acima de 100 kW da mesma tecnologia desapareceu no município no mesmo levantamento: ampliação ou correção possível",
+        "r_down": "uma linha acima de 100 kW da mesma tecnologia surgiu no município no mesmo levantamento",
+        "m_up": lambda c: f"mesma tecnologia e mesma potência desaparecidas em {c} no mesmo levantamento: mudança de município possível",
+        "m_down": lambda c: f"mesma tecnologia e mesma potência surgidas em {c} no mesmo levantamento",
+        "c_lede": lambda c, n, n0, first, last: (
+            f"Em {c}, o ficheiro da Leneda por instalação conta <strong>{n} "
+            f"{'instalação' if n == 1 else 'instalações'} acima de 100 kW</strong> no levantamento de {last}, "
+            f"todas as tecnologias ({n0} em {first})."),
+        "c_some": "Linhas acima de 100 kW surgidas ou desaparecidas entre dois levantamentos arquivados:",
+        "c_none": lambda first, last: (f"Nenhuma linha acima de 100 kW surgiu nem desapareceu no município "
+                                       f"entre {first} e {last}."),
+        "method": lambda lst: (
+            "<strong>Método.</strong> A Leneda publica todas as semanas um ficheiro com uma linha por instalação: "
+            "município, tecnologia e potência instalada, sem identificador, sem data de entrada em serviço e sem "
+            "operador. Substitui esse ficheiro sem guardar histórico; o lux-solaire arquiva uma cópia em cada "
+            "levantamento. Sem identificador, não é possível seguir uma instalação de um levantamento para o outro: "
+            "comparam-se, município a município e tecnologia a tecnologia, as linhas acima de 100 kW (100 kW "
+            "exatamente excluídos) de duas cópias consecutivas. Uma linha surgida pode ser uma instalação nova, mas "
+            "também uma instalação ampliada para lá de 100 kW, um valor corrigido ou uma linha atribuída a outro "
+            f"município; o ficheiro não permite decidir. Cópias comparadas: {lst}."),
+        "gap": lambda days: f"{days} dias depois da anterior",
+        "csv": "Linhas surgidas e desaparecidas (CSV)", "nat": "Lista nacional",
+        "list_aria": "Linhas acima de 100 kW surgidas",
     },
 }
 CSV_PATH = "/data/csv/solaire_grandes_installations.csv"

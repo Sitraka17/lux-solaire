@@ -1,0 +1,17 @@
+{
+"name:'Photovoltaïque'": "name:'Fotovoltaica'",
+"name:'Éolien'": "name:'Eólica'",
+"name:'Biomasse'": "name:'Biomassa'",
+"name:'Cogénération'": "name:'Cogeração'",
+"name:'Hydroélectrique'": "name:'Hídrica'",
+"name:'Biogaz'": "name:'Biogás'",
+"' communes'": "' municípios'",
+"Capacité installée par filière, ${first.label} à aujourd'hui": "Potência instalada por tecnologia, de ${first.label} até hoje",
+"'hebdo vs trim.'": "'semanal vs. trimestral'",
+"' inst.'": "' inst.'",
+"' W/hab.'": "' W/hab.'",
+"' toitures/1 000'": "' telhados/1 000'",
+"<b>${escH(c.c)} : ${fmt(nTot)} installations, ${fmt1(cTot)} MW</b>&nbsp;; ${Math.round(sn)} % font 30 kW ou moins, pour ${Math.round(sc)} % de la capacité.": "<b>${escH(c.c)}: ${fmt(nTot)} instalações, ${fmt1(cTot)} MW</b>; ${Math.round(sn)} % têm 30 kW ou menos, para ${Math.round(sc)} % da potência.",
+"Depuis le ${H.date} : ${sg(h[0])} installations, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parenthèses : variation par classe).": "Desde ${H.date}: ${sg(h[0])} instalações, ${h[1]<0?'−':'+'}${fmt1(Math.abs(h[1])/1000)} MW (entre parênteses: variação por classe).",
+"'Page de la commune'": "'Página do município'"
+}

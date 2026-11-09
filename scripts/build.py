@@ -2,7 +2,8 @@
 """Rebuild the Lux-Solaire dashboard from the latest Leneda open data.
 
 Downloads the quarterly + weekly CSVs from data.public.lu, recomputes the
-aggregates, and injects them into template.html -> index.html (EN), fr/ and lb/.
+aggregates, and injects them into template.html -> index.html (EN), fr/, de/, lb/
+and pt/ (plus the calculator, the municipal pages and « Pour les communes »).
 
 Usage:  python3 scripts/build.py
 Deps:   pandas, requests (pillow optional, for og.png)
@@ -555,8 +556,9 @@ _DE_ORD_RE = re.compile(
                     key=len, reverse=True)) + r"))")
 
 
-# Portugais européen (/pt/simulador/, ajouté le 8/11/2026) : SIMULATEUR seulement (ni
-# tableau de bord, ni pages communales). Public : la communauté portugaise du Luxembourg
+# Portugais européen (/pt/) : simulateur /pt/simulador/ (8/11/2026), puis TOUT le site le
+# même jour (tableau de bord /pt/, pages communales /pt/municipio/<slug>/, « Pour les
+# communes » /pt/para-os-municipios/). Public : la communauté portugaise du Luxembourg
 # (Differdange, Esch…). Nombres : virgule décimale, milliers séparés par une espace
 # insécable FINE (U+202F, celle que toLocaleString('fr-FR') produit : la locale JS
 # 'fr-FR' est gardée telle quelle). Dates : « 2 de novembro de 2026 ».
@@ -588,57 +590,44 @@ def _load_i18n(*names):
 I18N_FILES = {"en": ("i18n_en.json", "i18n_js.json", "i18n_sim_en.json", "i18n_sim_js.json"),
               "lb": ("i18n_lb.json", "i18n_lb_js.json", "i18n_sim_lb.json", "i18n_sim_lb_js.json"),
               "de": ("i18n_de.json", "i18n_de_js.json", "i18n_sim_de.json", "i18n_sim_de_js.json"),
-              # portugais : simulateur seulement (les clés du tableau de bord que la page
-              # simulateur contient aussi, barre de série, boîte à outils, sont dans i18n_sim_pt.json)
-              "pt": ("i18n_sim_pt.json", "i18n_sim_pt_js.json")}
+              "pt": ("i18n_pt.json", "i18n_pt_js.json", "i18n_sim_pt.json", "i18n_sim_pt_js.json")}
 I18N, I18N_PAIRS = _load_i18n(*I18N_FILES["en"])
 I18N_LB, I18N_LB_PAIRS = _load_i18n(*I18N_FILES["lb"])
 I18N_DE, I18N_DE_PAIRS = _load_i18n(*I18N_FILES["de"])
 I18N_PT, I18N_PT_PAIRS = _load_i18n(*I18N_FILES["pt"])
 
 
-def check_dicts(tpl):
+def _dict_parts(lang):
+    """Les quatre dictionnaires d'une langue, fichier par fichier, dans l'ordre de I18N_FILES."""
+    return [json.loads((ROOT / "scripts" / n).read_text()) for n in I18N_FILES[lang]]
+
+
+def check_dicts(tpl, parts=None):
     """Garde d'intégrité i18n, AVANT toute édition des gabarits : chaque clé des
     dictionnaires doit exister dans l'un des gabarits (`tpl` = concaténation de
     template.html et template_simulateur.html ; une clé morte = une phrase qui
-    reste silencieusement en français), et EN/LB/DE doivent couvrir exactement
-    le même jeu de clés."""
+    reste silencieusement en français), et LB/DE/PT doivent couvrir exactement les
+    clés EN, FICHIER PAR FICHIER (i18n_pt.json = i18n_en.json, i18n_pt_js.json =
+    i18n_js.json, i18n_sim_pt.json = i18n_sim_en.json, i18n_sim_pt_js.json =
+    i18n_sim_js.json) : la date de contenu du tableau de bord ne lit que ses propres
+    dictionnaires. `parts` = {langue: [dictionnaire par fichier]} (tests) ; par défaut,
+    les fichiers de I18N_FILES."""
+    parts = parts or {lang: _dict_parts(lang) for lang in I18N_FILES}
     problems = []
-    for name, dct in (("EN", I18N), ("LB", I18N_LB), ("DE", I18N_DE)):
-        dead = [k for k in dct if k not in tpl]
+    for lang, ps in parts.items():
+        dead = [k for p in ps for k in p if k not in tpl]
         if dead:
-            problems.append(f"clés {name} absentes du gabarit ({len(dead)}) :\n  " +
+            problems.append(f"clés {lang.upper()} absentes du gabarit ({len(dead)}) :\n  " +
                             "\n  ".join(repr(k[:90]) for k in dead))
-    for other_name, other in (("LB", I18N_LB), ("DE", I18N_DE)):
-        only_en, only_x = set(I18N) - set(other), set(other) - set(I18N)
-        if only_en or only_x:
-            problems.append(f"parité EN/{other_name} : {len(only_en)} clés EN sans {other_name}, "
-                            f"{len(only_x)} clés {other_name} sans EN :\n  "
-                            + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_x)))
-    if problems:
-        sys.exit("i18n : " + "\n".join(problems))
-
-
-def check_dict_pt(tpl_sim):
-    """Parité du dictionnaire portugais (simulateur seul) : exactement les clés EN du
-    simulateur (i18n_sim_en.json + i18n_sim_js.json) PLUS les clés EN du tableau de bord
-    présentes dans template_simulateur.html (barre de série, boîte à outils, lien
-    d'évitement, contact), c.-à-d. tout ce que to_en traduit sur cette page ; aucune clé
-    morte."""
-    sim_en = set()
-    for name in I18N_FILES["en"][2:]:
-        sim_en |= set(json.loads((ROOT / "scripts" / name).read_text()))
-    dash_en = set(I18N) - sim_en
-    expected = sim_en | {k for k in dash_en if k in tpl_sim}
-    missing, extra = expected - set(I18N_PT), set(I18N_PT) - expected
-    dead = [k for k in I18N_PT if k not in tpl_sim]
-    problems = []
-    if missing or extra:
-        problems.append(f"parité EN/PT (simulateur) : {len(missing)} clés sans PT, {len(extra)} clés PT en trop :\n  "
-                        + "\n  ".join(repr(k[:90]) for k in sorted(missing | extra)))
-    if dead:
-        problems.append(f"clés PT absentes du gabarit du simulateur ({len(dead)}) :\n  "
-                        + "\n  ".join(repr(k[:90]) for k in dead))
+    for lang, ps in parts.items():
+        if lang == "en":
+            continue
+        for name_en, name_x, a, b in zip(I18N_FILES["en"], I18N_FILES[lang], parts["en"], ps):
+            only_en, only_x = set(a) - set(b), set(b) - set(a)
+            if only_en or only_x:
+                problems.append(f"parité {name_en} / {name_x} : {len(only_en)} clés EN sans {lang.upper()}, "
+                                f"{len(only_x)} clés {lang.upper()} sans EN :\n  "
+                                + "\n  ".join(repr(k[:90]) for k in sorted(only_en | only_x)))
     if problems:
         sys.exit("i18n : " + "\n".join(problems))
 
@@ -680,7 +669,7 @@ def _tr_str_de(s):
 
 
 def _tr_str_pt(s):
-    """Variante portugaise (simulateur) : trimestres gardés (« 2025 T1 », T = trimestre),
+    """Variante portugaise : trimestres gardés (« 2025 T1 », T = trimestre),
     abréviations et noms de mois, puis « 2 de novembro de 2026 » ; « 1er » → « 1 ».
     Formats numériques français conservés (virgule décimale)."""
     for fr, pt in _ABBR_PT.items():                          # « juil. » → « jul. »
@@ -730,7 +719,7 @@ def to_de(html):
 
 
 def to_pt(html):
-    """HTML portugais (simulateur seul) : dictionnaire seul, comme to_de. La locale JS
+    """HTML portugais (tableau de bord et simulateur) : dictionnaire seul, comme to_de. La locale JS
     'fr-FR' reste intacte : elle produit exactement le format portugais voulu (virgule
     décimale, milliers séparés par U+202F)."""
     for fr, pt in I18N_PT_PAIRS:
@@ -739,14 +728,16 @@ def to_pt(html):
     return html
 
 
-from communes import CPATH, FORPATH, slug as _slug   # noqa: E402  (pages communales)
+from communes import CPATH, FORPATH, HTML_LANG, slug as _slug   # noqa: E402  (pages communales)
 
 
-LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"))   # Cloudflare Pages sert les dossiers avec barre finale
+LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"),
+              ("pt", "/pt/"))   # Cloudflare Pages sert les dossiers avec barre finale
 # page simulateur (template_simulateur.html) : mêmes langues, chemins propres
 SIM_PATHS = (("en", "/simulator/"), ("fr", "/fr/simulateur/"), ("de", "/de/rechner/"), ("lb", "/lb/rechner/"),
-             ("pt", "/pt/simulador/"))   # portugais : simulateur seulement (8/11/2026)
+             ("pt", "/pt/simulador/"))
 SIM_LANGS = tuple(c for c, _ in SIM_PATHS)
+DASH_LANGS = tuple(c for c, _ in LANG_PATHS)   # tableau de bord, pages communales, « Pour les communes »
 
 
 def _jsround(x):
@@ -1102,7 +1093,7 @@ def _js_lit(lang, fr_literal):
     """Un littéral JS du gabarit (quotes comprises) dans la langue cible, via
     i18n_js.json / i18n_lb_js.json : « ' inst.' » → « inst.» ;
     « name:'Éolien' » → « Wind ». Python et JS restent ainsi en phase."""
-    dct = {"en": I18N, "lb": I18N_LB, "de": I18N_DE}.get(lang, {})
+    dct = {"en": I18N, "lb": I18N_LB, "de": I18N_DE, "pt": I18N_PT}.get(lang, {})
     v = dct.get(fr_literal, fr_literal)
     return v.split("'", 1)[1].rsplit("'", 1)[0]
 
@@ -1236,62 +1227,76 @@ CSV_TITLES = {
     "solaire_communes": {"fr": "Capacité PV par commune ({n} communes)",
                          "en": "PV capacity by municipality ({n} municipalities)",
                          "lb": "PV-Kapazitéit pro Gemeng ({n} Gemengen)",
-                         "de": "PV-Leistung je Gemeinde ({n} Gemeinden)"},
+                         "de": "PV-Leistung je Gemeinde ({n} Gemeinden)",
+                         "pt": "Potência fotovoltaica por município ({n} municípios)"},
     "solaire_cantons": {"fr": "Capacité PV par canton ({n} cantons)",
                         "en": "PV capacity by canton ({n} cantons)",
                         "lb": "PV-Kapazitéit pro Kanton ({n} Kantonen)",
-                        "de": "PV-Leistung je Kanton ({n} Kantone)"},
+                        "de": "PV-Leistung je Kanton ({n} Kantone)",
+                        "pt": "Potência fotovoltaica por cantão ({n} cantões)"},
     "solaire_filieres": {"fr": "Capacité installée par filière et par relevé",
                          "en": "Installed capacity by technology and reading",
                          "lb": "Installéiert Kapazitéit pro Filière a Relevé",
-                         "de": "Installierte Leistung je Technologie und Erhebung"},
+                         "de": "Installierte Leistung je Technologie und Erhebung",
+                         "pt": "Potência instalada por tecnologia e por levantamento"},
     "solaire_tailles": {"fr": "Installations PV par classe de taille",
                         "en": "PV installations by size class",
                         "lb": "PV-Installatiounen no Gréisstklass",
-                        "de": "PV-Anlagen nach Größenklasse"},
+                        "de": "PV-Anlagen nach Größenklasse",
+                        "pt": "Instalações fotovoltaicas por classe de potência"},
     "solaire_communes_tailles": {"fr": "Installations PV par commune et par classe de taille",
                                  "en": "PV installations by municipality and size class",
                                  "lb": "PV-Installatiounen pro Gemeng an no Gréisstklass",
-                                 "de": "PV-Anlagen je Gemeinde und Größenklasse"},
+                                 "de": "PV-Anlagen je Gemeinde und Größenklasse",
+                                 "pt": "Instalações fotovoltaicas por município e por classe de potência"},
     "solaire_communes_tranches_aides": {"fr": "Installations PV par commune, tranches des aides communales (Klimabonus Gemengen)",
                                         "en": "PV installations by municipality, municipal subsidy bands (Klimabonus Gemengen)",
                                         "lb": "PV-Installatiounen pro Gemeng, Tranche vun de Gemengenhëllefen (Klimabonus Gemengen)",
-                                        "de": "PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)"},
+                                        "de": "PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)",
+                                        "pt": "Instalações fotovoltaicas por município, escalões das ajudas municipais (Klimabonus Gemengen)"},
     "solaire_grandes_installations": {"fr": "Lignes de plus de 100 kW apparues ou disparues entre deux relevés ({n} lignes)",
                                       "en": "Rows over 100 kW that appeared or disappeared between two readings ({n} rows)",
                                       "lb": "Zeilen iwwer 100 kW, déi tëscht zwee Relevéen dobäikomm oder ewechgefall sinn ({n} Zeilen)",
-                                      "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind ({n} Zeilen)"},
+                                      "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind ({n} Zeilen)",
+                                      "pt": "Linhas acima de 100 kW que surgiram ou desapareceram entre dois levantamentos ({n} linhas)"},
 }
 JSON_TITLE = {"fr": "Toutes les données de la page (JSON)", "en": "All the data on this page (JSON)",
-              "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)"}
+              "lb": "All d'Donnéeë vun dëser Säit (JSON)", "de": "Alle Daten dieser Seite (JSON)",
+              "pt": "Todos os dados do painel de dados (JSON)"}
 CSV_NOTES = {
     "solaire_communes": {"fr": "Relevé hebdomadaire Leneda par commune ; population RNPP (somme des quatre colonnes mineurs/majeurs).",
                          "en": "Leneda weekly reading by municipality; RNPP population (sum of the four minors/adults columns).",
                          "lb": "Wëchentleche Leneda-Relevé pro Gemeng; RNPP-Populatioun (Zomm vun de véier Kolonne Mannerjäreger/Volljäreger).",
-                         "de": "Wöchentliche Leneda-Erhebung je Gemeinde; RNPP-Bevölkerung (Summe der vier Spalten Minderjährige/Volljährige)."},
+                         "de": "Wöchentliche Leneda-Erhebung je Gemeinde; RNPP-Bevölkerung (Summe der vier Spalten Minderjährige/Volljährige).",
+                         "pt": "Levantamento semanal da Leneda por município; população RNPP (soma das quatro colunas menores/maiores)."},
     "solaire_cantons": {"fr": "Agrégé à partir des communes.", "en": "Aggregated from the municipalities.", "lb": "Aus de Gemengen zesummegerechent.",
-                        "de": "Aus den Gemeinden aggregiert."},
+                        "de": "Aus den Gemeinden aggregiert.", "pt": "Agregado a partir dos municípios."},
     "solaire_filieres": {"fr": "Une ligne par relevé : fichiers trimestriels (reading_kind=quarterly) et relevé hebdomadaire courant (weekly), deux extraits Leneda distincts.",
                          "en": "One row per reading: quarterly files (reading_kind=quarterly) and the current weekly reading (weekly), two separate Leneda extracts.",
                          "lb": "Eng Zeil pro Relevé: Quartalsfichieren (reading_kind=quarterly) an den aktuelle wëchentleche Relevé (weekly), zwee verschidden Leneda-Extraiten.",
-                         "de": "Eine Zeile je Erhebung: Quartalsdateien (reading_kind=quarterly) und aktuelle Wochenerhebung (weekly), zwei verschiedene Leneda-Auszüge."},
+                         "de": "Eine Zeile je Erhebung: Quartalsdateien (reading_kind=quarterly) und aktuelle Wochenerhebung (weekly), zwei verschiedene Leneda-Auszüge.",
+                         "pt": "Uma linha por levantamento: ficheiros trimestrais (reading_kind=quarterly) e levantamento semanal atual (weekly), dois extratos distintos da Leneda."},
     "solaire_tailles": {"fr": "Fichier hebdomadaire par installation ; bornes fermées à droite (kw_max inclus).",
                         "en": "Weekly per-installation file; right-closed bins (kw_max included).",
                         "lb": "Wëchentleche Fichier pro Installatioun; Klasse riets zou (kw_max abegraff).",
-                        "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen)."},
+                        "de": "Wöchentliche Datei je Anlage; rechts geschlossene Klassen (kw_max inbegriffen).",
+                        "pt": "Ficheiro semanal por instalação; classes fechadas à direita (kw_max incluído)."},
     "solaire_communes_tailles": {"fr": "Fichier hebdomadaire par installation, regroupé par commune (LAU2) ; bornes fermées à droite (kw_max inclus) ; capacité en kW.",
                                  "en": "Weekly per-installation file, grouped by municipality (LAU2); right-closed bins (kw_max included); capacity in kW.",
                                  "lb": "Wëchentleche Fichier pro Installatioun, pro Gemeng (LAU2) gruppéiert; Klasse riets zou (kw_max abegraff); Kapazitéit a kW.",
-                                 "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW."},
+                                 "de": "Wöchentliche Datei je Anlage, nach Gemeinde (LAU2) gruppiert; rechts geschlossene Klassen (kw_max inbegriffen); Leistung in kW.",
+                                 "pt": "Ficheiro semanal por instalação, agrupado por município (LAU2); classes fechadas à direita (kw_max incluído); potência em kW."},
     "solaire_communes_tranches_aides": {"fr": f"Même fichier, tranches 30 / 200 / 500 kWc / 5 MWc du Klimabonus Gemengen (barème {KBG_YEAR}) ; capacité en kW.",
                                         "en": f"Same file, Klimabonus Gemengen bands 30 / 200 / 500 kWp / 5 MWp ({KBG_YEAR} scale); capacity in kW.",
                                         "lb": f"Selwechte Fichier, Tranche 30 / 200 / 500 kWp / 5 MWp vum Klimabonus Gemengen (Bareem {KBG_YEAR}); Kapazitéit a kW.",
-                                        "de": f"Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand {KBG_YEAR}); Leistung in kW."},
+                                        "de": f"Gleiche Datei, Stufen 30 / 200 / 500 kWp / 5 MWp des Klimabonus Gemengen (Stand {KBG_YEAR}); Leistung in kW.",
+                                        "pt": f"Mesmo ficheiro, escalões de 30 / 200 / 500 kWp / 5 MWp do Klimabonus Gemengen (tabela de {KBG_YEAR}); potência em kW."},
     "solaire_grandes_installations": {
         "fr": "Copies archivées du fichier hebdomadaire par installation, comparées deux à deux par commune et par filière (lignes de plus de 100 kW, seuil exclu). Sans identifiant d'installation : une ligne apparue peut être une installation nouvelle, agrandie, corrigée ou rattachée à une autre commune.",
         "en": "Archived copies of the weekly per-installation file, compared pairwise by municipality and technology (rows over 100 kW, threshold excluded). No installation identifier: a row that appears may be a new, extended or corrected installation, or one assigned to another municipality.",
         "lb": "Archivéiert Kopie vum wëchentleche Fichier pro Installatioun, zwou a zwou pro Gemeng a pro Filière verglach (Zeilen iwwer 100 kW, Schwell ausgeschloss). Ouni Identifiant: eng nei Zeil kann eng nei, erweidert oder korrigéiert Installatioun sinn, oder eng, déi enger anerer Gemeng zougeuerdnet gouf.",
-        "de": "Archivierte Kopien der wöchentlichen Datei je Anlage, paarweise je Gemeinde und Technologie verglichen (Zeilen über 100 kW, Schwelle ausgenommen). Ohne Anlagenkennung: Eine hinzugekommene Zeile kann eine neue, erweiterte oder korrigierte Anlage sein oder einer anderen Gemeinde zugeordnet worden sein."},
+        "de": "Archivierte Kopien der wöchentlichen Datei je Anlage, paarweise je Gemeinde und Technologie verglichen (Zeilen über 100 kW, Schwelle ausgenommen). Ohne Anlagenkennung: Eine hinzugekommene Zeile kann eine neue, erweiterte oder korrigierte Anlage sein oder einer anderen Gemeinde zugeordnet worden sein.",
+        "pt": "Cópias arquivadas do ficheiro semanal por instalação, comparadas duas a duas por município e por tecnologia (linhas acima de 100 kW, limiar excluído). Sem identificador de instalação: uma linha que surge pode ser uma instalação nova, ampliada ou corrigida, ou atribuída a outro município."},
 }
 
 
@@ -1368,7 +1373,8 @@ def write_exports(tables, cdate):
         files.append({"path": f"/data/csv/{t['slug']}.csv", "format": "text/csv", "rows": len(t["rows"]),
                       "title": {lg: v.replace("{n}", str(len(t["rows"]))) for lg, v in CSV_TITLES[t["slug"]].items()},
                       "source": t["source"], "notes": CSV_NOTES[t["slug"]]})
-    for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("de", "data.de.json"), ("lb", "data.lb.json")):
+    for lang, name in (("fr", "data.json"), ("en", "data.en.json"), ("de", "data.de.json"), ("lb", "data.lb.json"),
+                       ("pt", "data.pt.json")):
         files.append({"path": f"/data/{name}", "format": "application/json", "rows": 0, "lang": lang,
                       "title": JSON_TITLE, "source": DATASET_URL, "notes": {}})
     manifest = {"site": "lux-solaire", "content_date": cdate, "license": LICENSE_URL,
@@ -1377,35 +1383,14 @@ def write_exports(tables, cdate):
     return manifest
 
 
-# Titres portugais de la boîte à outils du simulateur PT : propres à cette page, hors du
-# manifeste (data/manifest.json reste en en/fr/de/lb, aucun fichier de données en PT).
-RT_TITLES_PT = {
-    "solaire_communes": "Potência fotovoltaica por município ({n} municípios)",
-    "solaire_cantons": "Potência fotovoltaica por cantão ({n} cantões)",
-    "solaire_filieres": "Potência instalada por tecnologia e por levantamento",
-    "solaire_tailles": "Instalações fotovoltaicas por classe de potência",
-    "solaire_communes_tailles": "Instalações fotovoltaicas por município e por classe de potência",
-    "solaire_communes_tranches_aides": "Instalações fotovoltaicas por município, escalões das ajudas municipais (Klimabonus Gemengen)",
-    "solaire_grandes_installations": "Instalações acima de 100 kW que surgiram ou desapareceram entre dois levantamentos ({n} registos)",
-}
-RT_JSON_PT = "Todos os dados do painel de dados (JSON, rótulos em francês)"
-
-
 def rt_downloads(manifest, lang):
-    """Liste <li> de la boîte à outils : les CSV et le JSON de la locale (en portugais :
-    titres de RT_TITLES_PT et JSON français, il n'y a pas de data.pt.json)."""
+    """Liste <li> de la boîte à outils : les CSV et le JSON de la locale (titres du manifeste)."""
     items = []
     for f in manifest["files"]:
-        flang = "fr" if lang == "pt" else lang
-        if f.get("lang") and f["lang"] != flang:
+        if f.get("lang") and f["lang"] != lang:
             continue
         kind = "CSV" if f["format"] == "text/csv" else "JSON"
-        if lang == "pt":
-            slug = f["path"].rsplit("/", 1)[-1].removesuffix(".csv")
-            title = RT_JSON_PT if kind == "JSON" else RT_TITLES_PT[slug].replace("{n}", str(f["rows"]))
-        else:
-            title = f["title"][lang]
-        items.append(f'<li><a href="{f["path"]}" download>{title}</a> <small>{kind}</small></li>')
+        items.append(f'<li><a href="{f["path"]}" download>{f["title"][lang]}</a> <small>{kind}</small></li>')
     return "".join(items)
 
 
@@ -1437,7 +1422,8 @@ DATASET = {
     "name": {"fr": "lux-solaire : indicateurs dérivés du parc photovoltaïque luxembourgeois",
              "en": "lux-solaire: indicators derived from Luxembourg's solar PV fleet",
              "lb": "lux-solaire: Indicateuren ofgeleet vum lëtzebuergesche Photovoltaik-Park",
-             "de": "lux-solaire: Kennzahlen aus dem luxemburgischen Photovoltaik-Park"},
+             "de": "lux-solaire: Kennzahlen aus dem luxemburgischen Photovoltaik-Park",
+             "pt": "lux-solaire: indicadores derivados do parque fotovoltaico luxemburguês"},
     "description": {
         "fr": "Capacité photovoltaïque installée par commune et par canton, W par habitant (population RNPP), "
               "ajouts nets entre relevés, mix par filière et histogramme des tailles d'installation, recalculés "
@@ -1454,11 +1440,16 @@ DATASET = {
         "de": "Installierte Photovoltaik-Leistung je Gemeinde und Kanton, W pro Einwohner (RNPP-Bevölkerung), "
               "Netto-Zubau zwischen den Erhebungen, Technologie-Mix und Histogramm der Anlagengrößen, bei jeder "
               "Erhebung neu berechnet aus den Leneda-Dateien auf data.public.lu (CC0). Abgeleitete Daten unter "
-              "CC BY 4.0, als CSV und JSON herunterladbar."},
+              "CC BY 4.0, als CSV und JSON herunterladbar.",
+        "pt": "Potência fotovoltaica instalada por município e por cantão, W por habitante (população RNPP), "
+              "acréscimos líquidos entre levantamentos, mix por tecnologia e histograma das dimensões das "
+              "instalações, recalculados em cada levantamento a partir dos ficheiros da Leneda publicados no "
+              "data.public.lu (CC0). Dados derivados sob a licença CC BY 4.0, descarregáveis em CSV e JSON."},
     "keywords": {"fr": ["photovoltaïque", "Luxembourg", "communes", "capacité installée", "open data", "Leneda"],
                  "en": ["solar PV", "Luxembourg", "municipalities", "installed capacity", "open data", "Leneda"],
                  "lb": ["Photovoltaik", "Lëtzebuerg", "Gemengen", "installéiert Kapazitéit", "Open Data", "Leneda"],
-                 "de": ["Photovoltaik", "Luxemburg", "Gemeinden", "installierte Leistung", "Open Data", "Leneda"]},
+                 "de": ["Photovoltaik", "Luxemburg", "Gemeinden", "installierte Leistung", "Open Data", "Leneda"],
+                 "pt": ["fotovoltaico", "Luxemburgo", "municípios", "potência instalada", "dados abertos", "Leneda"]},
     "variables": {"fr": ["capacité photovoltaïque installée (kW)", "nombre d'installations photovoltaïques",
                          "part du photovoltaïque dans la capacité décentralisée (%)",
                          "variation de capacité depuis le premier relevé trimestriel (kW)",
@@ -1471,7 +1462,11 @@ DATASET = {
                          "PV-Leeschtung pro Awunner (W)", "PV-Installatioune pro 1 000 Awunner"],
                   "de": ["installierte Photovoltaik-Leistung (kW)", "Zahl der PV-Anlagen",
                          "PV-Anteil an der dezentralen Leistung (%)", "Leistungsänderung seit der ersten Quartalserhebung (kW)",
-                         "PV-Leistung pro Einwohner (W)", "PV-Anlagen je 1 000 Einwohner"]},
+                         "PV-Leistung pro Einwohner (W)", "PV-Anlagen je 1 000 Einwohner"],
+                  "pt": ["potência fotovoltaica instalada (kW)", "número de instalações fotovoltaicas",
+                         "parte do fotovoltaico na potência descentralizada (%)",
+                         "variação da potência desde o primeiro levantamento trimestral (kW)",
+                         "potência fotovoltaica por habitante (W)", "instalações fotovoltaicas por 1 000 habitantes"]},
 }
 
 
@@ -1517,10 +1512,8 @@ def jsonld(final_html, lang, canonical, cdate, manifest, d):
     return '<script type="application/ld+json">' + payload.replace("<", "\\u003c") + "</script>"
 
 
-OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png", "de": "og.de.png"}
+OG_FILES = {"fr": "og.png", "en": "og.en.png", "lb": "og.lb.png", "de": "og.de.png", "pt": "og.pt.png"}
 OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE", "pt": "pt_PT"}
-# attribut lang de <html> : portugais du Portugal (césure, lecteurs d'écran) ; hreflang reste « pt »
-HTML_LANG = {"pt": "pt-PT"}
 _OG_TEXT = {
     "fr": ("LUX-SOLAIRE · PHOTOVOLTAÏQUE · OPEN DATA", "Le photovoltaïque luxembourgeois,", "commune par commune",
            "de puissance PV raccordée", "installations photovoltaïques · capacité installée, pas énergie",
@@ -1534,6 +1527,9 @@ _OG_TEXT = {
     "de": ("LUX-SOLAIRE · PHOTOVOLTAIK · OPEN DATA", "Photovoltaik in Luxemburg,", "Gemeinde für Gemeinde",
            "angeschlossene PV-Leistung", "PV-Anlagen · installierte Leistung, nicht Energie",
            "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · DE · FR · EN · LU"),
+    "pt": ("LUX-SOLAIRE · FOTOVOLTAICO · DADOS ABERTOS", "A energia fotovoltaica no Luxemburgo,", "município a município",
+           "de potência ligada à rede", "instalações fotovoltaicas · potência instalada, não energia",
+           "solaire.sitraka.lu · Leneda / data.public.lu (CC0) · PT · FR · EN · DE · LU"),
 }
 # macOS en local ; DejaVu sur le runner Linux de la GitHub Action (même repli qu'index-lu)
 _FONT_SANS = ("/System/Library/Fonts/Helvetica.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "DejaVuSans.ttf")
@@ -1597,6 +1593,8 @@ def check_output(html, lang, dct):
         i = html.index("—")
         sys.exit(f"{lang} : tiret cadratin (U+2014) dans la page rendue, vers : {html[max(0, i-60):i+40]!r}")
     if dct:
+        # le sélecteur de langue lie volontairement les autres langues (href="/fr/simulateur/")
+        html = re.sub(r'<span class="langtoggle">.*?</span>', "", html, count=1, flags=re.S)
         leaks = [k for k, v in dct.items() if v != k and k in html]
         if leaks:
             sys.exit(f"{lang} : {len(leaks)} clés non traduites subsistent :\n  " +
@@ -1721,25 +1719,25 @@ def write_ev_allowlist(communes_fr, checked):
 
 
 def render_all(data):
-    """Écrit les JSON dérivés (EN, DE, LB) et les huit pages (tableau de bord
-    et simulateur, quatre langues chacun) depuis le blob FR."""
-    # endpoint public : la source reste en FR ; variantes EN + LB pour réutilisation
+    """Écrit les JSON dérivés (EN, DE, LB, PT) et les dix pages (tableau de bord
+    et simulateur, cinq langues chacun) depuis le blob FR, puis les pages communales."""
+    # endpoint public : la source reste en FR ; variantes EN, LB, DE et PT pour réutilisation
     data_en = translate_data(data)
     (ROOT / "data" / "data.en.json").write_text(json.dumps(data_en, ensure_ascii=False))
     data_lb = translate_data(data, _tr_str_lb)
     (ROOT / "data" / "data.lb.json").write_text(json.dumps(data_lb, ensure_ascii=False))
     data_de = translate_data(data, _tr_str_de)
     (ROOT / "data" / "data.de.json").write_text(json.dumps(data_de, ensure_ascii=False))
-    data_pt = translate_data(data, _tr_str_pt)   # simulateur PT seulement : aucun fichier publié
+    data_pt = translate_data(data, _tr_str_pt)
+    (ROOT / "data" / "data.pt.json").write_text(json.dumps(data_pt, ensure_ascii=False))
     pv = json.loads((ROOT / "data" / "pvgis.json").read_text())
-    for lang in ("fr", "en", "de", "lb"):
+    for lang in DASH_LANGS:
         make_og(data, lang)
     for lang in SIM_LANGS:
         make_og_sim(pv, lang)
     tpl = (ROOT / "template.html").read_text()
     tpl_sim = (ROOT / "template_simulateur.html").read_text()
     check_dicts(tpl + "\n" + tpl_sim)
-    check_dict_pt(tpl_sim)
     for name, t in (("template.html", tpl), ("template_simulateur.html", tpl_sim)):
         if "—" in t:
             sys.exit(f"{name} contient un tiret cadratin (U+2014)")
@@ -1763,7 +1761,7 @@ def render_all(data):
     blobs = {"fr": data, "en": data_en, "de": data_de, "lb": data_lb, "pt": data_pt}
     pv_txt = json.dumps(pv, sort_keys=True)
     cdates = {lang: content_date(lang, [tpl, dict_dash[lang], json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                        rt_js, KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
+                                        rt_js, KIT_VERSION, bar_txt, grandes_src]) for lang in DASH_LANGS}
     cdates_sim = {lang: content_date("sim_" + lang, [tpl_sim, sim_engine, bar_txt, dict_txt[lang], pv_txt,
                                                      json.dumps({"meta": blobs[lang]["meta"], "cantons": blobs[lang]["cantons"]},
                                                                 ensure_ascii=False, sort_keys=True),
@@ -1820,10 +1818,8 @@ def render_all(data):
                  .replace("__CANONICAL__", canonical)
                  .replace("__OGIMAGE__", (OG_SIM_FILES if sim else OG_FILES)[lang])
                  .replace("<!--OGLOCALE-->", og_locale)
-                 .replace("<!--LANGTOGGLE-->", toggle)
-                 # pas de pages communales en portugais : liens vers la version française
-                 .replace("__CPATH__", CPATH.get(lang, CPATH["fr"]))
-                 .replace("__FORPATH__", FORPATH.get(lang, FORPATH["fr"])))
+                 .replace("__CPATH__", CPATH[lang])
+                 .replace("__FORPATH__", FORPATH[lang]))
         dct = None
         if lang == "en":
             html, dct = to_en(html), I18N
@@ -1833,6 +1829,10 @@ def render_all(data):
             html, dct = to_de(html), I18N_DE
         elif lang == "pt":
             html, dct = to_pt(html), I18N_PT
+        # sélecteur de langue APRÈS traduction : sinon la clé href="/fr/simulateur/" des
+        # dictionnaires réécrivait aussi le lien FR du sélecteur (lien FR du simulateur
+        # EN/DE/LB/PT pointant vers la page elle-même, corrigé le 9/11/2026)
+        html = html.replace("<!--LANGTOGGLE-->", toggle)
         # jetons de prose (dont __DATE__) : APRÈS traduction, pour que les clés
         # des dictionnaires puissent les contenir
         for token, value in prose_numbers(d, lang).items():
@@ -1873,9 +1873,9 @@ def render_all(data):
     import communes
     csrc = (ROOT / "scripts" / "communes.py").read_text()
     cdates_c = {lang: content_date("communes_" + lang, [csrc, json.dumps(blobs[lang], ensure_ascii=False, sort_keys=True),
-                                                        KIT_VERSION, bar_txt, grandes_src]) for lang in ("fr", "en", "de", "lb")}
+                                                        KIT_VERSION, bar_txt, grandes_src]) for lang in DASH_LANGS}
     groups_c = communes.write_all(ROOT, SITE, blobs, cdates_c, _thousands, _dec1, PERSON, LUXEMBOURG, _FLAG, _jsround)
-    for lang in ("fr", "en", "de", "lb"):
+    for lang in DASH_LANGS:
         for f in sorted((ROOT / communes.CPATH[lang].strip("/")).glob("*/index.html")):
             checked.append((str(f.relative_to(ROOT)), f.read_text(), lang, "commune"))
         f = ROOT / communes.FORPATH[lang].strip("/") / "index.html"
@@ -1888,11 +1888,12 @@ def render_all(data):
                  + "\n  ".join(problems[:40]) + (f"\n  … et {len(problems) - 40} autres" if len(problems) > 40 else ""))
     print(f"barèmes : {len(checked)} pages contrôlées contre scripts/baremes.json (version {baremes.B['version']})")
     write_seo([(LANG_PATHS, cdates), (SIM_PATHS, cdates_sim)] + groups_c)
-    print(f"{len(groups_c) * 4} pages communales et « pour les communes » écrites")
-    print(f"9 pages rebuilt (tableau de bord × en/fr/de/lb, simulateur × en/fr/de/lb/pt) : "
+    print(f"{len(groups_c) * len(DASH_LANGS)} pages communales et « pour les communes » écrites "
+          f"({len(groups_c)} × {'/'.join(DASH_LANGS)})")
+    print(f"{len(LANG_PATHS) + len(SIM_PATHS)} pages rebuilt (tableau de bord et simulateur × {'/'.join(SIM_LANGS)}) : "
           f"PV {data['meta']['pv_mw']} MW au {data['meta']['date']} / "
           f"as of {data_en['meta']['date']} / Stand (DE) {data_de['meta']['date']} / "
-          f"Stand (LB) {data_lb['meta']['date']}")
+          f"Stand (LB) {data_lb['meta']['date']} / PT {data_pt['meta']['date']}")
 
 
 def main():

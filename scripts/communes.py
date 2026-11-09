@@ -1,4 +1,4 @@
-"""Pages par commune (une par commune du relevé, 100 en 2026, × 4 langues) et page « Pour les communes ».
+"""Pages par commune (une par commune du relevé, 100 en 2026, × 5 langues) et page « Pour les communes ».
 
 Appelé par build.render_all APRÈS l'écriture des tableaux de bord : la feuille
 de style et la barre de série sont reprises des pages déjà rendues, pour que
@@ -14,29 +14,37 @@ import urllib.parse
 import baremes   # scripts/baremes.json : taux et plafonds du Klimabonus Gemengen (source unique)
 import grandes   # nouvelles grandes installations (> 100 kW) : détection et textes
 
-CPATH = {"en": "/municipality/", "fr": "/fr/commune/", "de": "/de/gemeinde/", "lb": "/lb/gemeng/"}
+CPATH = {"en": "/municipality/", "fr": "/fr/commune/", "de": "/de/gemeinde/", "lb": "/lb/gemeng/",
+         "pt": "/pt/municipio/"}
 FORPATH = {"en": "/for-municipalities/", "fr": "/fr/pour-les-communes/", "de": "/de/fuer-gemeinden/",
-           "lb": "/lb/fir-gemengen/"}
-HOME = {"en": "/", "fr": "/fr/", "de": "/de/", "lb": "/lb/"}
-SIM = {"en": "/simulator/", "fr": "/fr/simulateur/", "de": "/de/rechner/", "lb": "/lb/rechner/"}
-LANGS = ("en", "fr", "de", "lb")
-ORDER = ("en", "fr", "de", "lb")
-FLAG_LABEL = {"en": "EN", "fr": "FR", "de": "DE", "lb": "LU"}
+           "lb": "/lb/fir-gemengen/", "pt": "/pt/para-os-municipios/"}
+HOME = {"en": "/", "fr": "/fr/", "de": "/de/", "lb": "/lb/", "pt": "/pt/"}
+SIM = {"en": "/simulator/", "fr": "/fr/simulateur/", "de": "/de/rechner/", "lb": "/lb/rechner/",
+       "pt": "/pt/simulador/"}
+LANGS = ("en", "fr", "de", "lb", "pt")
+ORDER = ("en", "fr", "de", "lb", "pt")
+FLAG_LABEL = {"en": "EN", "fr": "FR", "de": "DE", "lb": "LU", "pt": "PT"}
+# attribut lang de <html> (pages communales ET gabarits, importé par build.py) : portugais du
+# Portugal (césure, lecteurs d'écran) ; hreflang, og:locale et JSON-LD gardent « pt »
+HTML_LANG = {"pt": "pt-PT"}
 SRC_LENEDA = "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/"
 SRC_RNPP = ("https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-"
             "population-par-commune-population-per-municipality/")
 SRC_KBG = baremes.B["klimabonus_gemengen"]["source"]   # guide pratique Klimabonus Gemengen
 SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", "population", "inhabitants as of"),
-             "de": ("Quellen", "Bevölkerung", "Einwohner, Stand"), "lb": ("Quellen", "Populatioun", "Awunner, Stand")}
+             "de": ("Quellen", "Bevölkerung", "Einwohner, Stand"), "lb": ("Quellen", "Populatioun", "Awunner, Stand"),
+             "pt": ("Fontes", "população de", "habitantes em")}
 SKIP = {"fr": "Aller au contenu", "en": "Skip to content", "de": "Zum Inhalt springen",
-        "lb": "Op den Inhalt sprangen"}   # lien d'évitement (mêmes libellés que les dictionnaires des gabarits)
+        "lb": "Op den Inhalt sprangen", "pt": "Ir para o conteúdo"}   # lien d'évitement (mêmes libellés que les dictionnaires des gabarits)
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
 # Appel à l'action vers la page de contact de sitraka.lu (mêmes textes et style .contact-cta
 # que les gabarits ; le paramètre from= fixe l'objet du courriel côté sitraka.lu)
 _CONTACT_TXT = {"fr": ("https://sitraka.lu/fr/contact/?from=solaire", "Vous voulez ça pour votre commune\u00a0? Parlons-en"),
                 "en": ("https://sitraka.lu/contact/?from=solaire", "Want this for your commune? Let's talk"),
                 "de": ("https://sitraka.lu/de/contact/?from=solaire", "Wollen Sie das für Ihre Gemeinde? Sprechen wir"),
-                "lb": ("https://sitraka.lu/contact/?from=solaire", "Wëllt Dir dat fir Är Gemeng? Schwätze mer driwwer")}
+                "lb": ("https://sitraka.lu/contact/?from=solaire", "Wëllt Dir dat fir Är Gemeng? Schwätze mer driwwer"),
+                # pas de page de contact en portugais sur sitraka.lu : page française, signalée
+                "pt": ("https://sitraka.lu/fr/contact/?from=solaire", "Quer isto para o seu município? Vamos falar (em francês)")}
 CONTACT = {l: f'<p class="contact-cta"><a href="{u}">{s} <span aria-hidden="true">→</span></a></p>'
            for l, (u, s) in _CONTACT_TXT.items()}
 
@@ -47,7 +55,7 @@ _KBG_YEAR, _OMB = _KBG["bareme"], _KBG["ombriere"]
 
 def _n(x, lang):
     s = format(int(x), ",")
-    return s if lang == "en" else s.replace(",", " ")
+    return s if lang == "en" else s.replace(",", "\u202f" if lang == "pt" else " ")
 
 
 _KB_FMT = {
@@ -55,6 +63,7 @@ _KB_FMT = {
     "en": lambda t, first: f"{t['taux']}% ({'cap ' if first else ''}€{_n(t['plafond'], 'en')}/kWp)",
     "de": lambda t, first: f"{t['taux']} % ({'max. ' if first else ''}{_n(t['plafond'], 'de')} €/kWp)",
     "lb": lambda t, first: f"{t['taux']} % ({'Plafong ' if first else ''}{_n(t['plafond'], 'lb')} €/kWp)",
+    "pt": lambda t, first: f"{t['taux']} % ({'máx. ' if first else ''}{_n(t['plafond'], 'pt')} €/kWp)",
 }
 
 
@@ -79,9 +88,17 @@ def esc(s):
 
 
 # ──────────────── textes ──────────────────────────────────────────────────
+def _q_pt(label):
+    """Relevé trimestriel dans la prose portugaise : « 2025 T1 » (libellé-donnée) → « T1 2025 »,
+    comme __FIRSTQ__ du tableau de bord ; un autre libellé (relevé hebdomadaire) est rendu tel quel."""
+    return re.sub(r"^(\d{4}) T(\d)$", r"T\2 \1", label)
+
+
 def _ord(r, lang):
     if lang == "fr":
         return "1er" if r == 1 else f"{r}e"
+    if lang == "pt":
+        return f"{r}.º"
     if lang == "en":
         suf = "th" if 10 <= r % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(r % 10, "th")
         return f"{r}{suf}"
@@ -136,6 +153,7 @@ S = {
                     "(aucune adresse IP ni identifiant enregistrés)."),
         "by": "Analyse : Sitraka Forler",
         "crumb_home": "Le photovoltaïque au Luxembourg",
+        "src": "code source",
     },
     "en": {
         "rank": lambda r, n: f"{_ord(r, 'en')} of {n}",
@@ -183,6 +201,7 @@ S = {
                     "(no IP address or identifier stored)."),
         "by": "Analysis: Sitraka Forler",
         "crumb_home": "Solar PV in Luxembourg",
+        "src": "source code",
     },
     "de": {
         "rank": lambda r, n: f"Platz {r} von {n}",
@@ -231,6 +250,7 @@ S = {
                     "(keine IP-Adresse, keine Kennung gespeichert)."),
         "by": "Analyse: Sitraka Forler",
         "crumb_home": "Photovoltaik in Luxemburg",
+        "src": "Quellcode",
     },
     "lb": {
         "rank": lambda r, n: f"Plaz {r} vun {n}",
@@ -280,6 +300,57 @@ S = {
                     "(keng IP-Adress, keen Identifiant gespäichert)."),
         "by": "Analyse: Sitraka Forler",
         "crumb_home": "Photovoltaik zu Lëtzebuerg",
+        "src": "Quellcode",
+    },
+    "pt": {
+        "rank": lambda r, n: f"{_ord(r, 'pt')} de {n}",
+        "title": lambda c, n, mw, y: f"Energia fotovoltaica em {c}: {n} instalações, {mw} MW ({y})",
+        "desc": lambda c, k, mw, date, n, wpc: (f"{c} (cantão de {k}): {mw} MW de fotovoltaico ligados à rede em {date}, "
+                                                f"{n} instalações, {wpc} W por habitante. Dimensões das instalações, "
+                                                f"escalões do Klimabonus Gemengen e comparação com os municípios vizinhos."),
+        "eyebrow": lambda k: f"Município · cantão de {k}",
+        "h1": lambda c: f"A energia fotovoltaica em <span class=\"sun\">{c}</span>",
+        "stand": lambda c, mw, date, n, wpc, med, gkw, gp, fq: (
+            f"<strong>{mw} MW</strong> de fotovoltaico ligados à rede em {date}, repartidos por <strong>{n} "
+            f"instalações</strong>, ou seja, {wpc} W por habitante (mediana dos municípios: {med} W). Desde o "
+            f"levantamento do {_q_pt(fq)}: <strong>{gkw} kW</strong> ({gp} %)."),
+        "k_pv": "Potência fotovoltaica", "k_pv_sub": lambda n: f"{n} instalações",
+        "k_share": "Parte do fotovoltaico", "k_share_sub": lambda t: f"da potência descentralizada ({t} MW, todas as tecnologias)",
+        "k_wpc": "W por habitante", "k_ipk": "Instalações / 1\u202f000 hab.",
+        "k_ipk_sub": lambda rk, r: f"{rk} · telhados de 30 kW ou menos: {r} / 1\u202f000",
+        "k_g": lambda fq: f"Acréscimos desde o {_q_pt(fq)}", "k_hist": lambda d: f"Desde {d}",
+        "k_hist_val": lambda dn: f"{dn} inst.", "k_hist_sub": lambda dmw: f"{dmw} MW · acompanhamento semanal",
+        "k_pop": "População", "k_pop_sub": "habitantes (RNPP)",
+        "med": lambda m: f"mediana {m}",
+        "sizes_h": "Dimensões das instalações",
+        "sizes_lede": lambda c, sn, sc: (f"Em {c}, <strong>{sn} % das instalações têm 30 kW ou menos</strong> "
+                                         f"(sobretudo telhados), para <strong>{sc} % da potência</strong>."),
+        "k_cnt": "parte das instalações", "k_cap": "parte da potência", "inst": "inst.",
+        "hist_note": lambda d: f"Entre parênteses: variação líquida desde {d}.",
+        "kb_h": "Segundo os escalões das ajudas aos municípios",
+        "kb_cols": ("Escalão", "Instalações", "Potência", "Ajuda para uma central municipal"),
+        "kb_aid": _kb_aid("pt", "sem ajuda municipal (Klimabonus dos particulares: só habitações)", "caso a caso"),
+        "kb_note": (f"Tabela de {_KBG_YEAR} do Klimabonus Gemengen (guia prático, revisto todos os anos); uma cobertura "
+                    f"de parque de estacionamento recebe {_OMB['taux']} % ({_n(_OMB['plafond'], 'pt')} €/kWp). Os dados da "
+                    "Leneda não dizem se uma instalação pertence ao município ou a um particular."),
+        "cmp_h": "Comparação", "cmp_canton": lambda k: f"Municípios do cantão de {k}",
+        "cmp_size": "Municípios de dimensão comparável",
+        "cmp_cols": ("Município", "Cantão", "PV (MW)", "Inst.", "W/hab.", "Inst./1\u202f000 hab.", "Acréscimos (kW)"),
+        "cmp_lede": lambda fq: (f"Ordenados por W por habitante. «Acréscimos»: potência acrescentada desde o "
+                                f"levantamento do {_q_pt(fq)}."),
+        "links_h": "Saber mais",
+        "l_dash": "Gráfico interativo do município", "l_sim": "Simulador: o solar compensa no seu telhado?",
+        "l_for": "Para os municípios: o que esta página mostra", "l_csv": "Dimensões das instalações, {N} municípios (CSV)",
+        "prev": "Município anterior", "next": "Município seguinte", "all": "Todos os municípios",
+        "foot": lambda date: (
+            f"Dados: conjunto de dados sobre a produção de energia elétrica no Luxemburgo, publicado pela Leneda no "
+            f"portal data.public.lu (CC0), levantamento de {date}; população: RNPP (CC0). Números de potência ligada "
+            f"à rede (kW), não de energia produzida. Dados derivados sob a licença CC BY 4.0."),
+        "privacy": ("Medição de audiência sem cookies: Cloudflare Web Analytics e contadores de cliques anónimos "
+                    "(nenhum endereço IP nem identificador registado)."),
+        "by": "Análise: Sitraka Forler",
+        "crumb_home": "A energia fotovoltaica no Luxemburgo",
+        "src": "código-fonte",
     },
 }
 
@@ -391,6 +462,34 @@ FOR = {
                     "hello@sitraka.lu</a> a gitt Är Gemeng un."),
         "list_h": "All {N} Gemengen",
     },
+    "pt": {
+        "title": "Para os municípios: os seus dados fotovoltaicos, prontos a apresentar",
+        "desc": ("Uma página por município, atualizada todas as semanas: potência ligada à rede, dimensões das "
+                 "instalações, escalões do Klimabonus Gemengen, evolução e comparação com os municípios vizinhos."),
+        "eyebrow": "Para os municípios",
+        "h1": "Os seus dados fotovoltaicos, <span class=\"sun\">prontos a apresentar</span>",
+        "paras": [
+            "Cada município tem a sua página, atualizada todas as segundas-feiras a partir dos dados abertos da Leneda: "
+            "potência ligada à rede, número de instalações, parte do solar, watts por habitante, dimensões das "
+            "instalações e comparação com os municípios do cantão e com os municípios de dimensão comparável.",
+            "As dimensões são também apresentadas segundo os escalões do <strong>Klimabonus Gemengen</strong> (30, 200 e "
+            "500 kWp, 5 MWp): vê-se num relance o que cabe nas ajudas aos municípios e o que cabe no Klimabonus dos "
+            "particulares.",
+            "A Leneda substitui todas as semanas o seu ficheiro «uma linha por instalação», sem guardar histórico. "
+            "Desde 14 de setembro de 2026, é arquivada aqui uma cópia todas as semanas: cada página municipal mostra "
+            "a evolução desde essa data.",
+            "Todos os números podem ser descarregados em CSV, sob a licença CC BY 4.0, para as suas próprias análises "
+            "ou para uma apresentação no conselho municipal.",
+        ],
+        "limits_h": "O que estes dados não dizem",
+        "limits": ("Descrevem a potência ligada à rede (kW), não a energia produzida (kWh), e não distinguem as "
+                   "instalações municipais das instalações privadas. O acompanhamento dos seus próprios edifícios exige "
+                   "os seus próprios dados."),
+        "contact_h": "Uma pergunta, uma necessidade para o seu município?",
+        "contact": ("Escreva para <a href=\"mailto:hello@sitraka.lu?subject=Munic%C3%ADpio%3A%20solaire.sitraka.lu\">"
+                    "hello@sitraka.lu</a>, indicando o seu município."),
+        "list_h": "Os {N} municípios",
+    },
 }
 
 EXTRA_CSS = """
@@ -434,7 +533,7 @@ def _shell(lang, title, desc, canonical, alternates, style, seriesbar, body, jso
     main, foot = body[:i], body[i:]
     alt = "".join(f'<link rel="alternate" hreflang="{c}" href="{u}">' for c, u in alternates)
     alt += f'<link rel="alternate" hreflang="x-default" href="{dict(alternates)["en"]}">'
-    return (f'<!doctype html>\n<html lang="{lang}">\n<meta charset="utf-8">\n'
+    return (f'<!doctype html>\n<html lang="{HTML_LANG.get(lang, lang)}">\n<meta charset="utf-8">\n'
             f'<meta name="viewport" content="width=device-width, initial-scale=1">\n'
             f'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n'
             f'<title>{esc(title)}</title>\n<meta name="description" content="{esc(desc)}">\n'
@@ -559,6 +658,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<div class="sub">{k6[2]}</div></div>')
             hist_note = f'<p class="kbnote2">{L["hist_note"](d["hist"]["date"])}</p>' if h else ""
             prev_c, next_c = communes[i - 1], communes[(i + 1) % n_all]
+            colon = ":" if lang == "pt" else " :"   # portugais : pas d'espace avant les deux-points
             body = (
                 f'<p class="crumb"><a href="{HOME[lang]}">{L["crumb_home"]}</a> · '
                 f'<a href="{FORPATH[lang]}">{L["all"]}</a></p>'
@@ -583,15 +683,15 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<a href="{SIM[lang]}?canton={urllib.parse.quote(c["k"])}">{L["l_sim"]}</a>'
                 f'<a href="{FORPATH[lang]}">{L["l_for"]}</a>'
                 f'<a href="/data/csv/solaire_communes_tailles.csv">{L["l_csv"].replace("{N}", str(n_all))}</a></div>'
-                f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]} : {esc(prev_c["c"])}</a>'
-                f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]} : {esc(next_c["c"])} →</a></nav></section>'
+                f'<nav class="pn" aria-label="{L["all"]}"><a href="{CPATH[lang]}{slug(prev_c["c"])}/">← {L["prev"]}{colon} {esc(prev_c["c"])}</a>'
+                f'<a href="{CPATH[lang]}{slug(next_c["c"])}/">{L["next"]}{colon} {esc(next_c["c"])} →</a></nav></section>'
                 f'<footer class="cfoot"><p>{L["foot"](date)}</p>'
                 f'<p>{SRC_LABEL[lang][0]}{" :" if lang == "fr" else ":"} <a href="{SRC_LENEDA}">Leneda (data.public.lu)</a> · '
                 f'<a href="{SRC_RNPP}">RNPP</a> ({SRC_LABEL[lang][1]} {cn}{" :" if lang == "fr" else ":"} {T(c["pop"], lang)} '
                 f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a></p>'
                 f'<p>{L["privacy"]}</p>'
                 f'<p>{L["by"]} · <a href="https://sitraka.lu">sitraka.lu</a> · '
-                f'<a href="https://github.com/Sitraka17/lux-solaire">code source</a></p></footer>')
+                f'<a href="https://github.com/Sitraka17/lux-solaire">{L["src"]}</a></p></footer>')
             canonical = site + CPATH[lang] + s + "/"
             jsonld = {"@context": "https://schema.org", "@type": "WebPage", "@id": canonical, "url": canonical,
                       "name": title, "description": desc, "inLanguage": lang, "dateModified": cdate[lang],

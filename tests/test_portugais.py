@@ -1,4 +1,4 @@
-"""Simulateur en portugais (/pt/simulador/, 8/11/2026) : dictionnaires à parité, formats
+"""Portugais (/pt/simulador/ le 8/11/2026, tout le site ensuite ; voir test_portugais_site.py) : dictionnaires à parité, formats
 portugais, page rendue sans français résiduel, contrôle des barèmes actif."""
 import html
 import json
@@ -13,23 +13,22 @@ PAGE = "pt/simulador/index.html"
 
 
 def test_parite_dictionnaire_pt():
-    """Mêmes clés que le simulateur EN, plus les clés du tableau de bord présentes sur la page
-    simulateur ; aucune clé morte (check_dict_pt sort en erreur sinon)."""
-    tpl_sim = (build.ROOT / "template_simulateur.html").read_text()
-    build.check_dict_pt(tpl_sim)
-    sim_en = set()
-    for name in build.I18N_FILES["en"][2:]:
-        sim_en |= set(json.loads((build.ROOT / "scripts" / name).read_text()))
-    assert sim_en <= set(build.I18N_PT)
+    """Quatre dictionnaires PT (tableau de bord, JS, simulateur, JS du simulateur) : exactement les
+    clés EN, fichier par fichier ; aucune clé morte (check_dicts sort en erreur sinon)."""
+    tpl = (build.ROOT / "template.html").read_text() + "\n" + (build.ROOT / "template_simulateur.html").read_text()
+    build.check_dicts(tpl)
+    assert build.I18N_FILES["pt"] == ("i18n_pt.json", "i18n_pt_js.json", "i18n_sim_pt.json", "i18n_sim_pt_js.json")
+    for en, pt in zip(build._dict_parts("en"), build._dict_parts("pt")):
+        assert set(en) == set(pt)
 
 
-def test_parite_detecte_une_cle_manquante(monkeypatch):
-    tpl_sim = (build.ROOT / "template_simulateur.html").read_text()
-    d = dict(build.I18N_PT)
-    d.pop(next(iter(d)))
-    monkeypatch.setattr(build, "I18N_PT", d)
+@pytest.mark.parametrize("idx", [0, 1, 2, 3])
+def test_parite_detecte_une_cle_manquante(idx):
+    tpl = (build.ROOT / "template.html").read_text() + "\n" + (build.ROOT / "template_simulateur.html").read_text()
+    parts = {lang: build._dict_parts(lang) for lang in build.I18N_FILES}
+    parts["pt"][idx].pop(next(iter(parts["pt"][idx])))
     with pytest.raises(SystemExit):
-        build.check_dict_pt(tpl_sim)
+        build.check_dicts(tpl, parts)
 
 
 def test_formats_portugais():
