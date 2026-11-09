@@ -117,6 +117,31 @@
   "date_source": "2026-08-11",
   "date_verification": "2026-11-02"
  },
+ "prime_fournisseur_pac": {
+  "libelle": "Prime d'un fournisseur d'énergie pour une pompe à chaleur air-eau, maison unifamiliale (programme enoprimes, mécanisme d'obligation d'efficacité énergétique) : fourchette publiée, montant exact calculé au cas par cas ; action « enoprimes 10 ans » pour un dossier ouvert du 1/7 au 31/12/2026 ; dossier ouvert par une entreprise partenaire AVANT la commande ; cumulable avec les aides de l'État et des communes",
+  "valeur": {
+   "min": 1700,
+   "max": 2500,
+   "action10ans": 1000,
+   "action10ansJusquA": "2026-12-31",
+   "retenu": 1700
+  },
+  "source": "https://www.enoprimes.lu/fr/residentiels/primes-renovation-energetique/prime-chauffage/prime-pompe-a-chaleur/",
+  "source_titre": "enoprimes.lu, prime pompe à chaleur : 1 700 à 2 500 € pour une PAC air-eau en maison unifamiliale (exemple soumis à conditions), +1 000 € (action 10 ans) ; 1 700 € retenu = bas de la fourchette, hypothèse prudente de l'outil",
+  "date_source": "2026-11-09",
+  "date_verification": "2026-11-09"
+ },
+ "tva_travaux": {
+  "libelle": "TVA sur la fourniture et la pose d'une pompe à chaleur : 17 % (taux normal) ou 3 % (taux super-réduit, logement d'au moins 10 ans servant d'habitation principale, sur agrément de l'Administration de l'enregistrement, des domaines et de la TVA demandé par l'entreprise avant les travaux, ou par remboursement ; avantage plafonné à 50 000 € par logement)",
+  "valeur": {
+   "normal": 0.17,
+   "reduit": 0.03
+  },
+  "source": "https://guichet.public.lu/fr/citoyens/logement/aides/aides-indirectes-avantages-fiscaux/remboursement-tva-taux-reduit.html",
+  "source_titre": "guichet.lu, « Remboursement de la TVA ou application directe du taux super-réduit » (mise à jour du 10/11/2025)",
+  "date_source": "2025-11-10",
+  "date_verification": "2026-11-09"
+ },
  "prix_mazout": {
   "libelle": "Prix maximum officiel du gasoil de chauffage (basse teneur en soufre, livraison d'au moins 1 500 L), TVA comprise",
   "valeur": {
@@ -137,6 +162,24 @@
   "source_titre": "ILR, communiqué du 30/06/2026, chiffres clés du gaz naturel 2025 : 9,14 c€/kWh en 2025 ; 0,095 €/kWh retenu pour 2026 = hypothèse de l'outil (taxe CO2 en hausse)",
   "date_source": "2026-06-30",
   "date_verification": "2026-11-02"
+ },
+ "prix_gaz_composantes": {
+  "libelle": "Gaz naturel, ménage (compteur G4 à G16, catégorie A ≤ 550 MWh/an), composantes HORS TVA par m³ comme sur une facture : fourniture (offre résidentielle Enovos naturgas home T1, à remplacer par celle du fournisseur), réseau Creos (composante consommation, €/Nm³), taxe gaz naturel et taxe CO2 (45 €/t), TVA 8 % ; frais fixes : redevance d'accès au réseau (harmonisée) et prime mensuelle du fournisseur (0,30 €/kW, 20 kW) ; conversion de la fiche 2026 (1 m³ = 10,99 kWh = 0,967 Nm³). Hors aide temporaire Resilienzpak (1/8 au 31/12/2026)",
+  "valeur": {
+   "fourniture": 0.49497,
+   "reseauNm3": 0.248,
+   "nm3ParM3": 0.967,
+   "taxeGazM3": 0.01187,
+   "taxeCO2M3": 0.10023,
+   "tva": 0.08,
+   "redevanceMois": 8.69,
+   "primeMois": 6.0,
+   "kwhParM3": 10.99
+  },
+  "source": "https://www.enovos.lu/fr/?wpdmdl=897793",
+  "source_titre": "Enovos, « Tarifs réseau et taxes réglementées (Gaz naturel) valables à partir du 1er janvier 2026 » (Creos 0,24800 €/Nm³, redevance 8,69 €/mois, taxe gaz naturel 1,187 c€/m³, taxe CO2 10,023 c€/m³, 1 m³ = 10,99 kWh = 0,967 Nm³) et « naturgas home T1 valable à partir du 1er janvier 2026 » (0,49497 €/m³, prime mensuelle 0,30 €/kW installé, minimum 5 €), prix hors TVA (8 %)",
+  "date_source": "2026-01-01",
+  "date_verification": "2026-11-09"
  },
  "prix_electricite": {
   "libelle": "Hypothèses de l'outil (PAS un barème officiel) : part variable de l'électricité achetée sans la contribution exceptionnelle de 2026 (0,16 € avec), prix du surplus vendu sans tarif garanti (contrats indexés sur le marché, 0,04 à 0,10 €/kWh observés en 2026), hausse annuelle des prix (gaz et mazout, électricité)",
@@ -195,7 +238,7 @@
     "mazout": 0.8,
     "electrique": 1.0
    },
-   "pcGazKwhM3": 10.6,
+   "pcGazKwhM3": 10.99,
    "pciMazoutKwhL": 10,
    "ecsParPersonne": 800,
    "ecsPartMax": 0.4,

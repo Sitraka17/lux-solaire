@@ -176,3 +176,10 @@ def test_bareme_modifie_detecte_dans_les_pages_rendues(root):
     page = (root / "de" / "rechner" / "index.html").read_text()
     assert baremes.check_page(page, "de", "sim") == []
     assert baremes.check_page(page, "de", "sim", b)
+
+
+def test_gaz_conversion_unique():
+    """9/11/2026 : la conversion m³ → kWh du prix du gaz (fiche Enovos) est celle de la consommation saisie en m³
+    (modele_chaleur.pcGazKwhM3) : une facture de N m³ coûte N × prix TTC du m³."""
+    b = baremes.B
+    assert b["prix_gaz_composantes"]["valeur"]["kwhParM3"] == b["modele_chaleur"]["valeur"]["pcGazKwhM3"]

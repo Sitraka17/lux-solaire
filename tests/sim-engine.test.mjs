@@ -107,7 +107,8 @@ test('les barèmes viennent bien du paramètre', () => {
  * (2 000 m³/an), 8 kWc à 1 800 €/kWc, PAC 9 kW à 22 000 €, ballon 300 L à 1 800 €, HEMS 1 000 €
  * (aide 500 €), commande le 15/11/2026, aide locale GÉNÉRIQUE aux valeurs FICTIVES (30 % de l'aide
  * de l'État sur la PAC plafonnés à 2 000 €, 20 % sur les panneaux plafonnés à 1 000 €) : aucun
- * barème communal réel dans ce dépôt public. Sans aide locale, D se rembourse en ≈ 9,4 ans. */
+ * barème communal réel dans ce dépôt public. Sans aide locale, D se rembourse en ≈ 9,2 ans.
+ * Conversion du gaz : 1 m³ = 10,99 kWh (fiche Enovos 2026, depuis le 9/11/2026 ; 10,6 auparavant). */
 const SERIE = JSON.parse(fs.readFileSync(new URL('data/annee_type.json', root), 'utf8'));
 const BAR = E.BAREMES;
 const LOCALE = [
@@ -122,13 +123,13 @@ const TYPE = {
 };
 const heat = (o = {}) => E.computeHeat({ ...TYPE, ...o }, SERIE, BAR);
 
-test('chauffage : cas type gaz, remboursement de D ≈ 8,1 ans (9,4 sans aide locale) et CO2 −73 %', () => {
+test('chauffage : cas type gaz, remboursement de D ≈ 8,0 ans (9,2 sans aide locale) et CO2 −73 %', () => {
   const R = heat();
-  assert.ok(R.sc.D.pb > 8 && R.sc.D.pb < 8.25, `pb D = ${R.sc.D.pb}`);
+  assert.ok(R.sc.D.pb > 7.9 && R.sc.D.pb < 8.05, `pb D = ${R.sc.D.pb}`);
   assert.ok(R.sc.D.co2Baisse > 0.725 && R.sc.D.co2Baisse < 0.735, `CO2 D = ${R.sc.D.co2Baisse}`);
-  assert.ok(R.sc.C.pb > 7.6 && R.sc.C.pb < 7.8);
+  assert.ok(R.sc.C.pb > 7.4 && R.sc.C.pb < 7.55, `pb C = ${R.sc.C.pb}`);
   assert.ok(R.sc.B.pb > 7.6 && R.sc.B.pb < 7.9);
-  assert.ok(Math.abs(heat({ aidesLocales: [] }).sc.D.pb - 9.4) < 0.05);
+  assert.ok(Math.abs(heat({ aidesLocales: [] }).sc.D.pb - 9.24) < 0.05);
   assert.equal(R.sc.D.cum.length, 21);                           // horizon de 20 ans
   assert.equal(R.sc.D.net, 14400 + 22000 + 1800 + 1000 - (7128 + 12000 + 500) - (1000 + 2000));
   assert.ok(R.sc.C.energie.scop > 2.9 && R.sc.C.energie.scop < 3.1);
@@ -183,7 +184,7 @@ test('chauffage : COP horaire (Ruhnau et al. 2019)', () => {
 
 test('chauffage : besoin depuis la consommation, le besoin annuel ou la surface', () => {
   const a = heat().S;
-  assert.ok(Math.abs(a.fuelKWh - 21200) < 1e-9 && Math.abs(a.useful - 18020) < 1e-9);
+  assert.ok(Math.abs(a.fuelKWh - 21980) < 1e-9 && Math.abs(a.useful - 18683) < 1e-9);
   assert.equal(a.ecsY, 3200);
   const b = heat({ conso: null, besoin: 15000 }).S;
   assert.equal(b.useful, 15000);
@@ -285,4 +286,31 @@ test('verdict : sur tous les cas de référence et une grille de réglages, éti
       else assert.ok(R.A.pb === null && R.B.pb === null);
     }
   }
+});
+
+/* ===================== Compléments du 9/11/2026 : gaz décomposé, prime fournisseur, TVA travaux ===================== */
+test('gaz : prix TTC par m³ et par kWh à partir des composantes hors TVA (fiche Enovos 2026)', () => {
+  const g = E.gasPrice({}, BAR);
+  assert.ok(Math.abs(g.lignes.reseau - 0.248 * 0.967) < 1e-12);           // €/Nm³ ramené au m³
+  assert.ok(Math.abs(g.htM3 - (0.49497 + 0.248 * 0.967 + 0.01187 + 0.10023)) < 1e-12);
+  assert.ok(Math.abs(g.ttcM3 - g.htM3 * 1.08) < 1e-12);
+  assert.ok(Math.abs(g.ttcKwh * 100 - 8.32) < 0.01, `c€/kWh = ${g.ttcKwh * 100}`);  // 8,32 c€/kWh TTC
+  assert.ok(Math.abs(E.gasPrice({ fourniture: 0.5345 }, BAR).ttcM3 - (0.5345 + g.htM3 - 0.49497) * 1.08) < 1e-12);
+  assert.ok(Math.abs(E.gasFixed({}, BAR) - 12 * (8.69 + 6) * 1.08) < 1e-9);
+  // une facture en m³ coûte m³ × prix TTC du m³ : même conversion pour la consommation et le prix
+  const R = heat({ prixGaz: g.ttcKwh });
+  assert.ok(Math.abs(R.sc.A.fuelCost - 2000 * g.ttcM3) < 1e-6);
+});
+
+test('chauffage : frais fixes du gaz payés tant que le gaz reste raccordé (A, B), prime fournisseur (C, D)', () => {
+  const base = heat(), R = heat({ fixeGaz: 190, aidePrivee: 1700 });
+  assert.ok(Math.abs(R.sc.A.bill - base.sc.A.bill - 190) < 1e-9);
+  assert.ok(Math.abs(R.sc.B.bill - base.sc.B.bill - 190) < 1e-9);
+  assert.equal(R.sc.C.bill, base.sc.C.bill);
+  assert.equal(R.sc.D.net, base.sc.D.net - 1700);
+  assert.equal(R.sc.C.net, base.sc.C.net - 1700);
+  assert.equal(R.sc.B.net, base.sc.B.net);
+  assert.ok(R.sc.D.pb < base.sc.D.pb);
+  assert.equal(heat({ energie: 'mazout', unite: 'L', fixeGaz: 190 }).fixeGaz, 0);   // mazout : pas de frais fixes du gaz
+  assert.deepEqual([BAR.primeFournisseurPAC.min, BAR.primeFournisseurPAC.max, BAR.tvaTravaux.normal, BAR.tvaTravaux.reduit], [1700, 2500, 0.17, 0.03]);
 });

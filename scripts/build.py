@@ -976,6 +976,30 @@ def heat_numbers(lang):
         "__COP_A__": _decn(cop["a"], 2, lang), "__COP_B__": _decn(abs(cop["b"]), 2, lang),
         "__COP_C__": _decn(cop["c"], 4, lang), "__COP_F__": _decn(cop["f"], 2, lang),
         "__COP_DTMIN__": th(cop["dTmin"]), "__HORIZON_H__": th(ch["horizon"]),
+        **gas_numbers(lang),
+    }
+
+
+def gas_numbers(lang):
+    """Tableau 9 (prix du gaz décomposé), frais fixes et prime d'un fournisseur (9/11/2026) : mêmes formules
+    que gasPrice / gasFixed de sim-engine.js, lues dans scripts/baremes.json."""
+    B = baremes.B
+    g, e = B["prix_gaz_composantes"]["valeur"], B["prime_fournisseur_pac"]["valeur"]
+    th = lambda v: _thousands(_jsround(v), lang)
+    res = g["reseauNm3"] * g["nm3ParM3"]
+    ht = g["fourniture"] + res + g["taxeGazM3"] + g["taxeCO2M3"]
+    ttc = ht * (1 + g["tva"])
+    fixe = 12 * (g["redevanceMois"] + g["primeMois"]) * (1 + g["tva"])
+    c = lambda v: _decn(v * 100, 2, lang)
+    return {
+        "__GZ_FOURN_V__": f"{round(g['fourniture'] / 0.005) * 0.005:.3f}", "__GZ_FIXE_V__": str(round(fixe)),
+        "__GZ_FOURN__": _decn(g["fourniture"], 3, lang), "__GZ_FIXE__": th(fixe),
+        "__GZ_REDEV__": _decn(g["redevanceMois"], 2, lang), "__GZ_RES_NM3__": c(g["reseauNm3"]),
+        "__GZ_L_F__": c(g["fourniture"]), "__GZ_L_R__": c(res), "__GZ_L_TG__": c(g["taxeGazM3"]),
+        "__GZ_L_TC__": c(g["taxeCO2M3"]), "__GZ_L_TVA__": c(ht * g["tva"]), "__GZ_L_TOT__": c(ttc),
+        "__GZ_KWH__": c(ttc / g["kwhParM3"]), "__GZ_KWHM3__": _decn(g["kwhParM3"], 2, lang),
+        "__ENO_MIN__": th(e["min"]), "__ENO_MAX__": th(e["max"]), "__ENO_10__": th(e["action10ans"]),
+        "__ENO_RET__": th(e["retenu"]), "__ENO_RET_V__": str(e["retenu"]),
     }
 
 

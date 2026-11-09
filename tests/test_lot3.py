@@ -28,7 +28,7 @@ def test_tableaux_numerotes_dans_l_ordre_avec_caption(page):
     tables = re.findall(r"<table\b[^>]*>(.*?)</table>", main, re.S)
     nums = [re.match(r'\s*<caption id="[a-z-]+"><span class="capin"><b>\S+ (\d+)\.</b>', t) for t in tables]
     assert all(nums), "tableau sans <caption> numérotée"
-    assert [int(n.group(1)) for n in nums] == list(range(1, 9))
+    assert [int(n.group(1)) for n in nums] == list(range(1, 10))   # tableau 9 (gaz) depuis le 9/11/2026
     figs = re.findall(r"<figcaption><b>\S+ (\d+)\.</b>", main)
     assert figs == ["1", "2", "3"]
     # aucune légende de tableau en <figcaption>

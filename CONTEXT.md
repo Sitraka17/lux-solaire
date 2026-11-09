@@ -806,6 +806,19 @@ libellé (la mise en forme et les textes traduits restent dans `template_simulat
 
 ## Moteur du simulateur : chauffage (`computeHeat`, 2/11/2026)
 
+**Compléments du 9/11/2026 (retour de la Ville de Differdange, P. Reder)** :
+- Gaz décomposé comme une facture : `gasPrice({fourniture €/m³ HT}, bar)` ajoute réseau Creos (€/Nm³ × 0,967),
+  taxe gaz naturel, taxe CO2 (45 €/t) et TVA 8 % → €/kWh (1 m³ = 10,99 kWh, valeur qui remplace 10,6 dans
+  `modele_chaleur.pcGazKwhM3` : une seule conversion pour la consommation et le prix, test `test_gaz_conversion_unique`).
+  `gasFixed` : redevance d'accès 8,69 €/mois + prime mensuelle 6 €/mois, TVA comprise (190 €/an) ; entrée
+  `fixeGaz` de `computeHeat`, payée dans A et B seulement (raccordement résilié avec la PAC). Barème
+  `prix_gaz_composantes` (fiches Enovos 2026) ; tableau 9 de la page. Aide Resilienzpak (août-décembre 2026) exclue.
+- Prime d'un fournisseur (`aidePrivee`, C et D) : enoprimes 1 700 à 2 500 € (+1 000 € action 10 ans), 1 700 € par
+  défaut ; barème `prime_fournisseur_pac`.
+- TVA des travaux : coûts de l'outil 3 saisis HORS TVA, la page les multiplie par 1,03 ou 1,17 (`tva_travaux`,
+  agrément AED, guichet.lu) avant le moteur, qui reste en € TTC. Le photovoltaïque de l'outil 2 reste TTC (3 %).
+- Partage d'énergie de Differdange (7,5 c€/kWh) : PAS ici (propre à une commune) ; dans ~/sitraka-communes.
+
 `sim-engine.js` couvre aussi le remplacement d'une chaudière par une pompe à chaleur (PAC) air-eau,
 avec ou sans panneaux, batterie, HEMS et ballon tampon. Simulation heure par heure sur une année
 météo type (formules établies le 1/11/2026, hypothèses de l'outil sauf barèmes sourcés ci-dessous). **Partage public / privé** : le moteur ne contient que les règles NATIONALES

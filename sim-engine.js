@@ -42,7 +42,10 @@
     energie: Object.freeze({ mazoutL: 1.601, gaz: 0.095, achat: 0.2, surplus: 0.07, hausseFossile: 3, hausseElec: 1 }),
     co2: Object.freeze({ gaz: 0.2154, mazout: 0.3247, elec: 0.2122 }),
     cop: Object.freeze({ a: 6.08, b: -0.09, c: 0.0005, dTmin: 10, f: 0.85 }),
-    chaleur: Object.freeze({ horizon: 20, rendement: {"gaz": 0.85, "mazout": 0.8, "electrique": 1.0}, pcGazKwhM3: 10.6, pciMazoutKwhL: 10, ecsParPersonne: 800, ecsPartMax: 0.4, tBase: 15, depart: {"radiateurs": {"t0": 40, "pente": -1}, "plancher": {"t0": 30, "pente": -0.5}, "ecs": 50}, puissance: {"tRef": 7, "baisse": 0.25, "surK": 14, "min": 0.6, "max": 1.1}, ballon: {"whParLK": 1.163, "surchauffe": 15, "pertesParH": 0.01}, batterie: {"rendement": 0.9, "puissanceParKwh": 0.5, "puissanceMax": 5}, saisonBase: 0.15, profilBase: [0.55, 0.45, 0.4, 0.38, 0.38, 0.42, 0.6, 0.85, 0.95, 0.9, 0.88, 0.92, 1.0, 0.95, 0.85, 0.8, 0.85, 1.0, 1.25, 1.45, 1.4, 1.2, 0.95, 0.7], profilECS: [0.2, 0.1, 0.1, 0.1, 0.2, 0.6, 1.8, 2.2, 1.6, 0.9, 0.7, 0.7, 0.9, 0.7, 0.5, 0.5, 0.6, 0.9, 1.4, 1.8, 1.7, 1.2, 0.7, 0.4], besoinParEpoque: [190, 175, 165, 140, 105, 70, 40], epoques: ["avant 1949", "1949-1968", "1969-1978", "1979-1994", "1995-2008", "2009-2016", "après 2016"], entretien: {"gaz": 200, "mazout": 200, "electrique": 0, "pac": 150}, coutCuve: 1500 }),
+    chaleur: Object.freeze({ horizon: 20, rendement: {"gaz": 0.85, "mazout": 0.8, "electrique": 1.0}, pcGazKwhM3: 10.99, pciMazoutKwhL: 10, ecsParPersonne: 800, ecsPartMax: 0.4, tBase: 15, depart: {"radiateurs": {"t0": 40, "pente": -1}, "plancher": {"t0": 30, "pente": -0.5}, "ecs": 50}, puissance: {"tRef": 7, "baisse": 0.25, "surK": 14, "min": 0.6, "max": 1.1}, ballon: {"whParLK": 1.163, "surchauffe": 15, "pertesParH": 0.01}, batterie: {"rendement": 0.9, "puissanceParKwh": 0.5, "puissanceMax": 5}, saisonBase: 0.15, profilBase: [0.55, 0.45, 0.4, 0.38, 0.38, 0.42, 0.6, 0.85, 0.95, 0.9, 0.88, 0.92, 1.0, 0.95, 0.85, 0.8, 0.85, 1.0, 1.25, 1.45, 1.4, 1.2, 0.95, 0.7], profilECS: [0.2, 0.1, 0.1, 0.1, 0.2, 0.6, 1.8, 2.2, 1.6, 0.9, 0.7, 0.7, 0.9, 0.7, 0.5, 0.5, 0.6, 0.9, 1.4, 1.8, 1.7, 1.2, 0.7, 0.4], besoinParEpoque: [190, 175, 165, 140, 105, 70, 40], epoques: ["avant 1949", "1949-1968", "1969-1978", "1979-1994", "1995-2008", "2009-2016", "après 2016"], entretien: {"gaz": 200, "mazout": 200, "electrique": 0, "pac": 150}, coutCuve: 1500 }),
+    gaz: Object.freeze({ fourniture: 0.49497, reseauNm3: 0.248, nm3ParM3: 0.967, taxeGazM3: 0.01187, taxeCO2M3: 0.10023, tva: 0.08, redevanceMois: 8.69, primeMois: 6.0 }),
+    primeFournisseurPAC: Object.freeze({ min: 1700, max: 2500, action10ans: 1000, action10ansJusquA: "2026-12-31", retenu: 1700 }),
+    tvaTravaux: Object.freeze({ normal: 0.17, reduit: 0.03 }),
   });
   /* BAREMES:FIN */
 
@@ -229,6 +232,24 @@
     return { lignes: lignes, parBase: parBase, total: total };
   }
 
+  /* Prix du gaz décomposé comme une facture (9/11/2026), à partir du prix de fourniture saisi en €/m³ HORS TVA,
+   * unité des offres des fournisseurs. o : { fourniture (€/m³ HT), reseauNm3 (€/Nm³ HT), taxeGaz (€/m³ HT),
+   *   taxeCO2 (€/m³ HT), tva (fraction), nm3ParM3, kwhParM3 } ; valeurs absentes = bar.gaz.
+   * → { lignes: { fourniture, reseau, taxeGaz, taxeCO2, tva } (€/m³), htM3, ttcM3, ttcKwh (€/kWh, unité du moteur) } */
+  function gasPrice(o, bar) {
+    var g = bar.gaz, d = function (v, x) { return (v === undefined || v === null) ? x : v; };
+    var f = d(o.fourniture, g.fourniture), r = d(o.reseauNm3, g.reseauNm3) * d(o.nm3ParM3, g.nm3ParM3);
+    var tg = d(o.taxeGaz, g.taxeGazM3), tc = d(o.taxeCO2, g.taxeCO2M3), tv = d(o.tva, g.tva);
+    var ht = f + r + tg + tc, ttc = ht * (1 + tv);
+    return { lignes: { fourniture: f, reseau: r, taxeGaz: tg, taxeCO2: tc, tva: ht * tv }, htM3: ht, ttcM3: ttc,
+             ttcKwh: ttc / d(o.kwhParM3, bar.chaleur.pcGazKwhM3) };
+  }
+  // frais fixes annuels du gaz TTC (redevance d'accès au réseau + prime mensuelle du fournisseur)
+  function gasFixed(o, bar) {
+    var g = bar.gaz, d = function (v, x) { return (v === undefined || v === null) ? x : v; };
+    return 12 * (d(o.redevanceMois, g.redevanceMois) + d(o.primeMois, g.primeMois)) * (1 + d(o.tva, g.tva));
+  }
+
   /* Besoin de chaleur et séries horaires.
    * I : energie ('gaz' | 'mazout' | 'electrique'), rendement (fraction, défaut bar.chaleur.rendement),
    *   puis UNE des trois entrées, dans cet ordre de priorité :
@@ -348,7 +369,10 @@
    *   pompe à chaleur : pac (kW), pacCost (€), ballon (L), ballonCost (€), surchauffe (K), copF,
    *              coutCuve (€, mazout) [bar.chaleur.coutCuve], coutDistribution (€), chaudiereEvitee (€) ;
    *   aides : commande, facture (dates ISO), remplacement [vrai], zoneEau, aidesLocales [{nom, base, taux,
-   *              plafond}] ; kbPV, kbBatt, kbPAC (forçages facultatifs en €) ;
+   *              plafond}] ; kbPV, kbBatt, kbPAC (forçages facultatifs en €) ; aidePrivee (€, prime d'un
+   *              fournisseur d'énergie pour la pompe à chaleur, ex. enoprimes) [0] ;
+   *   gaz : fixeGaz (€/an TTC, abonnement et redevance d'accès, payés tant que le gaz reste raccordé,
+   *              donc dans A et B seulement) [0] ;
    *   prix : prixGaz (€/kWh PCS) [bar.energie.gaz], prixMazout (€/L) [bar.energie.mazoutL],
    *          price (électricité €/kWh) [bar.energie.achat], market (surplus €/kWh) [bar.energie.surplus],
    *          hausseFossile, growth (%/an) [bar.energie.hausseFossile, hausseElec], horizon (ans) [bar.chaleur.horizon],
@@ -394,17 +418,18 @@
     var cHems = I.hems ? (I.hcost || 0) : 0, evite = I.chaudiereEvitee || 0;
     var mFuel = c.entretien[energie] || 0, mHP = c.entretien.pac;
     var lpv = loc.parBase.pv + loc.parBase.batterie;
+    var aPriv = Math.max(0, I.aidePrivee || 0), fixe = (energie === 'gaz') ? Math.max(0, I.fixeGaz || 0) : 0;
     var sc = {
-      A: { inv: 0, aideEtat: 0, aideLocale: 0, fuelKWh: isEl ? 0 : S.fuelKWh, r: R.A, maint: mFuel, pvOn: false, evite: 0 },
-      B: { inv: cPV + cBat, aideEtat: kbPV + kbBat, aideLocale: lpv, fuelKWh: isEl ? 0 : S.fuelKWh, r: R.B, maint: mFuel, pvOn: true, evite: 0 },
-      C: { inv: cHP, aideEtat: kbPAC, aideLocale: loc.parBase.pac, fuelKWh: 0, r: R.C, maint: mHP, pvOn: false, evite: evite },
+      A: { inv: 0, aideEtat: 0, aideLocale: 0, aidePrivee: 0, fuelKWh: isEl ? 0 : S.fuelKWh, r: R.A, maint: mFuel + fixe, pvOn: false, evite: 0 },
+      B: { inv: cPV + cBat, aideEtat: kbPV + kbBat, aideLocale: lpv, aidePrivee: 0, fuelKWh: isEl ? 0 : S.fuelKWh, r: R.B, maint: mFuel + fixe, pvOn: true, evite: 0 },
+      C: { inv: cHP, aideEtat: kbPAC, aideLocale: loc.parBase.pac, aidePrivee: aPriv, fuelKWh: 0, r: R.C, maint: mHP, pvOn: false, evite: evite },
       D: { inv: cPV + cBat + cHP + (hasBuf ? (I.ballonCost || 0) : 0) + cHems, aideEtat: kbPV + kbBat + kbPAC + kbH,
-           aideLocale: lpv + loc.parBase.pac + loc.parBase.hems, fuelKWh: 0, r: R.D, maint: mHP, pvOn: true, evite: evite }
+           aideLocale: lpv + loc.parBase.pac + loc.parBase.hems, aidePrivee: aPriv, fuelKWh: 0, r: R.D, maint: mHP, pvOn: true, evite: evite }
     };
     var Y = def(I.horizon, c.horizon), disc = I.disc || 0, k;
     for (k in sc) {
       var s = sc[k];
-      s.net = s.inv - s.aideEtat - s.aideLocale - s.evite;
+      s.net = s.inv - s.aideEtat - s.aideLocale - s.aidePrivee - s.evite;
       s.fuelCost = s.fuelKWh * fuelPrice;
       s.elCost = s.r.imp * pel;
       s.sale = s.r.exp * pinj;
@@ -441,7 +466,7 @@
     return { S: { fuelKWh: S.fuelKWh, useful: S.useful, heatY: S.heatY, ecsY: S.ecsY, eta: S.eta, estimated: S.estimated,
                   pvScale: pvScale },
              sc: sc, D0: R.D0, ballon: ballon, horizon: Y, fuelPrice: fuelPrice, energie: energie,
-             aides: { kbPV: kbPV, kbBatt: kbBat, kbHems: kbH, pac: kp, kbPAC: kbPAC, locales: loc } };
+             fixeGaz: fixe, aides: { kbPV: kbPV, kbBatt: kbBat, kbHems: kbH, pac: kp, kbPAC: kbPAC, locales: loc, privee: aPriv } };
   }
 
   // Verdict de l'outil 2 (présentation, aucun calcul) : A et B = sorties de compute() (npv, pb).
@@ -463,6 +488,7 @@
     annualFlows: annualFlows, cumulative: cumulative, npvAt: npvAt, netGain: netGain,
     payback: payback, irr: irr, analyse: analyse, compute: compute,
     heatPumpCOP: heatPumpCOP, klimabonusPAC: klimabonusPAC, minBufferLitres: minBufferLitres, localAid: localAid,
+    gasPrice: gasPrice, gasFixed: gasFixed,
     heatDemand: heatDemand, simulateHourly: simulateHourly, computeHeat: computeHeat,
   });
 });

@@ -17,7 +17,8 @@ PATH = Path(__file__).resolve().parent / "baremes.json"
 _REQUIRED = ("valeur", "source", "date_source", "date_verification")
 _ENTRIES = ("klimabonus_pv", "klimabonus_batterie", "aide_hems", "tarif_injection",
             "klimabonus_gemengen", "klimabonus_pac", "prix_mazout", "prix_gaz", "prix_electricite",
-            "co2_combustibles", "co2_electricite", "cop_pac", "modele_chaleur", "modele")
+            "co2_combustibles", "co2_electricite", "cop_pac", "modele_chaleur", "modele",
+            "prix_gaz_composantes", "prime_fournisseur_pac", "tva_travaux")
 
 
 def load(path=PATH):
@@ -54,6 +55,10 @@ def engine_bar(b=None):
                 "elec": b["co2_electricite"]["valeur"]["reseau"]},
         "cop": dict(b["cop_pac"]["valeur"]),
         "chaleur": dict(b["modele_chaleur"]["valeur"]),
+        # compléments du 9/11/2026 (retour de la Ville de Differdange) : gaz décomposé, prime fournisseur, TVA travaux
+        "gaz": {k: v for k, v in b["prix_gaz_composantes"]["valeur"].items() if k != "kwhParM3"},
+        "primeFournisseurPAC": dict(b["prime_fournisseur_pac"]["valeur"]),
+        "tvaTravaux": dict(b["tva_travaux"]["valeur"]),
     }
 
 
