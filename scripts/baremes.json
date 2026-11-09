@@ -1,7 +1,7 @@
 {
  "_doc": "Source UNIQUE des barèmes du site (aides, tarifs). Lue par scripts/build.py (montants de la FAQ, bloc BAREMES de sim-engine.js régénéré, objet inliné dans les pages du simulateur, tranches KB_EDGES, contrôle des chiffres cités dans les phrases traduites) et par scripts/communes.py (colonne « Aide » et note des pages communales). Pour chaque entrée : valeur, source (URL), date_source (date de mise à jour ou de publication de la source), date_verification (dernière relecture). Après toute modification : relancer /usr/bin/python3 scripts/build.py, qui échoue si une phrase des gabarits ou des dictionnaires cite encore l'ancien chiffre, puis mettre à jour ces phrases (template*.html et scripts/i18n_*.json).",
- "version": "2026-11-02",
- "sources_moteur": "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026), petrol.lu (prix maximum du mazout, 27/10/2026), ILR gaz (30/06/2026), ADEME Base Carbone v23.9, Electricity Maps 2025",
+ "version": "2026-11-09",
+ "sources_moteur": "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026), petrol.lu (prix maximum du mazout, 27/10/2026), ILR gaz (30/06/2026), ADEME Base Carbone v23.9, Electricity Maps 2025, Enovos gaz naturel (tarifs du 01/01/2026), enoprimes.lu (09/11/2026), guichet.lu TVA logement (10/11/2025)",
  "klimabonus_pv": {
   "libelle": "Klimabonus photovoltaïque (logement, autoconsommation, pose sur toiture ou façade)",
   "formule": "0 sous pMin kWc ; P × (a − a/b × P) € de pMin à pCap exclu (a/b = 33) ; max € à partir de pCap kWc",

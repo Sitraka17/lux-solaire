@@ -29,8 +29,8 @@
    *                        + battGain × (1 − exp(−batt / (battJour × cons/365))), borné à max */
   /* BAREMES:DEBUT : bloc régénéré par scripts/build.py depuis scripts/baremes.json, ne pas éditer à la main. anneeOnduleur = indice d'année (0 = première année). */
   var BAREMES = Object.freeze({
-    version: "2026-11-02",
-    sources: "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026), petrol.lu (prix maximum du mazout, 27/10/2026), ILR gaz (30/06/2026), ADEME Base Carbone v23.9, Electricity Maps 2025",
+    version: "2026-11-09",
+    sources: "guichet.lu Klimabonus 2026 (11/08/2026), gouvernement.lu (16/07/2026), ILR (loi du 22/07/2026), petrol.lu (prix maximum du mazout, 27/10/2026), ILR gaz (30/06/2026), ADEME Base Carbone v23.9, Electricity Maps 2025, Enovos gaz naturel (tarifs du 01/01/2026), enoprimes.lu (09/11/2026), guichet.lu TVA logement (10/11/2025)",
     klimabonusPV: Object.freeze({ pMin: 2, pCap: 15, a: 1155, b: 35, max: 10000 }),
     klimabonusBatt: Object.freeze({ qMin: 2, qCap: 9, a: 500, b: 18, max: 2250 }),
     hems: Object.freeze({ aideMax: 500 }),
