@@ -226,7 +226,6 @@
   main:focus{outline:none}
   @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
     /* nom sur sa propre ligne, puis barre + valeur (la valeur en max-content
        écrasait la colonne du nom à 0 px) */
@@ -367,37 +366,190 @@
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 
+  /* ==== LOT 2 : corps du tableau de bord (figures numérotées, légendes, sources) ==== */
+  figure{margin:0}
+  .grid-2{align-items:start}
+  figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption+.src{margin-top:2px}
+  .src{margin-bottom:0}
+  .src a,.dl a{color:var(--amber-text)}
+  .card.refs .src{margin-top:-6px}
+  .refs2{margin-top:20px}
+  .refs2 .card.refs p:last-child{margin-bottom:0}
+  .sec-head h3.h2like+.u{display:block}
+  /* légende de tableau dans un conteneur défilant : reste lisible au bord gauche */
+  .tblwrap caption,.tblscroll caption{padding:10px 12px 8px}
+  .tblwrap caption .capin,.tblscroll caption .capin{display:block;position:sticky;left:12px;max-width:min(100%,calc(100vw - 64px))}
+  table.mini caption{font-family:var(--body);font-variant-numeric:normal}
+  a.dl{white-space:nowrap}
+  .tblwrap.tblscroll{background-color:var(--card)}
+  /* conteneur défilant posé sur le papier (pas dans une carte) : caches de bord couleur papier */
+  .tblscroll.on-paper{background:linear-gradient(to right,var(--paper) 30%,transparent) left/24px 100% no-repeat local,
+    linear-gradient(to left,var(--paper) 30%,transparent) right/24px 100% no-repeat local,
+    linear-gradient(to right,rgba(29,39,52,.12),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,rgba(29,39,52,.12),transparent) right/10px 100% no-repeat scroll}
+  .tblscroll:not(.tblwrap) caption{padding:0 0 8px}
+  .tblscroll:not(.tblwrap) caption .capin{left:0}
+  @media(max-width:767px){
+    .tblscroll caption .capin{max-width:calc(100vw - 32px)}
+    .card .tblscroll caption .capin,.tblwrap caption .capin{max-width:calc(100vw - 84px)}
+  }
+  .tblscroll.on-paper caption{padding-left:0;padding-right:0}
+  .tblscroll.on-paper caption .capin{left:0}
+  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  table.cantons{min-width:0}
+  table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
+  table.cantons tbody td{padding:5px 8px}
+  /* « Votre commune » dans l'en-tête */
+  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+  .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+  .pick label{font:600 13.5px var(--body);color:var(--ink)}
+  .pick select{font:inherit;font-size:14px;min-height:36px;padding:6px 8px;border:1px solid var(--ink-3);border-radius:2px;background:var(--card);color:var(--ink);max-width:100%}
+  .pick button{font:600 13.5px var(--body);min-height:36px;padding:6px 12px;border:1px solid var(--ink);border-radius:2px;background:var(--card);color:var(--ink);cursor:pointer}
+  .pick button:hover{border-color:var(--amber-text);color:var(--amber-text)}
+  /* méthode : premier paragraphe visible, la suite repliée */
+  .method details{margin-top:4px}
+  .method summary{font:600 14px var(--body);color:var(--amber-text)}
+  @media(max-width:767px){
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi.hero,.kpi:last-child{grid-column:1/-1}
+    .kpi{padding:13px 14px 12px}
+    .kpi .val{font-size:26px;margin-top:4px}
+    .kpi .sub{font-size:12px;line-height:1.4}
+    .pick{width:100%}
+    .pick select{flex:1 1 180px}
+  }
+  @media print{.pick,.dl{display:none}}
 
   .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}
   table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
   table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  table.cmp th:first-child,table.cmp td:first-child,table.cmp th:nth-child(2),table.cmp td:nth-child(2){text-align:left}
+  table.cmp th:nth-child(2),table.cmp td:nth-child(2),table.cmp .col-canton{text-align:left}
   table.cmp thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:none;position:static;cursor:default}
   table.cmp tr.me td{background:var(--amber-soft);font-weight:600}
   table.cmp a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
   table.cmp a:hover{color:var(--amber-text);border-color:var(--amber)}
   .tw{overflow-x:auto}
+  /* lot 2 : tableaux de comparaison (rang, commune collante, W/hab. en 2e colonne de données) */
+  table.cmp tbody th{text-align:left;font-weight:500;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.cmp tr.me th{background:var(--amber-soft);font-weight:650}
+  table.cmp .rk{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right;width:28px;min-width:28px;padding-left:4px;padding-right:8px}
+  table.cmp .rk,table.cmp tbody th,table.cmp thead th:nth-child(2){position:sticky;background:var(--paper);z-index:1}
+  table.cmp .rk{left:0}
+  table.cmp tbody th,table.cmp thead th:nth-child(2){left:40px;text-align:left}
+  @media(max-width:767px){table.cmp tbody th,table.cmp thead th:nth-child(2){box-shadow:inset -1px 0 0 var(--line)}}
+  table.cmp tr.me .rk,table.cmp tr.me th{background:var(--amber-soft)}
+  table.cmp th.wpc,table.cmp td.wpc{font-weight:650;color:var(--ink)}
+  @media(max-width:519px){table.cmp.in-canton .col-canton{display:none}}
+  .simlink{margin:14px 0 0;font:600 14.5px var(--body)}
+  .simlink a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
+  .simlink a:hover{color:var(--amber-text)}
+  .simlink span{color:var(--amber-text);white-space:nowrap}
+  #comparaison .tblscroll+.tblscroll{margin-top:22px}
+  #comparaison caption{font-size:14px;color:var(--ink)}
+  details.note{margin-top:12px;font-size:13px}
+  details.note summary{font:600 13px var(--body);color:var(--amber-text)}
+  details.note .kbnote2{margin-top:4px}
+  /* marque blanche (L2.16) : UNE variable d'accent pour les filets et les soulignements ; le texte garde --amber-text (AA) */
+  :root{--accent:var(--amber)}
+  .eyebrow::before{background:var(--accent)}
+  .links a,.contact-cta a{border-left-color:var(--accent)}
+  .links a:hover,table.cmp a:hover,table.bigtab a:hover{border-color:var(--accent)}
+  .masthead{border-top-color:var(--accent)}
+  .crumbs a:hover,.series a:hover{text-decoration-color:var(--accent)}
+  /* page « Pour les communes » (page d'offre) */
+  .offer section{margin-top:48px}
+  .offer h2{margin:0 0 14px}
+  .demo-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px 28px;align-items:start}
+  .demo{border:1px solid var(--line);border-top:3px solid var(--accent);background:var(--card);padding:16px 18px 18px}
+  .demo-h{margin:0;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .demo-name{margin:4px 0 12px;font:700 22px/1.2 var(--display)}
+  .demo-name .sun{color:var(--amber-h1)}
+  .demo .kpis{margin-top:0}
+  .demo .kpi{padding:14px 14px 12px}
+  .demo .kpi .val{font-size:26px}
+  .demo-open{margin:12px 0 0;font:600 14px var(--body)}
+  .demo-open a,.offer .prose a,.trust a{color:var(--amber-text)}
+  .tools{list-style:none;margin:6px 0 12px;padding:0;counter-reset:t}
+  .tools li{counter-increment:t;display:grid;grid-template-columns:22px 1fr;padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+  .tools li::before{content:counter(t) ".";font:600 12px/1.6 var(--mono);color:var(--ink-3)}
+  .tools b{color:var(--ink);font-weight:650}
+  .demo p.lead{margin:0;font-size:14px;color:var(--ink)}
+  table.offer-t{width:100%;font-size:14px}
+  table.offer-t th,table.offer-t td{padding:9px 12px 9px 0;text-align:left;vertical-align:top;white-space:normal;border-bottom:1px solid var(--line)}
+  table.offer-t thead th{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);background:none;position:static;cursor:default;border-bottom:1px solid var(--ink)}
+  table.offer-t tbody th{font-weight:650;width:24%}
+  table.offer-t td{font-family:var(--body);font-size:14px;color:var(--ink)}
+  table.offer-t td:nth-child(3){color:var(--ink-2);font-size:13px}
+  table.offer-t td:last-child{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);width:15%}
+  table.offer-t tbody tr:last-child th,table.offer-t tbody tr:last-child td{border-bottom:0}
+  .cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 28px;margin-top:24px}
+  .cols3 p{margin:0;padding-top:10px;border-top:1px solid var(--ink);font-size:14.5px;color:var(--ink)}
+  .trust{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px 40px;align-items:start}
+  .trust ul{margin:0;padding-left:18px;font-size:15px}
+  .trust li{margin:0 0 8px}
+  .trust h3{margin:0 0 6px;font:600 16px var(--display)}
+  .trust p{margin:0;font-size:15px}
+  .offer-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 28px;align-items:center;padding:16px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .offer-cta p{margin:0}
+  .offer-cta .q{font:600 17px var(--display)}
+  .offer-cta .alt{font-size:13.5px;color:var(--ink-2)}
+  .offer-cta .alt a{color:var(--amber-text)}
+  .offer-cta .cta-row{margin:0;grid-column:2;grid-row:1/3}
+  @media(max-width:767px){
+    .demo-grid,.cols3,.trust{grid-template-columns:minmax(0,1fr)}
+    .offer-cta{grid-template-columns:minmax(0,1fr)}
+    .offer-cta .cta-row{grid-column:1;grid-row:auto}
+    table.offer-t thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    table.offer-t tr{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
+    table.offer-t tbody tr:last-child{border-bottom:0}
+    table.offer-t tbody th,table.offer-t td{display:block;width:auto!important;border:0;padding:2px 0}
+    table.offer-t tbody th{font-size:15px;padding-bottom:4px}
+    table.offer-t td::before{content:attr(data-l) " ";font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  }
+  @media print{
+    @page{size:A4;margin:14mm}
+    .commune-page .simlink,.commune-page .contact-cta,.commune-page .pn,.commune-page #liens,.commune-page #aides,
+    .commune-page #grandes-installations,.commune-page .crumbs,.commune-page .co-b,.commune-page .co-series,
+    .commune-page details.note{display:none}
+    .commune-page table,.commune-page figure,.commune-page .kpis,.commune-page .tblscroll{break-inside:avoid}
+    .commune-page .tblscroll{overflow:visible}
+    .commune-page{zoom:.68;padding:0}
+    .commune-page section{margin-top:14px}
+    .commune-page,.commune-page *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .commune-page .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    .commune-page .kpi.hero,.commune-page .kpi:last-child{grid-column:auto!important}
+    .commune-page h1{font-size:30px}
+    .commune-page .sec-head,.commune-page .lede{break-after:avoid}
+    .commune-page #comparaison{break-before:page}
+    .commune-page .colophon{margin-top:16px}
+  }
   .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
   .links a{display:block;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}
   .links a:hover{border-color:var(--amber)}
   .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;font-size:14px}
   .pn a{color:var(--amber-text)}
   #aides table.mini td{text-align:right}
-  #aides table.mini td:last-child{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini td.aid{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini{width:100%}
   #aides table.mini th{white-space:nowrap}
+  @media(max-width:767px){#aides table.mini thead th{white-space:normal;vertical-align:bottom}}
   .prose a{color:var(--amber-text)}
   .clist div{break-inside:avoid}
   .kbnote2{font-size:13px;color:var(--ink-2);margin:10px 0 0;max-width:90ch}
+  .kbnote2 a,.prose a{color:var(--amber-text)}
   .prose p{font-size:15.5px;max-width:70ch;color:var(--ink)}
   .contact-cta+.prose{margin-top:28px}
-  .clist{columns:4 190px;column-gap:24px;font-size:14px;margin-top:10px}
-  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px;break-after:avoid}
-  .clist a{display:block;color:var(--ink);text-decoration:none;padding:2px 0}.clist a:hover{color:var(--amber-text)}
+  .clist{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 24px;font-size:14px;margin-top:10px}
+  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 4px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+  .clist a{display:flex;align-items:center;min-height:28px;color:var(--ink);text-decoration:none;padding:0}.clist a:hover{color:var(--amber-text);text-decoration:underline;text-decoration-color:var(--accent)}
+  @media(max-width:767px){.clist{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:850px){.kpis.k6{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis.k6{grid-template-columns:1fr}}
 </style>
 <a class="skip" href="#contenu">Aller au contenu</a>
-<div class="wrap">
+<div class="wrap commune-page">
 <!--MASTHEAD-->
 <div class="masthead">
   <div class="mh-row">
@@ -412,7 +564,7 @@
 </div>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
-<header><nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="/fr/">Le photovoltaïque au Luxembourg</a></li><li><a href="/fr/pour-les-communes/">Toutes les communes</a></li><li aria-current="page">Schengen</li></ol></nav><div class="eyebrow">Commune · canton de Remich</div><h1>Le photovoltaïque à <span class="sun">Schengen</span></h1><p class="standfirst"><strong>8,8 MW</strong> de photovoltaïque raccordés au 9 novembre 2026 sur <strong>513 installations</strong>, soit 1 671 W par habitant (médiane des communes : 1 700 W). Depuis le relevé 2025 T1 : <strong>+2 116 kW</strong> (+32 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">Puissance PV</div><div class="val">8,8 MW</div><div class="sub">513 installations</div></div><div class="kpi"><div class="lbl">Part du PV</div><div class="val">64,7 %</div><div class="sub">de la capacité décentralisée (13,6 MW toutes filières)</div></div><div class="kpi"><div class="lbl">W par habitant</div><div class="val">1 671</div><div class="sub">53e sur 100 · médiane 1 700</div></div><div class="kpi"><div class="lbl">Installations / 1 000 hab.</div><div class="val">97,7</div><div class="sub">45e sur 100 · toitures de 30 kW ou moins : 96,2 / 1 000</div></div><div class="kpi"><div class="lbl">Ajouts depuis 2025 T1</div><div class="val">+2 116 kW</div><div class="sub">41e sur 100 · +32 %</div></div><div class="kpi"><div class="lbl">Depuis le 14 septembre 2026</div><div class="val">+16 inst.</div><div class="sub">+0,2 MW · suivi hebdomadaire</div></div></div><p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Vous voulez ça pour votre commune ? Parlons-en <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Tailles des installations</h2></div><p class="lede">À Schengen, <strong>98 % des installations font 30 kW ou moins</strong> (surtout des toitures), pour <strong>76 % de la puissance</strong>.</p><div class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:4.68%"><i>5 % · 24 inst. <em>(−1)</em></i></div><div class="b cap" style="width:1.05%"><i>1 % · 92 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:34.31%"><i>34 % · 176 inst. <em>(+6)</em></i></div><div class="b cap" style="width:15.95%"><i>16 % · 1,4 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:32.16%"><i>32 % · 165 inst. <em>(+9)</em></i></div><div class="b cap" style="width:23.32%"><i>23 % · 2,0 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:27.29%"><i>27 % · 140 inst. <em>(+2)</em></i></div><div class="b cap" style="width:35.81%"><i>36 % · 3,1 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:0.78%"><i>0,8 % · 4 inst.</i></div><div class="b cap" style="width:2.63%"><i>3 % · 230 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,4 % · 2 inst.</i></div><div class="b cap" style="width:7.40%"><i>7 % · 649 kW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,4 % · 2 inst.</i></div><div class="b cap" style="width:13.84%"><i>14 % · 1,2 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">Entre parenthèses : variation nette depuis le 14 septembre 2026.</p></div></section><section id="grandes-installations"><div class="sec-head"><h2>Grandes installations : lignes apparues</h2><span class="sec-note">plus de 100 kW, d'un relevé archivé au suivant</span></div><p class="lede">À Schengen, le fichier Leneda par installation compte <strong>5 installations de plus de 100 kW</strong> au relevé du 9 novembre 2026, toutes filières (5 au 14 septembre 2026).</p><div class="card"><p class="bignone">Aucune ligne de plus de 100 kW n'est apparue ni n'a disparu dans la commune entre le 14 septembre 2026 et le 9 novembre 2026.</p><p class="kbnote2"><strong>Méthode.</strong> Leneda publie chaque semaine un fichier d'une ligne par installation : commune, filière et puissance installée, sans identifiant, sans date de mise en service ni exploitant. Il remplace ce fichier sans garder d'historique ; lux-solaire en archive une copie à chaque relevé. Faute d'identifiant, on ne peut pas suivre une installation d'un relevé à l'autre : on compare, commune par commune et filière par filière, les lignes de plus de 100 kW (100 kW exactement exclus) de deux copies consécutives. Une ligne apparue peut être une installation nouvelle, mais aussi une installation agrandie au-delà de 100 kW, une valeur corrigée ou une ligne rattachée à une autre commune ; le fichier ne permet pas de trancher. Copies comparées : 14 septembre 2026, 26 octobre 2026 (42 jours après la précédente), 2 novembre 2026, 9 novembre 2026.</p><p class="kbnote2"><a href="/fr/#grandes-installations">Liste nationale</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Lignes apparues et disparues (CSV)</a></p></div></section><section id="aides"><div class="sec-head"><h2>Selon les tranches des aides aux communes</h2></div><div class="card"><div class="tw"><table class="mini"><thead><tr><th scope="col">Tranche</th><th scope="col">Installations</th><th scope="col">Puissance</th><th scope="col">Aide pour une centrale communale</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td>505</td><td>6,7 MW</td><td>pas d'aide communale (Klimabonus des particuliers : logements seulement)</td></tr><tr><th scope="row">30–200 kW</th><td>5</td><td>405 kW</td><td>50 % (plafond 675 €/kWc)</td></tr><tr><th scope="row">200–500 kW</th><td>1</td><td>475 kW</td><td>45 % (505 €/kWc)</td></tr><tr><th scope="row">0,5–5 MW</th><td>2</td><td>1,2 MW</td><td>40 % (425 €/kWc)</td></tr></tbody></table></div><p class="kbnote2">Barème 2025 du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de parking est aidée à 45 % (990 €/kWc). Les données Leneda ne disent pas si une installation appartient à la commune ou à un particulier.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparaison</h2></div><p class="lede">Classées par W par habitant. « Ajouts » : puissance ajoutée depuis le relevé 2025 T1.</p><h3 class="refs" style="font-size:15px;margin:18px 0 6px">Communes du canton de Remich</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Commune</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Install.</th><th scope="col">W/hab.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Ajouts (kW)</th></tr></thead><tbody><tr><td><a href="/fr/commune/lenningen/">Lenningen</a></td><td>Remich</td><td>6,8</td><td>210</td><td>3 243</td><td>100,4</td><td>+5 078</td></tr><tr><td><a href="/fr/commune/stadtbredimus/">Stadtbredimus</a></td><td>Remich</td><td>4,7</td><td>242</td><td>2 363</td><td>120,7</td><td>+2 548</td></tr><tr class="me"><td><a href="/fr/commune/schengen/">Schengen</a></td><td>Remich</td><td>8,8</td><td>513</td><td>1 671</td><td>97,7</td><td>+2 116</td></tr><tr><td><a href="/fr/commune/mondorf-les-bains/">Mondorf-les-Bains</a></td><td>Remich</td><td>8,2</td><td>270</td><td>1 470</td><td>48,4</td><td>+1 490</td></tr><tr><td><a href="/fr/commune/bous-waldbredimus/">Bous-Waldbredimus</a></td><td>Remich</td><td>4,6</td><td>337</td><td>1 364</td><td>100,5</td><td>+1 477</td></tr><tr><td><a href="/fr/commune/dalheim/">Dalheim</a></td><td>Remich</td><td>2,5</td><td>190</td><td>1 028</td><td>79,6</td><td>+649</td></tr><tr><td><a href="/fr/commune/remich/">Remich</a></td><td>Remich</td><td>1,7</td><td>132</td><td>412</td><td>31,6</td><td>+766</td></tr></tbody></table></div><h3 class="refs" style="font-size:15px;margin:22px 0 6px">Communes de taille comparable</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Commune</th><th scope="col">Canton</th><th scope="col">PV (MW)</th><th scope="col">Install.</th><th scope="col">W/hab.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Ajouts (kW)</th></tr></thead><tbody><tr><td><a href="/fr/commune/contern/">Contern</a></td><td>Luxembourg</td><td>17,3</td><td>484</td><td>3 410</td><td>95,2</td><td>+5 101</td></tr><tr><td><a href="/fr/commune/rambrouch/">Rambrouch</a></td><td>Redange</td><td>15,2</td><td>751</td><td>2 971</td><td>146,5</td><td>+3 521</td></tr><tr><td><a href="/fr/commune/grevenmacher/">Grevenmacher</a></td><td>Grevenmacher</td><td>12,0</td><td>246</td><td>2 248</td><td>46,3</td><td>+1 082</td></tr><tr><td><a href="/fr/commune/frisange/">Frisange</a></td><td>Esch</td><td>10,7</td><td>445</td><td>2 111</td><td>87,8</td><td>+5 305</td></tr><tr><td><a href="/fr/commune/helperknapp/">Helperknapp</a></td><td>Mersch</td><td>9,1</td><td>593</td><td>1 698</td><td>110,2</td><td>+2 269</td></tr><tr class="me"><td><a href="/fr/commune/schengen/">Schengen</a></td><td>Remich</td><td>8,8</td><td>513</td><td>1 671</td><td>97,7</td><td>+2 116</td></tr><tr><td><a href="/fr/commune/habscht/">Habscht</a></td><td>Capellen</td><td>6,9</td><td>458</td><td>1 287</td><td>85,8</td><td>+2 283</td></tr></tbody></table></div></section><section><div class="sec-head"><h2>Aller plus loin</h2></div><div class="links"><a href="/fr/?commune=schengen#paradoxe">Graphique interactif de la commune</a><a href="/fr/simulateur/?canton=Remich">Simulateur : est-ce rentable sur votre toit ?</a><a href="/fr/pour-les-communes/">Pour les communes : ce que montre cette page</a><a href="/data/csv/solaire_communes_tailles.csv">Tailles des installations, 100 communes (CSV)</a></div><nav class="pn" aria-label="Toutes les communes"><a href="/fr/commune/sanem/">← Commune précédente : Sanem</a><a href="/fr/commune/schieren/">Commune suivante : Schieren →</a></nav></section>
+<header><nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="/fr/">Le photovoltaïque au Luxembourg</a></li><li><a href="/fr/pour-les-communes/">Toutes les communes</a></li><li aria-current="page">Schengen</li></ol></nav><div class="eyebrow">Commune · canton de Remich</div><h1>Le photovoltaïque à <span class="sun">Schengen</span></h1><p class="standfirst"><strong>8,8 MW</strong> de photovoltaïque raccordés au 9 novembre 2026 sur <strong>513 installations</strong>, soit 1 671 W par habitant (médiane des communes : 1 700 W). Depuis le relevé 2025 T1 : <strong>+2 116 kW</strong> (+32 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">Puissance PV</div><div class="val">8,8 MW</div><div class="sub">513 installations</div></div><div class="kpi"><div class="lbl">Part du PV</div><div class="val">64,7 %</div><div class="sub">de la capacité décentralisée (13,6 MW toutes filières)</div></div><div class="kpi"><div class="lbl">W par habitant</div><div class="val">1 671</div><div class="sub">53e sur 100 · médiane 1 700</div></div><div class="kpi"><div class="lbl">Installations / 1 000 hab.</div><div class="val">97,7</div><div class="sub">45e sur 100 · toitures de 30 kW ou moins : 96,2 / 1 000</div></div><div class="kpi"><div class="lbl">Ajouts depuis 2025 T1</div><div class="val">+2 116 kW</div><div class="sub">41e sur 100 · +32 %</div></div><div class="kpi"><div class="lbl">Depuis le 14 septembre 2026</div><div class="val">+16 inst.</div><div class="sub">+0,2 MW · suivi hebdomadaire</div></div></div><p class="simlink"><a href="/fr/simulateur/?canton=Remich">Est-ce rentable sur votre toit à Schengen ? <span>Simulateur <span aria-hidden="true">→</span></span></a></p><p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Vous voulez ça pour votre commune ? Parlons-en <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Tailles des installations</h2></div><p class="lede">À Schengen, <strong>98 % des installations font 30 kW ou moins</strong> (surtout des toitures), pour <strong>76 % de la puissance</strong>.</p><figure class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:4.68%"><i>5 % · 24 inst. <em>(−1)</em></i></div><div class="b cap" style="width:1.05%"><i>1 % · 92 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:34.31%"><i>34 % · 176 inst. <em>(+6)</em></i></div><div class="b cap" style="width:15.95%"><i>16 % · 1,4 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:32.16%"><i>32 % · 165 inst. <em>(+9)</em></i></div><div class="b cap" style="width:23.32%"><i>23 % · 2,0 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:27.29%"><i>27 % · 140 inst. <em>(+2)</em></i></div><div class="b cap" style="width:35.81%"><i>36 % · 3,1 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:0.78%"><i>0,8 % · 4 inst.</i></div><div class="b cap" style="width:2.63%"><i>3 % · 230 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,4 % · 2 inst.</i></div><div class="b cap" style="width:7.40%"><i>7 % · 649 kW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,4 % · 2 inst.</i></div><div class="b cap" style="width:13.84%"><i>14 % · 1,2 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">Entre parenthèses : variation nette depuis le 14 septembre 2026.</p><figcaption><b>Figure 1.</b> Part des installations et part de la puissance par classe de taille, à Schengen.</figcaption><p class="src">Source : Leneda (data.public.lu), fichier hebdomadaire par installation du 9 novembre 2026 ; traitement : Sitraka Forler.</p></figure></section><section id="aides"><div class="sec-head"><h2>Selon les tranches des aides aux communes</h2></div><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="kb-cap"><table class="mini booktabs"><caption id="kb-cap"><span class="capin"><b>Tableau 1.</b> Installations de Schengen selon les tranches du Klimabonus Gemengen, et aide prévue pour une centrale communale.</span></caption><thead><tr><th scope="col">Tranche</th><th scope="col">Aide pour une centrale communale</th><th scope="col">Installations</th><th scope="col">Puissance</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td class="aid">pas d'aide communale (Klimabonus des particuliers : logements seulement)</td><td>505</td><td>6,7 MW</td></tr><tr><th scope="row">30–200 kW</th><td class="aid">50 % (plafond 675 €/kWc)</td><td>5</td><td>405 kW</td></tr><tr><th scope="row">200–500 kW</th><td class="aid">45 % (505 €/kWc)</td><td>1</td><td>475 kW</td></tr><tr><th scope="row">0,5–5 MW</th><td class="aid">40 % (425 €/kWc)</td><td>2</td><td>1,2 MW</td></tr></tbody></table></div><p class="kbnote2">Barème 2025 du Klimabonus Gemengen (guide pratique, révisé chaque année) ; une ombrière de parking est aidée à 45 % (990 €/kWc). Les données Leneda ne disent pas si une installation appartient à la commune ou à un particulier.</p><p class="src">Sources : Leneda (data.public.lu), fichier par installation du 9 novembre 2026 ; guide pratique du Klimabonus Gemengen, barème 2025 ; traitement : Sitraka Forler.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparaison</h2></div><p class="lede">Classées par W par habitant. « Ajouts » : puissance ajoutée depuis le relevé 2025 T1.</p><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-2"><table class="cmp booktabs in-canton"><caption id="cmp-2"><span class="capin"><b>Tableau 2.</b> Communes du canton de Remich</span></caption><thead><tr><th scope="col" class="rk">N°</th><th scope="col">Commune</th><th scope="col" class="wpc">W/hab.</th><th scope="col">PV (MW)</th><th scope="col">Install.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Ajouts (kW)</th><th scope="col" class="col-canton">Canton</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/fr/commune/lenningen/">Lenningen</a></th><td class="wpc">3 243</td><td>6,8</td><td>210</td><td>100,4</td><td>+5 078</td><td class="col-canton">Remich</td></tr><tr><td class="rk">2</td><th scope="row"><a href="/fr/commune/stadtbredimus/">Stadtbredimus</a></th><td class="wpc">2 363</td><td>4,7</td><td>242</td><td>120,7</td><td>+2 548</td><td class="col-canton">Remich</td></tr><tr class="me"><td class="rk">3</td><th scope="row"><a href="/fr/commune/schengen/">Schengen</a></th><td class="wpc">1 671</td><td>8,8</td><td>513</td><td>97,7</td><td>+2 116</td><td class="col-canton">Remich</td></tr><tr><td class="rk">4</td><th scope="row"><a href="/fr/commune/mondorf-les-bains/">Mondorf-les-Bains</a></th><td class="wpc">1 470</td><td>8,2</td><td>270</td><td>48,4</td><td>+1 490</td><td class="col-canton">Remich</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/fr/commune/bous-waldbredimus/">Bous-Waldbredimus</a></th><td class="wpc">1 364</td><td>4,6</td><td>337</td><td>100,5</td><td>+1 477</td><td class="col-canton">Remich</td></tr><tr><td class="rk">6</td><th scope="row"><a href="/fr/commune/dalheim/">Dalheim</a></th><td class="wpc">1 028</td><td>2,5</td><td>190</td><td>79,6</td><td>+649</td><td class="col-canton">Remich</td></tr><tr><td class="rk">7</td><th scope="row"><a href="/fr/commune/remich/">Remich</a></th><td class="wpc">412</td><td>1,7</td><td>132</td><td>31,6</td><td>+766</td><td class="col-canton">Remich</td></tr></tbody></table></div><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-3"><table class="cmp booktabs similar"><caption id="cmp-3"><span class="capin"><b>Tableau 3.</b> Communes de taille comparable</span></caption><thead><tr><th scope="col" class="rk">N°</th><th scope="col">Commune</th><th scope="col" class="wpc">W/hab.</th><th scope="col">PV (MW)</th><th scope="col">Install.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Ajouts (kW)</th><th scope="col" class="col-canton">Canton</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/fr/commune/contern/">Contern</a></th><td class="wpc">3 410</td><td>17,3</td><td>484</td><td>95,2</td><td>+5 101</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">2</td><th scope="row"><a href="/fr/commune/rambrouch/">Rambrouch</a></th><td class="wpc">2 971</td><td>15,2</td><td>751</td><td>146,5</td><td>+3 521</td><td class="col-canton">Redange</td></tr><tr><td class="rk">3</td><th scope="row"><a href="/fr/commune/grevenmacher/">Grevenmacher</a></th><td class="wpc">2 248</td><td>12,0</td><td>246</td><td>46,3</td><td>+1 082</td><td class="col-canton">Grevenmacher</td></tr><tr><td class="rk">4</td><th scope="row"><a href="/fr/commune/frisange/">Frisange</a></th><td class="wpc">2 111</td><td>10,7</td><td>445</td><td>87,8</td><td>+5 305</td><td class="col-canton">Esch</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/fr/commune/helperknapp/">Helperknapp</a></th><td class="wpc">1 698</td><td>9,1</td><td>593</td><td>110,2</td><td>+2 269</td><td class="col-canton">Mersch</td></tr><tr class="me"><td class="rk">6</td><th scope="row"><a href="/fr/commune/schengen/">Schengen</a></th><td class="wpc">1 671</td><td>8,8</td><td>513</td><td>97,7</td><td>+2 116</td><td class="col-canton">Remich</td></tr><tr><td class="rk">7</td><th scope="row"><a href="/fr/commune/habscht/">Habscht</a></th><td class="wpc">1 287</td><td>6,9</td><td>458</td><td>85,8</td><td>+2 283</td><td class="col-canton">Capellen</td></tr></tbody></table></div><p class="src">Sources : Leneda (data.public.lu), relevé du 9 novembre 2026 ; population RNPP au 1er octobre 2026 ; traitement : Sitraka Forler.</p></section><section id="grandes-installations"><div class="sec-head"><h2>Grandes installations : lignes apparues</h2><span class="sec-note">plus de 100 kW, d'un relevé archivé au suivant</span></div><p class="lede">À Schengen, le fichier Leneda par installation compte <strong>5 installations de plus de 100 kW</strong> au relevé du 9 novembre 2026, toutes filières (5 au 14 septembre 2026).</p><div class="card"><p class="bignone">Aucune ligne de plus de 100 kW n'est apparue ni n'a disparu dans la commune entre le 14 septembre 2026 et le 9 novembre 2026.</p><details class="note"><summary>Méthode : d'où viennent ces chiffres ?</summary><p class="kbnote2"><strong>Méthode.</strong> Leneda publie chaque semaine un fichier d'une ligne par installation : commune, filière et puissance installée, sans identifiant, sans date de mise en service ni exploitant. Il remplace ce fichier sans garder d'historique ; lux-solaire en archive une copie à chaque relevé. Faute d'identifiant, on ne peut pas suivre une installation d'un relevé à l'autre : on compare, commune par commune et filière par filière, les lignes de plus de 100 kW (100 kW exactement exclus) de deux copies consécutives. Une ligne apparue peut être une installation nouvelle, mais aussi une installation agrandie au-delà de 100 kW, une valeur corrigée ou une ligne rattachée à une autre commune ; le fichier ne permet pas de trancher. Copies comparées : 14 septembre 2026, 26 octobre 2026 (42 jours après la précédente), 2 novembre 2026, 9 novembre 2026.</p></details><p class="kbnote2"><a href="/fr/#grandes-installations">Liste nationale</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Lignes apparues et disparues (CSV)</a></p></div></section><section id="liens"><div class="sec-head"><h2>Aller plus loin</h2></div><div class="links"><a href="/fr/?commune=schengen#paradoxe">Graphique interactif de la commune</a><a href="/fr/simulateur/?canton=Remich">Simulateur : est-ce rentable sur votre toit ?</a><a href="/fr/pour-les-communes/">Pour les communes : ce que montre cette page</a><a href="/data/csv/solaire_communes_tailles.csv">Tailles des installations, 100 communes (CSV)</a></div><nav class="pn" aria-label="Toutes les communes"><a href="/fr/commune/sanem/">← Commune précédente : Sanem</a><a href="/fr/commune/schieren/">Commune suivante : Schieren →</a></nav></section>
 </main>
 <footer class="colophon" aria-labelledby="colophon-h"><h2 id="colophon-h">Colophon</h2><div class="co-a"><p>Données : jeu « La production d'énergie électrique au Luxembourg » publié par Leneda sur data.public.lu (CC0), relevé du 9 novembre 2026 ; population : RNPP (CC0). Chiffres de puissance raccordée (kW), pas d'énergie produite. Données dérivées sous licence CC BY 4.0.</p><p>Sources : <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/">Leneda (data.public.lu)</a> · <a href="https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-population-par-commune-population-per-municipality/">RNPP</a> (population Schengen : 5 251 habitants au 1er octobre 2026) · <a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf">Klimabonus Gemengen</a></p><p>Mesure d'audience sans cookie : Cloudflare Web Analytics et des compteurs de clics anonymes (aucune adresse IP ni identifiant enregistrés).</p></div><!--COLOPHON_COMMON-->
 <div class="co-b">

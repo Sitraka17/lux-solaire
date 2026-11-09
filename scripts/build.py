@@ -737,7 +737,7 @@ def to_pt(html):
     return html
 
 
-from communes import CPATH, FORPATH, HTML_LANG, slug as _slug   # noqa: E402  (pages communales)
+from communes import CPATH, FORPATH, HTML_LANG, TAB_LABEL, slug as _slug   # noqa: E402  (pages communales)
 
 
 LANG_PATHS = (("en", "/"), ("fr", "/fr/"), ("de", "/de/"), ("lb", "/lb/"),
@@ -1183,7 +1183,12 @@ def prerender(d, lang):
             for a in A),
         "<!--PRE_PARADOX-->": "".join(paradox_row(s) for s in d["sizes"]),
         "<!--PRE_PARADOX_ROWS-->": "".join(paradox_table_row(s) for s in d["sizes"]),
-        "<!--PRE_BIGNEW-->": grandes.dashboard_section(d.get("bigs"), lang, CPATH[lang], _slug),
+        "<!--PRE_BIGNEW-->": grandes.dashboard_section(d.get("bigs"), lang, CPATH[lang], _slug,
+                                                       caption=f"<b>{TAB_LABEL[lang]} 5.</b>"),
+        # « Votre commune » de l'en-tête : une option par commune, valeur = chemin de sa page
+        "<!--PRE_PICK-->": "".join(
+            f'<option value="{CPATH[lang]}{_slug(r["c"])}/">{E(r["c"])}</option>'
+            for r in sorted(d["communes"], key=lambda r: _slug(r["c"]))),
         "<!--PRE_AREA_HEAD-->": "".join(f'<th scope="col">{names[k]}</th>' for k, _, _ in TECH_ORDER),
         "<!--PRE_AREA_ROWS-->": "".join(
             f'<tr><th scope="row">{r["label"]}</th>' + "".join(f'<td>{D1(r[k])}</td>' for k, _, _ in TECH_ORDER) + "</tr>"
@@ -1390,6 +1395,29 @@ def write_exports(tables, cdate):
                 "sources": [DATASET_URL, RNPP_URL], "files": files}
     (ROOT / "data" / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
     return manifest
+
+
+# lien « Données de la figure n (CSV, xx ko) » sous chaque figure ou tableau qui a un export (lot 2,
+# L2.2) : marqueur <!--DL:<slug>:<F|T>:<n>--> du gabarit, taille lue sur le fichier écrit par write_exports
+DL_LABEL = {"fr": ("Données de la figure", "Données du tableau", "ko"),
+            "en": ("Data for figure", "Data for table", "kB"),
+            "de": ("Daten zu Abbildung", "Daten zu Tabelle", "kB"),
+            "lb": ("Donnéeën zur Figur", "Donnéeën zur Tabell", "kB"),
+            "pt": ("Dados da figura", "Dados da tabela", "kB")}
+_DL_RE = re.compile(r"<!--DL:([a-z_]+):([FT]):(\d+)-->")
+
+
+def dl_links(html, lang):
+    fig, tab, unit = DL_LABEL[lang]
+
+    def one(m):
+        f = ROOT / "data" / "csv" / f"{m.group(1)}.csv"
+        if not f.exists():
+            sys.exit(f"{lang} : export {f.name} introuvable pour le lien de la figure {m.group(3)}")
+        size = _thousands(max(1, -(-f.stat().st_size // 1024)), lang)
+        return (f' · <a class="dl" href="/data/csv/{m.group(1)}.csv" download>'
+                f'{fig if m.group(2) == "F" else tab} {m.group(3)} (CSV, {size}\u00a0{unit})</a>')
+    return _DL_RE.sub(one, html)
 
 
 def rt_downloads(manifest, lang):
@@ -1856,12 +1884,13 @@ def render_all(data):
                     sys.exit(f"{lang} : marqueur {marker} absent du gabarit")
                 html = html.replace(marker, frag)
         html = html.replace("<!--RT_DOWNLOADS-->", rt_downloads(manifest, lang))
+        html = dl_links(html, lang)
         # JSON-LD en dernier : il relit le <title>, la description et le <h1> traduits
         if "<!--JSONLD-->" not in html:
             sys.exit(f"{lang} : marqueur <!--JSONLD--> absent du gabarit")
         ld = jsonld_sim(html, lang, canonical, cdate, pv) if sim else jsonld(html, lang, canonical, cdate, manifest, d)
         html = html.replace("<!--JSONLD-->", ld)
-        if "<!--" in html and re.search(r"<!--(PRE_|RT_|JSONLD|OGLOCALE|LANGTOGGLE)", html):
+        if "<!--" in html and re.search(r"<!--(PRE_|RT_|JSONLD|OGLOCALE|LANGTOGGLE|DL:)", html):
             sys.exit(f"{lang} : marqueur de gabarit non substitué")
         check_output(html, lang, dct)
         return html

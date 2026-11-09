@@ -377,8 +377,15 @@ def _rel(b, x):
     return b["snaps"][x["p"]]["l"]
 
 
-def dashboard_section(b, lang, cpath, slug):
-    """Contenu de <section id="grandes-installations"> du tableau de bord (blob `b` traduit)."""
+# résumé du <details> qui replie la note de méthode répétée sur les 100 pages communales (lot 2, L2.13)
+M_SUM = {"fr": "Méthode : d'où viennent ces chiffres ?", "en": "Method: where do these figures come from?",
+         "de": "Methode: Woher stammen diese Zahlen?", "lb": "Method: wou kommen dës Zuelen hier?",
+         "pt": "Método: de onde vêm estes números?"}
+
+
+def dashboard_section(b, lang, cpath, slug, caption=""):
+    """Contenu de <section id="grandes-installations"> du tableau de bord (blob `b` traduit).
+    `caption` : numéro du tableau (« <b>Tableau 5.</b> »), placé devant le titre de la liste."""
     L = S[lang]
     head = (f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>')
     if not b:
@@ -397,17 +404,19 @@ def dashboard_section(b, lang, cpath, slug):
             for x in ups[:DASH_MAX])
         th = "".join(f'<th scope="col">{c}</th>' for c in L["cols"])
         more = f'<p class="bignote">{L["more"](len(ups))}</p>' if len(ups) > DASH_MAX or downs else ""
-        body = (f'<h3 class="bigh">{L["latest"]}</h3>'
-                f'<div class="tblscroll" role="region" tabindex="0" aria-label="{L["list_aria"]}">'
-                f'<table class="bigtab" aria-label="{L["list_aria"]}"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>{more}')
+        body = (f'<div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-cap">'
+                f'<table class="bigtab booktabs"><caption id="bigtab-cap"><span class="capin">{caption} {L["latest"]}'
+                f'<span class="vh"> ({L["list_aria"]})</span></span></caption>'
+                f'<thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>{more}')
     else:
         body = f'<p class="bignone">{L["none_dash"](first, last)}</p>'
     return (f'{head}<p class="lede">{lede}</p><div class="card">{body}'
             f'<p class="kbnote">{L["method"](_copies(b, lang))} <a href="{CSV_PATH}" download>{L["csv"]}</a></p></div>')
 
 
-def commune_section(b, lang, lau2, cname_html, home):
-    """<section id="grandes-installations"> d'une page communale (blob `b` traduit)."""
+def commune_section(b, lang, lau2, cname_html, home, caption=""):
+    """<section id="grandes-installations"> d'une page communale (blob `b` traduit). `caption` : numéro du
+    tableau (« <b>Tableau 4.</b> ») ; la note de méthode, identique sur les 100 pages, est repliée."""
     L = S[lang]
     head = f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>'
     if not b:
@@ -417,18 +426,20 @@ def commune_section(b, lang, lau2, cname_html, home):
     lede = L["c_lede"](cname_html, n, n0, first, last)
     mine = [x for x in b["ev"] if x["l"] == lau2]
     if mine:
+        c_cap = L["c_some"].rstrip(" :\u00a0\u202f")   # légende : sans les deux-points finaux
         th = "".join(f'<th scope="col">{c}</th>' for c in L["ccols"])
         rows = "".join(
             f'<tr><td>{_rel(b, x)}</td><td>{L["up"] if x["e"] == 1 else L["down"]}'
             + (f'<small>{_remark(x, lang)}</small>' if _remark(x, lang) else "")
             + f'</td><td>{TYPE_NAMES[lang].get(x["t"], _esc(x["t"]))}</td><td>{fmt_kw(x["kw"], lang)}</td></tr>'
             for x in mine)
-        body = (f'<p class="bigh2" id="bigtab-h">{L["c_some"]}</p><div class="tblscroll" role="region" tabindex="0" '
-                f'aria-labelledby="bigtab-h"><table class="bigtab"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>')
+        body = (f'<div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h">'
+                f'<table class="bigtab booktabs"><caption id="bigtab-h"><span class="capin">{caption} {c_cap}.</span></caption>'
+                f'<thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>')
     else:
         body = f'<p class="bignone">{L["c_none"](first, last)}</p>'
     return (f'<section id="{DASH_ANCHOR}">{head}<p class="lede">{lede}</p><div class="card">{body}'
-            f'<p class="kbnote2">{L["method"](_copies(b, lang))}</p>'
+            f'<details class="note"><summary>{M_SUM[lang]}</summary><p class="kbnote2">{L["method"](_copies(b, lang))}</p></details>'
             f'<p class="kbnote2"><a href="{home}#{DASH_ANCHOR}">{L["nat"]}</a> · '
             f'<a href="{CSV_PATH}" download>{L["csv"]}</a></p></div></section>')
 

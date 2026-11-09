@@ -226,7 +226,6 @@
   main:focus{outline:none}
   @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
     /* nom sur sa propre ligne, puis barre + valeur (la valeur en max-content
        écrasait la colonne du nom à 0 px) */
@@ -367,37 +366,190 @@
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 
+  /* ==== LOT 2 : corps du tableau de bord (figures numérotées, légendes, sources) ==== */
+  figure{margin:0}
+  .grid-2{align-items:start}
+  figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption+.src{margin-top:2px}
+  .src{margin-bottom:0}
+  .src a,.dl a{color:var(--amber-text)}
+  .card.refs .src{margin-top:-6px}
+  .refs2{margin-top:20px}
+  .refs2 .card.refs p:last-child{margin-bottom:0}
+  .sec-head h3.h2like+.u{display:block}
+  /* légende de tableau dans un conteneur défilant : reste lisible au bord gauche */
+  .tblwrap caption,.tblscroll caption{padding:10px 12px 8px}
+  .tblwrap caption .capin,.tblscroll caption .capin{display:block;position:sticky;left:12px;max-width:min(100%,calc(100vw - 64px))}
+  table.mini caption{font-family:var(--body);font-variant-numeric:normal}
+  a.dl{white-space:nowrap}
+  .tblwrap.tblscroll{background-color:var(--card)}
+  /* conteneur défilant posé sur le papier (pas dans une carte) : caches de bord couleur papier */
+  .tblscroll.on-paper{background:linear-gradient(to right,var(--paper) 30%,transparent) left/24px 100% no-repeat local,
+    linear-gradient(to left,var(--paper) 30%,transparent) right/24px 100% no-repeat local,
+    linear-gradient(to right,rgba(29,39,52,.12),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,rgba(29,39,52,.12),transparent) right/10px 100% no-repeat scroll}
+  .tblscroll:not(.tblwrap) caption{padding:0 0 8px}
+  .tblscroll:not(.tblwrap) caption .capin{left:0}
+  @media(max-width:767px){
+    .tblscroll caption .capin{max-width:calc(100vw - 32px)}
+    .card .tblscroll caption .capin,.tblwrap caption .capin{max-width:calc(100vw - 84px)}
+  }
+  .tblscroll.on-paper caption{padding-left:0;padding-right:0}
+  .tblscroll.on-paper caption .capin{left:0}
+  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  table.cantons{min-width:0}
+  table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
+  table.cantons tbody td{padding:5px 8px}
+  /* « Votre commune » dans l'en-tête */
+  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+  .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+  .pick label{font:600 13.5px var(--body);color:var(--ink)}
+  .pick select{font:inherit;font-size:14px;min-height:36px;padding:6px 8px;border:1px solid var(--ink-3);border-radius:2px;background:var(--card);color:var(--ink);max-width:100%}
+  .pick button{font:600 13.5px var(--body);min-height:36px;padding:6px 12px;border:1px solid var(--ink);border-radius:2px;background:var(--card);color:var(--ink);cursor:pointer}
+  .pick button:hover{border-color:var(--amber-text);color:var(--amber-text)}
+  /* méthode : premier paragraphe visible, la suite repliée */
+  .method details{margin-top:4px}
+  .method summary{font:600 14px var(--body);color:var(--amber-text)}
+  @media(max-width:767px){
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi.hero,.kpi:last-child{grid-column:1/-1}
+    .kpi{padding:13px 14px 12px}
+    .kpi .val{font-size:26px;margin-top:4px}
+    .kpi .sub{font-size:12px;line-height:1.4}
+    .pick{width:100%}
+    .pick select{flex:1 1 180px}
+  }
+  @media print{.pick,.dl{display:none}}
 
   .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}
   table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
   table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  table.cmp th:first-child,table.cmp td:first-child,table.cmp th:nth-child(2),table.cmp td:nth-child(2){text-align:left}
+  table.cmp th:nth-child(2),table.cmp td:nth-child(2),table.cmp .col-canton{text-align:left}
   table.cmp thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:none;position:static;cursor:default}
   table.cmp tr.me td{background:var(--amber-soft);font-weight:600}
   table.cmp a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
   table.cmp a:hover{color:var(--amber-text);border-color:var(--amber)}
   .tw{overflow-x:auto}
+  /* lot 2 : tableaux de comparaison (rang, commune collante, W/hab. en 2e colonne de données) */
+  table.cmp tbody th{text-align:left;font-weight:500;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.cmp tr.me th{background:var(--amber-soft);font-weight:650}
+  table.cmp .rk{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right;width:28px;min-width:28px;padding-left:4px;padding-right:8px}
+  table.cmp .rk,table.cmp tbody th,table.cmp thead th:nth-child(2){position:sticky;background:var(--paper);z-index:1}
+  table.cmp .rk{left:0}
+  table.cmp tbody th,table.cmp thead th:nth-child(2){left:40px;text-align:left}
+  @media(max-width:767px){table.cmp tbody th,table.cmp thead th:nth-child(2){box-shadow:inset -1px 0 0 var(--line)}}
+  table.cmp tr.me .rk,table.cmp tr.me th{background:var(--amber-soft)}
+  table.cmp th.wpc,table.cmp td.wpc{font-weight:650;color:var(--ink)}
+  @media(max-width:519px){table.cmp.in-canton .col-canton{display:none}}
+  .simlink{margin:14px 0 0;font:600 14.5px var(--body)}
+  .simlink a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
+  .simlink a:hover{color:var(--amber-text)}
+  .simlink span{color:var(--amber-text);white-space:nowrap}
+  #comparaison .tblscroll+.tblscroll{margin-top:22px}
+  #comparaison caption{font-size:14px;color:var(--ink)}
+  details.note{margin-top:12px;font-size:13px}
+  details.note summary{font:600 13px var(--body);color:var(--amber-text)}
+  details.note .kbnote2{margin-top:4px}
+  /* marque blanche (L2.16) : UNE variable d'accent pour les filets et les soulignements ; le texte garde --amber-text (AA) */
+  :root{--accent:var(--amber)}
+  .eyebrow::before{background:var(--accent)}
+  .links a,.contact-cta a{border-left-color:var(--accent)}
+  .links a:hover,table.cmp a:hover,table.bigtab a:hover{border-color:var(--accent)}
+  .masthead{border-top-color:var(--accent)}
+  .crumbs a:hover,.series a:hover{text-decoration-color:var(--accent)}
+  /* page « Pour les communes » (page d'offre) */
+  .offer section{margin-top:48px}
+  .offer h2{margin:0 0 14px}
+  .demo-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px 28px;align-items:start}
+  .demo{border:1px solid var(--line);border-top:3px solid var(--accent);background:var(--card);padding:16px 18px 18px}
+  .demo-h{margin:0;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .demo-name{margin:4px 0 12px;font:700 22px/1.2 var(--display)}
+  .demo-name .sun{color:var(--amber-h1)}
+  .demo .kpis{margin-top:0}
+  .demo .kpi{padding:14px 14px 12px}
+  .demo .kpi .val{font-size:26px}
+  .demo-open{margin:12px 0 0;font:600 14px var(--body)}
+  .demo-open a,.offer .prose a,.trust a{color:var(--amber-text)}
+  .tools{list-style:none;margin:6px 0 12px;padding:0;counter-reset:t}
+  .tools li{counter-increment:t;display:grid;grid-template-columns:22px 1fr;padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+  .tools li::before{content:counter(t) ".";font:600 12px/1.6 var(--mono);color:var(--ink-3)}
+  .tools b{color:var(--ink);font-weight:650}
+  .demo p.lead{margin:0;font-size:14px;color:var(--ink)}
+  table.offer-t{width:100%;font-size:14px}
+  table.offer-t th,table.offer-t td{padding:9px 12px 9px 0;text-align:left;vertical-align:top;white-space:normal;border-bottom:1px solid var(--line)}
+  table.offer-t thead th{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);background:none;position:static;cursor:default;border-bottom:1px solid var(--ink)}
+  table.offer-t tbody th{font-weight:650;width:24%}
+  table.offer-t td{font-family:var(--body);font-size:14px;color:var(--ink)}
+  table.offer-t td:nth-child(3){color:var(--ink-2);font-size:13px}
+  table.offer-t td:last-child{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);width:15%}
+  table.offer-t tbody tr:last-child th,table.offer-t tbody tr:last-child td{border-bottom:0}
+  .cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 28px;margin-top:24px}
+  .cols3 p{margin:0;padding-top:10px;border-top:1px solid var(--ink);font-size:14.5px;color:var(--ink)}
+  .trust{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px 40px;align-items:start}
+  .trust ul{margin:0;padding-left:18px;font-size:15px}
+  .trust li{margin:0 0 8px}
+  .trust h3{margin:0 0 6px;font:600 16px var(--display)}
+  .trust p{margin:0;font-size:15px}
+  .offer-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 28px;align-items:center;padding:16px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .offer-cta p{margin:0}
+  .offer-cta .q{font:600 17px var(--display)}
+  .offer-cta .alt{font-size:13.5px;color:var(--ink-2)}
+  .offer-cta .alt a{color:var(--amber-text)}
+  .offer-cta .cta-row{margin:0;grid-column:2;grid-row:1/3}
+  @media(max-width:767px){
+    .demo-grid,.cols3,.trust{grid-template-columns:minmax(0,1fr)}
+    .offer-cta{grid-template-columns:minmax(0,1fr)}
+    .offer-cta .cta-row{grid-column:1;grid-row:auto}
+    table.offer-t thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    table.offer-t tr{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
+    table.offer-t tbody tr:last-child{border-bottom:0}
+    table.offer-t tbody th,table.offer-t td{display:block;width:auto!important;border:0;padding:2px 0}
+    table.offer-t tbody th{font-size:15px;padding-bottom:4px}
+    table.offer-t td::before{content:attr(data-l) " ";font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  }
+  @media print{
+    @page{size:A4;margin:14mm}
+    .commune-page .simlink,.commune-page .contact-cta,.commune-page .pn,.commune-page #liens,.commune-page #aides,
+    .commune-page #grandes-installations,.commune-page .crumbs,.commune-page .co-b,.commune-page .co-series,
+    .commune-page details.note{display:none}
+    .commune-page table,.commune-page figure,.commune-page .kpis,.commune-page .tblscroll{break-inside:avoid}
+    .commune-page .tblscroll{overflow:visible}
+    .commune-page{zoom:.68;padding:0}
+    .commune-page section{margin-top:14px}
+    .commune-page,.commune-page *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .commune-page .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    .commune-page .kpi.hero,.commune-page .kpi:last-child{grid-column:auto!important}
+    .commune-page h1{font-size:30px}
+    .commune-page .sec-head,.commune-page .lede{break-after:avoid}
+    .commune-page #comparaison{break-before:page}
+    .commune-page .colophon{margin-top:16px}
+  }
   .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
   .links a{display:block;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}
   .links a:hover{border-color:var(--amber)}
   .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;font-size:14px}
   .pn a{color:var(--amber-text)}
   #aides table.mini td{text-align:right}
-  #aides table.mini td:last-child{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini td.aid{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini{width:100%}
   #aides table.mini th{white-space:nowrap}
+  @media(max-width:767px){#aides table.mini thead th{white-space:normal;vertical-align:bottom}}
   .prose a{color:var(--amber-text)}
   .clist div{break-inside:avoid}
   .kbnote2{font-size:13px;color:var(--ink-2);margin:10px 0 0;max-width:90ch}
+  .kbnote2 a,.prose a{color:var(--amber-text)}
   .prose p{font-size:15.5px;max-width:70ch;color:var(--ink)}
   .contact-cta+.prose{margin-top:28px}
-  .clist{columns:4 190px;column-gap:24px;font-size:14px;margin-top:10px}
-  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px;break-after:avoid}
-  .clist a{display:block;color:var(--ink);text-decoration:none;padding:2px 0}.clist a:hover{color:var(--amber-text)}
+  .clist{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 24px;font-size:14px;margin-top:10px}
+  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 4px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+  .clist a{display:flex;align-items:center;min-height:28px;color:var(--ink);text-decoration:none;padding:0}.clist a:hover{color:var(--amber-text);text-decoration:underline;text-decoration-color:var(--accent)}
+  @media(max-width:767px){.clist{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:850px){.kpis.k6{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis.k6{grid-template-columns:1fr}}
 </style>
 <a class="skip" href="#contenu">Ir para o conteúdo</a>
-<div class="wrap">
+<div class="wrap commune-page">
 <!--MASTHEAD-->
 <div class="masthead">
   <div class="mh-row">
@@ -412,7 +564,7 @@
 </div>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
-<header><nav class="crumbs" aria-label="Trilho de navegação"><ol><li><a href="/pt/">A energia fotovoltaica no Luxemburgo</a></li><li><a href="/pt/para-os-municipios/">Todos os municípios</a></li><li aria-current="page">Feulen</li></ol></nav><div class="eyebrow">Município · cantão de Diekirch</div><h1>A energia fotovoltaica em <span class="sun">Feulen</span></h1><p class="standfirst"><strong>5,5 MW</strong> de fotovoltaico ligados à rede em 9 de novembro de 2026, repartidos por <strong>239 instalações</strong>, ou seja, 2 243 W por habitante (mediana dos municípios: 1 700 W). Desde o levantamento do T1 2025: <strong>+1 515 kW</strong> (+38 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">Potência fotovoltaica</div><div class="val">5,5 MW</div><div class="sub">239 instalações</div></div><div class="kpi"><div class="lbl">Parte do fotovoltaico</div><div class="val">61,8 %</div><div class="sub">da potência descentralizada (8,9 MW, todas as tecnologias)</div></div><div class="kpi"><div class="lbl">W por habitante</div><div class="val">2 243</div><div class="sub">28.º de 100 · mediana 1 700</div></div><div class="kpi"><div class="lbl">Instalações / 1 000 hab.</div><div class="val">97,7</div><div class="sub">46.º de 100 · telhados de 30 kW ou menos: 92,4 / 1 000</div></div><div class="kpi"><div class="lbl">Acréscimos desde o T1 2025</div><div class="val">+1 515 kW</div><div class="sub">50.º de 100 · +38 %</div></div><div class="kpi"><div class="lbl">Desde 14 de setembro de 2026</div><div class="val">+9 inst.</div><div class="sub">+0,1 MW · acompanhamento semanal</div></div></div><p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Quer isto para o seu município? Vamos falar (em francês) <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Dimensões das instalações</h2></div><p class="lede">Em Feulen, <strong>95 % das instalações têm 30 kW ou menos</strong> (sobretudo telhados), para <strong>56 % da potência</strong>.</p><div class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> parte das instalações</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> parte da potência</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:7.95%"><i>8 % · 19 inst. <em>(+1)</em></i></div><div class="b cap" style="width:1.45%"><i>1 % · 79 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:31.38%"><i>31 % · 75 inst. <em>(+2)</em></i></div><div class="b cap" style="width:11.39%"><i>11 % · 625 kW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:25.10%"><i>25 % · 60 inst. <em>(+2)</em></i></div><div class="b cap" style="width:13.68%"><i>14 % · 751 kW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:30.13%"><i>30 % · 72 inst. <em>(+4)</em></i></div><div class="b cap" style="width:29.86%"><i>30 % · 1,6 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:1.67%"><i>2 % · 4 inst.</i></div><div class="b cap" style="width:5.24%"><i>5 % · 288 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:3.77%"><i>4 % · 9 inst.</i></div><div class="b cap" style="width:38.39%"><i>38 % · 2,1 MW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">Entre parênteses: variação líquida desde 14 de setembro de 2026.</p></div></section><section id="grandes-installations"><div class="sec-head"><h2>Grandes instalações: linhas surgidas</h2><span class="sec-note">acima de 100 kW, de um levantamento arquivado para o seguinte</span></div><p class="lede">Em Feulen, o ficheiro da Leneda por instalação conta <strong>11 instalações acima de 100 kW</strong> no levantamento de 9 de novembro de 2026, todas as tecnologias (10 em 14 de setembro de 2026).</p><div class="card"><p class="bigh2" id="bigtab-h">Linhas acima de 100 kW surgidas ou desaparecidas entre dois levantamentos arquivados:</p><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h"><table class="bigtab"><thead><tr><th scope="col">Levantamento</th><th scope="col">Movimento</th><th scope="col">Tecnologia</th><th scope="col">Potência (kW)</th></tr></thead><tbody><tr><td>26 de outubro de 2026</td><td>surgida</td><td>Eólica</td><td>3 200</td></tr></tbody></table></div><p class="kbnote2"><strong>Método.</strong> A Leneda publica todas as semanas um ficheiro com uma linha por instalação: município, tecnologia e potência instalada, sem identificador, sem data de entrada em serviço e sem operador. Substitui esse ficheiro sem guardar histórico; o lux-solaire arquiva uma cópia em cada levantamento. Sem identificador, não é possível seguir uma instalação de um levantamento para o outro: comparam-se, município a município e tecnologia a tecnologia, as linhas acima de 100 kW (100 kW exatamente excluídos) de duas cópias consecutivas. Uma linha surgida pode ser uma instalação nova, mas também uma instalação ampliada para lá de 100 kW, um valor corrigido ou uma linha atribuída a outro município; o ficheiro não permite decidir. Cópias comparadas: 14 de setembro de 2026, 26 de outubro de 2026 (42 dias depois da anterior), 2 de novembro de 2026, 9 de novembro de 2026.</p><p class="kbnote2"><a href="/pt/#grandes-installations">Lista nacional</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Linhas surgidas e desaparecidas (CSV)</a></p></div></section><section id="aides"><div class="sec-head"><h2>Segundo os escalões das ajudas aos municípios</h2></div><div class="card"><div class="tw"><table class="mini"><thead><tr><th scope="col">Escalão</th><th scope="col">Instalações</th><th scope="col">Potência</th><th scope="col">Ajuda para uma central municipal</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td>226</td><td>3,1 MW</td><td>sem ajuda municipal (Klimabonus dos particulares: só habitações)</td></tr><tr><th scope="row">30–200 kW</th><td>9</td><td>1,2 MW</td><td>50 % (máx. 675 €/kWp)</td></tr><tr><th scope="row">200–500 kW</th><td>4</td><td>1,2 MW</td><td>45 % (505 €/kWp)</td></tr><tr><th scope="row">0,5–5 MW</th><td>0</td><td>0,0 MW</td><td>40 % (425 €/kWp)</td></tr></tbody></table></div><p class="kbnote2">Tabela de 2025 do Klimabonus Gemengen (guia prático, revisto todos os anos); uma cobertura de parque de estacionamento recebe 45 % (990 €/kWp). Os dados da Leneda não dizem se uma instalação pertence ao município ou a um particular.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparação</h2></div><p class="lede">Ordenados por W por habitante. «Acréscimos»: potência acrescentada desde o levantamento do T1 2025.</p><h3 class="refs" style="font-size:15px;margin:18px 0 6px">Municípios do cantão de Diekirch</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Município</th><th scope="col">Cantão</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/hab.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Acréscimos (kW)</th></tr></thead><tbody><tr><td><a href="/pt/municipio/erpeldange-sur-sure/">Erpeldange-sur-Sûre</a></td><td>Diekirch</td><td>6,4</td><td>227</td><td>2 295</td><td>81,8</td><td>+1 229</td></tr><tr class="me"><td><a href="/pt/municipio/feulen/">Feulen</a></td><td>Diekirch</td><td>5,5</td><td>239</td><td>2 243</td><td>97,7</td><td>+1 515</td></tr><tr><td><a href="/pt/municipio/mertzig/">Mertzig</a></td><td>Diekirch</td><td>4,9</td><td>263</td><td>2 029</td><td>108,6</td><td>+1 039</td></tr><tr><td><a href="/pt/municipio/vallee-de-l-ernz/">Vallée de l&#x27;Ernz</a></td><td>Diekirch</td><td>5,6</td><td>291</td><td>1 910</td><td>99,0</td><td>+1 403</td></tr><tr><td><a href="/pt/municipio/bourscheid/">Bourscheid</a></td><td>Diekirch</td><td>2,8</td><td>182</td><td>1 576</td><td>101,4</td><td>+1 137</td></tr><tr><td><a href="/pt/municipio/bettendorf/">Bettendorf</a></td><td>Diekirch</td><td>3,9</td><td>208</td><td>1 264</td><td>67,7</td><td>+754</td></tr><tr><td><a href="/pt/municipio/reisdorf/">Reisdorf</a></td><td>Diekirch</td><td>1,4</td><td>87</td><td>967</td><td>59,5</td><td>+449</td></tr><tr><td><a href="/pt/municipio/schieren/">Schieren</a></td><td>Diekirch</td><td>2,0</td><td>158</td><td>899</td><td>70,6</td><td>+802</td></tr><tr><td><a href="/pt/municipio/diekirch/">Diekirch</a></td><td>Diekirch</td><td>4,2</td><td>158</td><td>565</td><td>21,3</td><td>+1 076</td></tr><tr><td><a href="/pt/municipio/ettelbruck/">Ettelbruck</a></td><td>Diekirch</td><td>5,1</td><td>306</td><td>509</td><td>30,3</td><td>+1 577</td></tr></tbody></table></div><h3 class="refs" style="font-size:15px;margin:22px 0 6px">Municípios de dimensão comparável</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Município</th><th scope="col">Cantão</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">W/hab.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Acréscimos (kW)</th></tr></thead><tbody><tr><td><a href="/pt/municipio/tandel/">Tandel</a></td><td>Vianden</td><td>13,2</td><td>276</td><td>5 561</td><td>116,0</td><td>+7 454</td></tr><tr><td><a href="/pt/municipio/groussbus-wal/">Groussbus-Wal</a></td><td>Redange</td><td>7,3</td><td>339</td><td>3 065</td><td>142,7</td><td>+1 317</td></tr><tr><td><a href="/pt/municipio/lac-de-la-haute-sure/">Lac de la Haute-Sûre</a></td><td>Wiltz</td><td>6,7</td><td>293</td><td>2 805</td><td>122,0</td><td>+1 234</td></tr><tr class="me"><td><a href="/pt/municipio/feulen/">Feulen</a></td><td>Diekirch</td><td>5,5</td><td>239</td><td>2 243</td><td>97,7</td><td>+1 515</td></tr><tr><td><a href="/pt/municipio/mertzig/">Mertzig</a></td><td>Diekirch</td><td>4,9</td><td>263</td><td>2 029</td><td>108,6</td><td>+1 039</td></tr><tr><td><a href="/pt/municipio/weiler-la-tour/">Weiler-la-Tour</a></td><td>Luxembourg</td><td>3,3</td><td>275</td><td>1 298</td><td>109,3</td><td>+923</td></tr><tr><td><a href="/pt/municipio/dalheim/">Dalheim</a></td><td>Remich</td><td>2,5</td><td>190</td><td>1 028</td><td>79,6</td><td>+649</td></tr></tbody></table></div></section><section><div class="sec-head"><h2>Saber mais</h2></div><div class="links"><a href="/pt/?commune=feulen#paradoxe">Gráfico interativo do município</a><a href="/pt/simulador/?canton=Diekirch">Simulador: o solar compensa no seu telhado?</a><a href="/pt/para-os-municipios/">Para os municípios: o que esta página mostra</a><a href="/data/csv/solaire_communes_tailles.csv">Dimensões das instalações, 100 municípios (CSV)</a></div><nav class="pn" aria-label="Todos os municípios"><a href="/pt/municipio/ettelbruck/">← Município anterior: Ettelbruck</a><a href="/pt/municipio/fischbach/">Município seguinte: Fischbach →</a></nav></section>
+<header><nav class="crumbs" aria-label="Trilho de navegação"><ol><li><a href="/pt/">A energia fotovoltaica no Luxemburgo</a></li><li><a href="/pt/para-os-municipios/">Todos os municípios</a></li><li aria-current="page">Feulen</li></ol></nav><div class="eyebrow">Município · cantão de Diekirch</div><h1>A energia fotovoltaica em <span class="sun">Feulen</span></h1><p class="standfirst"><strong>5,5 MW</strong> de fotovoltaico ligados à rede em 9 de novembro de 2026, repartidos por <strong>239 instalações</strong>, ou seja, 2 243 W por habitante (mediana dos municípios: 1 700 W). Desde o levantamento do T1 2025: <strong>+1 515 kW</strong> (+38 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">Potência fotovoltaica</div><div class="val">5,5 MW</div><div class="sub">239 instalações</div></div><div class="kpi"><div class="lbl">Parte do fotovoltaico</div><div class="val">61,8 %</div><div class="sub">da potência descentralizada (8,9 MW, todas as tecnologias)</div></div><div class="kpi"><div class="lbl">W por habitante</div><div class="val">2 243</div><div class="sub">28.º de 100 · mediana 1 700</div></div><div class="kpi"><div class="lbl">Instalações / 1 000 hab.</div><div class="val">97,7</div><div class="sub">46.º de 100 · telhados de 30 kW ou menos: 92,4 / 1 000</div></div><div class="kpi"><div class="lbl">Acréscimos desde o T1 2025</div><div class="val">+1 515 kW</div><div class="sub">50.º de 100 · +38 %</div></div><div class="kpi"><div class="lbl">Desde 14 de setembro de 2026</div><div class="val">+9 inst.</div><div class="sub">+0,1 MW · acompanhamento semanal</div></div></div><p class="simlink"><a href="/pt/simulador/?canton=Diekirch">O solar compensa no seu telhado em Feulen? <span>Simulador <span aria-hidden="true">→</span></span></a></p><p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Quer isto para o seu município? Vamos falar (em francês) <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Dimensões das instalações</h2></div><p class="lede">Em Feulen, <strong>95 % das instalações têm 30 kW ou menos</strong> (sobretudo telhados), para <strong>56 % da potência</strong>.</p><figure class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> parte das instalações</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> parte da potência</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:7.95%"><i>8 % · 19 inst. <em>(+1)</em></i></div><div class="b cap" style="width:1.45%"><i>1 % · 79 kW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:31.38%"><i>31 % · 75 inst. <em>(+2)</em></i></div><div class="b cap" style="width:11.39%"><i>11 % · 625 kW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:25.10%"><i>25 % · 60 inst. <em>(+2)</em></i></div><div class="b cap" style="width:13.68%"><i>14 % · 751 kW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:30.13%"><i>30 % · 72 inst. <em>(+4)</em></i></div><div class="b cap" style="width:29.86%"><i>30 % · 1,6 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:1.67%"><i>2 % · 4 inst.</i></div><div class="b cap" style="width:5.24%"><i>5 % · 288 kW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:3.77%"><i>4 % · 9 inst.</i></div><div class="b cap" style="width:38.39%"><i>38 % · 2,1 MW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 inst.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">Entre parênteses: variação líquida desde 14 de setembro de 2026.</p><figcaption><b>Figura 1.</b> Parte das instalações e parte da potência por classe de potência, em Feulen.</figcaption><p class="src">Fonte: Leneda (data.public.lu), ficheiro semanal por instalação de 9 de novembro de 2026; tratamento: Sitraka Forler.</p></figure></section><section id="aides"><div class="sec-head"><h2>Segundo os escalões das ajudas aos municípios</h2></div><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="kb-cap"><table class="mini booktabs"><caption id="kb-cap"><span class="capin"><b>Tabela 1.</b> Instalações em Feulen segundo os escalões do Klimabonus Gemengen, e ajuda prevista para uma central municipal.</span></caption><thead><tr><th scope="col">Escalão</th><th scope="col">Ajuda para uma central municipal</th><th scope="col">Instalações</th><th scope="col">Potência</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td class="aid">sem ajuda municipal (Klimabonus dos particulares: só habitações)</td><td>226</td><td>3,1 MW</td></tr><tr><th scope="row">30–200 kW</th><td class="aid">50 % (máx. 675 €/kWp)</td><td>9</td><td>1,2 MW</td></tr><tr><th scope="row">200–500 kW</th><td class="aid">45 % (505 €/kWp)</td><td>4</td><td>1,2 MW</td></tr><tr><th scope="row">0,5–5 MW</th><td class="aid">40 % (425 €/kWp)</td><td>0</td><td>0,0 MW</td></tr></tbody></table></div><p class="kbnote2">Tabela de 2025 do Klimabonus Gemengen (guia prático, revisto todos os anos); uma cobertura de parque de estacionamento recebe 45 % (990 €/kWp). Os dados da Leneda não dizem se uma instalação pertence ao município ou a um particular.</p><p class="src">Fontes: Leneda (data.public.lu), ficheiro por instalação de 9 de novembro de 2026; guia prático do Klimabonus Gemengen, tabela de 2025; tratamento: Sitraka Forler.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Comparação</h2></div><p class="lede">Ordenados por W por habitante. «Acréscimos»: potência acrescentada desde o levantamento do T1 2025.</p><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-2"><table class="cmp booktabs in-canton"><caption id="cmp-2"><span class="capin"><b>Tabela 2.</b> Municípios do cantão de Diekirch</span></caption><thead><tr><th scope="col" class="rk">N.º</th><th scope="col">Município</th><th scope="col" class="wpc">W/hab.</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Acréscimos (kW)</th><th scope="col" class="col-canton">Cantão</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/pt/municipio/erpeldange-sur-sure/">Erpeldange-sur-Sûre</a></th><td class="wpc">2 295</td><td>6,4</td><td>227</td><td>81,8</td><td>+1 229</td><td class="col-canton">Diekirch</td></tr><tr class="me"><td class="rk">2</td><th scope="row"><a href="/pt/municipio/feulen/">Feulen</a></th><td class="wpc">2 243</td><td>5,5</td><td>239</td><td>97,7</td><td>+1 515</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">3</td><th scope="row"><a href="/pt/municipio/mertzig/">Mertzig</a></th><td class="wpc">2 029</td><td>4,9</td><td>263</td><td>108,6</td><td>+1 039</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">4</td><th scope="row"><a href="/pt/municipio/vallee-de-l-ernz/">Vallée de l&#x27;Ernz</a></th><td class="wpc">1 910</td><td>5,6</td><td>291</td><td>99,0</td><td>+1 403</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/pt/municipio/bourscheid/">Bourscheid</a></th><td class="wpc">1 576</td><td>2,8</td><td>182</td><td>101,4</td><td>+1 137</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">6</td><th scope="row"><a href="/pt/municipio/bettendorf/">Bettendorf</a></th><td class="wpc">1 264</td><td>3,9</td><td>208</td><td>67,7</td><td>+754</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">7</td><th scope="row"><a href="/pt/municipio/reisdorf/">Reisdorf</a></th><td class="wpc">967</td><td>1,4</td><td>87</td><td>59,5</td><td>+449</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">8</td><th scope="row"><a href="/pt/municipio/schieren/">Schieren</a></th><td class="wpc">899</td><td>2,0</td><td>158</td><td>70,6</td><td>+802</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">9</td><th scope="row"><a href="/pt/municipio/diekirch/">Diekirch</a></th><td class="wpc">565</td><td>4,2</td><td>158</td><td>21,3</td><td>+1 076</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">10</td><th scope="row"><a href="/pt/municipio/ettelbruck/">Ettelbruck</a></th><td class="wpc">509</td><td>5,1</td><td>306</td><td>30,3</td><td>+1 577</td><td class="col-canton">Diekirch</td></tr></tbody></table></div><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-3"><table class="cmp booktabs similar"><caption id="cmp-3"><span class="capin"><b>Tabela 3.</b> Municípios de dimensão comparável</span></caption><thead><tr><th scope="col" class="rk">N.º</th><th scope="col">Município</th><th scope="col" class="wpc">W/hab.</th><th scope="col">PV (MW)</th><th scope="col">Inst.</th><th scope="col">Inst./1 000 hab.</th><th scope="col">Acréscimos (kW)</th><th scope="col" class="col-canton">Cantão</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/pt/municipio/tandel/">Tandel</a></th><td class="wpc">5 561</td><td>13,2</td><td>276</td><td>116,0</td><td>+7 454</td><td class="col-canton">Vianden</td></tr><tr><td class="rk">2</td><th scope="row"><a href="/pt/municipio/groussbus-wal/">Groussbus-Wal</a></th><td class="wpc">3 065</td><td>7,3</td><td>339</td><td>142,7</td><td>+1 317</td><td class="col-canton">Redange</td></tr><tr><td class="rk">3</td><th scope="row"><a href="/pt/municipio/lac-de-la-haute-sure/">Lac de la Haute-Sûre</a></th><td class="wpc">2 805</td><td>6,7</td><td>293</td><td>122,0</td><td>+1 234</td><td class="col-canton">Wiltz</td></tr><tr class="me"><td class="rk">4</td><th scope="row"><a href="/pt/municipio/feulen/">Feulen</a></th><td class="wpc">2 243</td><td>5,5</td><td>239</td><td>97,7</td><td>+1 515</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/pt/municipio/mertzig/">Mertzig</a></th><td class="wpc">2 029</td><td>4,9</td><td>263</td><td>108,6</td><td>+1 039</td><td class="col-canton">Diekirch</td></tr><tr><td class="rk">6</td><th scope="row"><a href="/pt/municipio/weiler-la-tour/">Weiler-la-Tour</a></th><td class="wpc">1 298</td><td>3,3</td><td>275</td><td>109,3</td><td>+923</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">7</td><th scope="row"><a href="/pt/municipio/dalheim/">Dalheim</a></th><td class="wpc">1 028</td><td>2,5</td><td>190</td><td>79,6</td><td>+649</td><td class="col-canton">Remich</td></tr></tbody></table></div><p class="src">Fontes: Leneda (data.public.lu), levantamento de 9 de novembro de 2026; população RNPP em 1 de outubro de 2026; tratamento: Sitraka Forler.</p></section><section id="grandes-installations"><div class="sec-head"><h2>Grandes instalações: linhas surgidas</h2><span class="sec-note">acima de 100 kW, de um levantamento arquivado para o seguinte</span></div><p class="lede">Em Feulen, o ficheiro da Leneda por instalação conta <strong>11 instalações acima de 100 kW</strong> no levantamento de 9 de novembro de 2026, todas as tecnologias (10 em 14 de setembro de 2026).</p><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h"><table class="bigtab booktabs"><caption id="bigtab-h"><span class="capin"><b>Tabela 4.</b> Linhas acima de 100 kW surgidas ou desaparecidas entre dois levantamentos arquivados.</span></caption><thead><tr><th scope="col">Levantamento</th><th scope="col">Movimento</th><th scope="col">Tecnologia</th><th scope="col">Potência (kW)</th></tr></thead><tbody><tr><td>26 de outubro de 2026</td><td>surgida</td><td>Eólica</td><td>3 200</td></tr></tbody></table></div><details class="note"><summary>Método: de onde vêm estes números?</summary><p class="kbnote2"><strong>Método.</strong> A Leneda publica todas as semanas um ficheiro com uma linha por instalação: município, tecnologia e potência instalada, sem identificador, sem data de entrada em serviço e sem operador. Substitui esse ficheiro sem guardar histórico; o lux-solaire arquiva uma cópia em cada levantamento. Sem identificador, não é possível seguir uma instalação de um levantamento para o outro: comparam-se, município a município e tecnologia a tecnologia, as linhas acima de 100 kW (100 kW exatamente excluídos) de duas cópias consecutivas. Uma linha surgida pode ser uma instalação nova, mas também uma instalação ampliada para lá de 100 kW, um valor corrigido ou uma linha atribuída a outro município; o ficheiro não permite decidir. Cópias comparadas: 14 de setembro de 2026, 26 de outubro de 2026 (42 dias depois da anterior), 2 de novembro de 2026, 9 de novembro de 2026.</p></details><p class="kbnote2"><a href="/pt/#grandes-installations">Lista nacional</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Linhas surgidas e desaparecidas (CSV)</a></p></div></section><section id="liens"><div class="sec-head"><h2>Saber mais</h2></div><div class="links"><a href="/pt/?commune=feulen#paradoxe">Gráfico interativo do município</a><a href="/pt/simulador/?canton=Diekirch">Simulador: o solar compensa no seu telhado?</a><a href="/pt/para-os-municipios/">Para os municípios: o que esta página mostra</a><a href="/data/csv/solaire_communes_tailles.csv">Dimensões das instalações, 100 municípios (CSV)</a></div><nav class="pn" aria-label="Todos os municípios"><a href="/pt/municipio/ettelbruck/">← Município anterior: Ettelbruck</a><a href="/pt/municipio/fischbach/">Município seguinte: Fischbach →</a></nav></section>
 </main>
 <footer class="colophon" aria-labelledby="colophon-h"><h2 id="colophon-h">Colofão</h2><div class="co-a"><p>Dados: conjunto de dados sobre a produção de energia elétrica no Luxemburgo, publicado pela Leneda no portal data.public.lu (CC0), levantamento de 9 de novembro de 2026; população: RNPP (CC0). Números de potência ligada à rede (kW), não de energia produzida. Dados derivados sob a licença CC BY 4.0.</p><p>Fontes: <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/">Leneda (data.public.lu)</a> · <a href="https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-population-par-commune-population-per-municipality/">RNPP</a> (população de Feulen: 2 447 habitantes em 1 de outubro de 2026) · <a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf">Klimabonus Gemengen</a></p><p>Medição de audiência sem cookies: Cloudflare Web Analytics e contadores de cliques anónimos (nenhum endereço IP nem identificador registado).</p></div><!--COLOPHON_COMMON-->
 <div class="co-b">

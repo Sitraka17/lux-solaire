@@ -1,5 +1,30 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
+## Lot 2 du cahier des charges UX/UI : tableau de bord, pages communales, « Pour les communes » (9/11/2026)
+
+- **Tableau de bord** : Figures 1 à 7 (`<figure class="card">`, `<figcaption><b>Figure n.</b> constat. <span class="u">ancien
+  sous-titre mono</span>`) et Tableaux 1 à 6 (`<caption>`, y compris les tableaux « Données du graphique » et la
+  liste des grandes installations, numéro passé par `grandes.dashboard_section(caption=)`). Sous chaque figure :
+  `<p class="src">` (source datée, traitement) + lien « Données de la figure n (CSV, x ko) », marqueur
+  `<!--DL:<slug>:<F|T>:<n>-->` remplacé par `build.dl_links` (taille lue sur data/csv, libellés `DL_LABEL`).
+  « Votre commune » dans l'en-tête (`form.pick`, options `<!--PRE_PICK-->`, navigation à l'envoi, sans JS : #communes).
+  KPI sur 2 colonnes sous 768 px. Section « rythme » : figure pleine largeur puis les deux encadrés côte à côte.
+  Méthode : 1er paragraphe visible, la suite dans `<details>`. Préfixes traduits par les clés `<b>Figure ` et
+  `<b>Tableau ` des dictionnaires.
+- **Pages communales** : Figure 1 (tailles), Tableau 1 (tranches Klimabonus Gemengen, aide en 2e colonne),
+  Tableaux 2 et 3 (comparaisons : N°, Commune collante, W/hab., …, Canton en dernier et masqué sous 520 px dans
+  le tableau du canton), puis Tableau 4 (grandes installations, présent sur 17 communes seulement : section
+  DÉPLACÉE après la comparaison pour que les numéros 1 à 3 soient identiques sur les 500 pages). Lien
+  « Est-ce rentable sur votre toit à X ? » sous les KPI. Note de méthode des grandes installations repliée
+  (`grandes.M_SUM`). Liens de note en `--amber-text`. Impression A4 (`.commune-page`, 2 pages). Variable
+  `--accent` (marque blanche) pour filets et soulignements. Textes : `L2`, `FIG_LABEL`, `TAB_LABEL` (communes.py).
+- **« Pour les communes »** = page d'offre : 1. Démonstration (Figure 1 = KPI réels de Differdange, même fragment
+  que sa page ; Figure 2 = simulateur préréglé sur le canton), 2. Tableau 1 des composantes (page communale,
+  simulateur aux couleurs de la commune, bilan énergétique du patrimoine communal), 3. Méthode et confiance,
+  4. Contact (bouton `?from=solaire-communes`, en tête et ici seulement), 5. index en grille. Textes `FOR2`.
+  `check_offer` fait échouer le build sur « € », prix, tarif, devis, audit, « conseiller en énergie » (5 langues).
+- Tests : `tests/test_lot2.py`. Mesures navigateur : scratchpad de la session, `pw/lot2/accept.mjs`.
+
 ## Ossature commune, lot 1 du cahier des charges UX/UI (9/11/2026)
 
 Une seule source pour le haut et le bas de TOUS les types de pages (tableau de bord, simulateur,

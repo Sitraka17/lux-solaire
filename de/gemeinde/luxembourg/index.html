@@ -226,7 +226,6 @@
   main:focus{outline:none}
   @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
     /* nom sur sa propre ligne, puis barre + valeur (la valeur en max-content
        écrasait la colonne du nom à 0 px) */
@@ -367,37 +366,190 @@
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 
+  /* ==== LOT 2 : corps du tableau de bord (figures numérotées, légendes, sources) ==== */
+  figure{margin:0}
+  .grid-2{align-items:start}
+  figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption+.src{margin-top:2px}
+  .src{margin-bottom:0}
+  .src a,.dl a{color:var(--amber-text)}
+  .card.refs .src{margin-top:-6px}
+  .refs2{margin-top:20px}
+  .refs2 .card.refs p:last-child{margin-bottom:0}
+  .sec-head h3.h2like+.u{display:block}
+  /* légende de tableau dans un conteneur défilant : reste lisible au bord gauche */
+  .tblwrap caption,.tblscroll caption{padding:10px 12px 8px}
+  .tblwrap caption .capin,.tblscroll caption .capin{display:block;position:sticky;left:12px;max-width:min(100%,calc(100vw - 64px))}
+  table.mini caption{font-family:var(--body);font-variant-numeric:normal}
+  a.dl{white-space:nowrap}
+  .tblwrap.tblscroll{background-color:var(--card)}
+  /* conteneur défilant posé sur le papier (pas dans une carte) : caches de bord couleur papier */
+  .tblscroll.on-paper{background:linear-gradient(to right,var(--paper) 30%,transparent) left/24px 100% no-repeat local,
+    linear-gradient(to left,var(--paper) 30%,transparent) right/24px 100% no-repeat local,
+    linear-gradient(to right,rgba(29,39,52,.12),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,rgba(29,39,52,.12),transparent) right/10px 100% no-repeat scroll}
+  .tblscroll:not(.tblwrap) caption{padding:0 0 8px}
+  .tblscroll:not(.tblwrap) caption .capin{left:0}
+  @media(max-width:767px){
+    .tblscroll caption .capin{max-width:calc(100vw - 32px)}
+    .card .tblscroll caption .capin,.tblwrap caption .capin{max-width:calc(100vw - 84px)}
+  }
+  .tblscroll.on-paper caption{padding-left:0;padding-right:0}
+  .tblscroll.on-paper caption .capin{left:0}
+  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  table.cantons{min-width:0}
+  table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
+  table.cantons tbody td{padding:5px 8px}
+  /* « Votre commune » dans l'en-tête */
+  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+  .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+  .pick label{font:600 13.5px var(--body);color:var(--ink)}
+  .pick select{font:inherit;font-size:14px;min-height:36px;padding:6px 8px;border:1px solid var(--ink-3);border-radius:2px;background:var(--card);color:var(--ink);max-width:100%}
+  .pick button{font:600 13.5px var(--body);min-height:36px;padding:6px 12px;border:1px solid var(--ink);border-radius:2px;background:var(--card);color:var(--ink);cursor:pointer}
+  .pick button:hover{border-color:var(--amber-text);color:var(--amber-text)}
+  /* méthode : premier paragraphe visible, la suite repliée */
+  .method details{margin-top:4px}
+  .method summary{font:600 14px var(--body);color:var(--amber-text)}
+  @media(max-width:767px){
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi.hero,.kpi:last-child{grid-column:1/-1}
+    .kpi{padding:13px 14px 12px}
+    .kpi .val{font-size:26px;margin-top:4px}
+    .kpi .sub{font-size:12px;line-height:1.4}
+    .pick{width:100%}
+    .pick select{flex:1 1 180px}
+  }
+  @media print{.pick,.dl{display:none}}
 
   .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}
   table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
   table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  table.cmp th:first-child,table.cmp td:first-child,table.cmp th:nth-child(2),table.cmp td:nth-child(2){text-align:left}
+  table.cmp th:nth-child(2),table.cmp td:nth-child(2),table.cmp .col-canton{text-align:left}
   table.cmp thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:none;position:static;cursor:default}
   table.cmp tr.me td{background:var(--amber-soft);font-weight:600}
   table.cmp a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
   table.cmp a:hover{color:var(--amber-text);border-color:var(--amber)}
   .tw{overflow-x:auto}
+  /* lot 2 : tableaux de comparaison (rang, commune collante, W/hab. en 2e colonne de données) */
+  table.cmp tbody th{text-align:left;font-weight:500;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.cmp tr.me th{background:var(--amber-soft);font-weight:650}
+  table.cmp .rk{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right;width:28px;min-width:28px;padding-left:4px;padding-right:8px}
+  table.cmp .rk,table.cmp tbody th,table.cmp thead th:nth-child(2){position:sticky;background:var(--paper);z-index:1}
+  table.cmp .rk{left:0}
+  table.cmp tbody th,table.cmp thead th:nth-child(2){left:40px;text-align:left}
+  @media(max-width:767px){table.cmp tbody th,table.cmp thead th:nth-child(2){box-shadow:inset -1px 0 0 var(--line)}}
+  table.cmp tr.me .rk,table.cmp tr.me th{background:var(--amber-soft)}
+  table.cmp th.wpc,table.cmp td.wpc{font-weight:650;color:var(--ink)}
+  @media(max-width:519px){table.cmp.in-canton .col-canton{display:none}}
+  .simlink{margin:14px 0 0;font:600 14.5px var(--body)}
+  .simlink a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
+  .simlink a:hover{color:var(--amber-text)}
+  .simlink span{color:var(--amber-text);white-space:nowrap}
+  #comparaison .tblscroll+.tblscroll{margin-top:22px}
+  #comparaison caption{font-size:14px;color:var(--ink)}
+  details.note{margin-top:12px;font-size:13px}
+  details.note summary{font:600 13px var(--body);color:var(--amber-text)}
+  details.note .kbnote2{margin-top:4px}
+  /* marque blanche (L2.16) : UNE variable d'accent pour les filets et les soulignements ; le texte garde --amber-text (AA) */
+  :root{--accent:var(--amber)}
+  .eyebrow::before{background:var(--accent)}
+  .links a,.contact-cta a{border-left-color:var(--accent)}
+  .links a:hover,table.cmp a:hover,table.bigtab a:hover{border-color:var(--accent)}
+  .masthead{border-top-color:var(--accent)}
+  .crumbs a:hover,.series a:hover{text-decoration-color:var(--accent)}
+  /* page « Pour les communes » (page d'offre) */
+  .offer section{margin-top:48px}
+  .offer h2{margin:0 0 14px}
+  .demo-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px 28px;align-items:start}
+  .demo{border:1px solid var(--line);border-top:3px solid var(--accent);background:var(--card);padding:16px 18px 18px}
+  .demo-h{margin:0;font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .demo-name{margin:4px 0 12px;font:700 22px/1.2 var(--display)}
+  .demo-name .sun{color:var(--amber-h1)}
+  .demo .kpis{margin-top:0}
+  .demo .kpi{padding:14px 14px 12px}
+  .demo .kpi .val{font-size:26px}
+  .demo-open{margin:12px 0 0;font:600 14px var(--body)}
+  .demo-open a,.offer .prose a,.trust a{color:var(--amber-text)}
+  .tools{list-style:none;margin:6px 0 12px;padding:0;counter-reset:t}
+  .tools li{counter-increment:t;display:grid;grid-template-columns:22px 1fr;padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+  .tools li::before{content:counter(t) ".";font:600 12px/1.6 var(--mono);color:var(--ink-3)}
+  .tools b{color:var(--ink);font-weight:650}
+  .demo p.lead{margin:0;font-size:14px;color:var(--ink)}
+  table.offer-t{width:100%;font-size:14px}
+  table.offer-t th,table.offer-t td{padding:9px 12px 9px 0;text-align:left;vertical-align:top;white-space:normal;border-bottom:1px solid var(--line)}
+  table.offer-t thead th{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);background:none;position:static;cursor:default;border-bottom:1px solid var(--ink)}
+  table.offer-t tbody th{font-weight:650;width:24%}
+  table.offer-t td{font-family:var(--body);font-size:14px;color:var(--ink)}
+  table.offer-t td:nth-child(3){color:var(--ink-2);font-size:13px}
+  table.offer-t td:last-child{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);width:15%}
+  table.offer-t tbody tr:last-child th,table.offer-t tbody tr:last-child td{border-bottom:0}
+  .cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 28px;margin-top:24px}
+  .cols3 p{margin:0;padding-top:10px;border-top:1px solid var(--ink);font-size:14.5px;color:var(--ink)}
+  .trust{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px 40px;align-items:start}
+  .trust ul{margin:0;padding-left:18px;font-size:15px}
+  .trust li{margin:0 0 8px}
+  .trust h3{margin:0 0 6px;font:600 16px var(--display)}
+  .trust p{margin:0;font-size:15px}
+  .offer-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 28px;align-items:center;padding:16px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .offer-cta p{margin:0}
+  .offer-cta .q{font:600 17px var(--display)}
+  .offer-cta .alt{font-size:13.5px;color:var(--ink-2)}
+  .offer-cta .alt a{color:var(--amber-text)}
+  .offer-cta .cta-row{margin:0;grid-column:2;grid-row:1/3}
+  @media(max-width:767px){
+    .demo-grid,.cols3,.trust{grid-template-columns:minmax(0,1fr)}
+    .offer-cta{grid-template-columns:minmax(0,1fr)}
+    .offer-cta .cta-row{grid-column:1;grid-row:auto}
+    table.offer-t thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    table.offer-t tr{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
+    table.offer-t tbody tr:last-child{border-bottom:0}
+    table.offer-t tbody th,table.offer-t td{display:block;width:auto!important;border:0;padding:2px 0}
+    table.offer-t tbody th{font-size:15px;padding-bottom:4px}
+    table.offer-t td::before{content:attr(data-l) " ";font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  }
+  @media print{
+    @page{size:A4;margin:14mm}
+    .commune-page .simlink,.commune-page .contact-cta,.commune-page .pn,.commune-page #liens,.commune-page #aides,
+    .commune-page #grandes-installations,.commune-page .crumbs,.commune-page .co-b,.commune-page .co-series,
+    .commune-page details.note{display:none}
+    .commune-page table,.commune-page figure,.commune-page .kpis,.commune-page .tblscroll{break-inside:avoid}
+    .commune-page .tblscroll{overflow:visible}
+    .commune-page{zoom:.68;padding:0}
+    .commune-page section{margin-top:14px}
+    .commune-page,.commune-page *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .commune-page .kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+    .commune-page .kpi.hero,.commune-page .kpi:last-child{grid-column:auto!important}
+    .commune-page h1{font-size:30px}
+    .commune-page .sec-head,.commune-page .lede{break-after:avoid}
+    .commune-page #comparaison{break-before:page}
+    .commune-page .colophon{margin-top:16px}
+  }
   .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
   .links a{display:block;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}
   .links a:hover{border-color:var(--amber)}
   .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;font-size:14px}
   .pn a{color:var(--amber-text)}
   #aides table.mini td{text-align:right}
-  #aides table.mini td:last-child{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini td.aid{text-align:left;font-family:var(--body);white-space:normal;min-width:150px}
+  #aides table.mini{width:100%}
   #aides table.mini th{white-space:nowrap}
+  @media(max-width:767px){#aides table.mini thead th{white-space:normal;vertical-align:bottom}}
   .prose a{color:var(--amber-text)}
   .clist div{break-inside:avoid}
   .kbnote2{font-size:13px;color:var(--ink-2);margin:10px 0 0;max-width:90ch}
+  .kbnote2 a,.prose a{color:var(--amber-text)}
   .prose p{font-size:15.5px;max-width:70ch;color:var(--ink)}
   .contact-cta+.prose{margin-top:28px}
-  .clist{columns:4 190px;column-gap:24px;font-size:14px;margin-top:10px}
-  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:12px 0 4px;break-after:avoid}
-  .clist a{display:block;color:var(--ink);text-decoration:none;padding:2px 0}.clist a:hover{color:var(--amber-text)}
+  .clist{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 24px;font-size:14px;margin-top:10px}
+  .clist h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 4px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+  .clist a{display:flex;align-items:center;min-height:28px;color:var(--ink);text-decoration:none;padding:0}.clist a:hover{color:var(--amber-text);text-decoration:underline;text-decoration-color:var(--accent)}
+  @media(max-width:767px){.clist{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:850px){.kpis.k6{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis.k6{grid-template-columns:1fr}}
 </style>
 <a class="skip" href="#contenu">Zum Inhalt springen</a>
-<div class="wrap">
+<div class="wrap commune-page">
 <!--MASTHEAD-->
 <div class="masthead">
   <div class="mh-row">
@@ -412,7 +564,7 @@
 </div>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
-<header><nav class="crumbs" aria-label="Brotkrümelnavigation"><ol><li><a href="/de/">Photovoltaik in Luxemburg</a></li><li><a href="/de/fuer-gemeinden/">Alle Gemeinden</a></li><li aria-current="page">Luxembourg</li></ol></nav><div class="eyebrow">Gemeinde · Kanton Luxembourg</div><h1>Photovoltaik in <span class="sun">Luxembourg</span></h1><p class="standfirst"><strong>27,5 MW</strong> Photovoltaik angeschlossen (Stand 9. November 2026) auf <strong>2 040 Anlagen</strong>, also 198 W pro Einwohner (Median der Gemeinden: 1 700 W). Seit der Erhebung 2025 Q1: <strong>+12 593 kW</strong> (+85 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">PV-Leistung</div><div class="val">27,5 MW</div><div class="sub">2 040 Anlagen</div></div><div class="kpi"><div class="lbl">PV-Anteil</div><div class="val">46,1 %</div><div class="sub">der dezentralen Leistung (59,7 MW alle Technologien)</div></div><div class="kpi"><div class="lbl">W pro Einwohner</div><div class="val">198</div><div class="sub">Platz 100 von 100 · Median 1 700</div></div><div class="kpi"><div class="lbl">Anlagen / 1 000 Einw.</div><div class="val">14,7</div><div class="sub">Platz 99 von 100 · Dächer bis 30 kW: 14,3 / 1 000</div></div><div class="kpi"><div class="lbl">Zubau seit 2025 Q1</div><div class="val">+12 593 kW</div><div class="sub">Platz 1 von 100 · +85 %</div></div><div class="kpi"><div class="lbl">Seit dem 14. September 2026</div><div class="val">+69 Anl.</div><div class="sub">+1,2 MW · wöchentlich verfolgt</div></div></div><p class="contact-cta"><a href="https://sitraka.lu/de/contact/?from=solaire">Wollen Sie das für Ihre Gemeinde? Sprechen wir <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Anlagengrößen</h2></div><p class="lede">In Luxembourg haben <strong>98 % der Anlagen 30 kW oder weniger</strong> (meist Dächer), mit <strong>71 % der Leistung</strong>.</p><div class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> Anteil der Anlagen</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> Anteil der Leistung</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:14.36%"><i>14 % · 293 Anl. <em>(+7)</em></i></div><div class="b cap" style="width:4.24%"><i>4 % · 1,2 MW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:50.93%"><i>51 % · 1 039 Anl. <em>(+34)</em></i></div><div class="b cap" style="width:28.57%"><i>29 % · 7,9 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:20.54%"><i>21 % · 419 Anl. <em>(+15)</em></i></div><div class="b cap" style="width:18.15%"><i>18 % · 5,0 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:11.72%"><i>12 % · 239 Anl. <em>(+10)</em></i></div><div class="b cap" style="width:20.30%"><i>20 % · 5,6 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:1.03%"><i>1 % · 21 Anl. <em>(+2)</em></i></div><div class="b cap" style="width:4.65%"><i>5 % · 1,3 MW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:1.32%"><i>1 % · 27 Anl. <em>(+1)</em></i></div><div class="b cap" style="width:19.89%"><i>20 % · 5,5 MW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,1 % · 2 Anl.</i></div><div class="b cap" style="width:4.19%"><i>4 % · 1,2 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 Anl.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">In Klammern: Nettoveränderung seit dem 14. September 2026.</p></div></section><section id="grandes-installations"><div class="sec-head"><h2>Großanlagen: hinzugekommene Zeilen</h2><span class="sec-note">über 100 kW, von einer archivierten Erhebung zur nächsten</span></div><p class="lede">In Luxembourg verzeichnet die Leneda-Datei je Anlage <strong>44 Anlagen über 100 kW</strong> (Erhebung vom 9. November 2026), alle Technologien (43 am 14. September 2026).</p><div class="card"><p class="bigh2" id="bigtab-h">Zeilen über 100 kW, die zwischen zwei archivierten Erhebungen hinzugekommen oder weggefallen sind:</p><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h"><table class="bigtab"><thead><tr><th scope="col">Erhebung</th><th scope="col">Änderung</th><th scope="col">Technologie</th><th scope="col">Leistung (kW)</th></tr></thead><tbody><tr><td>26. Oktober 2026</td><td>hinzugekommen</td><td>Photovoltaik</td><td>324,9</td></tr></tbody></table></div><p class="kbnote2"><strong>Methode.</strong> Leneda veröffentlicht jede Woche eine Datei mit einer Zeile je Anlage: Gemeinde, Technologie und installierte Leistung, ohne Kennung, ohne Datum der Inbetriebnahme und ohne Betreiber. Die Datei wird ersetzt, ohne Verlauf; lux-solaire archiviert bei jeder Erhebung eine Kopie. Ohne Kennung lässt sich eine Anlage nicht von einer Erhebung zur nächsten verfolgen: Verglichen werden, Gemeinde für Gemeinde und Technologie für Technologie, die Zeilen über 100 kW (genau 100 kW ausgenommen) zweier aufeinander folgender Kopien. Eine hinzugekommene Zeile kann eine neue Anlage sein, aber auch eine über 100 kW hinaus erweiterte Anlage, ein korrigierter Wert oder eine Zeile, die einer anderen Gemeinde zugeordnet wurde; die Datei lässt das offen. Verglichene Kopien: 14. September 2026, 26. Oktober 2026 (42 Tage nach der vorigen), 2. November 2026, 9. November 2026.</p><p class="kbnote2"><a href="/de/#grandes-installations">Landesweite Liste</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Hinzugekommene und weggefallene Zeilen (CSV)</a></p></div></section><section id="aides"><div class="sec-head"><h2>Nach Stufen der Gemeindeförderung</h2></div><div class="card"><div class="tw"><table class="mini"><thead><tr><th scope="col">Stufe</th><th scope="col">Anlagen</th><th scope="col">Leistung</th><th scope="col">Förderung für eine Gemeindeanlage</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td>1 990</td><td>19,6 MW</td><td>keine Gemeindeförderung (Klimabonus für Privathaushalte: nur Wohnungen)</td></tr><tr><th scope="row">30–200 kW</th><td>40</td><td>4,3 MW</td><td>50 % (max. 675 €/kWp)</td></tr><tr><th scope="row">200–500 kW</th><td>8</td><td>2,4 MW</td><td>45 % (505 €/kWp)</td></tr><tr><th scope="row">0,5–5 MW</th><td>2</td><td>1,2 MW</td><td>40 % (425 €/kWp)</td></tr></tbody></table></div><p class="kbnote2">Klimabonus Gemengen, Stand 2025 (Praxisleitfaden, jährlich angepasst); eine Parkplatzüberdachung wird mit 45 % gefördert (990 €/kWp). Die Leneda-Daten sagen nicht, ob eine Anlage der Gemeinde oder Privatleuten gehört.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Vergleich</h2></div><p class="lede">Sortiert nach W pro Einwohner. „Zubau“: seit der Erhebung 2025 Q1 hinzugekommene Leistung.</p><h3 class="refs" style="font-size:15px;margin:18px 0 6px">Gemeinden im Kanton Luxembourg</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Gemeinde</th><th scope="col">Kanton</th><th scope="col">PV (MW)</th><th scope="col">Anl.</th><th scope="col">W/Einw.</th><th scope="col">Anl./1 000 Einw.</th><th scope="col">Zubau (kW)</th></tr></thead><tbody><tr><td><a href="/de/gemeinde/contern/">Contern</a></td><td>Luxembourg</td><td>17,3</td><td>484</td><td>3 410</td><td>95,2</td><td>+5 101</td></tr><tr><td><a href="/de/gemeinde/schuttrange/">Schuttrange</a></td><td>Luxembourg</td><td>8,7</td><td>491</td><td>1 944</td><td>110,3</td><td>+3 031</td></tr><tr><td><a href="/de/gemeinde/niederanven/">Niederanven</a></td><td>Luxembourg</td><td>13,4</td><td>874</td><td>1 876</td><td>122,4</td><td>+4 659</td></tr><tr><td><a href="/de/gemeinde/weiler-la-tour/">Weiler-la-Tour</a></td><td>Luxembourg</td><td>3,3</td><td>275</td><td>1 298</td><td>109,3</td><td>+923</td></tr><tr><td><a href="/de/gemeinde/steinsel/">Steinsel</a></td><td>Luxembourg</td><td>7,7</td><td>501</td><td>1 214</td><td>78,9</td><td>+1 837</td></tr><tr><td><a href="/de/gemeinde/sandweiler/">Sandweiler</a></td><td>Luxembourg</td><td>3,5</td><td>300</td><td>909</td><td>77,6</td><td>+1 262</td></tr><tr><td><a href="/de/gemeinde/bertrange/">Bertrange</a></td><td>Luxembourg</td><td>8,9</td><td>487</td><td>903</td><td>49,5</td><td>+2 859</td></tr><tr><td><a href="/de/gemeinde/hesperange/">Hesperange</a></td><td>Luxembourg</td><td>10,3</td><td>688</td><td>594</td><td>39,6</td><td>+3 466</td></tr><tr><td><a href="/de/gemeinde/walferdange/">Walferdange</a></td><td>Luxembourg</td><td>5,2</td><td>412</td><td>557</td><td>43,8</td><td>+2 131</td></tr><tr><td><a href="/de/gemeinde/strassen/">Strassen</a></td><td>Luxembourg</td><td>5,2</td><td>391</td><td>464</td><td>35,2</td><td>+2 486</td></tr><tr class="me"><td><a href="/de/gemeinde/luxembourg/">Luxembourg</a></td><td>Luxembourg</td><td>27,5</td><td>2 040</td><td>198</td><td>14,7</td><td>+12 593</td></tr></tbody></table></div><h3 class="refs" style="font-size:15px;margin:22px 0 6px">Gemeinden ähnlicher Größe</h3><div class="tw"><table class="cmp"><thead><tr><th scope="col">Gemeinde</th><th scope="col">Kanton</th><th scope="col">PV (MW)</th><th scope="col">Anl.</th><th scope="col">W/Einw.</th><th scope="col">Anl./1 000 Einw.</th><th scope="col">Zubau (kW)</th></tr></thead><tbody><tr><td><a href="/de/gemeinde/sanem/">Sanem</a></td><td>Esch</td><td>28,5</td><td>907</td><td>1 443</td><td>45,9</td><td>+5 435</td></tr><tr><td><a href="/de/gemeinde/dudelange/">Dudelange</a></td><td>Esch</td><td>24,2</td><td>967</td><td>1 078</td><td>43,1</td><td>+2 862</td></tr><tr><td><a href="/de/gemeinde/differdange/">Differdange</a></td><td>Esch</td><td>20,9</td><td>916</td><td>665</td><td>29,1</td><td>+6 792</td></tr><tr><td><a href="/de/gemeinde/hesperange/">Hesperange</a></td><td>Luxembourg</td><td>10,3</td><td>688</td><td>594</td><td>39,6</td><td>+3 466</td></tr><tr><td><a href="/de/gemeinde/petange/">Pétange</a></td><td>Esch</td><td>7,1</td><td>604</td><td>333</td><td>28,2</td><td>+3 089</td></tr><tr><td><a href="/de/gemeinde/esch-sur-alzette/">Esch-sur-Alzette</a></td><td>Esch</td><td>12,2</td><td>451</td><td>318</td><td>11,8</td><td>+4 012</td></tr><tr class="me"><td><a href="/de/gemeinde/luxembourg/">Luxembourg</a></td><td>Luxembourg</td><td>27,5</td><td>2 040</td><td>198</td><td>14,7</td><td>+12 593</td></tr></tbody></table></div></section><section><div class="sec-head"><h2>Weiter</h2></div><div class="links"><a href="/de/?commune=luxembourg#paradoxe">Interaktive Grafik der Gemeinde</a><a href="/de/rechner/?canton=Luxembourg">Rechner: lohnt sich Solar auf Ihrem Dach?</a><a href="/de/fuer-gemeinden/">Für Gemeinden: was diese Seite zeigt</a><a href="/data/csv/solaire_communes_tailles.csv">Anlagengrößen, alle 100 Gemeinden (CSV)</a></div><nav class="pn" aria-label="Alle Gemeinden"><a href="/de/gemeinde/lorentzweiler/">← Vorherige Gemeinde : Lorentzweiler</a><a href="/de/gemeinde/mamer/">Nächste Gemeinde : Mamer →</a></nav></section>
+<header><nav class="crumbs" aria-label="Brotkrümelnavigation"><ol><li><a href="/de/">Photovoltaik in Luxemburg</a></li><li><a href="/de/fuer-gemeinden/">Alle Gemeinden</a></li><li aria-current="page">Luxembourg</li></ol></nav><div class="eyebrow">Gemeinde · Kanton Luxembourg</div><h1>Photovoltaik in <span class="sun">Luxembourg</span></h1><p class="standfirst"><strong>27,5 MW</strong> Photovoltaik angeschlossen (Stand 9. November 2026) auf <strong>2 040 Anlagen</strong>, also 198 W pro Einwohner (Median der Gemeinden: 1 700 W). Seit der Erhebung 2025 Q1: <strong>+12 593 kW</strong> (+85 %).</p></header><div class="kpis k6"><div class="kpi hero"><div class="lbl">PV-Leistung</div><div class="val">27,5 MW</div><div class="sub">2 040 Anlagen</div></div><div class="kpi"><div class="lbl">PV-Anteil</div><div class="val">46,1 %</div><div class="sub">der dezentralen Leistung (59,7 MW alle Technologien)</div></div><div class="kpi"><div class="lbl">W pro Einwohner</div><div class="val">198</div><div class="sub">Platz 100 von 100 · Median 1 700</div></div><div class="kpi"><div class="lbl">Anlagen / 1 000 Einw.</div><div class="val">14,7</div><div class="sub">Platz 99 von 100 · Dächer bis 30 kW: 14,3 / 1 000</div></div><div class="kpi"><div class="lbl">Zubau seit 2025 Q1</div><div class="val">+12 593 kW</div><div class="sub">Platz 1 von 100 · +85 %</div></div><div class="kpi"><div class="lbl">Seit dem 14. September 2026</div><div class="val">+69 Anl.</div><div class="sub">+1,2 MW · wöchentlich verfolgt</div></div></div><p class="simlink"><a href="/de/rechner/?canton=Luxembourg">Lohnt sich Solar auf Ihrem Dach in Luxembourg? <span>Rechner <span aria-hidden="true">→</span></span></a></p><p class="contact-cta"><a href="https://sitraka.lu/de/contact/?from=solaire">Wollen Sie das für Ihre Gemeinde? Sprechen wir <span aria-hidden="true">→</span></a></p><section id="tailles"><div class="sec-head"><h2>Anlagengrößen</h2></div><p class="lede">In Luxembourg haben <strong>98 % der Anlagen 30 kW oder weniger</strong> (meist Dächer), mit <strong>71 % der Leistung</strong>.</p><figure class="card"><div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> Anteil der Anlagen</span><span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> Anteil der Leistung</span></div><div class="pair"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:14.36%"><i>14 % · 293 Anl. <em>(+7)</em></i></div><div class="b cap" style="width:4.24%"><i>4 % · 1,2 MW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:50.93%"><i>51 % · 1 039 Anl. <em>(+34)</em></i></div><div class="b cap" style="width:28.57%"><i>29 % · 7,9 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:20.54%"><i>21 % · 419 Anl. <em>(+15)</em></i></div><div class="b cap" style="width:18.15%"><i>18 % · 5,0 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:11.72%"><i>12 % · 239 Anl. <em>(+10)</em></i></div><div class="b cap" style="width:20.30%"><i>20 % · 5,6 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:1.03%"><i>1 % · 21 Anl. <em>(+2)</em></i></div><div class="b cap" style="width:4.65%"><i>5 % · 1,3 MW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:1.32%"><i>1 % · 27 Anl. <em>(+1)</em></i></div><div class="b cap" style="width:19.89%"><i>20 % · 5,5 MW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,1 % · 2 Anl.</i></div><div class="b cap" style="width:4.19%"><i>4 % · 1,2 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.40%"><i>0,0 % · 0 Anl.</i></div><div class="b cap" style="width:0.40%"><i>0,0 % · 0,0 MW</i></div></div></div><p class="kbnote2">In Klammern: Nettoveränderung seit dem 14. September 2026.</p><figcaption><b>Abbildung 1.</b> Anteil der Anlagen und Anteil der Leistung nach Größenklasse, in Luxembourg.</figcaption><p class="src">Quelle: Leneda (data.public.lu), wöchentliche Datei je Anlage vom 9. November 2026; Auswertung: Sitraka Forler.</p></figure></section><section id="aides"><div class="sec-head"><h2>Nach Stufen der Gemeindeförderung</h2></div><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="kb-cap"><table class="mini booktabs"><caption id="kb-cap"><span class="capin"><b>Tabelle 1.</b> Anlagen in Luxembourg nach Stufen des Klimabonus Gemengen und Förderung für eine Gemeindeanlage.</span></caption><thead><tr><th scope="col">Stufe</th><th scope="col">Förderung für eine Gemeindeanlage</th><th scope="col">Anlagen</th><th scope="col">Leistung</th></tr></thead><tbody><tr><th scope="row">0–30 kW</th><td class="aid">keine Gemeindeförderung (Klimabonus für Privathaushalte: nur Wohnungen)</td><td>1 990</td><td>19,6 MW</td></tr><tr><th scope="row">30–200 kW</th><td class="aid">50 % (max. 675 €/kWp)</td><td>40</td><td>4,3 MW</td></tr><tr><th scope="row">200–500 kW</th><td class="aid">45 % (505 €/kWp)</td><td>8</td><td>2,4 MW</td></tr><tr><th scope="row">0,5–5 MW</th><td class="aid">40 % (425 €/kWp)</td><td>2</td><td>1,2 MW</td></tr></tbody></table></div><p class="kbnote2">Klimabonus Gemengen, Stand 2025 (Praxisleitfaden, jährlich angepasst); eine Parkplatzüberdachung wird mit 45 % gefördert (990 €/kWp). Die Leneda-Daten sagen nicht, ob eine Anlage der Gemeinde oder Privatleuten gehört.</p><p class="src">Quellen: Leneda (data.public.lu), Datei je Anlage vom 9. November 2026; Praxisleitfaden Klimabonus Gemengen, Stand 2025; Auswertung: Sitraka Forler.</p></div></section><section id="comparaison"><div class="sec-head"><h2>Vergleich</h2></div><p class="lede">Sortiert nach W pro Einwohner. „Zubau“: seit der Erhebung 2025 Q1 hinzugekommene Leistung.</p><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-2"><table class="cmp booktabs in-canton"><caption id="cmp-2"><span class="capin"><b>Tabelle 2.</b> Gemeinden im Kanton Luxembourg</span></caption><thead><tr><th scope="col" class="rk">Nr.</th><th scope="col">Gemeinde</th><th scope="col" class="wpc">W/Einw.</th><th scope="col">PV (MW)</th><th scope="col">Anl.</th><th scope="col">Anl./1 000 Einw.</th><th scope="col">Zubau (kW)</th><th scope="col" class="col-canton">Kanton</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/de/gemeinde/contern/">Contern</a></th><td class="wpc">3 410</td><td>17,3</td><td>484</td><td>95,2</td><td>+5 101</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">2</td><th scope="row"><a href="/de/gemeinde/schuttrange/">Schuttrange</a></th><td class="wpc">1 944</td><td>8,7</td><td>491</td><td>110,3</td><td>+3 031</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">3</td><th scope="row"><a href="/de/gemeinde/niederanven/">Niederanven</a></th><td class="wpc">1 876</td><td>13,4</td><td>874</td><td>122,4</td><td>+4 659</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">4</td><th scope="row"><a href="/de/gemeinde/weiler-la-tour/">Weiler-la-Tour</a></th><td class="wpc">1 298</td><td>3,3</td><td>275</td><td>109,3</td><td>+923</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/de/gemeinde/steinsel/">Steinsel</a></th><td class="wpc">1 214</td><td>7,7</td><td>501</td><td>78,9</td><td>+1 837</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">6</td><th scope="row"><a href="/de/gemeinde/sandweiler/">Sandweiler</a></th><td class="wpc">909</td><td>3,5</td><td>300</td><td>77,6</td><td>+1 262</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">7</td><th scope="row"><a href="/de/gemeinde/bertrange/">Bertrange</a></th><td class="wpc">903</td><td>8,9</td><td>487</td><td>49,5</td><td>+2 859</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">8</td><th scope="row"><a href="/de/gemeinde/hesperange/">Hesperange</a></th><td class="wpc">594</td><td>10,3</td><td>688</td><td>39,6</td><td>+3 466</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">9</td><th scope="row"><a href="/de/gemeinde/walferdange/">Walferdange</a></th><td class="wpc">557</td><td>5,2</td><td>412</td><td>43,8</td><td>+2 131</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">10</td><th scope="row"><a href="/de/gemeinde/strassen/">Strassen</a></th><td class="wpc">464</td><td>5,2</td><td>391</td><td>35,2</td><td>+2 486</td><td class="col-canton">Luxembourg</td></tr><tr class="me"><td class="rk">11</td><th scope="row"><a href="/de/gemeinde/luxembourg/">Luxembourg</a></th><td class="wpc">198</td><td>27,5</td><td>2 040</td><td>14,7</td><td>+12 593</td><td class="col-canton">Luxembourg</td></tr></tbody></table></div><div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="cmp-3"><table class="cmp booktabs similar"><caption id="cmp-3"><span class="capin"><b>Tabelle 3.</b> Gemeinden ähnlicher Größe</span></caption><thead><tr><th scope="col" class="rk">Nr.</th><th scope="col">Gemeinde</th><th scope="col" class="wpc">W/Einw.</th><th scope="col">PV (MW)</th><th scope="col">Anl.</th><th scope="col">Anl./1 000 Einw.</th><th scope="col">Zubau (kW)</th><th scope="col" class="col-canton">Kanton</th></tr></thead><tbody><tr><td class="rk">1</td><th scope="row"><a href="/de/gemeinde/sanem/">Sanem</a></th><td class="wpc">1 443</td><td>28,5</td><td>907</td><td>45,9</td><td>+5 435</td><td class="col-canton">Esch</td></tr><tr><td class="rk">2</td><th scope="row"><a href="/de/gemeinde/dudelange/">Dudelange</a></th><td class="wpc">1 078</td><td>24,2</td><td>967</td><td>43,1</td><td>+2 862</td><td class="col-canton">Esch</td></tr><tr><td class="rk">3</td><th scope="row"><a href="/de/gemeinde/differdange/">Differdange</a></th><td class="wpc">665</td><td>20,9</td><td>916</td><td>29,1</td><td>+6 792</td><td class="col-canton">Esch</td></tr><tr><td class="rk">4</td><th scope="row"><a href="/de/gemeinde/hesperange/">Hesperange</a></th><td class="wpc">594</td><td>10,3</td><td>688</td><td>39,6</td><td>+3 466</td><td class="col-canton">Luxembourg</td></tr><tr><td class="rk">5</td><th scope="row"><a href="/de/gemeinde/petange/">Pétange</a></th><td class="wpc">333</td><td>7,1</td><td>604</td><td>28,2</td><td>+3 089</td><td class="col-canton">Esch</td></tr><tr><td class="rk">6</td><th scope="row"><a href="/de/gemeinde/esch-sur-alzette/">Esch-sur-Alzette</a></th><td class="wpc">318</td><td>12,2</td><td>451</td><td>11,8</td><td>+4 012</td><td class="col-canton">Esch</td></tr><tr class="me"><td class="rk">7</td><th scope="row"><a href="/de/gemeinde/luxembourg/">Luxembourg</a></th><td class="wpc">198</td><td>27,5</td><td>2 040</td><td>14,7</td><td>+12 593</td><td class="col-canton">Luxembourg</td></tr></tbody></table></div><p class="src">Quellen: Leneda (data.public.lu), Erhebung vom 9. November 2026; Bevölkerung RNPP, Stand 1. Oktober 2026; Auswertung: Sitraka Forler.</p></section><section id="grandes-installations"><div class="sec-head"><h2>Großanlagen: hinzugekommene Zeilen</h2><span class="sec-note">über 100 kW, von einer archivierten Erhebung zur nächsten</span></div><p class="lede">In Luxembourg verzeichnet die Leneda-Datei je Anlage <strong>44 Anlagen über 100 kW</strong> (Erhebung vom 9. November 2026), alle Technologien (43 am 14. September 2026).</p><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h"><table class="bigtab booktabs"><caption id="bigtab-h"><span class="capin"><b>Tabelle 4.</b> Zeilen über 100 kW, die zwischen zwei archivierten Erhebungen hinzugekommen oder weggefallen sind.</span></caption><thead><tr><th scope="col">Erhebung</th><th scope="col">Änderung</th><th scope="col">Technologie</th><th scope="col">Leistung (kW)</th></tr></thead><tbody><tr><td>26. Oktober 2026</td><td>hinzugekommen</td><td>Photovoltaik</td><td>324,9</td></tr></tbody></table></div><details class="note"><summary>Methode: Woher stammen diese Zahlen?</summary><p class="kbnote2"><strong>Methode.</strong> Leneda veröffentlicht jede Woche eine Datei mit einer Zeile je Anlage: Gemeinde, Technologie und installierte Leistung, ohne Kennung, ohne Datum der Inbetriebnahme und ohne Betreiber. Die Datei wird ersetzt, ohne Verlauf; lux-solaire archiviert bei jeder Erhebung eine Kopie. Ohne Kennung lässt sich eine Anlage nicht von einer Erhebung zur nächsten verfolgen: Verglichen werden, Gemeinde für Gemeinde und Technologie für Technologie, die Zeilen über 100 kW (genau 100 kW ausgenommen) zweier aufeinander folgender Kopien. Eine hinzugekommene Zeile kann eine neue Anlage sein, aber auch eine über 100 kW hinaus erweiterte Anlage, ein korrigierter Wert oder eine Zeile, die einer anderen Gemeinde zugeordnet wurde; die Datei lässt das offen. Verglichene Kopien: 14. September 2026, 26. Oktober 2026 (42 Tage nach der vorigen), 2. November 2026, 9. November 2026.</p></details><p class="kbnote2"><a href="/de/#grandes-installations">Landesweite Liste</a> · <a href="/data/csv/solaire_grandes_installations.csv" download>Hinzugekommene und weggefallene Zeilen (CSV)</a></p></div></section><section id="liens"><div class="sec-head"><h2>Weiter</h2></div><div class="links"><a href="/de/?commune=luxembourg#paradoxe">Interaktive Grafik der Gemeinde</a><a href="/de/rechner/?canton=Luxembourg">Rechner: lohnt sich Solar auf Ihrem Dach?</a><a href="/de/fuer-gemeinden/">Für Gemeinden: was diese Seite zeigt</a><a href="/data/csv/solaire_communes_tailles.csv">Anlagengrößen, alle 100 Gemeinden (CSV)</a></div><nav class="pn" aria-label="Alle Gemeinden"><a href="/de/gemeinde/lorentzweiler/">← Vorherige Gemeinde : Lorentzweiler</a><a href="/de/gemeinde/mamer/">Nächste Gemeinde : Mamer →</a></nav></section>
 </main>
 <footer class="colophon" aria-labelledby="colophon-h"><h2 id="colophon-h">Kolophon</h2><div class="co-a"><p>Daten: „La production d'énergie électrique au Luxembourg“, veröffentlicht von Leneda auf data.public.lu (CC0), Erhebung vom 9. November 2026; Bevölkerung: RNPP (CC0). Angeschlossene Leistung (kW), nicht erzeugte Energie. Abgeleitete Daten unter CC BY 4.0.</p><p>Quellen: <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/">Leneda (data.public.lu)</a> · <a href="https://data.public.lu/fr/datasets/registre-national-des-personnes-physiques-rnpp-population-par-commune-population-per-municipality/">RNPP</a> (Bevölkerung Luxembourg: 138 818 Einwohner, Stand 1. Oktober 2026) · <a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf">Klimabonus Gemengen</a></p><p>Reichweitenmessung ohne Cookies: Cloudflare Web Analytics und anonyme Klickzähler (keine IP-Adresse, keine Kennung gespeichert).</p></div><!--COLOPHON_COMMON-->
 <div class="co-b">

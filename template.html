@@ -238,7 +238,6 @@
   main:focus{outline:none}
   @media print{.rt,.rt-a{display:none}}
   @media(max-width:850px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:440px){.kpis{grid-template-columns:1fr}}
   @media(max-width:520px){
     /* nom sur sa propre ligne, puis barre + valeur (la valeur en max-content
        écrasait la colonne du nom à 0 px) */
@@ -251,6 +250,62 @@
     .pair .b i,.pair .b.in i,.pair .b.cap.in i{left:0;right:auto;top:12px;color:var(--ink-3)}
   }
 /*@OSSATURE_CSS*/
+  /* ==== LOT 2 : corps du tableau de bord (figures numérotées, légendes, sources) ==== */
+  figure{margin:0}
+  .grid-2{align-items:start}
+  figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption+.src{margin-top:2px}
+  .src{margin-bottom:0}
+  .src a,.dl a{color:var(--amber-text)}
+  .card.refs .src{margin-top:-6px}
+  .refs2{margin-top:20px}
+  .refs2 .card.refs p:last-child{margin-bottom:0}
+  .sec-head h3.h2like+.u{display:block}
+  /* légende de tableau dans un conteneur défilant : reste lisible au bord gauche */
+  .tblwrap caption,.tblscroll caption{padding:10px 12px 8px}
+  .tblwrap caption .capin,.tblscroll caption .capin{display:block;position:sticky;left:12px;max-width:min(100%,calc(100vw - 64px))}
+  table.mini caption{font-family:var(--body);font-variant-numeric:normal}
+  a.dl{white-space:nowrap}
+  .tblwrap.tblscroll{background-color:var(--card)}
+  /* conteneur défilant posé sur le papier (pas dans une carte) : caches de bord couleur papier */
+  .tblscroll.on-paper{background:linear-gradient(to right,var(--paper) 30%,transparent) left/24px 100% no-repeat local,
+    linear-gradient(to left,var(--paper) 30%,transparent) right/24px 100% no-repeat local,
+    linear-gradient(to right,rgba(29,39,52,.12),transparent) left/10px 100% no-repeat scroll,
+    linear-gradient(to left,rgba(29,39,52,.12),transparent) right/10px 100% no-repeat scroll}
+  .tblscroll:not(.tblwrap) caption{padding:0 0 8px}
+  .tblscroll:not(.tblwrap) caption .capin{left:0}
+  @media(max-width:767px){
+    .tblscroll caption .capin{max-width:calc(100vw - 32px)}
+    .card .tblscroll caption .capin,.tblwrap caption .capin{max-width:calc(100vw - 84px)}
+  }
+  .tblscroll.on-paper caption{padding-left:0;padding-right:0}
+  .tblscroll.on-paper caption .capin{left:0}
+  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  table.cantons{min-width:0}
+  table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
+  table.cantons tbody td{padding:5px 8px}
+  /* « Votre commune » dans l'en-tête */
+  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+  .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+  .pick label{font:600 13.5px var(--body);color:var(--ink)}
+  .pick select{font:inherit;font-size:14px;min-height:36px;padding:6px 8px;border:1px solid var(--ink-3);border-radius:2px;background:var(--card);color:var(--ink);max-width:100%}
+  .pick button{font:600 13.5px var(--body);min-height:36px;padding:6px 12px;border:1px solid var(--ink);border-radius:2px;background:var(--card);color:var(--ink);cursor:pointer}
+  .pick button:hover{border-color:var(--amber-text);color:var(--amber-text)}
+  /* méthode : premier paragraphe visible, la suite repliée */
+  .method details{margin-top:4px}
+  .method summary{font:600 14px var(--body);color:var(--amber-text)}
+  @media(max-width:767px){
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi.hero,.kpi:last-child{grid-column:1/-1}
+    .kpi{padding:13px 14px 12px}
+    .kpi .val{font-size:26px;margin-top:4px}
+    .kpi .sub{font-size:12px;line-height:1.4}
+    .pick{width:100%}
+    .pick select{flex:1 1 180px}
+  }
+  @media print{.pick,.dl{display:none}}
 </style>
 
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -267,7 +322,14 @@
     <span class="badge">Licence <b>CC0</b></span>
     <span class="badge"><b>__NCOMMUNES__</b> communes · <b>6</b> filières</span>
   </div>
-  <p class="cta-row"><a class="cta" href="/fr/simulateur/">Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden="true">→</span></a></p>
+  <div class="cta-row">
+    <a class="cta" href="/fr/simulateur/">Et sur votre toit ? Simulateur : production, Klimabonus 2026, retour sur investissement <span aria-hidden="true">→</span></a>
+    <form class="pick" action="#communes" method="get">
+      <label for="pick-c">Votre commune</label>
+      <select id="pick-c"><option value="">Choisir une commune…</option><!--PRE_PICK--></select>
+      <button type="submit">Voir la page</button>
+    </form>
+  </div>
 </header>
 
 <div class="kpis">
@@ -308,34 +370,40 @@
 <section id="trajectoire">
   <div class="sec-head">
     <h2>Trajectoire nationale : le PV creuse l'écart</h2>
-    <span class="sec-note">MW installés · __FIRSTQ__ → aujourd'hui</span>
   </div>
   <p class="lede">Capacité installée cumulée par filière sur les __NREADINGS__ relevés publiés. Le photovoltaïque explique <strong>__PVGROWTHSHARE__ %</strong> des <span id="growth-total">__GROWTHTOTAL__</span> MW nets ajoutés au parc depuis __FIRSTQ__ (éolien __WINDDELTA__ MW, cogénération __CHPDELTA__ MW, hydroélectricité, biomasse et biogaz __RESTDELTA__ MW ensemble).</p>
-  <div class="card">
+  <figure class="card">
     <div class="svgwrap" id="area"></div>
     <div class="legend" id="area-legend"></div>
     <details class="alt">
       <summary>Données du graphique</summary>
-      <table class="mini"><thead><tr><th scope="col">Relevé</th><!--PRE_AREA_HEAD--></tr></thead><tbody><!--PRE_AREA_ROWS--></tbody></table>
+      <table class="mini"><caption><b>Tableau 1.</b> Données de la figure 1 : capacité installée par filière et par relevé, en MW.</caption><thead><tr><th scope="col">Relevé</th><!--PRE_AREA_HEAD--></tr></thead><tbody><!--PRE_AREA_ROWS--></tbody></table>
     </details>
-  </div>
+    <figcaption><b>Figure 1.</b> Capacité installée cumulée par filière, relevé par relevé. <span class="u">MW installés · __FIRSTQ__ → aujourd'hui</span></figcaption>
+    <p class="src">Source : Leneda (data.public.lu), relevés trimestriels et relevé hebdomadaire du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_filieres:F:1--></p>
+  </figure>
 </section>
 
 <section id="rythme">
   <div class="sec-head">
     <h2>Combien de capacité PV s'ajoute chaque trimestre ?</h2>
-    <span class="sec-note">MW nets ajoutés entre deux relevés consécutifs</span>
   </div>
   <p class="lede">Ajouts nets de capacité photovoltaïque entre relevés Leneda consécutifs. Les barres trimestrielles comparent deux fichiers trimestriels ; la dernière compare le relevé hebdomadaire du __DATE__ au dernier relevé trimestriel publié (__LASTQ__), soit deux extraits Leneda distincts.</p>
-  <div class="grid-2">
-    <div class="card"><div class="hbars" id="additions"><!--PRE_ADDITIONS--></div></div>
+  <figure class="card">
+    <div class="hbars" id="additions"><!--PRE_ADDITIONS--></div>
+    <figcaption><b>Figure 2.</b> Rythme des raccordements photovoltaïques, d'un relevé à l'autre. <span class="u">MW nets ajoutés entre deux relevés consécutifs</span></figcaption>
+    <p class="src">Source : Leneda (data.public.lu), relevés trimestriels et relevé hebdomadaire du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_filieres:F:2--></p>
+  </figure>
+  <div class="grid-2 refs2">
     <div class="card refs">
       <h3>Quelle part de l'électricité vient du solaire ?</h3>
       <p>Capacité (MW) et production (GWh) sont deux mesures différentes. D'après l'ILR (<a href="__ILR_URL__" target="_blank" rel="noopener">Chiffres-clés __ILR_YEAR__ du marché de l'électricité</a>, publication __ILR_PUB__), le photovoltaïque a produit <strong>__ILR_PVGWH__ GWh</strong> en __ILR_YEAR__, devant l'éolien (__ILR_WINDGWH__ GWh), pour une production nationale de __ILR_PRODGWH__ GWh et une consommation nationale brute de __ILR_CONSGWH__ GWh ; __ILR_SELFGWH__ GWh ont été autoconsommés ou partagés (__ILR_SELFPCT__ % de la consommation finale). Calcul lux-solaire à partir de ces chiffres : le PV pèse <strong>__PVPRODSHARE__ %</strong> de la production nationale et <strong>__PVCONSSHARE__ %</strong> de la consommation brute.</p>
+    </div>
+    <div class="card refs">
       <h3>Repères officiels</h3>
       <p>ILR, fin __ILR_YEAR__ : <strong>__ILR_PVMW__ MW</strong> de photovoltaïque (+__ILR_PVDELTA__ MW, +__ILR_PVPCT__ %) et __ILR_N__ installations (+__ILR_NDELTA__, +__ILR_NPCT__ %). Leneda, relevé __LENEDA_YEQ__ : __LENEDA_YEMW__ MW et __LENEDA_YEN__ installations.</p>
       <p>PNEC (<a href="__PNEC_URL__" target="_blank" rel="noopener">plan national intégré en matière d'énergie et de climat, mise à jour de juillet 2024</a>, tableau 8, p. 44), puissance photovoltaïque installée prévue, en MW :</p>
-      <table class="mini"><thead><tr>__PNEC_HEAD__</tr></thead><tbody><tr>__PNEC_ROW__</tr></tbody></table>
+      <table class="mini booktabs"><caption><b>Tableau 2.</b> Puissance photovoltaïque installée prévue par le PNEC, en MW.</caption><thead><tr>__PNEC_HEAD__</tr></thead><tbody><tr>__PNEC_ROW__</tr></tbody></table>
     </div>
   </div>
 </section>
@@ -343,11 +411,13 @@
 <section id="mix">
   <div class="grid-2">
     <div>
-      <div class="sec-head"><h2>Mix des filières</h2><span class="sec-note">relevé du __DATE__</span></div>
-      <div class="card">
+      <div class="sec-head"><h2>Mix des filières</h2></div>
+      <figure class="card">
         <div class="mixbar" id="mixbar"><!--PRE_MIXBAR--></div>
         <div class="mixlist" id="mixlist"><!--PRE_MIXLIST--></div>
-      </div>
+        <figcaption><b>Figure 3.</b> Répartition de la capacité décentralisée par filière. <span class="u">relevé du __DATE__</span></figcaption>
+        <p class="src">Source : Leneda (data.public.lu), relevé du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_filieres:F:3--></p>
+      </figure>
     </div>
     <div>
       <div class="sec-head"><h2>Trois signaux dans les données</h2></div>
@@ -372,12 +442,18 @@
 <section id="classements">
   <div class="grid-2">
     <div>
-      <div class="sec-head"><h2>Top 15 : capacité PV</h2><span class="sec-note">kW installés</span></div>
-      <div class="card"><div class="hbars" id="top-pv"><!--PRE_TOP_PV--></div></div>
+      <div class="sec-head"><h2>Top 15 : capacité PV</h2></div>
+      <figure class="card"><div class="hbars" id="top-pv"><!--PRE_TOP_PV--></div>
+        <figcaption><b>Figure 4.</b> Les 15 communes à la plus forte capacité photovoltaïque. <span class="u">kW installés</span></figcaption>
+        <p class="src">Source : Leneda (data.public.lu), relevé du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_communes:F:4--></p>
+      </figure>
     </div>
     <div>
-      <div class="sec-head"><h2>Top 10 : croissance PV</h2><span class="sec-note">kW ajoutés depuis __FIRSTQ__</span></div>
-      <div class="card"><div class="hbars" id="top-growth"><!--PRE_TOP_GROWTH--></div></div>
+      <div class="sec-head"><h2>Top 10 : croissance PV</h2></div>
+      <figure class="card"><div class="hbars" id="top-growth"><!--PRE_TOP_GROWTH--></div>
+        <figcaption><b>Figure 5.</b> Les 10 communes à la plus forte hausse de capacité photovoltaïque. <span class="u">kW ajoutés depuis __FIRSTQ__</span></figcaption>
+        <p class="src">Source : Leneda (data.public.lu), relevés trimestriels et relevé hebdomadaire du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_communes:F:5--></p>
+      </figure>
     </div>
   </div>
 </section>
@@ -385,22 +461,26 @@
 <section id="par-habitant">
   <div class="sec-head">
     <h2>Quelles communes ont le plus de photovoltaïque par habitant ?</h2>
-    <span class="sec-note">population RNPP au __POPDATE__</span>
   </div>
   <p class="lede">Rapportée à la population, la capacité PV inverse les classements : __NATWPC__ W par habitant à l'échelle nationale (médiane communale __MEDWPC__ W/hab.), __TOPWPC__ W/hab. à <strong>__TOPWPC_COMMUNE__</strong> contre __LOWWPC__ à __LOWWPC_COMMUNE__. Les grandes centrales gonflent les petites communes : à __TOPWPC_COMMUNE__, __TOPWPC_MW__ MW proviennent de __TOPWPC_N__ installations seulement. La colonne « toitures » compte les installations de 30 kW ou moins pour 1 000 habitants.</p>
   <div class="grid-2">
     <div>
-      <div class="sec-head"><h3 class="h2like">Top 10 : W par habitant</h3><span class="sec-note">toitures (≤ 30 kW) pour 1 000 hab. en second</span></div>
-      <div class="card"><div class="hbars" id="top-wpc"><!--PRE_TOP_WPC--></div></div>
+      <div class="sec-head"><h3 class="h2like">Top 10 : W par habitant</h3></div>
+      <figure class="card"><div class="hbars" id="top-wpc"><!--PRE_TOP_WPC--></div>
+        <figcaption><b>Figure 6.</b> Les 10 communes au plus fort ratio de photovoltaïque par habitant. <span class="u">toitures (≤ 30 kW) pour 1 000 hab. en second</span></figcaption>
+        <p class="src">Sources : Leneda (data.public.lu), relevé du __DATE__ ; population RNPP au __POPDATE__ ; traitement : Sitraka Forler.<!--DL:solaire_communes:F:6--></p>
+      </figure>
     </div>
     <div>
-      <div class="sec-head"><h3 class="h2like">Les 12 cantons</h3><span class="sec-note">triés par W/hab.</span></div>
-      <div class="tblwrap">
-        <table class="cantons" id="cantons">
-          <thead><tr><th>Canton</th><th>PV kW</th><th>Install.</th><th>Population</th><th>W/hab.</th><th>Inst./1 000 hab.</th></tr></thead>
+      <div class="sec-head"><h3 class="h2like">Les 12 cantons</h3></div>
+      <div class="tblwrap tblscroll" role="region" tabindex="0" aria-labelledby="cantons-cap">
+        <table class="cantons booktabs" id="cantons">
+          <caption id="cantons-cap"><span class="capin"><b>Tableau 3.</b> Capacité photovoltaïque et population par canton. <span class="u">triés par W/hab.</span></span></caption>
+          <thead><tr><th scope="col">Canton</th><th scope="col">PV kW</th><th scope="col">Install.</th><th scope="col">Population</th><th scope="col">W/hab.</th><th scope="col">Inst./<br>1 000 hab.</th></tr></thead>
           <tbody><!--PRE_CANTONS--></tbody>
         </table>
       </div>
+      <p class="src">Sources : Leneda (data.public.lu), relevé du __DATE__ ; population RNPP au __POPDATE__ ; traitement : Sitraka Forler.<!--DL:solaire_cantons:T:3--></p>
     </div>
   </div>
 </section>
@@ -408,10 +488,9 @@
 <section id="paradoxe">
   <div class="sec-head">
     <h2>Le paradoxe résidentiel</h2>
-    <span class="sec-note">__NGCOUNT__ installations PV recensées une à une</span>
   </div>
   <p class="lede"><strong>__SMALLSHARE_N__ % des installations font 30 kW ou moins</strong>, pour l'essentiel des toitures résidentielles, mais elles ne représentent que <strong>__SMALLSHARE_CAP__ % de la capacité</strong>. À l'autre extrémité, __BIGN__ installations de plus de 0,5 MW concentrent à elles seules __BIGMW__ MW.</p>
-  <div class="card">
+  <figure class="card">
     <div class="toolbar pctool">
       <label for="pc" class="tlabel">Voir une commune</label>
       <select id="pc"><option value="">Tout le Luxembourg</option></select>
@@ -427,9 +506,11 @@
     <p class="kbnote" id="kb-note" hidden>Aides aux communes pour une centrale sur bâtiment (<a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf" rel="noopener">Klimabonus Gemengen</a>, barème 2025 révisé chaque année) : 50 % des coûts entre 30 et 200 kWc (plafond 675 €/kWc), 45 % entre 200 et 500 kWc (505 €/kWc), 40 % entre 0,5 et 5 MWc (425 €/kWc) ; ombrière de parking : 45 % (990 €/kWc). En dessous de 30 kWc, pas d'aide Klimabonus Gemengen : le Klimabonus des particuliers ne vaut que pour des logements, y compris les logements communaux. Les données Leneda ne disent pas si une installation est communale ou privée.</p>
     <details class="alt">
       <summary>Données du graphique</summary>
-      <table class="mini"><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody id="paradox-rows"><!--PRE_PARADOX_ROWS--></tbody></table>
+      <table class="mini"><caption><b>Tableau 4.</b> Données de la figure 7 : installations et capacité par classe de taille.</caption><thead><tr><th scope="col">Taille (kW)</th><th scope="col">Install.</th><th scope="col">part des installations</th><th scope="col">MW</th><th scope="col">part de la capacité</th></tr></thead><tbody id="paradox-rows"><!--PRE_PARADOX_ROWS--></tbody></table>
     </details>
-  </div>
+    <figcaption><b>Figure 7.</b> Part des installations et part de la capacité, par classe de taille. <span class="u">__NGCOUNT__ installations PV recensées une à une</span></figcaption>
+    <p class="src">Source : Leneda (data.public.lu), fichier hebdomadaire par installation du __DATE__ ; traitement : Sitraka Forler.<!--DL:solaire_tailles:F:7--></p>
+  </figure>
 </section>
 
 <!-- textes : scripts/grandes.py (4 langues), rendus par prerender -->
@@ -454,8 +535,9 @@
     <input type="search" id="q" placeholder="Filtrer par commune ou canton…">
     <span class="count" id="cnt" aria-live="polite"></span>
   </div>
-  <div class="tblwrap">
+  <div class="tblwrap" role="region" tabindex="0" aria-labelledby="tbl-cap">
     <table id="tbl">
+      <caption id="tbl-cap"><span class="capin"><b>Tableau 6.</b> Capacité, croissance et ratios par habitant des __NCOMMUNES__ communes.</span></caption>
       <thead><tr>
         <th data-k="c" data-s="str" aria-sort="none"><button type="button">Commune</button></th>
         <th data-k="k" data-s="str" aria-sort="none"><button type="button">Canton</button></th>
@@ -470,13 +552,17 @@
       <tbody><!--PRE_ROWS--></tbody>
     </table>
   </div>
+  <p class="src">Sources : Leneda (data.public.lu), relevé du __DATE__ ; population RNPP au __POPDATE__ ; traitement : Sitraka Forler.<!--DL:solaire_communes:T:6--></p>
 </section>
 
 <section id="methode" class="method" aria-labelledby="methode-h">
   <h2 id="methode-h">Méthode & source</h2>
   <p>Données : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> publié par Leneda sur data.public.lu (licence CC0) : relevés trimestriels __FIRSTQ__ → __LASTQ__ et relevé hebdomadaire du __DATE__ (fichiers commune, canton et par installation).</p>
+  <details>
+  <summary>Comment ces chiffres sont-ils calculés ?</summary>
   <p>Les chiffres décrivent la <strong>capacité installée</strong> (kW raccordés) du parc de production décentralisé, pas l'énergie produite (kWh) : la part réelle du PV dans l'électricité livrée dépend de l'ensoleillement et des facteurs de charge. « Δ kW depuis __FIRSTQ__ » compare le relevé courant au premier relevé trimestriel publié. Dans le tableau par commune, seule la capacité photovoltaïque est détaillée ; la colonne « Total kW » agrège toutes les filières.</p>
   <p>Population : Registre national des personnes physiques (RNPP) au __POPDATE__, __POPTOTAL__ résidents, jeu CC0 publié sur data.public.lu ; ce registre administratif diffère de l'estimation officielle de population du STATEC. « W/hab. » = kW PV × 1 000 / population ; « toitures » = installations PV de 30 kW ou moins.</p>
+  </details>
 </section>
 
 <aside class="rt" id="rt" aria-labelledby="rt-h"
@@ -700,6 +786,12 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   const P=new URLSearchParams(location.search), q0=P.get('commune');
   apply(q0?slugC(q0):'',P.get('classes')||'',false);
   if((q0&&sel.value)||P.get('classes')) addEventListener('load',()=>document.getElementById('paradoxe').scrollIntoView());
+})();
+
+/* ---- « Votre commune » (en-tête) : la page de la commune choisie ; sans JS, le formulaire mène au tableau ---- */
+(function(){
+  const f=document.querySelector('form.pick'), s=document.getElementById('pick-c');
+  if(f&&s) f.addEventListener('submit',e=>{ if(s.value){ e.preventDefault(); location.href=s.value; } });
 })();
 
 /* ---- table ---- */
