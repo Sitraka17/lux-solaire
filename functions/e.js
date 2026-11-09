@@ -31,7 +31,7 @@ const TARGET = {
   commune: (x) => x === "lux" || SLUGS.has(x),
   classes: (x) => x === "aides" || x === "detail",
   copy: (x) => COPY.has(x),
-  contact: (x) => x === "hello@sitraka.lu",
+  contact: (x) => x === "hello@sitraka.lu" || x === "sitraka.lu/contact",
   sim: (x) => x === "",
   page: (x) => SLUGS.has(x),
   land: (x) => x === "",

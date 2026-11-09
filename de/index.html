@@ -31,6 +31,7 @@
 <style>
   :root{
     --paper:#F4F5F1; --card:#FFFFFF; --ink:#1D2734; --ink-2:#5A6472; --ink-3:#5F6773;
+    --cap:#3A434F;   /* barres « Anteil der Leistung » : --ink à 82 % sur blanc, opaque (l'étiquette garde 5,2:1) */
     --line:#DCDDD5; --amber:#EE9B05; --amber-deep:#C77F00; --amber-soft:#FBEED3;
     /* ambre lisible : #C77F00 ne passe pas le contraste AA en texte (2,97:1 sur --paper) ;
        #8A5600 (5,6:1) pour le texte courant, #A86A00 (4,1:1) pour le grand titre */
@@ -134,6 +135,7 @@
   .hbars .fl{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .hbars .vv{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
   .hbars .vv b{color:var(--ink);font-weight:600}
+  .nw{white-space:nowrap}
 
   /* ---------- mix bar ---------- */
   .mixbar{display:flex;height:34px;border-radius:3px;overflow:hidden;margin-top:14px}
@@ -152,7 +154,7 @@
   .pair .b.in i{left:auto;right:8px;color:var(--ink)}
   .pair .b.cap.in i{color:#fff}
   .pair .b.cnt{background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
-  .pair .b.cap{background:var(--ink);opacity:.82}
+  .pair .b.cap{background:var(--cap)}
   .pkey{display:flex;gap:16px;margin:2px 0 14px;font-size:12.5px;color:var(--ink-2)}
 
   /* ---------- callouts ---------- */
@@ -212,10 +214,11 @@
     .hbars .fl,.pair .b{transition:width .6s ease}
   }
   /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
-  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  :root{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono)}
+  .rt{margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
-  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
+  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 26px;align-items:start}
+  .rt h3.rt-h3b{margin-top:18px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
   .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
   .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
@@ -229,7 +232,7 @@
   .rt-dl small{color:var(--rt-muted);font-weight:400}
   .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
   .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.8;vertical-align:middle}
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
@@ -256,6 +259,7 @@
   @media(max-width:480px){.wrap{padding:12px 16px 56px}}
   html{scroll-padding-top:56px}
   :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .nt{text-transform:none}   /* unité dans un en-tête en capitales (unit_case) */
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   /* bandeau de la série */
   .masthead{border-top:3px solid var(--amber);border-bottom:1px solid var(--line);padding:5px 0 6px;margin:0 0 24px;font-size:13px}
@@ -269,6 +273,7 @@
   .series a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
   .series a[aria-current]{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:4px}
   .mh-desk{margin-top:2px}
+  .langs-nav{display:flex}
   .langs{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font:600 11.5px var(--mono);letter-spacing:.04em}
   .langs li{display:flex}
   .langs a{display:inline-flex;align-items:center;gap:5px;min-height:28px;min-width:24px;padding:0 4px;color:var(--ink-3);text-decoration:none}
@@ -289,7 +294,7 @@
     .mh-label,.mh-desk{display:none}
     .mh-row{display:grid;grid-template-columns:1fr auto;align-items:start;column-gap:8px}
     .mh-series{display:block;grid-column:1/-1;grid-row:1}
-    .mh-row>.langs{grid-column:2;grid-row:1}
+    .mh-row>.langs-nav{grid-column:2;grid-row:1}
     .mh-series .series{padding:2px 0 6px 16px}
     .mh-series .series a{min-height:32px}
     .langs a{min-height:32px;padding:0 3px}
@@ -301,8 +306,8 @@
   .crumbs ol{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-wrap:wrap;font:11.5px/1.5 var(--mono);color:var(--ink-3)}
   .crumbs li{display:flex;align-items:center}
   .crumbs li:not(:last-child)::after{content:"›"/"";margin:0 8px}
-  .crumbs a{color:var(--amber-text);text-decoration:none;display:inline-block;padding:4px 0}
-  .crumbs a:hover{text-decoration:underline}
+  .crumbs a{color:var(--ink-3);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;display:inline-block;padding:4px 0}
+  .crumbs a:hover{color:var(--amber-text);text-decoration-color:currentColor}
   .crumbs li[aria-current]{padding:4px 0}
   /* téléphone : fil d'Ariane sur une ligne ; le premier libellé, long, est tronqué à l'écran (texte complet dans le DOM) */
   @media(max-width:767px){
@@ -310,6 +315,10 @@
     .crumbs li{flex:none;min-width:0}
     .crumbs li:first-child{flex:0 1 auto}
     .crumbs li:first-child a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .crumbs ol{margin-bottom:0}
+    .crumbs a,.crumbs li[aria-current]{padding:2px 0}
+    .wrap h1{margin-top:6px}
+    .eb-tail{display:none}   /* surtitre réduit à son 1er mot sous 768 px (texte complet à partir de 768 px) */
   }
   header>.eyebrow{margin:0}
   h1{max-width:20ch;margin-top:10px}
@@ -324,12 +333,16 @@
   #tbl{min-width:900px}
   table.bigtab th,table.bigtab td{white-space:normal}
   table.bigtab td:first-child,table.bigtab td:last-child{white-space:nowrap}
-  table.bigtab small{white-space:normal;overflow-wrap:anywhere}
+  table.bigtab small{white-space:normal;overflow-wrap:normal;hyphens:auto}
   td.num,th.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
   caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-2);padding:0 0 8px}
   caption b,figcaption b{font:650 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
   figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
   .src{font:11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+  .src a,.dl a{color:var(--amber-text)}
+  /* sous-titre d'une légende (mono gris), séparé du constat par un point médian : il commence par une minuscule */
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption .u::before,caption .u::before{content:"· "/""}
   table.booktabs{border-collapse:collapse;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.booktabs thead th{border-bottom:1px solid var(--ink)}
   table.booktabs td,table.booktabs th{border-left:0;border-right:0}
@@ -338,7 +351,7 @@
   .pn a{display:inline-flex;align-items:center;min-height:32px}
   /* section Méthode (sortie du pied de page) */
   .method{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
-  .method h2{margin:0 0 10px}
+  .method h2{margin:0 0 10px;color:var(--ink)}
   .method p,.method ol{max-width:75ch;margin:0 0 10px}
   .method a{color:var(--amber-text)}
   /* colophon commun */
@@ -347,6 +360,8 @@
   .colophon p{margin:0 0 8px;max-width:75ch}
   .colophon a{color:var(--amber-text)}
   .colophon .co-series{grid-column:1/-1;margin-top:10px}
+  .co-series-d>summary{cursor:pointer;font:600 13px var(--body);color:var(--amber-text);min-height:32px;display:flex;align-items:center}
+  .co-series-d[open]>summary{margin-bottom:2px}
   .colophon .tblscroll{--sc-bg:var(--paper)}
   table.series-t{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:13px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.series-t th,table.series-t td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal}
@@ -382,10 +397,8 @@
   figure{margin:0}
   .grid-2{align-items:start}
   figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
-  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
   figcaption+.src{margin-top:2px}
   .src{margin-bottom:0}
-  .src a,.dl a{color:var(--amber-text)}
   .card.refs .src{margin-top:-6px}
   .refs2{margin-top:20px}
   .refs2 .card.refs p:last-child{margin-bottom:0}
@@ -409,8 +422,11 @@
   }
   .tblscroll.on-paper caption{padding-left:0;padding-right:0}
   .tblscroll.on-paper caption .capin{left:0}
-  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
-  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  #classements .grid-2{align-items:stretch}
+  #classements .grid-2>div,#par-habitant .grid-2>div{display:flex;flex-direction:column}
+  #classements .grid-2>div>figure.card{flex:1;display:flex;flex-direction:column}
+  #classements figure.card>figcaption{margin-top:auto}
+  #classements figure.card>.hbars{margin-bottom:16px}
   table.cantons{min-width:0}
   table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
   table.cantons tbody td{padding:5px 8px}
@@ -434,22 +450,37 @@
     .pick select{flex:1 1 180px}
   }
   @media print{.pick,.dl{display:none}}
+  /* ==== relecture du 9/11 ==== */
+  /* sous-titre d'une légende : séparé du constat par un point médian (il commence par une minuscule) */
+  /* graphique des tailles sur téléphone : classe au-dessus de ses deux barres, toute la largeur pour les
+     barres et leurs étiquettes (plus de défilement horizontal à 320 px) */
+  @media(max-width:520px){
+    .pair{grid-template-columns:minmax(0,1fr);gap:0;overflow:visible}
+    .pair .bin{text-align:left;padding-top:6px}
+  }
+  /* tableau des 100 communes : ombre en haut et en bas tant qu'il reste des lignes à faire défiler */
+  #communes .tblwrap{background:linear-gradient(var(--card) 30%,rgba(255,255,255,0)) top/100% 28px no-repeat local,
+    linear-gradient(rgba(255,255,255,0),var(--card) 70%) bottom/100% 28px no-repeat local,
+    linear-gradient(rgba(29,39,52,.14),transparent) top/100% 10px no-repeat scroll,
+    linear-gradient(transparent,rgba(29,39,52,.14)) bottom/100% 10px no-repeat scroll,var(--card)}
+  #communes .tblwrap tbody td{background:none}
+  .tblwrap+.src{margin-top:8px}
 </style>
 
 <a class="skip" href="#contenu">Zum Inhalt springen</a>
 <div class="wrap">
 <!--MASTHEAD-->
-<div class="masthead">
+<header class="masthead">
   <div class="mh-row">
     <p class="mh-label" id="mh-l">Open-Data-Serie · Luxemburg</p>
     <details class="mh-series">
-      <summary aria-label="Open-Data-Serie (8)"><span class="mh-long" aria-hidden="true">Open-Data-Serie</span><span class="mh-short" aria-hidden="true">Serie</span> <span class="count" aria-hidden="true">(8)</span></summary>
-      <nav aria-label="Open-Data-Serie · Luxemburg"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaik: angeschlossene Leistung je Gemeinde">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Gründungen, Überleben und Konkurse von Unternehmen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Die nächste Indextranche der Löhne">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschulden und Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Hitze, Gemeinde für Gemeinde">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesundheitskarte: Betten, Personal, Wartezeiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien und Luxemburg in Zahlen">lux-india</a></li></ul></nav>
+      <summary><span class="mh-long">Open-Data-Serie</span><span class="mh-short">Serie</span> <span class="count">(8)</span></summary>
+      <nav aria-label="Open-Data-Serie · Luxemburg"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaik: angeschlossene Leistung je Gemeinde">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Gründungen, Überleben und Konkurse von Unternehmen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Die nächste Indextranche der Löhne">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschulden und Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Hitze, Gemeinde für Gemeinde">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesundheitskarte: Betten, Personal, Wartezeiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien und Luxemburg in Zahlen">lux-india</a></li></ul></nav>
     </details>
-    <ul class="langs" aria-label="Sprache der Seite"><li><a href="/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/" lang="fr" hreflang="fr"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/" lang="de" hreflang="de" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/" lang="lb" hreflang="lb"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul>
+    <nav class="langs-nav" aria-label="Sprache der Seite"><ul class="langs"><li><a href="/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/" lang="fr" hreflang="fr"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/" lang="de" hreflang="de" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/" lang="lb" hreflang="lb"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul></nav>
   </div>
-  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaik: angeschlossene Leistung je Gemeinde">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Gründungen, Überleben und Konkurse von Unternehmen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Die nächste Indextranche der Löhne">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschulden und Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Hitze, Gemeinde für Gemeinde">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesundheitskarte: Betten, Personal, Wartezeiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien und Luxemburg in Zahlen">lux-india</a></li></ul></nav>
-</div>
+  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaik: angeschlossene Leistung je Gemeinde">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Gründungen, Überleben und Konkurse von Unternehmen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Die nächste Indextranche der Löhne">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschulden und Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="Hitze, Gemeinde für Gemeinde">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesundheitskarte: Betten, Personal, Wartezeiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien und Luxemburg in Zahlen">lux-india</a></li></ul></nav>
+</header>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
 <header>
@@ -491,7 +522,7 @@
   <div class="kpi">
     <div class="lbl">Anteil am dezentralen Park</div>
     <div class="val" id="k-share">64,8 %</div>
-    <div class="sub">von <span id="k-tot">1 277</span> MW über alle Technologien</div>
+    <div class="sub">von <span id="k-tot">1 278</span> MW über alle Technologien</div>
   </div>
   <div class="kpi">
     <div class="lbl">Seit Ende 2025</div>
@@ -505,13 +536,13 @@
   </div>
 </div>
 <p class="kpi-note">Zur Erinnerung: installierte Leistung heißt nicht erzeugte Energie; der PNEC-Wert ist das im nationalen Plan festgeschriebene Ziel, keine Projektion dieses Dashboards.</p>
-<p class="contact-cta"><a href="https://sitraka.lu/de/contact/?from=solaire">Wollen Sie das für Ihre Gemeinde? Sprechen wir <span aria-hidden="true">→</span></a></p>
+<p class="contact-cta"><a href="/de/fuer-gemeinden/">Wollen Sie das für Ihre Gemeinde? Zur Seite „Für Gemeinden“ <span aria-hidden="true">→</span></a></p>
 
 <section id="trajectoire">
   <div class="sec-head">
     <h2>Nationale Entwicklung: die Photovoltaik zieht davon</h2>
   </div>
-  <p class="lede">Kumulierte installierte Leistung nach Technologie über die 6 veröffentlichten Erhebungen. Die Photovoltaik erklärt <strong>91 %</strong> der <span id="growth-total">257</span> MW, die seit Q1 2025 netto hinzukamen (Windkraft +38,6 MW, Kraft-Wärme-Kopplung -15,5 MW, Wasserkraft, Biomasse und Biogas zusammen -0,3 MW).</p>
+  <p class="lede">Kumulierte installierte Leistung nach Technologie über die 6 veröffentlichten Erhebungen. Die Photovoltaik erklärt <strong>91 %</strong> der <span id="growth-total">257</span> MW, die seit Q1 2025 netto hinzukamen (Windkraft +38,6 MW, Kraft-Wärme-Kopplung −15,5 MW, Wasserkraft, Biomasse und Biogas zusammen −0,3 MW).</p>
   <figure class="card">
     <div class="svgwrap" id="area"></div>
     <div class="legend" id="area-legend"></div>
@@ -606,8 +637,8 @@
   <div class="grid-2">
     <div>
       <div class="sec-head"><h3 class="h2like">Top 10: W pro Einwohner</h3></div>
-      <figure class="card"><div class="hbars" id="top-wpc"><div class="nm">Colmar-Berg <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:100.0%"></div></div><div class="vv"><b>7 883</b> W/Einw. · 61,0 Dächer/1 000</div><div class="nm">Tandel <small>· Vianden</small></div><div class="tr"><div class="fl" style="width:70.54420905746544%"></div></div><div class="vv"><b>5 561</b> W/Einw. · 108,0 Dächer/1 000</div><div class="nm">Heffingen <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:65.85056450589877%"></div></div><div class="vv"><b>5 191</b> W/Einw. · 96,7 Dächer/1 000</div><div class="nm">Wincrange <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:65.17823163770137%"></div></div><div class="vv"><b>5 138</b> W/Einw. · 127,5 Dächer/1 000</div><div class="nm">Nommern <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:55.080553088925534%"></div></div><div class="vv"><b>4 342</b> W/Einw. · 121,5 Dächer/1 000</div><div class="nm">Ell <small>· Redange</small></div><div class="tr"><div class="fl" style="width:53.67245972345553%"></div></div><div class="vv"><b>4 231</b> W/Einw. · 136,0 Dächer/1 000</div><div class="nm">Troisvierges <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:48.54750729417734%"></div></div><div class="vv"><b>3 827</b> W/Einw. · 81,0 Dächer/1 000</div><div class="nm">Flaxweiler <small>· Grevenmacher</small></div><div class="tr"><div class="fl" style="width:47.96397310668527%"></div></div><div class="vv"><b>3 781</b> W/Einw. · 122,4 Dächer/1 000</div><div class="nm">Clervaux <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:45.47761004693645%"></div></div><div class="vv"><b>3 585</b> W/Einw. · 87,7 Dächer/1 000</div><div class="nm">Bissen <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:44.551566662438155%"></div></div><div class="vv"><b>3 512</b> W/Einw. · 78,0 Dächer/1 000</div></div>
-        <figcaption><b>Abbildung 6.</b> Die 10 Gemeinden mit der meisten PV-Leistung pro Einwohner. <span class="u">Dächer (≤ 30 kW) je 1 000 Einw. an zweiter Stelle</span></figcaption>
+      <figure class="card"><div class="hbars" id="top-wpc"><div class="nm">Colmar-Berg <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:100.0%"></div></div><div class="vv"><span class="nw"><b>7 883</b> W/Einw.</span> · <span class="nw">61,0 Dächer/1 000</span></div><div class="nm">Tandel <small>· Vianden</small></div><div class="tr"><div class="fl" style="width:70.54420905746544%"></div></div><div class="vv"><span class="nw"><b>5 561</b> W/Einw.</span> · <span class="nw">108,0 Dächer/1 000</span></div><div class="nm">Heffingen <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:65.85056450589877%"></div></div><div class="vv"><span class="nw"><b>5 191</b> W/Einw.</span> · <span class="nw">96,7 Dächer/1 000</span></div><div class="nm">Wincrange <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:65.17823163770137%"></div></div><div class="vv"><span class="nw"><b>5 138</b> W/Einw.</span> · <span class="nw">127,5 Dächer/1 000</span></div><div class="nm">Nommern <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:55.080553088925534%"></div></div><div class="vv"><span class="nw"><b>4 342</b> W/Einw.</span> · <span class="nw">121,5 Dächer/1 000</span></div><div class="nm">Ell <small>· Redange</small></div><div class="tr"><div class="fl" style="width:53.67245972345553%"></div></div><div class="vv"><span class="nw"><b>4 231</b> W/Einw.</span> · <span class="nw">136,0 Dächer/1 000</span></div><div class="nm">Troisvierges <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:48.54750729417734%"></div></div><div class="vv"><span class="nw"><b>3 827</b> W/Einw.</span> · <span class="nw">81,0 Dächer/1 000</span></div><div class="nm">Flaxweiler <small>· Grevenmacher</small></div><div class="tr"><div class="fl" style="width:47.96397310668527%"></div></div><div class="vv"><span class="nw"><b>3 781</b> W/Einw.</span> · <span class="nw">122,4 Dächer/1 000</span></div><div class="nm">Clervaux <small>· Clervaux</small></div><div class="tr"><div class="fl" style="width:45.47761004693645%"></div></div><div class="vv"><span class="nw"><b>3 585</b> W/Einw.</span> · <span class="nw">87,7 Dächer/1 000</span></div><div class="nm">Bissen <small>· Mersch</small></div><div class="tr"><div class="fl" style="width:44.551566662438155%"></div></div><div class="vv"><span class="nw"><b>3 512</b> W/Einw.</span> · <span class="nw">78,0 Dächer/1 000</span></div></div>
+        <figcaption><b>Abbildung 6.</b> Die 10 Gemeinden mit der meisten PV-Leistung pro Einwohner. <span class="u">zweite Zahl: Dächer (≤ 30 kW) je 1 000 Einw.</span></figcaption>
         <p class="src">Quellen: Leneda (data.public.lu), Erhebung vom 9. November 2026; Bevölkerung RNPP, Stand 1. Oktober 2026; Auswertung: Sitraka Forler. · <a class="dl" href="/data/csv/solaire_communes.csv" download>Daten zu Abbildung 6 (CSV, 34 kB)</a></p>
       </figure>
     </div>
@@ -616,7 +647,7 @@
       <div class="tblwrap tblscroll" role="region" tabindex="0" aria-labelledby="cantons-cap">
         <table class="cantons booktabs" id="cantons">
           <caption id="cantons-cap"><span class="capin"><b>Tabelle 3.</b> PV-Leistung und Bevölkerung je Kanton. <span class="u">sortiert nach W/Einw.</span></span></caption>
-          <thead><tr><th scope="col">Kanton</th><th scope="col">PV kW</th><th scope="col">Anlagen</th><th scope="col">Bevölkerung</th><th scope="col">W/Einw.</th><th scope="col">Anlagen/<br>1 000 Einw.</th></tr></thead>
+          <thead><tr><th scope="col">Kanton</th><th scope="col">PV <span class="nt">kW</span></th><th scope="col">Anlagen</th><th scope="col">Bevölkerung</th><th scope="col">W/Einw.</th><th scope="col">Anlagen/<br>1 000 Einw.</th></tr></thead>
           <tbody><tr><td>Clervaux</td><td>85 477</td><td>2 514</td><td>22 423</td><td>3 812</td><td>112,1</td></tr><tr><td>Vianden</td><td>16 682</td><td>488</td><td>5 856</td><td>2 849</td><td>83,3</td></tr><tr><td>Redange</td><td>59 812</td><td>2 819</td><td>21 812</td><td>2 742</td><td>129,2</td></tr><tr><td>Grevenmacher</td><td>77 925</td><td>2 973</td><td>34 461</td><td>2 261</td><td>86,3</td></tr><tr><td>Mersch</td><td>82 936</td><td>2 952</td><td>37 424</td><td>2 216</td><td>78,9</td></tr><tr><td>Wiltz</td><td>35 819</td><td>1 729</td><td>20 623</td><td>1 737</td><td>83,8</td></tr><tr><td>Echternach</td><td>34 822</td><td>1 705</td><td>20 736</td><td>1 679</td><td>82,2</td></tr><tr><td>Remich</td><td>37 245</td><td>1 894</td><td>24 844</td><td>1 499</td><td>76,2</td></tr><tr><td>Capellen</td><td>84 397</td><td>4 665</td><td>57 336</td><td>1 472</td><td>81,4</td></tr><tr><td>Diekirch</td><td>41 852</td><td>2 119</td><td>36 670</td><td>1 141</td><td>57,8</td></tr><tr><td>Esch</td><td>159 547</td><td>7 531</td><td>198 114</td><td>805</td><td>38,0</td></tr><tr><td>Luxembourg</td><td>110 967</td><td>6 943</td><td>215 968</td><td>514</td><td>32,1</td></tr></tbody>
         </table>
       </div>
@@ -640,13 +671,13 @@
     </div>
     <div class="pkey">
       <span><span class="sw am" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> Anteil der Anlagen</span>
-      <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> Anteil der Leistung</span>
+      <span><span class="sw" style="background:var(--cap);display:inline-block;vertical-align:-1px"></span> Anteil der Leistung</span>
     </div>
     <div class="pair" id="paradox"><div class="bin">0–5 kW</div><div class="duo"><div class="b cnt" style="width:7.779401022644265%"><i>8 % · 2 982 inst.</i></div><div class="b cap" style="width:1.4138972809667674%"><i>1 % · 11,7 MW</i></div></div><div class="bin">5–10 kW</div><div class="duo"><div class="b cnt" style="width:40.07617656266305%"><i>40 % · 15 362 inst.</i></div><div class="b cap" style="width:14.706948640483382%"><i>15 % · 121,7 MW</i></div></div><div class="bin">10–15 kW</div><div class="duo"><div class="b cnt" style="width:25.198267765835336%"><i>25 % · 9 659 inst.</i></div><div class="b cap" style="width:14.187311178247736%"><i>14 % · 117,4 MW</i></div></div><div class="bin">15–30 kW</div><div class="duo"><div class="b cnt" style="width:23.173849525200875%"><i>23 % · 8 883 inst.</i></div><div class="b cap" style="width:24.410876132930515%"><i>24 % · 202,0 MW</i></div></div><div class="bin">30–100 kW</div><div class="duo"><div class="b cnt" style="width:1.6174475633935093%"><i>2 % · 620 inst.</i></div><div class="b cap" style="width:4.628398791540786%"><i>5 % · 38,3 MW</i></div></div><div class="bin">100–500 kW</div><div class="duo"><div class="b cnt" style="width:1.8131065428362725%"><i>2 % · 695 inst.</i></div><div class="b cap" style="width:19.129909365558913%"><i>19 % · 158,3 MW</i></div></div><div class="bin">0,5–1 MW</div><div class="duo"><div class="b cnt" style="width:0.4%"><i>0,2 % · 77 inst.</i></div><div class="b cap" style="width:6.682779456193353%"><i>7 % · 55,3 MW</i></div></div><div class="bin">1–5 MW</div><div class="duo"><div class="b cnt" style="width:0.4%"><i>0,1 % · 54 inst.</i></div><div class="b cap" style="width:14.83987915407855%"><i>15 % · 122,8 MW</i></div></div></div>
     <p class="kbnote" id="kb-note" hidden>Förderung für Gemeinden für eine Anlage auf einem Gebäude (<a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf" rel="noopener">Klimabonus Gemengen</a>, Stand 2025, jährlich angepasst): 50 % der Kosten zwischen 30 und 200 kWp (Obergrenze 675 €/kWp), 45 % zwischen 200 und 500 kWp (505 €/kWp), 40 % zwischen 0,5 und 5 MWp (425 €/kWp); Parkplatzüberdachung: 45 % (990 €/kWp). Unter 30 kWp gibt es keine Förderung aus dem Klimabonus Gemengen: der Klimabonus für Privathaushalte gilt nur für Wohnungen, auch für Gemeindewohnungen. Die Leneda-Daten sagen nicht, ob eine Anlage der Gemeinde oder Privatleuten gehört.</p>
     <details class="alt">
       <summary>Daten der Grafik</summary>
-      <table class="mini"><caption><b>Tabelle 4.</b> Daten zu Abbildung 7: Anlagen und Leistung nach Größenklasse.</caption><thead><tr><th scope="col">Größe (kW)</th><th scope="col">Anlagen</th><th scope="col">Anteil der Anlagen</th><th scope="col">MW</th><th scope="col">Anteil der Leistung</th></tr></thead><tbody id="paradox-rows"><tr><th scope="row">0–5 kW</th><td>2 982</td><td>7,8 %</td><td>11,7</td><td>1,4 %</td></tr><tr><th scope="row">5–10 kW</th><td>15 362</td><td>40,1 %</td><td>121,7</td><td>14,7 %</td></tr><tr><th scope="row">10–15 kW</th><td>9 659</td><td>25,2 %</td><td>117,4</td><td>14,2 %</td></tr><tr><th scope="row">15–30 kW</th><td>8 883</td><td>23,2 %</td><td>202,0</td><td>24,4 %</td></tr><tr><th scope="row">30–100 kW</th><td>620</td><td>1,6 %</td><td>38,3</td><td>4,6 %</td></tr><tr><th scope="row">100–500 kW</th><td>695</td><td>1,8 %</td><td>158,3</td><td>19,1 %</td></tr><tr><th scope="row">0,5–1 MW</th><td>77</td><td>0,2 %</td><td>55,3</td><td>6,7 %</td></tr><tr><th scope="row">1–5 MW</th><td>54</td><td>0,1 %</td><td>122,8</td><td>14,8 %</td></tr></tbody></table>
+      <table class="mini"><caption><b>Tabelle 4.</b> Daten zu Abbildung 7: Anlagen und Leistung nach Größenklasse.</caption><thead><tr><th scope="col">Größe (<span class="nt">kW</span>)</th><th scope="col">Anlagen</th><th scope="col">Anteil der Anlagen</th><th scope="col">MW</th><th scope="col">Anteil der Leistung</th></tr></thead><tbody id="paradox-rows"><tr><th scope="row">0–5 <span class="nt">kW</span></th><td>2 982</td><td>7,8 %</td><td>11,7</td><td>1,4 %</td></tr><tr><th scope="row">5–10 <span class="nt">kW</span></th><td>15 362</td><td>40,1 %</td><td>121,7</td><td>14,7 %</td></tr><tr><th scope="row">10–15 <span class="nt">kW</span></th><td>9 659</td><td>25,2 %</td><td>117,4</td><td>14,2 %</td></tr><tr><th scope="row">15–30 <span class="nt">kW</span></th><td>8 883</td><td>23,2 %</td><td>202,0</td><td>24,4 %</td></tr><tr><th scope="row">30–100 <span class="nt">kW</span></th><td>620</td><td>1,6 %</td><td>38,3</td><td>4,6 %</td></tr><tr><th scope="row">100–500 <span class="nt">kW</span></th><td>695</td><td>1,8 %</td><td>158,3</td><td>19,1 %</td></tr><tr><th scope="row">0,5–1 MW</th><td>77</td><td>0,2 %</td><td>55,3</td><td>6,7 %</td></tr><tr><th scope="row">1–5 MW</th><td>54</td><td>0,1 %</td><td>122,8</td><td>14,8 %</td></tr></tbody></table>
     </details>
     <figcaption><b>Abbildung 7.</b> Anteil der Anlagen und Anteil der Leistung, nach Größenklasse. <span class="u">38 332 einzeln erfasste PV-Anlagen</span></figcaption>
     <p class="src">Quelle: Leneda (data.public.lu), wöchentliche Datei je Anlage vom 9. November 2026; Auswertung: Sitraka Forler. · <a class="dl" href="/data/csv/solaire_tailles.csv" download>Daten zu Abbildung 7 (CSV, 2 kB)</a></p>
@@ -654,7 +685,7 @@
 </section>
 
 <!-- textes : scripts/grandes.py (4 langues), rendus par prerender -->
-<section id="grandes-installations"><div class="sec-head"><h2>Großanlagen: hinzugekommene Zeilen</h2><span class="sec-note">über 100 kW, von einer archivierten Erhebung zur nächsten</span></div><p class="lede">In der Erhebung vom 9. November 2026 verzeichnet die Leneda-Datei je Anlage <strong>976 Anlagen über 100 kW</strong>, alle Technologien (961 am 14. September 2026). Vom 14. September 2026 bis zum 9. November 2026, über 4 archivierte Erhebungen, jeweils mit der vorigen verglichen, sind <strong>18 Zeilen über 100 kW hinzugekommen</strong> und 3 weggefallen (davon 0 hinzugekommen in der letzten Erhebung vom 9. November 2026).</p><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-cap"><table class="bigtab booktabs"><caption id="bigtab-cap"><span class="capin"><b>Tabelle 5.</b> Zuletzt hinzugekommene Zeilen<span class="vh"> (Hinzugekommene Zeilen über 100 kW)</span></span></caption><thead><tr><th scope="col">Erhebung</th><th scope="col">Gemeinde</th><th scope="col">Technologie</th><th scope="col">Leistung (kW)</th></tr></thead><tbody><tr><td>2. November 2026</td><td><a href="/de/gemeinde/heffingen/#grandes-installations">Heffingen</a></td><td>Photovoltaik</td><td>4 623,84</td></tr><tr><td>2. November 2026</td><td><a href="/de/gemeinde/dippach/#grandes-installations">Dippach</a></td><td>Windkraft</td><td>4 260</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/rambrouch/#grandes-installations">Rambrouch</a><small>gleiche Technologie und gleiche Leistung in derselben Erhebung in Ell weggefallen: Wechsel der Gemeinde möglich</small></td><td>Windkraft</td><td>12 600</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/schieren/#grandes-installations">Schieren</a></td><td>Windkraft</td><td>4 260</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/feulen/#grandes-installations">Feulen</a></td><td>Windkraft</td><td>3 200</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/heffingen/#grandes-installations">Heffingen</a></td><td>Photovoltaik</td><td>1 612</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/differdange/#grandes-installations">Differdange</a></td><td>Photovoltaik</td><td>999,6</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/weiswampach/#grandes-installations">Weiswampach</a></td><td>Photovoltaik</td><td>497,7</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/nommern/#grandes-installations">Nommern</a><small>in derselben Erhebung ist in der Gemeinde eine Zeile über 100 kW derselben Technologie weggefallen: Erweiterung oder Korrektur möglich</small></td><td>Biogas</td><td>350</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/luxembourg/#grandes-installations">Luxembourg</a></td><td>Photovoltaik</td><td>324,9</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/bertrange/#grandes-installations">Bertrange</a></td><td>Photovoltaik</td><td>234,9</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/wiltz/#grandes-installations">Wiltz</a></td><td>Photovoltaik</td><td>226,95</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>199,5</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>199,5</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>185</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/contern/#grandes-installations">Contern</a></td><td>Photovoltaik</td><td>147,42</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/kehlen/#grandes-installations">Kehlen</a></td><td>Photovoltaik</td><td>120,12</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/vallee-de-l-ernz/#grandes-installations">Vallée de l&#x27;Ernz</a></td><td>Photovoltaik</td><td>109,02</td></tr></tbody></table></div><p class="bignote">Insgesamt 18 hinzugekommene Zeilen; die vollständige Liste, weggefallene Zeilen inbegriffen, steht in der CSV-Datei.</p><p class="kbnote"><strong>Methode.</strong> Leneda veröffentlicht jede Woche eine Datei mit einer Zeile je Anlage: Gemeinde, Technologie und installierte Leistung, ohne Kennung, ohne Datum der Inbetriebnahme und ohne Betreiber. Die Datei wird ersetzt, ohne Verlauf; lux-solaire archiviert bei jeder Erhebung eine Kopie. Ohne Kennung lässt sich eine Anlage nicht von einer Erhebung zur nächsten verfolgen: Verglichen werden, Gemeinde für Gemeinde und Technologie für Technologie, die Zeilen über 100 kW (genau 100 kW ausgenommen) zweier aufeinander folgender Kopien. Eine hinzugekommene Zeile kann eine neue Anlage sein, aber auch eine über 100 kW hinaus erweiterte Anlage, ein korrigierter Wert oder eine Zeile, die einer anderen Gemeinde zugeordnet wurde; die Datei lässt das offen. Verglichene Kopien: 14. September 2026, 26. Oktober 2026 (42 Tage nach der vorigen), 2. November 2026, 9. November 2026. <a href="/data/csv/solaire_grandes_installations.csv" download>Hinzugekommene und weggefallene Zeilen (CSV)</a></p></div></section>
+<section id="grandes-installations"><div class="sec-head"><h2>Großanlagen: hinzugekommene Zeilen</h2></div><p class="lede">In der Erhebung vom 9. November 2026 verzeichnet die Leneda-Datei je Anlage <strong>976 Anlagen über 100 kW</strong>, alle Technologien (961 am 14. September 2026). Vom 14. September 2026 bis zum 9. November 2026, über 4 archivierte Erhebungen, jeweils mit der vorigen verglichen, sind <strong>18 Zeilen über 100 kW hinzugekommen</strong> und 3 weggefallen (davon 0 hinzugekommen in der letzten Erhebung vom 9. November 2026).</p><div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-cap"><table class="bigtab booktabs"><caption id="bigtab-cap"><span class="capin"><b>Tabelle 5.</b> Zuletzt hinzugekommene Zeilen <span class="u">über 100 kW, von einer archivierten Erhebung zur nächsten</span></span></caption><thead><tr><th scope="col">Erhebung</th><th scope="col">Gemeinde</th><th scope="col">Technologie</th><th scope="col">Leistung (<span class="nt">kW</span>)</th></tr></thead><tbody><tr><td>2. November 2026</td><td><a href="/de/gemeinde/heffingen/#grandes-installations">Heffingen</a></td><td>Photovoltaik</td><td>4 623,84</td></tr><tr><td>2. November 2026</td><td><a href="/de/gemeinde/dippach/#grandes-installations">Dippach</a></td><td>Windkraft</td><td>4 260</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/rambrouch/#grandes-installations">Rambrouch</a><small>gleiche Technologie und gleiche Leistung in derselben Erhebung in Ell weggefallen: Wechsel der Gemeinde möglich</small></td><td>Windkraft</td><td>12 600</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/schieren/#grandes-installations">Schieren</a></td><td>Windkraft</td><td>4 260</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/feulen/#grandes-installations">Feulen</a></td><td>Windkraft</td><td>3 200</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/heffingen/#grandes-installations">Heffingen</a></td><td>Photovoltaik</td><td>1 612</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/differdange/#grandes-installations">Differdange</a></td><td>Photovoltaik</td><td>999,6</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/weiswampach/#grandes-installations">Weiswampach</a></td><td>Photovoltaik</td><td>497,7</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/nommern/#grandes-installations">Nommern</a><small>in derselben Erhebung ist in der Gemeinde eine Zeile über 100 kW derselben Technologie weggefallen: Erweiterung oder Korrektur möglich</small></td><td>Biogas</td><td>350</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/luxembourg/#grandes-installations">Luxembourg</a></td><td>Photovoltaik</td><td>324,9</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/bertrange/#grandes-installations">Bertrange</a></td><td>Photovoltaik</td><td>234,9</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/wiltz/#grandes-installations">Wiltz</a></td><td>Photovoltaik</td><td>226,95</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>199,5</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>199,5</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/esch-sur-alzette/#grandes-installations">Esch-sur-Alzette</a></td><td>Photovoltaik</td><td>185</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/contern/#grandes-installations">Contern</a></td><td>Photovoltaik</td><td>147,42</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/kehlen/#grandes-installations">Kehlen</a></td><td>Photovoltaik</td><td>120,12</td></tr><tr><td>26. Oktober 2026</td><td><a href="/de/gemeinde/vallee-de-l-ernz/#grandes-installations">Vallée de l&#x27;Ernz</a></td><td>Photovoltaik</td><td>109,02</td></tr></tbody></table></div><p class="bignote">Insgesamt 18 hinzugekommene Zeilen; die vollständige Liste, weggefallene Zeilen inbegriffen, steht in der CSV-Datei.</p><p class="kbnote"><strong>Methode.</strong> Leneda veröffentlicht jede Woche eine Datei mit einer Zeile je Anlage: Gemeinde, Technologie und installierte Leistung, ohne Kennung, ohne Datum der Inbetriebnahme und ohne Betreiber. Die Datei wird ersetzt, ohne Verlauf; lux-solaire archiviert bei jeder Erhebung eine Kopie. Ohne Kennung lässt sich eine Anlage nicht von einer Erhebung zur nächsten verfolgen: Verglichen werden, Gemeinde für Gemeinde und Technologie für Technologie, die Zeilen über 100 kW (genau 100 kW ausgenommen) zweier aufeinander folgender Kopien. Eine hinzugekommene Zeile kann eine neue Anlage sein, aber auch eine über 100 kW hinaus erweiterte Anlage, ein korrigierter Wert oder eine Zeile, die einer anderen Gemeinde zugeordnet wurde; die Datei lässt das offen. Verglichene Kopien: 14. September 2026, 26. Oktober 2026 (42 Tage nach der vorigen), 2. November 2026, 9. November 2026. <a href="/data/csv/solaire_grandes_installations.csv" download>Hinzugekommene und weggefallene Zeilen (CSV)</a></p></div></section>
 
 <aside class="teaser" aria-labelledby="teaser-h">
   <div>
@@ -667,7 +698,6 @@
 <section id="communes">
   <div class="sec-head">
     <h2>Die 100 Gemeinden</h2>
-    <span class="sec-note">zum Sortieren auf eine Spaltenüberschrift klicken</span>
   </div>
   <p class="lede">Jede Gemeinde hat ihre eigene Seite: Klicken Sie auf ihren Namen in der Tabelle. <a href="/de/fuer-gemeinden/">Sie arbeiten für eine Gemeinde?</a></p>
   <div class="toolbar">
@@ -677,15 +707,15 @@
   </div>
   <div class="tblwrap" role="region" tabindex="0" aria-labelledby="tbl-cap">
     <table id="tbl">
-      <caption id="tbl-cap"><span class="capin"><b>Tabelle 6.</b> Leistung, Wachstum und Kennzahlen pro Einwohner der 100 Gemeinden.</span></caption>
+      <caption id="tbl-cap"><span class="capin"><b>Tabelle 6.</b> Leistung, Wachstum und Kennzahlen pro Einwohner der 100 Gemeinden. <span class="u">zum Sortieren auf eine Spaltenüberschrift klicken</span></span></caption>
       <thead><tr>
         <th data-k="c" data-s="str" aria-sort="none"><button type="button">Gemeinde</button></th>
         <th data-k="k" data-s="str" aria-sort="none"><button type="button">Kanton</button></th>
-        <th data-k="pv" aria-sort="descending"><button type="button">PV kW</button> <span class="arr" aria-hidden="true">▼</span></th>
+        <th data-k="pv" aria-sort="descending"><button type="button">PV <span class="nt">kW</span></button> <span class="arr" aria-hidden="true">▼</span></th>
         <th data-k="n" aria-sort="none"><button type="button">Anlagen</button></th>
         <th data-k="share" aria-sort="none"><button type="button">PV-Anteil</button></th>
-        <th data-k="g" aria-sort="none"><button type="button">Δ kW seit Q1 2025</button></th>
-        <th data-k="tot" aria-sort="none"><button type="button">Total kW</button></th>
+        <th data-k="g" aria-sort="none"><button type="button">Δ <span class="nt">kW</span> seit Q1 2025</button></th>
+        <th data-k="tot" aria-sort="none"><button type="button">Total <span class="nt">kW</span></button></th>
         <th data-k="wpc" aria-sort="none"><button type="button">W/Einw.</button></th>
         <th data-k="ipk" aria-sort="none"><button type="button">Anlagen/1 000 Einw.</button></th>
       </tr></thead>
@@ -729,13 +759,16 @@
         <button type="button" id="rt-copy">Link kopieren</button>
         <button type="button" id="rt-native" hidden>Teilen…</button>
       </p>
+      <h3 class="rt-h3b">Kontakt</h3>
+      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20https%3A%2F%2Fsolaire.sitraka.lu%2Fde%2F">Fehler melden</a></p>
+      <p class="rt-note">Autor: <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
     </div>
     <div>
       <h3>Diese Seite zitieren</h3>
-      <pre class="rt-cite" id="rt-cite-txt">https://solaire.sitraka.lu/de/</pre>
+      <pre class="rt-cite" id="rt-cite-txt" tabindex="0" role="region" aria-label="Zitat">https://solaire.sitraka.lu/de/</pre>
       <p class="rt-row"><button type="button" id="rt-copy-txt">Zitat kopieren</button></p>
       <details class="rt-bib"><summary>BibTeX</summary>
-        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <pre class="rt-cite" id="rt-cite-bib" tabindex="0" role="region" aria-label="BibTeX"></pre>
         <p class="rt-row"><button type="button" id="rt-copy-bib">BibTeX kopieren</button></p>
       </details>
     </div>
@@ -743,11 +776,6 @@
       <h3>Daten herunterladen</h3>
       <ul class="rt-dl"><li><a href="/data/csv/solaire_communes.csv" download>PV-Leistung je Gemeinde (100 Gemeinden)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_cantons.csv" download>PV-Leistung je Kanton (12 Kantone)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_filieres.csv" download>Installierte Leistung je Technologie und Erhebung</a> <small>CSV</small></li><li><a href="/data/csv/solaire_tailles.csv" download>PV-Anlagen nach Größenklasse</a> <small>CSV</small></li><li><a href="/data/csv/solaire_communes_tailles.csv" download>PV-Anlagen je Gemeinde und Größenklasse</a> <small>CSV</small></li><li><a href="/data/csv/solaire_communes_tranches_aides.csv" download>PV-Anlagen je Gemeinde, Stufen der Gemeindeförderung (Klimabonus Gemengen)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_grandes_installations.csv" download>Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind (21 Zeilen)</a> <small>CSV</small></li><li><a href="/data/data.de.json" download>Alle Daten dieser Seite (JSON)</a> <small>JSON</small></li></ul>
       <p class="rt-note">Lizenz und Quellen: siehe <a href="#methode">Methode</a>.</p>
-    </div>
-    <div>
-      <h3>Kontakt</h3>
-      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20https%3A%2F%2Fsolaire.sitraka.lu%2Fde%2F">Fehler melden</a></p>
-      <p class="rt-note">Autor: <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
     </div>
   </div>
   <p class="rt-sr" id="rt-live" aria-live="polite"></p>
@@ -763,14 +791,16 @@
 <!--COLOPHON_COMMON-->
 <div class="co-b">
   <p><a href="/de/fuer-gemeinden/">Für Gemeinden</a>: eine Seite pro Gemeinde, mit ihren Daten.</p>
-  <p>Kontakt: <a href="https://sitraka.lu/de/contact/?from=solaire">dem Autor schreiben</a></p>
+  <p>Kontakt: <a href="https://sitraka.lu/de/contact/?from=solaire">dem Autor schreiben</a> · <a href="https://sitraka.lu/de/privacy/">Datenschutzerklärung</a></p>
   <p>Analyse und Visualisierung: <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + natives SVG, ohne Bibliothek · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">Quellcode</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
   <p>Agenda, Newsletter und weitere Arbeiten: <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
   <p>Vom selben Autor, für die Pause: <a href="https://ratrace.sitraka.lu/">Rat Race</a>, das Grenzgänger-Spiel (65 Städte, eine Strecke pro Tag).</p>
 </div>
 <div class="co-series">
   <p>Diese Website ist Teil einer Serie von Weiterverwendungen luxemburgischer offener Daten.</p>
-  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tabelle A.</b> Die Open-Data-Serie · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">Nr.</span></th><th scope="col">Website</th><th scope="col">Thema</th><th scope="col">Adresse</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="page">lux-solaire</a></th><td>Photovoltaik: angeschlossene Leistung je Gemeinde</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Gründungen, Überleben und Konkurse von Unternehmen</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Die nächste Indextranche der Löhne</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Staatsschulden und Staatsfinanzen</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>Hitze, Gemeinde für Gemeinde</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Gesundheitskarte: Betten, Personal, Wartezeiten</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>Indien und Luxemburg in Zahlen</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  <details class="co-series-d"><summary>Open-Data-Serie · Luxemburg (8)</summary>
+  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tabelle A.</b> Die Open-Data-Serie · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">Nr.</span></th><th scope="col">Website</th><th scope="col">Thema</th><th scope="col">Adresse</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="true">lux-solaire</a></th><td>Photovoltaik: angeschlossene Leistung je Gemeinde</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Gründungen, Überleben und Konkurse von Unternehmen</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Ein IT-Dienstleistungsunternehmen gründen: bezifferte Marktstudie</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Die nächste Indextranche der Löhne</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Staatsschulden und Staatsfinanzen</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>Hitze, Gemeinde für Gemeinde</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Gesundheitskarte: Betten, Personal, Wartezeiten</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>Indien und Luxemburg in Zahlen</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  </details><script>(function(d){if(d&&matchMedia('(min-width:768px)').matches)d.open=true})(document.currentScript.previousElementSibling)</script>
 </div>
 <!--/COLOPHON_COMMON-->
 </footer>
@@ -802,10 +832,13 @@ const S = D.series, last = S[S.length-1], first = S[0];
 document.getElementById('k-pv').textContent = fmt1(last.pv)+' MW';
 document.getElementById('k-growth').textContent = '+'+Math.round((last.pv/first.pv-1)*100)+' %';
 document.getElementById('k-n').textContent = fmt(D.meta.pv_n);
-const totLast = TECHS.reduce((a,t)=>a+last[t.k],0);
+/* sommes arrondies au millionième : les valeurs ont 2 décimales, la somme flottante 1277,4999… vaut 1277,5
+   (même total, quel que soit l'ordre d'addition, pour l'indicateur et l'étiquette de la figure 1) */
+const sum6 = (o,ks)=>+ks.reduce((a,k)=>a+o[k],0).toFixed(6);
+const totLast = sum6(last, TECHS.map(t=>t.k));
 document.getElementById('k-share').textContent = fmt1(last.pv/totLast*100)+' %';
 document.getElementById('k-tot').textContent = fmt(Math.round(totLast));
-const totFirst = TECHS.reduce((a,t)=>a+first[t.k],0);
+const totFirst = sum6(first, TECHS.map(t=>t.k));
 document.getElementById('growth-total').textContent = Math.round(totLast-totFirst);
 
 /* ---- stacked area (SVG) ---- */
@@ -816,14 +849,14 @@ function drawArea(){
   const W=nar?Math.max(280,Math.round(cw)):960, H=nar?260:380, mL=nar?40:52, mR=nar?6:16, mT=14, mB=34;
   const iw=W-mL-mR, ih=H-mT-mB;
   const order=['biogas','hydro','chp','biomass','wind','pv']; // stack bottom->top, pv on top
-  const stacks = S.map(s=>{let acc=0; const o={label:s.label,vals:{}}; order.forEach(k=>{o.vals[k]=[acc,acc+s[k]]; acc+=s[k];}); o.total=acc; return o;});
+  const stacks = S.map(s=>{let acc=0; const o={label:s.label,vals:{}}; order.forEach(k=>{o.vals[k]=[acc,acc+s[k]]; acc+=s[k];}); o.total=+acc.toFixed(6); return o;});
   const maxY = Math.ceil(Math.max(...stacks.map(s=>s.total))/200)*200;
   const x=i=>mL+iw*i/(S.length-1), y=v=>mT+ih*(1-v/maxY);
   let g='';
   // gridlines
   for(let v=0;v<=maxY;v+=200){
     g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?'#B9BCB2':'#E7E8E1'}" stroke-width="1"/>`;
-    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${v}</text>`;
+    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
   }
   order.forEach(k=>{
     const t=TECHS.find(t=>t.k===k);
@@ -880,7 +913,7 @@ hbars('top-growth', topG, topG[0].g, r=>r.g, r=>`<b>+${fmt(Math.round(r.g))}</b>
 
 /* ---- par habitant (RNPP) ---- */
 const topW=[...D.communes].sort((a,b)=>b.wpc-a.wpc).slice(0,10);
-hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<b>${fmt(r.wpc)}</b>${' W/Einw.'} · ${fmt1(r.rpk)}${' Dächer/1 000'}`);
+hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<span class="nw"><b>${fmt(r.wpc)}</b>${' W/Einw.'}</span> · <span class="nw">${fmt1(r.rpk)}${' Dächer/1 000'}</span>`);
 document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   `<tr><td>${escH(k.k)}</td><td>${fmt(Math.round(k.pv))}</td><td>${fmt(k.n)}</td><td>${fmt(k.pop)}</td><td>${fmt(k.wpc)}</td><td>${fmt1(k.ipk)}</td></tr>`).join('');
 
@@ -943,7 +976,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 /* ---- « Votre commune » (en-tête) : la page de la commune choisie ; sans JS, le formulaire mène au tableau ---- */
 (function(){
   const f=document.querySelector('form.pick'), s=document.getElementById('pick-c');
-  if(f&&s) f.addEventListener('submit',e=>{ if(s.value){ e.preventDefault(); location.href=s.value; } });
+  if(f&&s) f.addEventListener('submit',e=>{ if(s.value){ e.preventDefault(); window.solEv&&solEv('page', s.value.split('/').slice(-2)[0]); location.href=s.value; } });
 })();
 
 /* ---- table ---- */
@@ -990,4 +1023,4 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 })();
 </script>
 <script defer src="/rt.js"></script>
-<script defer src="/ev.js"></script>
+<script defer src="/ev.js?v=f10cd30cc6"></script>

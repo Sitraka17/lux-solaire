@@ -1,5 +1,38 @@
 # CONTEXT : lux-solaire (notes internes, jamais servies : hors de la liste blanche de scripts/make_dist.py)
 
+## Relectures du 9/11/2026 (visuel, portugais, technique, accessibilité, offre) : corrections
+
+- **Typographie FR** : `ossature.fr_typo` (pages FR du build et de communes.py) : insécable U+00A0 avant « : », fine
+  U+202F avant « ; ! ? » et dans « », sur le seul texte (ni attributs, ni URL, ni scripts). Pages communales : nombres
+  et « 28,4 / 1 000 » en U+00A0 (la fine U+202F est quasi invisible en police système). `ossature.unit_case` :
+  « kW » des en-têtes en capitales dans `<span class="nt">`. `ossature.pt_prose` : « em Luxembourg » → « na cidade do Luxemburgo ».
+- **Ossature** : bandeau = `<header class="masthead">` (repère banner), sélecteur dans `<nav class="langs-nav">` ;
+  site courant de la série en `aria-current="true"` ; résumé mobile sans aria-label ; fil d'Ariane en gris ;
+  tableau A replié dans `details.co-series-d` (ouvert ≥ 768 px par un script, replié sans JS) ; lien
+  « politique de confidentialité » (sitraka.lu, fr/de, sinon page anglaise ou française) dans le colophon.
+- **Appel principal** « Vous voulez ça pour votre commune ? » → page « Pour les communes » de la langue (plus le
+  formulaire de contact) ; pages communales : simulateur et offre côte à côte (`p.contact-cta.cta-pair`).
+- **Compteur** : ev.js reconnaît /pt/simulador/ et /pt/municipio/, compte les liens sitraka.lu/…/contact/
+  (`contact` = « sitraka.lu/contact », accepté par functions/e.js) ; sélecteur « Votre commune » → `page` ;
+  ev.js versionné `?v=` (`ossature.EV_SRC`).
+- **Simulateur** : source `<p class="src">` sous les figures 1-3 et tableaux 1-8 (renvois aux sources de la méthode) ;
+  sous-titres mono des outils passés dans les légendes ; `.fig{margin:18px 0 16px}` ; surtitre réduit à
+  « Simulateur » sous 768 px (`.eb-tail`) ; ligne « Variation du CO₂ » (au lieu de « Baisse », valeurs signées) ;
+  marque blanche : `window.SIM_CONFIG = {accent, nom, logo, aidesLocales}` lu à l'initialisation (défauts = page
+  publique, aucune différence visible) ; variables `--rt-*` sur `:root` (contour du bouton « # »).
+- **Tableau de bord** : total national arrondi après somme au millionième (`sum6`, Python `round(…, 6)`) : 1 278 MW
+  partout (l'indicateur affichait 1 277, la figure 1 278) ; axe de la figure 1 avec séparateur de milliers ;
+  « −15,5 MW » (signe moins) ; grilles 1fr/1fr, cartes des classements à hauteur égale ; « Partager » et « Contact »
+  dans la même colonne ; graphique des tailles sur une colonne sous 520 px ; barres de capacité en couleur pleine
+  `--cap` ; ombres de défilement du tableau des 100 communes ; sous-titre de la figure 6 reformulé (« second chiffre : … »).
+- **Pages communales** : tableaux 2 et 3 dans une carte, `<colgroup>` commun (fixe ≥ 768 px) ; « Toutes les
+  communes » → `…/pour-les-communes/#liste` ; JSON-LD `@graph` WebPage + BreadcrumbList ; `og:locale` ; « T1 2025 » ;
+  rangs « 86ᵉ ».
+- **« Pour les communes »** : Figure 3 = maquette du simulateur en marque blanche (couleur d'exemple, aucun montant,
+  prime communale fictive), Tableau 2 = maquette du bilan (colonnes, « à renseigner ») ; ligne éditeur (`who`).
+- **Portugais** : « Tabela » partout, « quota », « FV », « predefinido », tarifa de injeção garantida, calques corrigés.
+- Tests : `tests/test_relecture_9_11.py`.
+
 ## Lot 3 du cahier des charges UX/UI : simulateur, 5 langues (9/11/2026)
 
 - **Parcours** : sommaire numéroté `nav.toc` (Production, Rentabilité, Chauffage) sous les badges ; dans chaque outil,

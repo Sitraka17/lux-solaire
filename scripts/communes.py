@@ -38,16 +38,14 @@ SRC_LABEL = {"fr": ("Sources", "population", "habitants au"), "en": ("Sources", 
 SKIP = {"fr": "Aller au contenu", "en": "Skip to content", "de": "Zum Inhalt springen",
         "lb": "Op den Inhalt sprangen", "pt": "Ir para o conteúdo"}   # lien d'évitement (mêmes libellés que les dictionnaires des gabarits)
 SMALL_BINS = 4   # classes détaillées de 30 kW ou moins (0-5, 5-10, 10-15, 15-30)
-# Appel à l'action vers la page de contact de sitraka.lu (mêmes textes et style .contact-cta
-# que les gabarits ; le paramètre from= fixe l'objet du courriel côté sitraka.lu)
-_CONTACT_TXT = {"fr": ("https://sitraka.lu/fr/contact/?from=solaire", "Vous voulez ça pour votre commune\u00a0? Parlons-en"),
-                "en": ("https://sitraka.lu/contact/?from=solaire", "Want this for your commune? Let's talk"),
-                "de": ("https://sitraka.lu/de/contact/?from=solaire", "Wollen Sie das für Ihre Gemeinde? Sprechen wir"),
-                "lb": ("https://sitraka.lu/contact/?from=solaire", "Wëllt Dir dat fir Är Gemeng? Schwätze mer driwwer"),
-                # pas de page de contact en portugais sur sitraka.lu : page française, signalée
-                "pt": ("https://sitraka.lu/fr/contact/?from=solaire", "Quer isto para o seu município? Vamos falar (em francês)")}
-CONTACT = {l: f'<p class="contact-cta"><a href="{u}">{s} <span aria-hidden="true">→</span></a></p>'
-           for l, (u, s) in _CONTACT_TXT.items()}
+# Appel à l'action des pages communales : vers la page d'offre « Pour les communes » de la langue (qui mène
+# elle-même au contact), mêmes textes que l'encadré .contact-cta des gabarits (dictionnaires)
+_CONTACT_TXT = {"fr": "Vous voulez ça pour votre commune\u00a0? Voir «\u00a0Pour les communes\u00a0»",
+                "en": "Want this for your commune? See “For municipalities”",
+                "de": "Wollen Sie das für Ihre Gemeinde? Zur Seite „Für Gemeinden“",
+                "lb": "Wëllt Dir dat fir Är Gemeng? Op d'Säit „Fir Gemengen“",
+                "pt": "Quer isto para o seu município? Ver a página «Para os municípios»"}
+CONTACT = {l: f'<a href="{FORPATH[l]}">{t} <span aria-hidden="true">→</span></a>' for l, t in _CONTACT_TXT.items()}
 
 # Klimabonus Gemengen : colonne « Aide » et note des pages, générées depuis baremes.json
 _KBG = baremes.gemengen()
@@ -100,7 +98,7 @@ L2 = {
     },
     "pt": {
         "rankcol": "N.º",
-        "fig1": lambda c: f"Parte das instalações e parte da potência por classe de potência, em {c}.",
+        "fig1": lambda c: f"Quota das instalações e quota da potência por classe de potência, em {c}.",
         "src_inst": lambda d: f"Fonte: Leneda (data.public.lu), ficheiro semanal por instalação de {d}; tratamento: {_SF}.",
         "t_kb": lambda c: f"Instalações em {c} segundo os escalões do Klimabonus Gemengen, e ajuda prevista para uma central municipal.",
         "src_kb": lambda d: (f"Fontes: Leneda (data.public.lu), ficheiro por instalação de {d}; guia prático do Klimabonus "
@@ -113,6 +111,7 @@ L2 = {
 # Page « Pour les communes », structurée en page d'offre (L2.15) : AUCUN prix, jamais « conseiller en
 # énergie » ni « audit », aucun délai ni engagement ; contrôlé par check_offer() à chaque build.
 _REPO = "https://github.com/Sitraka17/lux-solaire"
+FILL = {'fr': 'à renseigner', 'en': 'to be filled in', 'de': 'einzutragen', 'lb': 'auszefëllen', 'pt': 'a preencher'}   # cellules de la maquette du bilan (aucun chiffre)
 DEMO_COMMUNE = "differdange"   # exemple de données publiques, pas une référence client
 _CT = {"fr": "https://sitraka.lu/fr/contact/?from=solaire-communes", "en": "https://sitraka.lu/contact/?from=solaire-communes",
        "de": "https://sitraka.lu/de/contact/?from=solaire-communes", "lb": "https://sitraka.lu/contact/?from=solaire-communes",
@@ -128,7 +127,7 @@ FOR2 = {
                   ("Rentabilité", "Klimabonus ou rémunération garantie de l'injection, retour sur investissement"),
                   ("Chauffage", "pompe à chaleur et panneaux comparés au chauffage actuel")),
         "f2link": lambda k: f"Ouvrir le simulateur préréglé sur le canton {de_k(k)}",
-        "f2cap": "Le simulateur citoyen, préréglé sur le canton.",
+        "f2cap": 'Le simulateur citoyen public, préréglé sur le canton : sans les couleurs ni les aides de la commune.',
         "src_sim": f"Sources : PVGIS (Commission européenne), guichet.lu, ILR ; détail et dates de consultation dans la méthode du simulateur.",
         "s2": "2. Ce que la commune peut obtenir",
         "t1cap": "Composantes, contenu et sources des données.",
@@ -151,6 +150,15 @@ FOR2 = {
         "s4": "4. Contact",
         "btn": "Écrire pour une démonstration",
         "s5": "5. ",
+        "f3h": 'Maquette · exemple fictif',
+        "f3lead": "Le même simulateur aux couleurs d'une commune, avec une ligne pour son aide locale :",
+        "f3rows": (("Klimabonus de l'État", 'calculé par le simulateur (barème guichet.lu)'), ('Prime de la commune', 'calculée selon le règlement communal, fourni par la commune'), ('Reste à payer', 'calculé par le simulateur, les deux aides déduites')),
+        "f3cols": ('Ligne du résultat', 'Calcul'),
+        "f3cap": "Maquette du simulateur en marque blanche : couleur d'exemple, aucun montant ; la prime communale est un exemple fictif.",
+        "t2cap": 'Maquette du bilan énergétique du patrimoine communal : colonnes prévues, sans aucun chiffre.',
+        "t2cols": ('Bâtiment', 'Consommation (kWh/an)', 'Production photovoltaïque (kWh/an)', 'Évolution sur un an'),
+        "t2rows": ('Bâtiment communal 1 (exemple)', 'Bâtiment communal 2 (exemple)'),
+        "who": 'Site conçu et publié par Sitraka Forler (analyse et visualisation des données) : <a href="https://sitraka.lu/fr/">sitraka.lu</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler">LinkedIn</a> · <a href="https://sitraka.lu/fr/privacy/">politique de confidentialité</a>.',
     },
     "en": {
         "s1": "1. Demonstration",
@@ -162,7 +170,7 @@ FOR2 = {
                   ("Return", "Klimabonus or guaranteed feed-in payment, payback period"),
                   ("Heating", "heat pump and panels compared with the current heating")),
         "f2link": lambda k: f"Open the calculator preset to the canton of {k}",
-        "f2cap": "The citizen calculator, preset to the canton.",
+        "f2cap": "The public citizen calculator, preset to the canton: without the municipality's colours or subsidies.",
         "src_sim": "Sources: PVGIS (European Commission), guichet.lu, ILR; details and access dates in the calculator's method.",
         "s2": "2. What a municipality can get",
         "t1cap": "Components, content and data sources.",
@@ -185,6 +193,15 @@ FOR2 = {
         "s4": "4. Contact",
         "btn": "Write to request a demonstration",
         "s5": "5. ",
+        "f3h": 'Mock-up · fictitious example',
+        "f3lead": "The same calculator in a municipality's colours, with a line for its local subsidy:",
+        "f3rows": (('State Klimabonus', 'computed by the calculator (guichet.lu scale)'), ('Municipal grant', 'computed from the municipal regulation, supplied by the municipality'), ('Left to pay', 'computed by the calculator, both subsidies deducted')),
+        "f3cols": ('Result line', 'Calculation'),
+        "f3cap": 'Mock-up of the white-label calculator: example colour, no amounts; the municipal grant is a fictitious example.',
+        "t2cap": 'Mock-up of the energy report on municipal buildings: planned columns, with no figures.',
+        "t2cols": ('Building', 'Consumption (kWh/year)', 'Solar PV production (kWh/year)', 'Change over one year'),
+        "t2rows": ('Municipal building 1 (example)', 'Municipal building 2 (example)'),
+        "who": 'Site designed and published by Sitraka Forler (data analysis and visualisation): <a href="https://sitraka.lu/">sitraka.lu</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler">LinkedIn</a> · <a href="https://sitraka.lu/privacy/">privacy policy</a>.',
     },
     "de": {
         "s1": "1. Demonstration",
@@ -196,7 +213,7 @@ FOR2 = {
                   ("Rentabilität", "Klimabonus oder garantierte Einspeisevergütung, Amortisation"),
                   ("Heizung", "Wärmepumpe und Paneele im Vergleich zur bestehenden Heizung")),
         "f2link": lambda k: f"Rechner öffnen, voreingestellt auf den Kanton {k}",
-        "f2cap": "Der Rechner für Bürgerinnen und Bürger, auf den Kanton voreingestellt.",
+        "f2cap": 'Der öffentliche Rechner für Bürgerinnen und Bürger, auf den Kanton voreingestellt: ohne die Farben und Förderungen der Gemeinde.',
         "src_sim": "Quellen: PVGIS (Europäische Kommission), guichet.lu, ILR; Einzelheiten und Abrufdaten in der Methode des Rechners.",
         "s2": "2. Was die Gemeinde erhalten kann",
         "t1cap": "Bestandteile, Inhalt und Datenquellen.",
@@ -219,6 +236,15 @@ FOR2 = {
         "s4": "4. Kontakt",
         "btn": "Für eine Demonstration schreiben",
         "s5": "5. ",
+        "f3h": 'Entwurf · fiktives Beispiel',
+        "f3lead": 'Derselbe Rechner in den Farben einer Gemeinde, mit einer Zeile für ihre lokale Förderung:',
+        "f3rows": (('Klimabonus des Staates', 'vom Rechner berechnet (Tabelle von guichet.lu)'), ('Prämie der Gemeinde', 'nach dem Gemeindereglement berechnet, von der Gemeinde geliefert'), ('Verbleibende Kosten', 'vom Rechner berechnet, beide Förderungen abgezogen')),
+        "f3cols": ('Ergebniszeile', 'Berechnung'),
+        "f3cap": 'Entwurf des Rechners als White Label: Beispielfarbe, keine Beträge; die Gemeindeprämie ist ein fiktives Beispiel.',
+        "t2cap": 'Entwurf der Energiebilanz der Gemeindegebäude: vorgesehene Spalten, ohne Zahlen.',
+        "t2cols": ('Gebäude', 'Verbrauch (kWh/Jahr)', 'Photovoltaik-Erzeugung (kWh/Jahr)', 'Veränderung in einem Jahr'),
+        "t2rows": ('Gemeindegebäude 1 (Beispiel)', 'Gemeindegebäude 2 (Beispiel)'),
+        "who": 'Website konzipiert und veröffentlicht von Sitraka Forler (Datenanalyse und -visualisierung): <a href="https://sitraka.lu/de/">sitraka.lu</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler">LinkedIn</a> · <a href="https://sitraka.lu/de/privacy/">Datenschutzerklärung</a>.',
     },
     "lb": {
         "s1": "1. Demonstratioun",
@@ -230,7 +256,7 @@ FOR2 = {
                   ("Rentabilitéit", "Klimabonus oder garantéiert Vergütung fir d'Aspeisung, Amortisatioun"),
                   ("Heizung", "Wäermepompel a Panneauen am Verglach mat der aktueller Heizung")),
         "f2link": lambda k: f"De Rechner opmaachen, op de Kanton {k} agestallt",
-        "f2cap": "De Rechner fir d'Bierger, op de Kanton agestallt.",
+        "f2cap": "Den ëffentleche Rechner fir d'Bierger, op de Kanton agestallt: ouni d'Faarwen an d'Hëllefe vun der Gemeng.",
         "src_sim": "Quellen: PVGIS (Europäesch Kommissioun), guichet.lu, ILR; Detailer an Datumer vun der Consultatioun an der Method vum Rechner.",
         "s2": "2. Wat d'Gemeng kréie kann",
         "t1cap": "Bestanddeeler, Inhalt an Donnéequellen.",
@@ -253,6 +279,15 @@ FOR2 = {
         "s4": "4. Kontakt",
         "btn": "Fir eng Demonstratioun schreiwen",
         "s5": "5. ",
+        "f3h": 'Maquette · fiktiivt Beispill',
+        "f3lead": 'Deeselwechte Rechner an de Faarwe vun enger Gemeng, mat enger Linn fir hir lokal Hëllef:',
+        "f3rows": (('Klimabonus vum Staat', 'vum Rechner gerechent (Bareem vu guichet.lu)'), ('Prime vun der Gemeng', 'no dem Gemengereglement gerechent, vun der Gemeng geliwwert'), ('Bleift ze bezuelen', 'vum Rechner gerechent, mat béiden Hëllefen ofgezunn')),
+        "f3cols": ('Resultatlinn', 'Berechnung'),
+        "f3cap": "Maquette vum Rechner als White Label: Beispillfaarf, keng Montanten; d'Gemengeprime ass e fiktiivt Beispill.",
+        "t2cap": 'Maquette vum Energiebilan vun de Gemengegebaier: virgesinn Kolonnen, ouni Zuelen.',
+        "t2cols": ('Gebai', 'Verbrauch (kWh/Joer)', 'Fotovoltaik-Produktioun (kWh/Joer)', 'Entwécklung iwwer ee Joer'),
+        "t2rows": ('Gemengegebai 1 (Beispill)', 'Gemengegebai 2 (Beispill)'),
+        "who": 'Site konzipéiert a publizéiert vum Sitraka Forler (Analys a Visualiséierung vun Donnéeën): <a href="https://sitraka.lu/">sitraka.lu</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler">LinkedIn</a> · <a href="https://sitraka.lu/privacy/">Dateschutz (op Englesch)</a>.',
     },
     "pt": {
         "s1": "1. Demonstração",
@@ -261,10 +296,10 @@ FOR2 = {
         "f2h": "Simulador para os cidadãos",
         "f2lead": "Três ferramentas para os habitantes, calculadas no navegador:",
         "tools": (("Produção", "o que produziria uma instalação no seu telhado (perfil PVGIS)"),
-                  ("Rentabilidade", "Klimabonus ou remuneração garantida da injeção, retorno do investimento"),
+                  ("Rentabilidade", "Klimabonus ou tarifa de injeção garantida, retorno do investimento"),
                   ("Aquecimento", "bomba de calor e painéis comparados com o aquecimento atual")),
         "f2link": lambda k: f"Abrir o simulador predefinido para o cantão de {k}",
-        "f2cap": "O simulador para os cidadãos, predefinido para o cantão.",
+        "f2cap": 'O simulador público para os cidadãos, predefinido para o cantão: sem as cores nem as ajudas do município.',
         "src_sim": "Fontes: PVGIS (Comissão Europeia), guichet.lu, ILR; pormenores e datas de consulta no método do simulador.",
         "s2": "2. O que o município pode obter",
         "t1cap": "Componentes, conteúdo e fontes dos dados.",
@@ -287,6 +322,15 @@ FOR2 = {
         "s4": "4. Contacto",
         "btn": "Escrever para pedir uma demonstração (em francês)",
         "s5": "5. ",
+        "f3h": 'Maqueta · exemplo fictício',
+        "f3lead": 'O mesmo simulador com as cores de um município, com uma linha para a sua ajuda local:',
+        "f3rows": (('Klimabonus do Estado', 'calculado pelo simulador (tabela do guichet.lu)'), ('Prémio do município', 'calculado segundo o regulamento municipal, fornecido pelo município'), ('Valor a pagar', 'calculado pelo simulador, deduzidas as duas ajudas')),
+        "f3cols": ('Linha do resultado', 'Cálculo'),
+        "f3cap": 'Maqueta do simulador em marca branca: cor de exemplo, sem montantes; o prémio municipal é um exemplo fictício.',
+        "t2cap": 'Maqueta do balanço energético do património municipal: colunas previstas, sem qualquer número.',
+        "t2cols": ('Edifício', 'Consumo (kWh/ano)', 'Produção fotovoltaica (kWh/ano)', 'Evolução num ano'),
+        "t2rows": ('Edifício municipal 1 (exemplo)', 'Edifício municipal 2 (exemplo)'),
+        "who": 'Sítio concebido e publicado por Sitraka Forler (análise e visualização de dados): <a href="https://sitraka.lu/">sitraka.lu</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler">LinkedIn</a> · <a href="https://sitraka.lu/fr/privacy/">política de privacidade (em francês)</a>.',
     },
 }
 # mots interdits sur la page d'offre (aucun prix, aucun « audit », jamais « conseiller en énergie »)
@@ -347,12 +391,12 @@ def esc(s):
 def _q_pt(label):
     """Relevé trimestriel dans la prose portugaise : « 2025 T1 » (libellé-donnée) → « T1 2025 »,
     comme __FIRSTQ__ du tableau de bord ; un autre libellé (relevé hebdomadaire) est rendu tel quel."""
-    return re.sub(r"^(\d{4}) T(\d)$", r"T\2 \1", label)
+    return re.sub(r"^(\d{4}) ([TQ]\d)$", r"\2 \1", label)
 
 
 def _ord(r, lang):
     if lang == "fr":
-        return "1er" if r == 1 else f"{r}e"
+        return "1\u1d49\u02b3" if r == 1 else f"{r}\u1d49"   # 1ᵉʳ, 86ᵉ (lettres supérieures)
     if lang == "pt":
         return f"{r}.º"
     if lang == "en":
@@ -563,7 +607,7 @@ S = {
             f"instalações</strong>, ou seja, {wpc} W por habitante (mediana dos municípios: {med} W). Desde o "
             f"levantamento do {_q_pt(fq)}: <strong>{gkw} kW</strong> ({gp} %)."),
         "k_pv": "Potência fotovoltaica", "k_pv_sub": lambda n: f"{n} instalações",
-        "k_share": "Parte do fotovoltaico", "k_share_sub": lambda t: f"da potência descentralizada ({t} MW, todas as tecnologias)",
+        "k_share": "Quota do fotovoltaico", "k_share_sub": lambda t: f"da potência descentralizada ({t} MW, todas as tecnologias)",
         "k_wpc": "W por habitante", "k_ipk": "Instalações / 1\u202f000 hab.",
         "k_ipk_sub": lambda rk, r: f"{rk} · telhados de 30 kW ou menos: {r} / 1\u202f000",
         "k_g": lambda fq: f"Acréscimos desde o {_q_pt(fq)}", "k_hist": lambda d: f"Desde {d}",
@@ -572,8 +616,8 @@ S = {
         "med": lambda m: f"mediana {m}",
         "sizes_h": "Dimensões das instalações",
         "sizes_lede": lambda c, sn, sc: (f"Em {c}, <strong>{sn} % das instalações têm 30 kW ou menos</strong> "
-                                         f"(sobretudo telhados), para <strong>{sc} % da potência</strong>."),
-        "k_cnt": "parte das instalações", "k_cap": "parte da potência", "inst": "inst.",
+                                         f"(sobretudo telhados), que representam <strong>{sc} % da potência</strong>."),
+        "k_cnt": "quota das instalações", "k_cap": "quota da potência", "inst": "inst.",
         "hist_note": lambda d: f"Entre parênteses: variação líquida desde {d}.",
         "kb_h": "Segundo os escalões das ajudas aos municípios",
         "kb_cols": ("Escalão", "Instalações", "Potência", "Ajuda para uma central municipal"),
@@ -583,7 +627,7 @@ S = {
                     "Leneda não dizem se uma instalação pertence ao município ou a um particular."),
         "cmp_h": "Comparação", "cmp_canton": lambda k: f"Municípios do cantão de {k}",
         "cmp_size": "Municípios de dimensão comparável",
-        "cmp_cols": ("Município", "Cantão", "PV (MW)", "Inst.", "W/hab.", "Inst./1\u202f000 hab.", "Acréscimos (kW)"),
+        "cmp_cols": ("Município", "Cantão", "FV (MW)", "Inst.", "W/hab.", "Inst./1\u202f000 hab.", "Acréscimos (kW)"),
         "cmp_lede": lambda fq: (f"Ordenados por W por habitante. «Acréscimos»: potência acrescentada desde o "
                                 f"levantamento do {_q_pt(fq)}."),
         "links_h": "Saber mais",
@@ -716,7 +760,7 @@ FOR = {
         "h1": "Os seus dados fotovoltaicos, <span class=\"sun\">prontos a apresentar</span>",
         "paras": [
             "Cada município tem a sua página, atualizada todas as segundas-feiras a partir dos dados abertos da Leneda: "
-            "potência ligada à rede, número de instalações, parte do solar, watts por habitante, dimensões das "
+            "potência ligada à rede, número de instalações, quota do solar, watts por habitante, dimensões das "
             "instalações e comparação com os municípios do cantão e com os municípios de dimensão comparável.",
             "As dimensões são também apresentadas segundo os escalões do <strong>Klimabonus Gemengen</strong> (30, 200 e "
             "500 kWp, 5 MWp): vê-se num relance o que cabe nas ajudas aos municípios e o que cabe no Klimabonus dos "
@@ -731,7 +775,7 @@ FOR = {
         "limits": ("Descrevem a potência ligada à rede (kW), não a energia produzida (kWh), e não distinguem as "
                    "instalações municipais das instalações privadas. O acompanhamento dos seus próprios edifícios exige "
                    "os seus próprios dados."),
-        "contact_h": "Uma pergunta, uma necessidade para o seu município?",
+        "contact_h": "Tem uma pergunta ou uma necessidade concreta para o seu município?",
         "contact": ("Escreva para <a href=\"mailto:hello@sitraka.lu?subject=Munic%C3%ADpio%3A%20solaire.sitraka.lu\">"
                     "hello@sitraka.lu</a>, indicando o seu município."),
         "list_h": "Os {N} municípios",
@@ -752,17 +796,23 @@ EXTRA_CSS = """
   table.cmp tbody th{text-align:left;font-weight:500;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
   table.cmp tr.me th{background:var(--amber-soft);font-weight:650}
   table.cmp .rk{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right;width:28px;min-width:28px;padding-left:4px;padding-right:8px}
-  table.cmp .rk,table.cmp tbody th,table.cmp thead th:nth-child(2){position:sticky;background:var(--paper);z-index:1}
+  table.cmp .rk,table.cmp tbody th,table.cmp thead th:nth-child(2){position:sticky;background:var(--card);z-index:1}
   table.cmp .rk{left:0}
   table.cmp tbody th,table.cmp thead th:nth-child(2){left:40px;text-align:left}
   @media(max-width:767px){table.cmp tbody th,table.cmp thead th:nth-child(2){box-shadow:inset -1px 0 0 var(--line)}}
   table.cmp tr.me .rk,table.cmp tr.me th{background:var(--amber-soft)}
   table.cmp th.wpc,table.cmp td.wpc{font-weight:650;color:var(--ink)}
   @media(max-width:519px){table.cmp.in-canton .col-canton{display:none}}
-  .simlink{margin:14px 0 0;font:600 14.5px var(--body)}
-  .simlink a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px}
-  .simlink a:hover{color:var(--amber-text)}
-  .simlink span{color:var(--amber-text);white-space:nowrap}
+  /* tableaux 2 et 3 : mêmes largeurs de colonnes (bureau) ; sur téléphone, largeur automatique et défilement */
+  @media(min-width:768px){
+    table.cmp{table-layout:fixed;width:100%}
+    table.cmp col.c-rk{width:6%}table.cmp col.c-nm{width:22%}table.cmp col.c-wpc{width:10%}table.cmp col.c-pv{width:10%}
+    table.cmp col.c-n{width:10%}table.cmp col.c-ipk{width:14%}table.cmp col.c-g{width:12%}table.cmp col.c-k{width:16%}
+    table.cmp tbody th{overflow:hidden;text-overflow:ellipsis}
+  }
+  #comparaison .card .tblscroll{--sc-bg:var(--card)}
+  .cta-pair{display:flex;flex-wrap:wrap;gap:8px 12px}
+  .cta-pair a span{white-space:nowrap}
   #comparaison .tblscroll+.tblscroll{margin-top:22px}
   #comparaison caption{font-size:14px;color:var(--ink)}
   details.note{margin-top:12px;font-size:13px}
@@ -793,6 +843,20 @@ EXTRA_CSS = """
   .tools li::before{content:counter(t) ".";font:600 12px/1.6 var(--mono);color:var(--ink-3)}
   .tools b{color:var(--ink);font-weight:650}
   .demo p.lead{margin:0;font-size:14px;color:var(--ink)}
+  .demo-wl{--accent:var(--hydro)}   /* couleur d'exemple d'une commune (marque blanche) */
+  .demo-wl .demo-h{color:var(--hydro)}
+  .demo-f3{grid-column:1/-1}
+  dl.wl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 1px;margin:10px 0 0;font-size:13.5px;background:var(--line);border:1px solid var(--line)}
+  dl.wl>div{background:var(--card);padding:10px 12px}
+  dl.wl>div:nth-child(2){background:color-mix(in srgb,var(--hydro) 9%,var(--card));box-shadow:inset 0 3px 0 var(--hydro)}
+  dl.wl dt{font-weight:650;color:var(--ink);margin:0 0 4px}
+  dl.wl dd{margin:0;color:var(--ink-2)}
+  @media(max-width:767px){dl.wl{grid-template-columns:minmax(0,1fr);gap:1px 0}}
+  table.bilan-t{margin-top:24px}
+  table.bilan-t td.tbd{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);font-style:italic}
+  table.bilan-t tbody th{width:28%}
+  .offer .who{margin:12px 0 0;font-size:13.5px;color:var(--ink-2);max-width:90ch}
+  .offer .who a{color:var(--amber-text)}
   table.offer-t{width:100%;font-size:14px}
   table.offer-t th,table.offer-t td{padding:9px 12px 9px 0;text-align:left;vertical-align:top;white-space:normal;border-bottom:1px solid var(--line)}
   table.offer-t thead th{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);background:none;position:static;cursor:default;border-bottom:1px solid var(--ink)}
@@ -827,7 +891,7 @@ EXTRA_CSS = """
   }
   @media print{
     @page{size:A4;margin:14mm}
-    .commune-page .simlink,.commune-page .contact-cta,.commune-page .pn,.commune-page #liens,.commune-page #aides,
+    .commune-page .contact-cta,.commune-page .pn,.commune-page #liens,.commune-page #aides,
     .commune-page #grandes-installations,.commune-page .crumbs,.commune-page .co-b,.commune-page .co-series,
     .commune-page details.note{display:none}
     .commune-page table,.commune-page figure,.commune-page .kpis,.commune-page .tblscroll{break-inside:avoid}
@@ -870,6 +934,11 @@ EXTRA_CSS = """
 def _shell(lang, title, desc, canonical, alternates, style, masthead, body, jsonld, page_class=""):
     if lang != "en":   # « 45 % » ne se coupe pas avant le signe
         body = body.replace(" %", "\u202f%")
+    # « 28,4 / 1 000 » : ni avant ni après la barre, ni dans « 1 000 »
+    body = re.sub(r"(\d) / (\d)", "\\1\u00a0/\u00a0\\2", body).replace(" 1 000 ", " 1\u00a0000 ").replace("/1 000", "/1\u00a0000")
+    body = ossature.unit_case(body)
+    og_loc = f'<meta property="og:locale" content="{OG_LOCALE[lang]}">' + "".join(
+        f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">' for c, _ in alternates if c != lang)
     i = body.rindex('<footer class="colophon"')        # le colophon reste hors de <main>
     main, foot = body[:i], body[i:]
     alt = "".join(f'<link rel="alternate" hreflang="{c}" href="{u}">' for c, u in alternates)
@@ -879,7 +948,7 @@ def _shell(lang, title, desc, canonical, alternates, style, masthead, body, json
             f'<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n'
             f'<title>{esc(title)}</title>\n<meta name="description" content="{esc(desc)}">\n'
             f'<link rel="canonical" href="{canonical}">\n<meta property="og:url" content="{canonical}">\n'
-            f'<meta property="og:type" content="website">\n<meta property="og:site_name" content="Lux-Solaire">\n'
+            f'<meta property="og:type" content="website">\n<meta property="og:site_name" content="Lux-Solaire">\n{og_loc}\n'
             f'<meta property="og:title" content="{esc(title)}">\n<meta property="og:description" content="{esc(desc)}">\n'
             f'<meta property="og:image" content="https://solaire.sitraka.lu/{ {"fr": "og.png"}.get(lang, f"og.{lang}.png") }">\n'
             f'<meta name="twitter:card" content="summary_large_image">\n{alt}\n'
@@ -888,7 +957,16 @@ def _shell(lang, title, desc, canonical, alternates, style, masthead, body, json
             f"data-cf-beacon='{{\"token\": \"48047aeb049d4a6ba27a197d274297a7\"}}'></script>\n"
             f"<style>{style}{EXTRA_CSS}</style>\n<a class=\"skip\" href=\"#contenu\">{SKIP[lang]}</a>\n"
             f"<div class=\"wrap {page_class}\">\n{masthead}\n<main id=\"contenu\" tabindex=\"-1\">\n{main}\n</main>\n{foot}\n</div>\n"
-            f'<script defer src="/ev.js"></script>\n</html>\n')
+            f'<script defer src="{ossature.EV_SRC}"></script>\n</html>\n')
+
+
+def _breadcrumb(canonical, steps):
+    """BreadcrumbList JSON-LD : [(nom, URL absolue), …], la dernière étape étant la page elle-même."""
+    return {"@type": "BreadcrumbList", "@id": canonical + "#breadcrumb", "itemListElement": [
+        {"@type": "ListItem", "position": i, "name": re.sub(r"<[^>]+>", "", n), "item": u} for i, (n, u) in enumerate(steps, 1)]}
+
+
+OG_LOCALE = {"fr": "fr_FR", "en": "en_US", "lb": "lb_LU", "de": "de_DE", "pt": "pt_PT"}   # = build.OG_LOCALE
 
 
 def _colophon(h, common, paras):
@@ -916,16 +994,16 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                        re.search(r"<!--COLOPHON_COMMON-->.*?<!--/COLOPHON_COMMON-->", src, re.S).group(0))
 
     def masthead(lang, paths):   # bandeau du tableau de bord rendu, sélecteur pointant vers CETTE page
-        return re.sub(r'<ul class="langs".*?</ul>', lambda m: ossature.lang_nav(paths, lang, flags),
+        return re.sub(r'<nav class="langs-nav".*?</nav>', lambda m: ossature.lang_nav(paths, lang, flags),
                       pages[lang][1], count=1, flags=re.S)
     groups = []
     demo = {}   # (langue, slug) → (canton, commune, KPI) : extrait réel repris par « Pour les communes »
 
-    def T(n, lang):   # espace insécable fine : « +6 719 kW » ne se coupe pas en fin de ligne
-        return thousands(n, lang).replace(" ", "\u202f")
+    def T(n, lang):   # espace insécable U+00A0 (la fine U+202F est quasi invisible en police système)
+        return thousands(n, lang).replace(" ", "\u00a0").replace("\u202f", "\u00a0")
 
     def dec1(x, lang):
-        return dec1_raw(x, lang).replace(" ", "\u202f")
+        return dec1_raw(x, lang).replace(" ", "\u00a0").replace("\u202f", "\u00a0")
     for i, c in enumerate(communes):
         s = slug(c["c"])
         alternates = [(l, site + CPATH[l] + s + "/") for l in ORDER]
@@ -933,7 +1011,7 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
         for lang in LANGS:
             d, L = blobs[lang], S[lang]
             meta, P = d["meta"], d["population"]
-            fq = d["series"][0]["label"]
+            fq = _q_pt(d["series"][0]["label"])   # « T1 2025 », comme la prose du tableau de bord
             date = meta["date"]
             mw = dec1(c["pv"] / 1000, lang)
             nn = T(c["n"], lang)
@@ -989,9 +1067,12 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                     f'<td>{dec1(o["ipk"], lang)}</td><td>{sg(o["g"])}</td><td class="col-canton">{esc(o["k"])}</td></tr>'
                     for r, o in enumerate(sorted(lst, key=lambda o: -o["wpc"]), 1))
                 cid = f"cmp-{num}"
-                return (f'<div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="{cid}">'
+                # colonnes de largeur fixe (<colgroup>, table-layout:fixed en bureau) : les tableaux 2 et 3,
+                # superposés, ont leurs colonnes alignées
+                cols = "".join(f'<col class="c-{k}">' for k in ("rk", "nm", "wpc", "pv", "n", "ipk", "g", "k"))
+                return (f'<div class="tblscroll" role="region" tabindex="0" aria-labelledby="{cid}">'
                         f'<table class="cmp booktabs {cls}"><caption id="{cid}"><span class="capin"><b>{TL} {num}.</b> {cap}</span></caption>'
-                        f'<thead><tr>{hd_}</tr></thead><tbody>{body}</tbody></table></div>')
+                        f'<colgroup>{cols}</colgroup><thead><tr>{hd_}</tr></thead><tbody>{body}</tbody></table></div>')
             same_k = [o for o in base["communes"] if o["k"] == c["k"]]
             similar = sorted((o for o in base["communes"] if o["lau2"] != c["lau2"]),
                              key=lambda o: abs(o["pop"] - c["pop"]))[:6] + [c]
@@ -1019,16 +1100,17 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
             colon = ":" if lang == "pt" else " :"   # portugais : pas d'espace avant les deux-points
             X, FL = L2[lang], FIG_LABEL[lang]
             demo[(lang, s)] = (kn, cn, kpis)
-            simq = (f'<p class="simlink"><a href="{SIM[lang]}?canton={urllib.parse.quote(c["k"])}">{X["simq"](cn)} '
-                    f'<span>{X["sim_word"]} <span aria-hidden="true">→</span></span></a></p>')
+            # deux appels de même style côte à côte : le simulateur (habitant) et la page d'offre (commune)
+            simq = (f'<p class="contact-cta cta-pair"><a href="{SIM[lang]}?canton={urllib.parse.quote(c["k"])}">{X["simq"](cn)} '
+                    f'<span>{X["sim_word"]} <span aria-hidden="true">→</span></span></a>{CONTACT[lang]}</p>')
             # ordre : figure 1 (tailles), tableau 1 (tranches), tableaux 2 et 3 (comparaisons), puis le
             # tableau 4 des grandes installations, présent sur une partie des communes seulement : les
             # numéros 1 à 3 sont ainsi les mêmes sur toutes les pages
             body = (
-                f'<header>{ossature.crumbs([(L["crumb_home"], HOME[lang]), (L["all"], FORPATH[lang]), (cn, None)], lang)}'
+                f'<header>{ossature.crumbs([(L["crumb_home"], HOME[lang]), (L["all"], FORPATH[lang] + "#liste"), (cn, None)], lang)}'
                 f'<div class="eyebrow">{L["eyebrow"](kn)}</div><h1>{L["h1"](cn)}</h1>'
                 f'<p class="standfirst">{L["stand"](cn, mw, date, nn, wpc, med, gkw, gp, fq)}</p></header>'
-                f'<div class="kpis k6">{kpis}</div>{simq}{CONTACT[lang]}'
+                f'<div class="kpis k6">{kpis}</div>{simq}'
                 f'<section id="tailles"><div class="sec-head"><h2>{L["sizes_h"]}</h2></div>'
                 f'<p class="lede">{L["sizes_lede"](cn, sn, sc)}</p><figure class="card">'
                 f'<div class="pkey"><span><span class="sw" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> {L["k_cnt"]}</span>'
@@ -1042,10 +1124,10 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<tbody>{kb_rows}</tbody></table></div><p class="kbnote2">{L["kb_note"]}</p>'
                 f'<p class="src">{X["src_kb"](date)}</p></div></section>'
                 f'<section id="comparaison"><div class="sec-head"><h2>{L["cmp_h"]}</h2></div>'
-                f'<p class="lede">{L["cmp_lede"](fq)}</p>'
+                f'<p class="lede">{L["cmp_lede"](fq)}</p><div class="card">'
                 f'{cmp_table(same_k, 2, L["cmp_canton"](kn), "in-canton")}'
                 f'{cmp_table(similar, 3, L["cmp_size"], "similar")}'
-                f'<p class="src">{X["src_cmp"](date, P["date"])}</p></section>'
+                f'<p class="src">{X["src_cmp"](date, P["date"])}</p></div></section>'
                 + grandes.commune_section(d.get("bigs"), lang, c["lau2"], cn, HOME[lang], caption=f"<b>{TL} 4.</b>") +
                 f'<section id="liens"><div class="sec-head"><h2>{L["links_h"]}</h2></div><div class="links">'
                 f'<a href="{HOME[lang]}?commune={s}#paradoxe">{L["l_dash"]}</a>'
@@ -1061,14 +1143,22 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                     f'{SRC_LABEL[lang][2]} {P["date"]}) · <a href="{SRC_KBG}">Klimabonus Gemengen</a>',
                     L["privacy"]]))
             canonical = site + CPATH[lang] + s + "/"
-            jsonld = {"@context": "https://schema.org", "@type": "WebPage", "@id": canonical, "url": canonical,
-                      "name": title, "description": desc, "inLanguage": lang, "dateModified": cdate[lang],
-                      "isPartOf": {"@id": site + HOME[lang]}, "author": person,
-                      "about": {"@type": "Place", "name": c["c"], "containedInPlace": luxembourg}}
+            # WebPage + BreadcrumbList : mêmes étapes que le fil d'Ariane visible
+            jsonld = {"@context": "https://schema.org", "@graph": [
+                {"@type": "WebPage", "@id": canonical, "url": canonical,
+                 "name": title, "description": desc, "inLanguage": lang, "dateModified": cdate[lang],
+                 "isPartOf": {"@id": site + HOME[lang]}, "author": person, "breadcrumb": {"@id": canonical + "#breadcrumb"},
+                 "about": {"@type": "Place", "name": c["c"], "containedInPlace": luxembourg}},
+                _breadcrumb(canonical, [(L["crumb_home"], site + HOME[lang]), (L["all"], site + FORPATH[lang] + "#liste"),
+                                        (c["c"], canonical)])]}
             sb = masthead(lang, [(l, CPATH[l] + s + "/") for l in ORDER])
             out = root / CPATH[lang].strip("/") / s / "index.html"
             out.parent.mkdir(parents=True, exist_ok=True)
             html = _shell(lang, title, desc, canonical, alternates, pages[lang][0], sb, body, jsonld, "commune-page")
+            if lang == "fr":
+                html = ossature.fr_typo(html)
+            elif lang == "pt":
+                html = ossature.pt_prose(html)
             if "—" in html:
                 raise SystemExit(f"{lang}/{s} : tiret cadratin dans la page communale")
             out.write_text(html)
@@ -1093,6 +1183,9 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
         colon = ":" if lang != "fr" else " :"
         tr1 = "".join(f'<tr><th scope="row">{r[0]}</th>' + "".join(f'<td data-l="{esc(h)}{colon}">{x}</td>' for h, x in zip(X["t1cols"][1:], r[1:]))
                       + "</tr>" for r in X["t1rows"])
+        th2 = "".join(f'<th scope="col">{x}</th>' for x in X["t2cols"])
+        tr2 = "".join(f'<tr><th scope="row">{r}</th>' + "".join(f'<td data-l="{esc(h)}{colon}" class="tbd">{FILL[lang]}</td>'
+                                                               for h in X["t2cols"][1:]) + "</tr>" for r in X["t2rows"])
         tools = "".join(f"<li><span><b>{a}</b> : {b}</span></li>" if lang == "fr" else f"<li><span><b>{a}</b>: {b}</span></li>"
                         for a, b in X["tools"])
         body = (f'<header>{ossature.crumbs([(L["crumb_home"], HOME[lang]), (F["eyebrow"], None)], lang)}'
@@ -1110,29 +1203,41 @@ def write_all(root, site, blobs, cdate, thousands, dec1_raw, person, luxembourg,
                 f'<p class="demo-open"><a href="{SIM[lang]}?canton={urllib.parse.quote(dc["k"])}">{X["f2link"](esc(dc["k"]))} '
                 f'<span aria-hidden="true">→</span></a></p></div>'
                 f'<figcaption><b>{FL} 2.</b> {X["f2cap"]}</figcaption><p class="src">{X["src_sim"]}</p></figure>'
+                # figure 3 : maquette de la version communale (couleur d'exemple, aucun montant, prime fictive)
+                f'<figure class="demo-f3"><div class="demo demo-wl"><p class="demo-h">{X["f3h"]}</p><p class="lead">{X["f3lead"]}</p>'
+                f'<dl class="wl">{"".join(f"<div><dt>{a}</dt><dd>{b}</dd></div>" for a, b in X["f3rows"])}</dl></div>'
+                f'<figcaption><b>{FL} 3.</b> {X["f3cap"]}</figcaption></figure>'
                 f'</div></section>'
                 f'<section id="composantes"><h2>{X["s2"]}</h2>'
                 f'<div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="offer-cap"><table class="offer-t booktabs">'
                 f'<caption id="offer-cap"><span class="capin"><b>{TL} 1.</b> {X["t1cap"]}</span></caption>'
                 f'<thead><tr>{th1}</tr></thead><tbody>{tr1}</tbody></table></div>'
+                # tableau 2 : maquette du bilan énergétique, colonnes seulement (aucun chiffre)
+                f'<div class="tblscroll on-paper" role="region" tabindex="0" aria-labelledby="bilan-cap"><table class="offer-t bilan-t booktabs">'
+                f'<caption id="bilan-cap"><span class="capin"><b>{TL} 2.</b> {X["t2cap"]}</span></caption>'
+                f'<thead><tr>{th2}</tr></thead><tbody>{tr2}</tbody></table></div>'
                 f'<div class="cols3 prose">{"".join(f"<p>{p}</p>" for p in F["paras"][1:])}</div></section>'
                 f'<section id="confiance"><h2>{X["s3"]}</h2><div class="trust">'
                 f'<ul>{"".join(f"<li>{t}</li>" for t in X["trust"])}</ul>'
                 f'<div><h3>{F["limits_h"]}</h3><p>{F["limits"]}</p></div></div></section>'
                 f'<section id="contact"><h2>{X["s4"]}</h2><div class="offer-cta">'
-                f'<p class="q">{F["contact_h"]}</p><p class="alt">{F["contact"]}</p>{cta}</div></section>'
+                f'<p class="q">{F["contact_h"]}</p><p class="alt">{F["contact"]}</p>{cta}</div><p class="who">{X["who"]}</p></section>'
                 f'</div>'
                 f'<section id="liste"><div class="sec-head"><h2>{X["s5"]}{F["list_h"].replace("{N}", str(n_all))}</h2></div><div class="clist">{clist}</div></section>'
                 + _colophon(pages[lang][2], pages[lang][3], [L["foot"](blobs[lang]["meta"]["date"]), L["privacy"]]))
         alternates = [(l, site + FORPATH[l]) for l in ORDER]
         canonical = site + FORPATH[lang]
-        jsonld = {"@context": "https://schema.org", "@type": "WebPage", "@id": canonical, "url": canonical,
-                  "name": F["title"], "description": F["desc"], "inLanguage": lang, "dateModified": cdate[lang],
-                  "isPartOf": {"@id": site + HOME[lang]}, "author": person}
+        jsonld = {"@context": "https://schema.org", "@graph": [
+            {"@type": "WebPage", "@id": canonical, "url": canonical,
+             "name": F["title"], "description": F["desc"], "inLanguage": lang, "dateModified": cdate[lang],
+             "isPartOf": {"@id": site + HOME[lang]}, "author": person, "breadcrumb": {"@id": canonical + "#breadcrumb"}},
+            _breadcrumb(canonical, [(L["crumb_home"], site + HOME[lang]), (F["eyebrow"], canonical)])]}
         sb = masthead(lang, for_paths)
         out = root / FORPATH[lang].strip("/") / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
         html = _shell(lang, F["title"], F["desc"], canonical, alternates, pages[lang][0], sb, body, jsonld)
+        if lang == "fr":
+            html = ossature.fr_typo(html)
         if "—" in html:
             raise SystemExit(f"{lang} : tiret cadratin dans la page pour les communes")
         check_offer(html, lang)

@@ -776,7 +776,8 @@ def _dec1(x, lang):
 
 
 def _signed1(x, lang):
-    return ("+" if x > 0 else "") + _dec1(x, lang)
+    """Signe explicite ; négatif avec le signe moins U+2212 (comme le JS), pas le trait d'union."""
+    return ("+" if x > 0 else "\u2212" if x < 0 else "") + _dec1(abs(x), lang)
 
 
 def _q_label(label):
@@ -987,7 +988,8 @@ def prose_numbers(d, lang):
     s = d["series"]
     first, last = s[0], s[-1]
     keys = ("pv", "wind", "hydro", "chp", "biomass", "biogas")
-    tot_first, tot_last = sum(first[k] for k in keys), sum(last[k] for k in keys)
+    # sommes arrondies au millionième (valeurs à 2 décimales) : 1277,4999… redevient 1277,5, comme dans le JS (sum6)
+    tot_first, tot_last = round(sum(first[k] for k in keys), 6), round(sum(last[k] for k in keys), 6)
     top = max(d["communes"], key=lambda c: c["g"])
     small = [x for x in d["sizes"] if "MW" not in x["bin"] and x["bin"] != "30–100" and x["bin"] != "100–500"]
     big = [x for x in d["sizes"] if "MW" in x["bin"]]
@@ -1182,7 +1184,7 @@ def prerender(d, lang):
         "<!--PRE_TOP_GROWTH-->": hb(topg, lambda r: r["g"],
                                     lambda r: f'<b>+{T(_jsround(r["g"]))}</b> · +{_jsround(r["gp"] or 0)} %', topg[0]["g"]),
         "<!--PRE_TOP_WPC-->": hb(topw, lambda r: r["wpc"],
-                                 lambda r: f'<b>{T(r["wpc"])}</b>{lbl_w} · {D1(r["rpk"])}{lbl_r}', topw[0]["wpc"]),
+                                 lambda r: f'<span class="nw"><b>{T(r["wpc"])}</b>{lbl_w}</span> · <span class="nw">{D1(r["rpk"])}{lbl_r}</span>', topw[0]["wpc"]),
         "<!--PRE_CANTONS-->": "".join(
             f'<tr><td>{E(k["k"])}</td><td>{T(_jsround(k["pv"]))}</td><td>{T(k["n"])}</td><td>{T(k["pop"])}</td>'
             f'<td>{T(k["wpc"])}</td><td>{D1(k["ipk"])}</td></tr>' for k in d["cantons"]),
@@ -1862,7 +1864,8 @@ def render_all(data):
                  .replace("__OGIMAGE__", (OG_SIM_FILES if sim else OG_FILES)[lang])
                  .replace("<!--OGLOCALE-->", og_locale)
                  .replace("__CPATH__", CPATH[lang])
-                 .replace("__FORPATH__", FORPATH[lang]))
+                 .replace("__FORPATH__", FORPATH[lang])
+                 .replace("__EV_SRC__", ossature.EV_SRC))
         dct = None
         if lang == "en":
             html, dct = to_en(html), I18N
@@ -1902,6 +1905,11 @@ def render_all(data):
         html = html.replace("<!--JSONLD-->", ld)
         if "<!--" in html and re.search(r"<!--(PRE_|RT_|JSONLD|OGLOCALE|LANGTOGGLE|DL:)", html):
             sys.exit(f"{lang} : marqueur de gabarit non substitué")
+        html = ossature.unit_case(html)   # « kW » des en-têtes en capitales
+        if lang == "fr":
+            html = ossature.fr_typo(html)
+        elif lang == "pt":
+            html = ossature.pt_prose(html)
         check_output(html, lang, dct)
         return html
 

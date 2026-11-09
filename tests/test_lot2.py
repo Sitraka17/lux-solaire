@@ -43,7 +43,7 @@ def test_pages_communales(lang):
     assert m.count("<table") == m.count("<caption")
     tabs = re.findall(r"<caption[^>]*><span[^>]*><b>\S+ (\d+)\.</b>", m)
     assert tabs[:3] == ["1", "2", "3"]
-    assert 'class="simlink"' in m and '<details class="note">' in m
+    assert 'class="contact-cta cta-pair"' in m and '<details class="note">' in m
 
 
 @pytest.mark.parametrize("lang", FOR)

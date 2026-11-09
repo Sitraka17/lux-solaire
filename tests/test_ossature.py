@@ -33,9 +33,11 @@ def pages(root):
 
 def test_bandeau_et_selecteur_sur_chaque_type_de_page(pages):
     for kind, lang, path, h in pages:
-        assert h.count('<div class="masthead">') == 1, path
+        # bandeau = repère banner (<header> hors de <main>), sélecteur de langue dans un <nav> étiqueté
+        assert h.count('<header class="masthead">') == 1, path
+        assert h.index('<header class="masthead">') < h.index("<main"), path
         assert "seriesbar" not in h and "langtoggle" not in h, path
-        nav = re.search(r'<ul class="langs" aria-label="([^"]+)">(.*?)</ul>', h, re.S)
+        nav = re.search(r'<nav class="langs-nav" aria-label="([^"]+)"><ul class="langs">(.*?)</ul></nav>', h, re.S)
         assert nav and nav.group(1) == ossature.ARIA_LANG[lang], path
         codes = re.findall(r'hreflang="([a-z]+)"', nav.group(2))
         assert codes == ["en", "fr", "de", "lb", "pt"], (path, codes)
@@ -46,7 +48,9 @@ def test_bandeau_et_selecteur_sur_chaque_type_de_page(pages):
         assert nav.group(2).count('<span class="vh"> ') == 5, path
         # deux copies de la liste (bureau, repli mobile), chacune avec un seul site courant
         series = re.findall(r'<ul class="series">(.*?)</ul>', h, re.S)
-        assert len(series) == 2 and all(s.count("aria-current") == 1 and s.count("<li>") == 8 for s in series), path
+        # site courant : aria-current="true" (le lien mène à l'accueil du site, pas à la page affichée)
+        assert len(series) == 2 and all(s.count('aria-current="true"') == 1 and s.count("<li>") == 8 for s in series), path
+        assert "<summary aria-label" not in h, path    # nom accessible du résumé = son texte visible (2.5.3)
 
 
 def test_fil_d_ariane_et_colophon(pages):

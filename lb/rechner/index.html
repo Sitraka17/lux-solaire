@@ -155,7 +155,7 @@
   .kpi .val.ab{display:flex;flex-wrap:wrap;gap:0 14px;font-size:22px}
   .kpi .val.ab span{white-space:nowrap}
   .kpi .val.ab i{font:650 11.5px var(--mono);font-style:normal;color:var(--ink-3);margin-left:5px;letter-spacing:.04em}
-  .fig{margin-top:18px}
+  .fig{margin:18px 0 16px}
   .fig figcaption{font-size:13px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45}
   /* L3.7 : « Tableau n. » dans un <caption> au-dessus (style commun L1.11), lisible au bord gauche du conteneur défilant */
   .tab{margin-top:18px}
@@ -173,7 +173,6 @@
   table.mini th[scope=row],table.mini td:first-child,table.mini th:first-child{text-align:left}
   table.mini td.best{color:var(--green);font-weight:650}
   table.mini td{white-space:nowrap}   /* un montant ne se coupe pas ; le tableau défile dans son conteneur */
-  @media(max-width:560px){#tab-detail td{white-space:normal}}
   table.mini td.hi{background:var(--amber-soft)}
   .verdict{border-left:4px solid var(--amber);padding:14px 18px;background:var(--amber-soft);border-radius:0;margin-top:0}
   .verdict.good{border-color:var(--green);background:var(--green-soft)}
@@ -235,8 +234,8 @@
   .method details[open]>summary::after{content:"−"/""}
   .method details>p,.method details>ol{margin-top:4px}
   .method details>ol{margin-bottom:16px}
-  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  :root{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono)}
+  .rt{margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
   .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
@@ -252,7 +251,7 @@
   .rt-dl small{color:var(--rt-muted);font-weight:400}
   .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
   .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.8;vertical-align:middle}
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
@@ -280,6 +279,7 @@
   @media(max-width:480px){.wrap{padding:12px 16px 56px}}
   html{scroll-padding-top:56px}
   :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .nt{text-transform:none}   /* unité dans un en-tête en capitales (unit_case) */
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   /* bandeau de la série */
   .masthead{border-top:3px solid var(--amber);border-bottom:1px solid var(--line);padding:5px 0 6px;margin:0 0 24px;font-size:13px}
@@ -293,6 +293,7 @@
   .series a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
   .series a[aria-current]{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:4px}
   .mh-desk{margin-top:2px}
+  .langs-nav{display:flex}
   .langs{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font:600 11.5px var(--mono);letter-spacing:.04em}
   .langs li{display:flex}
   .langs a{display:inline-flex;align-items:center;gap:5px;min-height:28px;min-width:24px;padding:0 4px;color:var(--ink-3);text-decoration:none}
@@ -313,7 +314,7 @@
     .mh-label,.mh-desk{display:none}
     .mh-row{display:grid;grid-template-columns:1fr auto;align-items:start;column-gap:8px}
     .mh-series{display:block;grid-column:1/-1;grid-row:1}
-    .mh-row>.langs{grid-column:2;grid-row:1}
+    .mh-row>.langs-nav{grid-column:2;grid-row:1}
     .mh-series .series{padding:2px 0 6px 16px}
     .mh-series .series a{min-height:32px}
     .langs a{min-height:32px;padding:0 3px}
@@ -325,8 +326,8 @@
   .crumbs ol{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-wrap:wrap;font:11.5px/1.5 var(--mono);color:var(--ink-3)}
   .crumbs li{display:flex;align-items:center}
   .crumbs li:not(:last-child)::after{content:"›"/"";margin:0 8px}
-  .crumbs a{color:var(--amber-text);text-decoration:none;display:inline-block;padding:4px 0}
-  .crumbs a:hover{text-decoration:underline}
+  .crumbs a{color:var(--ink-3);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;display:inline-block;padding:4px 0}
+  .crumbs a:hover{color:var(--amber-text);text-decoration-color:currentColor}
   .crumbs li[aria-current]{padding:4px 0}
   /* téléphone : fil d'Ariane sur une ligne ; le premier libellé, long, est tronqué à l'écran (texte complet dans le DOM) */
   @media(max-width:767px){
@@ -334,6 +335,10 @@
     .crumbs li{flex:none;min-width:0}
     .crumbs li:first-child{flex:0 1 auto}
     .crumbs li:first-child a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .crumbs ol{margin-bottom:0}
+    .crumbs a,.crumbs li[aria-current]{padding:2px 0}
+    .wrap h1{margin-top:6px}
+    .eb-tail{display:none}   /* surtitre réduit à son 1er mot sous 768 px (texte complet à partir de 768 px) */
   }
   header>.eyebrow{margin:0}
   h1{max-width:20ch;margin-top:10px}
@@ -348,12 +353,16 @@
   #tbl{min-width:900px}
   table.bigtab th,table.bigtab td{white-space:normal}
   table.bigtab td:first-child,table.bigtab td:last-child{white-space:nowrap}
-  table.bigtab small{white-space:normal;overflow-wrap:anywhere}
+  table.bigtab small{white-space:normal;overflow-wrap:normal;hyphens:auto}
   td.num,th.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
   caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-2);padding:0 0 8px}
   caption b,figcaption b{font:650 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
   figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
   .src{font:11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+  .src a,.dl a{color:var(--amber-text)}
+  /* sous-titre d'une légende (mono gris), séparé du constat par un point médian : il commence par une minuscule */
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption .u::before,caption .u::before{content:"· "/""}
   table.booktabs{border-collapse:collapse;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.booktabs thead th{border-bottom:1px solid var(--ink)}
   table.booktabs td,table.booktabs th{border-left:0;border-right:0}
@@ -362,7 +371,7 @@
   .pn a{display:inline-flex;align-items:center;min-height:32px}
   /* section Méthode (sortie du pied de page) */
   .method{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
-  .method h2{margin:0 0 10px}
+  .method h2{margin:0 0 10px;color:var(--ink)}
   .method p,.method ol{max-width:75ch;margin:0 0 10px}
   .method a{color:var(--amber-text)}
   /* colophon commun */
@@ -371,6 +380,8 @@
   .colophon p{margin:0 0 8px;max-width:75ch}
   .colophon a{color:var(--amber-text)}
   .colophon .co-series{grid-column:1/-1;margin-top:10px}
+  .co-series-d>summary{cursor:pointer;font:600 13px var(--body);color:var(--amber-text);min-height:32px;display:flex;align-items:center}
+  .co-series-d[open]>summary{margin-bottom:2px}
   .colophon .tblscroll{--sc-bg:var(--paper)}
   table.series-t{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:13px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.series-t th,table.series-t td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal}
@@ -402,27 +413,31 @@
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 
+  :root{--accent:var(--amber)}
+  .masthead{border-top-color:var(--accent)}
+  .eyebrow::before{background:var(--accent)}
+  .contact-cta a{border-left-color:var(--accent)}
 </style>
 
 <a class="skip" href="#contenu">Op den Inhalt sprangen</a>
 <div class="wrap">
 <!--MASTHEAD-->
-<div class="masthead">
+<header class="masthead">
   <div class="mh-row">
     <p class="mh-label" id="mh-l">Open-Data-Serie · Lëtzebuerg</p>
     <details class="mh-series">
-      <summary aria-label="Open-Data-Serie (8)"><span class="mh-long" aria-hidden="true">Open-Data-Serie</span><span class="mh-short" aria-hidden="true">Serie</span> <span class="count" aria-hidden="true">(8)</span></summary>
-      <nav aria-label="Open-Data-Serie · Lëtzebuerg"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaik: ugeschloss Leeschtung pro Gemeng">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Grënnungen, Iwwerliewen a Faillitte vun Entreprisen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Eng IT-Servicefirma grënnen: bezifferte Maartstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Déi nächst Indextranche vun de Léin">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschold a Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="D'Hëtzt, Gemeng fir Gemeng">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesondheetskaart: Better, Personal, Waardezäiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien a Lëtzebuerg an Zuelen">lux-india</a></li></ul></nav>
+      <summary><span class="mh-long">Open-Data-Serie</span><span class="mh-short">Serie</span> <span class="count">(8)</span></summary>
+      <nav aria-label="Open-Data-Serie · Lëtzebuerg"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaik: ugeschloss Leeschtung pro Gemeng">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Grënnungen, Iwwerliewen a Faillitte vun Entreprisen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Eng IT-Servicefirma grënnen: bezifferte Maartstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Déi nächst Indextranche vun de Léin">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschold a Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="D'Hëtzt, Gemeng fir Gemeng">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesondheetskaart: Better, Personal, Waardezäiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien a Lëtzebuerg an Zuelen">lux-india</a></li></ul></nav>
     </details>
-    <ul class="langs" aria-label="Sprooch vun der Säit"><li><a href="/simulator/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/simulateur/" lang="fr" hreflang="fr"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/rechner/" lang="de" hreflang="de"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/rechner/" lang="lb" hreflang="lb" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/simulador/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul>
+    <nav class="langs-nav" aria-label="Sprooch vun der Säit"><ul class="langs"><li><a href="/simulator/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/simulateur/" lang="fr" hreflang="fr"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/rechner/" lang="de" hreflang="de"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/rechner/" lang="lb" hreflang="lb" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/simulador/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul></nav>
   </div>
-  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaik: ugeschloss Leeschtung pro Gemeng">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Grënnungen, Iwwerliewen a Faillitte vun Entreprisen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Eng IT-Servicefirma grënnen: bezifferte Maartstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Déi nächst Indextranche vun de Léin">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschold a Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="D'Hëtzt, Gemeng fir Gemeng">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesondheetskaart: Better, Personal, Waardezäiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien a Lëtzebuerg an Zuelen">lux-india</a></li></ul></nav>
-</div>
+  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaik: ugeschloss Leeschtung pro Gemeng">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Grënnungen, Iwwerliewen a Faillitte vun Entreprisen">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Eng IT-Servicefirma grënnen: bezifferte Maartstudie">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Déi nächst Indextranche vun de Léin">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Staatsschold a Staatsfinanzen">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="D'Hëtzt, Gemeng fir Gemeng">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Gesondheetskaart: Better, Personal, Waardezäiten">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="Indien a Lëtzebuerg an Zuelen">lux-india</a></li></ul></nav>
+</header>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
 <header>
   <nav class="crumbs" aria-label="Navigatiounswee"><ol><li><a href="/lb/">D'Photovoltaik zu Lëtzebuerg, Gemeng fir Gemeng</a></li><li aria-current="page">Simulator</li></ol></nav>
-  <p class="eyebrow">Simulator · dräi gratis Tools, ouni Aschreiwung</p>
+  <p class="eyebrow">Simulator<span class="eb-tail"> · dräi gratis Tools, ouni Aschreiwung</span></p>
   <h1>Solarpanneauen zu Lëtzebuerg: <span class="sun">lount et sech bei Iech?</span></h1>
   <p class="standfirst"><strong>Tool 1</strong>: wéi vill Äert Daach all Joer produzéieren an abréngen géif. <strong>Tool 2</strong>: a wéi vill Joer d'Installatioun ofbezuelt ass, mam <strong>Klimabonus 2026</strong> oder mam <strong>garantéierten Aspeistarif iwwer 15 Joer</strong>, a wéi eng vun deenen zwou Optioune fir Iech passt. <strong>Tool 3</strong>: wat eng Wäermepëmp amplaz vun Ärer aktueller Heizung kascht an aspuert, mat oder ouni dës Panneauen. Alles gëtt an Ärem Browser aus offizielle Quelle gerechent: Ertrag laut <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS</a>, Hëllefe vu <a href="https://guichet.public.lu/de/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">guichet.lu</a>, ILR-Netztariffer, groussherzoglecht Reglement iwwer d'Aspeistariffer. Referenz: <strong>38 332 Installatiounen</strong> sinn zu Lëtzebuerg schonn um Netz (9. November 2026).</p>
   <div class="badges">
@@ -437,7 +452,6 @@
 <section id="production">
   <div class="sec-head">
     <h2><span class="num">Tool 1</span>Wéi vill produzéiert a verdéngt Dir all Joer?</h2>
-    <span class="sec-note">kWh/Joer · €/Joer</span>
   </div>
   <p class="lede">Beschreift Äert Daach an Äre Verbrauch: den Ertrag kënnt aus der <strong>PVGIS</strong>-Datebank vum Gemeinsame Fuerschungszentrum (JRC) vun der Europäescher Kommissioun (SARAH3-Stralung, 2005-2023, 14 % Systemverloschter), gerechent fir d'Stad Lëtzebuerg an duerno pro Kanton korrigéiert. Den Undeel Eegeverbrauch gëtt aus dem Verhältnis Produktioun/Verbrauch geschat; Dir kënnt en awer selwer festleeën.</p>
   <div class="grid-tool">
@@ -453,10 +467,12 @@
         <div class="svgwrap bar" id="fig-months"></div>
         <div class="legend"><span><span class="sw" style="background:#1D2734;opacity:.82"></span>Produktioun, déi an d'Netz agespeist gëtt</span><span><span class="sw am" style="background:var(--amber)"></span>Undeel Eegeverbrauch</span></div>
         <figcaption><b>Figur 1.</b> Geschate Produktioun pro Mount (kWh) an Undeel Eegeverbrauch. PVGIS-Profil vun der Stad Lëtzebuerg, op Är Installatioun skaléiert; den Eegeverbrauch gëtt proportional zur Produktioun verdeelt.</figcaption>
+        <p class="src">Quell: Ertrag PVGIS SARAH3, kuckt <a href="#src-1">Quell 1</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
       </figure>
       <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-detail">
-        <table class="mini" id="tab-detail"><caption id="cap-detail"><span class="capin"><b>Tabell 1.</b> Detail vum éischte Joer jee no Verwäertungsmodell. Optioun A: Klimabonus an Iwwerschoss zum Maartpräis verkaaft. Optioun B: garantéierten Aspeistarif iwwer 15 Joer, ouni Klimabonus. D'Präisser sinn déi vum Tool 2.</span></caption><thead><tr><th scope="col">Posten</th><th scope="col">Optioun A · Klimabonus</th><th scope="col">Optioun B · garantéierten Tarif</th></tr></thead><tbody><tr><th scope="row">Selwer verbraucht kWh × Wäert vun der agespuerter kWh</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">Agespeist kWh × Verkafspräis</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gewënn am éischte Joer</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus op der Rechnung ofgezunn</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Rescht ze bezuelen</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
+        <table class="mini" id="tab-detail"><caption id="cap-detail"><span class="capin"><b>Tabell 1.</b> Detail vum éischte Joer jee no Verwäertungsmodell. Optioun A: Klimabonus an Iwwerschoss zum Maartpräis verkaaft. Optioun B: garantéierten Aspeistarif iwwer 15 Joer, ouni Klimabonus. D'Präisser sinn déi vum Tool 2. <span class="u">kWh/Joer · €/Joer</span></span></caption><thead><tr><th scope="col">Posten</th><th scope="col">Optioun A · Klimabonus</th><th scope="col">Optioun B · garantéierten Tarif</th></tr></thead><tbody><tr><th scope="row">Selwer verbraucht <span class="nt">kWh</span> × Wäert vun der agespuerter <span class="nt">kWh</span></th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">Agespeist <span class="nt">kWh</span> × Verkafspräis</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gewënn am éischte Joer</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus op der Rechnung ofgezunn</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Rescht ze bezuelen</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
       </div>
+      <p class="src">Quellen: PVGIS-Ertrag, Klimabonus, garantéierten Aspeisetarif, kWh-Präisser a Richtkäschten, kuckt <a href="#m-src">Quellen 1 bis 7</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
       <p class="hint" id="r-canton">Am Kanton Luxembourg: 6 943 PV-Installatiounen um Netz, 514 W Photovoltaik pro Awunner, 32,1 Installatioune pro 1 000 Awunner (Leneda, 9. November 2026).</p>
       <p class="to-form"><a href="#f1">Hypothesen änneren <span aria-hidden="true">↓</span></a></p>
     </div>
@@ -527,7 +543,6 @@
 <section id="rentabilite">
   <div class="sec-head">
     <h2><span class="num">Tool 2</span>Lount et sech fir Iech?</h2>
-    <span class="sec-note">Amortisatiounsdauer · Nettogewënn iwwer 25 Joer, standardméisseg net ofgezinst</span>
   </div>
   <p class="lede">Den Tool iwwerhëlt d'Produktioun vum Tool 1 a vergläicht déi zwee Regimer, déi 2026 fir Privatleit opstinn: <strong>Optioun A</strong>, Klimabonus (op der Rechnung ofgezunn oder duerno ugefrot) mat Eegeverbrauch an Iwwerschoss zum Maartpräis verkaaft; <strong>Optioun B</strong>, keng Hëllef, mee den Iwwerschoss gëtt 15 Joer laang zum garantéierten Aspeistarif bezuelt. Déi zwou Optioune kënnen net kombinéiert ginn: wien de Klimabonus ufreet, verzicht op de garantéierten Tarif. Fir eng Offer, déi tëscht dem 1. Oktober 2024 an dem 4. Mäerz 2026 ënnerschriwwe gouf, kombinéiert en Iwwergangsregime de garantéierten Tarif mat enger Hëllef vu 20 % (héchstens 500 €/kWp), Schlussrechnung spéitstens den 31. Dezember 2026: en gëtt hei net simuléiert.</p>
   <div class="grid-tool">
@@ -560,13 +575,15 @@
       <figure class="fig">
         <div class="svgwrap" id="fig-cash"></div>
         <div class="legend"><span><span class="sw am" style="background:var(--amber)"></span>Option A · Klimabonus</span><span><span class="sw" style="background:var(--ink)"></span>Optioun B · garantéierten Tarif</span></div>
-        <figcaption><b>Figur 2.</b> Kumuléierte Cashflow iwwer 25 Joer, a lafenden Euro: Nettoinvestitioun am Ufank, duerno jäerlech Gewënner (net kaaften Stroum + verkaaften Iwwerschoss), Ersatz vum Wiesselrichter am Joer 13. De Punkt, wou d'Kurv duerch Null geet, ass d'Amortisatiounsdauer.</figcaption>
+        <figcaption><b>Figur 2.</b> Kumuléierte Cashflow iwwer 25 Joer, a lafenden Euro: Nettoinvestitioun am Ufank, duerno jäerlech Gewënner (net kaaften Stroum + verkaaften Iwwerschoss), Ersatz vum Wiesselrichter am Joer 13. De Punkt, wou d'Kurv duerch Null geet, ass d'Amortisatiounsdauer. <span class="u">Amortisatiounsdauer · Nettogewënn iwwer 25 Joer, standardméisseg net ofgezinst</span></figcaption>
+        <p class="src">Quellen: PVGIS-Ertrag, Klimabonus, garantéierten Aspeisetarif, kWh-Präisser a Richtkäschten, kuckt <a href="#m-src">Quellen 1 bis 7</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
       </figure>
       <details class="alt">
         <summary>Cashflow Joer fir Joer</summary>
         <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-cash">
           <table class="mini" id="tab-cash"><caption id="cap-cash"><span class="capin"><b>Tabell 2.</b> Cashflow vun den Optiounen A a B an nominellen Euro: Gewënn vum Joer a kumuléierte Saldo, Joer 0, 1, 5, 10, 13 (Wechselrichter), 15, 16 (nom garantéierten Tarif), 20 a 25.</span></caption></table>
         </div>
+        <p class="src">Quellen: PVGIS-Ertrag, Klimabonus, garantéierten Aspeisetarif, kWh-Präisser a Richtkäschten, kuckt <a href="#m-src">Quellen 1 bis 7</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
       </details>
       <p class="hint" id="r-lcoe">Duerchschnëttskäschte vun enger produzéierter kWh iwwer 25 Joer (Nettoinvestitioun a Wiesselrichter, ouni Diskontéierung): 4,3 c€/kWh mam Klimabonus, 8,1 c€/kWh ouni. Zum Verglach: 20,0 c€/kWh fir eng kaaft kWh.</p>
       <p class="to-form"><a href="#f2">Hypothesen änneren <span aria-hidden="true">↓</span></a></p>
@@ -650,7 +667,6 @@
 <section id="chauffage">
   <div class="sec-head">
     <h2><span class="num">Tool 3</span>Heizung: Wäermepëmp a Pufferspäicher</h2>
-    <span class="sec-note">€/Joer · CO₂ · Amortisatioun iwwer 20 Joer</span>
   </div>
   <p class="lede">Dir heizt mat Gas, Mazout oder direkter elektrescher Heizung: Den Tool vergläicht Är aktuell Heizung mat enger <strong>Loft-Waasser-Wäermepëmp</strong>, eleng oder mat de Solarpanneauen aus den Tools 1 an 2, Stonn fir Stonn iwwer e typescht Wiederjoer (PVGIS, Stad Lëtzebuerg, Joer 2017, no beim Duerchschnëtt 2005-2023). E <strong>Pufferspäicher</strong>, deen mam Solariwwerschoss vum Dag gehëtzt gëtt, hält dës Wäermt fir den Owend. Et ginn nëmmen d'Hëllefe vum Staat (Klimabonus) gezielt.</p>
   <div class="grid-tool">
@@ -665,16 +681,19 @@
           <div class="kpi"><div class="lbl">CO₂ pro Joer</div><div class="val" id="h-co2">–</div><div class="sub" id="h-co2-sub">–</div></div>
         </div>
         <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat">
-          <table class="mini" id="tab-heat"><caption id="cap-heat"><span class="capin"><b>Tabell 3.</b> D'Szenarie verglach mat Ärer aktueller Heizung. Rechnung am 1. Joer = Brennstoff + kaafte Stroum (Haus an Heizung) − verkaaften Iwwerschoss + Entretien. Amortisatioun an Nettogewënn: Differenz vun den Ausgabe mat der aktueller Heizung, an nominalen Euro.</span></caption></table>
+          <table class="mini" id="tab-heat"><caption id="cap-heat"><span class="capin"><b>Tabell 3.</b> D'Szenarie verglach mat Ärer aktueller Heizung. Rechnung am 1. Joer = Brennstoff + kaafte Stroum (Haus an Heizung) − verkaaften Iwwerschoss + Entretien. Amortisatioun an Nettogewënn: Differenz vun den Ausgabe mat der aktueller Heizung, an nominalen Euro. <span class="u">€/Joer · CO₂ · Amortisatioun iwwer 20 Joer</span></span></caption></table>
         </div>
+        <p class="src">Quellen: typescht Wiederjoer PVGIS, Klimabonus, Brennstoffpräisser, Emissiounen a COP, kuckt <a href="#m-src">Quellen 1 an 9 bis 12</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
         <figure class="fig">
           <div class="svgwrap" id="fig-heat"></div>
           <div class="legend" id="leg-heat"></div>
           <figcaption><b>Figur 3.</b> Kumuléiert Ausgaben iwwer 20 Joer, an nominalen Euro: Rescht ze bezuelen um Ufank, dann d'Joresrechnungen (Energie, Entretien, Onduleur am Joer 13 mat Panneauen). Déi Kurv, déi riets am déifste läit, ass iwwer d'Period déi bëllegst.</figcaption>
+          <p class="src">Quellen: typescht Wiederjoer PVGIS, Klimabonus, Brennstoffpräisser, Emissiounen a COP, kuckt <a href="#m-src">Quellen 1 an 9 bis 12</a> vun der Method; Berechnung: Rechner lux-solaire.</p>
         </figure>
         <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat-aid">
           <table class="mini" id="tab-heat-aid"><caption id="cap-heat-aid"><span class="capin"><b>Tabell 4.</b> Gezielt Hëllefe vum Staat (Klimabonus, guichet.lu, Säit aktualiséiert den 11. August 2026), bestoend Eefamilljenhaus.</span></caption></table>
         </div>
+        <p class="src">Quellen: Klimabonus-Hëllefen, guichet.lu, kuckt <a href="#m-src">Quellen 2 an 9</a> vun der Method.</p>
         <p class="hint">Verschidde Gemengen bezuelen nieft der Hëllef vum Staat eng eege Prime: Frot bei Ärer Gemeng no; si gëtt hei net gezielt.</p>
         <details class="alt">
           <summary>Pufferspäicher a Wäermebedarf: den Detail</summary>
@@ -848,12 +867,12 @@
       <caption id="cap-profils"><span class="capin"><b>Tabell 5.</b> Dräi Profiler, gerechent mam Motor vum Simulator a mat de Standardhypothese vum Tool 2; Optioun A = Klimabonus an Iwwerschoss zum Maartpräis, Optioun B = 15 Joer garantéierten Aspeistarif ouni Hëllef; Nettogewënn iwwer 25 Joer ouni Diskontéierung. Är Zuelen hänke vun Ärem Daach, Ärem Verbrauch an Ärem Devis of.</span></caption>
       <thead><tr><th scope="col">Profil</th><th scope="col">Produktioun</th><th scope="col">Eegeverbrauch</th><th scope="col">Klimabonus</th><th scope="col">Rescht ze bezuelen (A)</th><th scope="col">Amortisatioun (A)</th><th scope="col">Amortisatioun (B)</th><th scope="col">Nettogewënn 25 Joer (A)</th><th scope="col">Nettogewënn 25 Joer (B)</th></tr></thead>
       <tbody>
-        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Klengt Daach: 3 kWp Südosten, 2 500 kWh/Joer</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Joer</td><td>15,5 Joer</td><td>+3 263 €</td><td>+2 634 €</td></tr>
-        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 kWp genee Südden, 4 500 kWh/Joer</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Joer</td><td>11,6 Joer</td><td>+7 503 €</td><td>+7 331 €</td></tr>
-        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mat Wärmepompel an Elektroauto: 10 kWp, Batterie vu 7 kWh, 10 000 kWh/Joer</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Joer</td><td>15,1 Joer</td><td>+16 146 €</td><td>+12 763 €</td></tr>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Klengt Daach: 3 <span class="nt">kWp</span> Südosten, 2 500 <span class="nt">kWh</span>/Joer</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 Joer</td><td>15,5 Joer</td><td>+3 263 €</td><td>+2 634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Haus: 6 <span class="nt">kWp</span> genee Südden, 4 500 <span class="nt">kWh</span>/Joer</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 Joer</td><td>11,6 Joer</td><td>+7 503 €</td><td>+7 331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Haus mat Wärmepompel an Elektroauto: 10 <span class="nt">kWp</span>, Batterie vu 7 <span class="nt">kWh</span>, 10 000 <span class="nt">kWh</span>/Joer</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 Joer</td><td>15,1 Joer</td><td>+16 146 €</td><td>+12 763 €</td></tr>
       </tbody>
       </table>
-  </div></div>
+  </div><p class="src">Quellen: Rechenkär vum Rechner mat de Standardhypothesen, kuckt <a href="#m-src">Quellen 1 bis 7</a> vun der Method.</p></div>
 </section>
 
 <section id="reperes">
@@ -867,6 +886,7 @@
       <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-grid">
         <table class="mini" id="tab-grid"><caption id="cap-grid"><span class="capin"><b>Tabell 6.</b> Ertrag no Ausriichtung an Neigung</span></caption></table>
       </div>
+      <p class="src">Quell: PVGIS 5.3, Gemeinsam Fuerschungsstell (JRC) vun der Europäescher Kommissioun, kuckt <a href="#src-1">Quell 1</a> vun der Method.</p>
       <p style="margin-top:12px">Facteure pro Kanton (Südsäit, 35°): <span id="cantons-line"></span>.</p>
     </div>
     <div>
@@ -881,10 +901,11 @@
             <tr><th scope="row">Kompensatiounsmechanismus, Kat. A</th><td>−3,71 c€</td><td>−0,10 c€</td></tr>
             <tr><th scope="row">Stroumtax, Kat. A</th><td>0,10 c€</td><td>0,10 c€</td></tr>
             <tr><th scope="row">TVA 8 %</th><td>1,18 c€</td><td>1,46 c€</td></tr>
-            <tr><th scope="row"><strong>Total pro kWh</strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
+            <tr><th scope="row"><strong>Total pro <span class="nt">kWh</span></strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
           </tbody>
         </table>
         </div>
+        <p class="src">Quellen: Netztariffer a Steieren (ILR), Gesetz vum 22. Juli 2026, kuckt <a href="#m-src">Quellen 5 an 6</a> vun der Method.</p>
         <details class="alt">
           <summary>Bestanddeeler, Sätz an Datumer</summary>
           <p>Variabel Komponente vun der Rechnung vun engem Stot (Kategorie A, manner wéi 25 000 kWh/Joer), Tariffer gëlteg um 1. August 2026. De Kompensatiounsmechanismus läit vum 1. August bis den 31. Dezember 2026 bei −3,71 c€/kWh: dat ass déi temporär Hëllef vu ronn 4 c€/kWh, déi mam Gesetz vum 22. Juli 2026 iwwer de Staatsbäitrag fir 2026 beschloss gouf. Vu Januar bis Juli 2026 louch en bei −0,10 c€/kWh, engem Saz, an deem schonn e Staatsbäitrag dra war. De Saz fir 2027 ass den 2. November 2026 nach net publizéiert.</p>
@@ -894,6 +915,7 @@
         <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-aid">
           <table class="mini" id="tab-aid" aria-describedby="aid-note"><caption id="cap-aid"><span class="capin"><b>Tabell 8.</b> Klimabonus 2026 a garantéierten Aspeistarif</span></caption></table>
         </div>
+        <p class="src">Quellen: guichet.lu, geännert groussherzoglecht Reglement vum 1. August 2014, kuckt <a href="#m-src">Quellen 2 bis 4</a> vun der Method.</p>
         <p class="hint" id="aid-note"></p>
         <details class="alt">
           <summary>Konditiounen a Formelen</summary>
@@ -955,7 +977,7 @@
   <p class="hint" style="margin-top:14px">Déi 38 332 Installatiounen, déi schonn um Netz sinn, Gemeng fir Gemeng: <a href="/lb/">den Dashboard lux-solaire</a>.</p>
 </section>
 
-<p class="contact-cta"><a href="https://sitraka.lu/contact/?from=solaire">Wëllt Dir dat fir Är Gemeng? Schwätze mer driwwer <span aria-hidden="true">→</span></a></p>
+<p class="contact-cta"><a href="/lb/fir-gemengen/">Wëllt Dir dat fir Är Gemeng? Op d'Säit „Fir Gemengen“ <span aria-hidden="true">→</span></a></p>
 
 <section id="methode" class="method" aria-labelledby="methode-h">
   <h2 id="methode-h">Method a Quellen</h2>
@@ -1013,10 +1035,10 @@
     </div>
     <div>
       <h3>Dës Säit zitéieren</h3>
-      <pre class="rt-cite" id="rt-cite-txt">https://solaire.sitraka.lu/lb/rechner/</pre>
+      <pre class="rt-cite" id="rt-cite-txt" tabindex="0" role="region" aria-label="Zitat">https://solaire.sitraka.lu/lb/rechner/</pre>
       <p class="rt-row"><button type="button" id="rt-copy-txt">Zitat kopéieren</button></p>
       <details class="rt-bib"><summary>BibTeX</summary>
-        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <pre class="rt-cite" id="rt-cite-bib" tabindex="0" role="region" aria-label="BibTeX"></pre>
         <p class="rt-row"><button type="button" id="rt-copy-bib">BibTeX kopéieren</button></p>
       </details>
     </div>
@@ -1043,14 +1065,16 @@
 <!--COLOPHON_COMMON-->
 <div class="co-b">
   <p><a href="/lb/fir-gemengen/">Fir Gemengen</a>: eng Säit pro Gemeng, mat hiren Donnéeën.</p>
-  <p>Kontakt: <a href="https://sitraka.lu/contact/?from=solaire">dem Auteur schreiwen</a></p>
+  <p>Kontakt: <a href="https://sitraka.lu/contact/?from=solaire">dem Auteur schreiwen</a> · <a href="https://sitraka.lu/privacy/">Dateschutz (op Englesch)</a></p>
   <p>Analys a Visualiséierung: <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + natiivt SVG, ouni Bibliothéik · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">Quellcode</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
   <p>Agenda, Newsletter an aner Aarbechten: <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
   <p>Vum selwechten Auteur, fir d'Paus: <a href="https://ratrace.sitraka.lu/">Rat Race</a>, d'Spill vum Frontalier (65 Stied, en Aarbechtswee vum Dag).</p>
 </div>
 <div class="co-series">
   <p>Dës Websäit ass Deel vun enger Serie vu Weiderverwendunge vun de lëtzebuergeschen ëffentlechen Donnéeën.</p>
-  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tabell A.</b> D'Open-Data-Serie · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">Nr.</span></th><th scope="col">Websäit</th><th scope="col">Thema</th><th scope="col">Adress</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="page">lux-solaire</a></th><td>Photovoltaik: ugeschloss Leeschtung pro Gemeng</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Grënnungen, Iwwerliewen a Faillitte vun Entreprisen</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Eng IT-Servicefirma grënnen: bezifferte Maartstudie</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Déi nächst Indextranche vun de Léin</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Staatsschold a Staatsfinanzen</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>D'Hëtzt, Gemeng fir Gemeng</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Gesondheetskaart: Better, Personal, Waardezäiten</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>Indien a Lëtzebuerg an Zuelen</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  <details class="co-series-d"><summary>Open-Data-Serie · Lëtzebuerg (8)</summary>
+  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tabell A.</b> D'Open-Data-Serie · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">Nr.</span></th><th scope="col">Websäit</th><th scope="col">Thema</th><th scope="col">Adress</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="true">lux-solaire</a></th><td>Photovoltaik: ugeschloss Leeschtung pro Gemeng</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Grënnungen, Iwwerliewen a Faillitte vun Entreprisen</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Eng IT-Servicefirma grënnen: bezifferte Maartstudie</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Déi nächst Indextranche vun de Léin</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Staatsschold a Staatsfinanzen</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>D'Hëtzt, Gemeng fir Gemeng</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Gesondheetskaart: Better, Personal, Waardezäiten</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>Indien a Lëtzebuerg an Zuelen</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  </details><script>(function(d){if(d&&matchMedia('(min-width:768px)').matches)d.open=true})(document.currentScript.previousElementSibling)</script>
 </div>
 <!--/COLOPHON_COMMON-->
 </footer>
@@ -1059,6 +1083,11 @@
 <script src="/sim-engine.js?v=350753f233"></script>
 <script>
 const G = {"source": "PVGIS 5.3, JRC (Commission européenne)", "url": "https://re.jrc.ec.europa.eu/pvg_tools/fr/", "radiation_db": "PVGIS-SARAH3", "years": [2005, 2023], "system_loss_pct": 14, "center": {"name": "Luxembourg-Ville", "lat": 49.61, "lon": 6.13}, "azimuths": [-90, -60, -45, -30, 0, 30, 45, 60, 90], "tilts": [0, 10, 20, 30, 35, 40, 50, 60, 90], "grid": {"-90:10": 908, "-90:20": 897, "-90:30": 880, "-90:35": 868, "-90:40": 853, "-90:50": 815, "-90:60": 765, "-90:90": 549, "-60:10": 946, "-60:20": 968, "-60:30": 976, "-60:35": 974, "-60:40": 967, "-60:50": 941, "-60:60": 897, "-60:90": 665, "-45:10": 962, "-45:20": 996, "-45:30": 1013, "-45:35": 1014, "-45:40": 1010, "-45:50": 988, "-45:60": 944, "-45:90": 707, "-30:10": 974, "-30:20": 1017, "-30:30": 1040, "-30:35": 1044, "-30:40": 1042, "-30:50": 1022, "-30:60": 980, "-30:90": 730, "0:0": 912, "0:10": 983, "0:20": 1033, "0:30": 1061, "0:35": 1067, "0:40": 1066, "0:50": 1047, "0:60": 1004, "0:90": 741, "30:10": 972, "30:20": 1014, "30:30": 1036, "30:35": 1039, "30:40": 1036, "30:50": 1014, "30:60": 971, "30:90": 721, "45:10": 960, "45:20": 992, "45:30": 1006, "45:35": 1006, "45:40": 1001, "45:50": 977, "45:60": 933, "45:90": 696, "60:10": 944, "60:20": 963, "60:30": 968, "60:35": 964, "60:40": 957, "60:50": 928, "60:60": 884, "60:90": 655, "90:10": 905, "90:20": 890, "90:30": 869, "90:35": 856, "90:40": 840, "90:50": 801, "90:60": 751, "90:90": 540}, "monthly_ref": [35, 55, 96, 122, 129, 130, 132, 120, 107, 71, 37, 32], "cantons": {"Capellen": {"E_y": 1084, "factor": 1.016}, "Clervaux": {"E_y": 1034, "factor": 0.969}, "Diekirch": {"E_y": 1066, "factor": 0.999}, "Echternach": {"E_y": 1065, "factor": 0.998}, "Esch": {"E_y": 1086, "factor": 1.018}, "Grevenmacher": {"E_y": 1072, "factor": 1.005}, "Luxembourg": {"E_y": 1067, "factor": 1.0}, "Mersch": {"E_y": 1061, "factor": 0.994}, "Redange": {"E_y": 1073, "factor": 1.006}, "Remich": {"E_y": 1078, "factor": 1.01}, "Vianden": {"E_y": 1050, "factor": 0.984}, "Wiltz": {"E_y": 1036, "factor": 0.971}}};
+/* Marque blanche (version communale) : SEUL point d'entrée, lu à l'initialisation. Une page communale définit
+   window.SIM_CONFIG avant ce script : {accent:'#…' (filets et soulignements), nom:'…' (réservé), logo:'…' (réservé),
+   aidesLocales:[{nom, base, taux, plafond, …}] (format de SimEngine.localAid)}. Valeurs par défaut = page publique :
+   accent de la série, aucune aide locale comptée. */
+const CFG = Object.assign({accent:null, nom:null, logo:null, aidesLocales:[]}, window.SIM_CONFIG||{});
 const D = {"meta": {"pv_mw": 827.5, "total_mw": 1277.5, "pv_n": 38332, "growth12_mw": 175.5, "since_year_end": {"base": "2025 Q4", "pv_mw": 82.1, "pv_n": 5082}, "date": "9. November 2026", "date_iso": "2026-11-09", "median_share": 93.2, "full_pv_communes": 23, "top_records": [{"c": "Junglinster", "kw": 4999.7}, {"c": "Differdange", "kw": 4999.2}, {"c": "Käerjeng", "kw": 4998.0}, {"c": "Sanem", "kw": 4996.5}]}, "cantons": [{"k": "Clervaux", "pv": 85477.0, "n": 2514, "pop": 22423, "tot": 189964.9, "wpc": 3812, "ipk": 112.1, "share": 45.0}, {"k": "Vianden", "pv": 16681.6, "n": 488, "pop": 5856, "tot": 24119.6, "wpc": 2849, "ipk": 83.3, "share": 69.2}, {"k": "Redange", "pv": 59812.0, "n": 2819, "pop": 21812, "tot": 89177.4, "wpc": 2742, "ipk": 129.2, "share": 67.1}, {"k": "Grevenmacher", "pv": 77924.8, "n": 2973, "pop": 34461, "tot": 93169.3, "wpc": 2261, "ipk": 86.3, "share": 83.6}, {"k": "Mersch", "pv": 82935.7, "n": 2952, "pop": 37424, "tot": 101741.4, "wpc": 2216, "ipk": 78.9, "share": 81.5}, {"k": "Wiltz", "pv": 35818.9, "n": 1729, "pop": 20623, "tot": 66073.7, "wpc": 1737, "ipk": 83.8, "share": 54.2}, {"k": "Echternach", "pv": 34822.0, "n": 1705, "pop": 20736, "tot": 44024.0, "wpc": 1679, "ipk": 82.2, "share": 79.1}, {"k": "Remich", "pv": 37244.9, "n": 1894, "pop": 24844, "tot": 65742.9, "wpc": 1499, "ipk": 76.2, "share": 56.7}, {"k": "Capellen", "pv": 84397.3, "n": 4665, "pop": 57336, "tot": 99606.1, "wpc": 1472, "ipk": 81.4, "share": 84.7}, {"k": "Diekirch", "pv": 41851.9, "n": 2119, "pop": 36670, "tot": 90773.3, "wpc": 1141, "ipk": 57.8, "share": 46.1}, {"k": "Esch", "pv": 159546.8, "n": 7531, "pop": 198114, "tot": 261817.0, "wpc": 805, "ipk": 38.0, "share": 60.9}, {"k": "Luxembourg", "pv": 110967.3, "n": 6943, "pop": 215968, "tot": 151293.9, "wpc": 514, "ipk": 32.1, "share": 73.3}]};
 
 /* Libellés construits en JS (traduits par i18n_sim_js.json / i18n_sim_lb_js.json). */
@@ -1320,7 +1349,7 @@ const LH = {
   scA:'Aktuell Heizung', scB:'Nëmme Panneauen', scC:'Nëmme Wäermepëmp', scD:'Wäermepëmp a Panneauen',
   rowInv:'Investitioun', rowAid:'Klimabonus (Staat)', rowEvit:'Vermidden neie Kessel', rowNet:'Rescht ze bezuelen',
   rowBill:'Rechnung am 1. Joer', rowSave:'Erspuernis am 1. Joer', rowPb:'Amortisatiounsdauer', rowGain:'Nettogewënn iwwer ',
-  rowCO2:'CO₂ pro Joer', rowCO2b:'Manner CO₂', rowSelf:'Selwer verbrauchte Solarstroum', rowScop:'Joresaarbechtszuel vun der Wäermepëmp (SCOP)', thScen:'Szenario',
+  rowCO2:'CO₂ pro Joer', rowCO2b:'Ännerung vum CO₂', rowSelf:'Selwer verbrauchte Solarstroum', rowScop:'Joresaarbechtszuel vun der Wäermepëmp (SCOP)', thScen:'Szenario',
   aidPac:'Loft-Waasser-Wäermepëmp als Ersatz vun der aktueller Heizung', aidMaj:' (erhéicht Hëllef)', aidCuve:'Ewechhuele vum Mazoutstank', aidZone:'Waasserschutzzon',
   aidDist:'Upassung vun der Wäermeverdeelung (', aidDistMax:' % vun de Käschten, maximal ', aidPv:'Photovoltaikpanneauen', aidBatt:'Batterie', aidHems:'Energiemanagementsystem (HEMS)', aidTot:'Total vun den Hëllefe vum Staat', thAid:'Posten', thAmt:'Betrag',
   perYear:' pro Joer', today1:'Energie, Entretien a Stroum vum Haus', after1:'Erspuernis vun ', after2:' am 1. Joer', afterNo:'keng Erspuernis am 1. Joer',
@@ -1375,7 +1404,7 @@ function renderHeat(R, npvq){
     p:pv?I.p:0, cost:pv?I.cost:0, batt:pv?I.batt:0, bcost:pv?I.bcost:0, hems:pv&&I.hems, hcost:I.hcost, haid:I.haid, inv:pv?I.inv:0,
     az:I.az, tilt:I.tilt, canton:I.canton,
     pac:H.hpac, pacCost:H.hpcost, ballon:buf?H.hbuf:0, ballonCost:H.hbufc, coutCuve:H.hcuve, coutDistribution:H.hdist, chaudiereEvitee:H.hevit,
-    commande:H.hmaj===1?K.majoreCommandeA:null, remplacement:true, zoneEau:oil&&$('hzone').checked, aidesLocales:[],
+    commande:H.hmaj===1?K.majoreCommandeA:null, remplacement:true, zoneEau:oil&&$('hzone').checked, aidesLocales:CFG.aidesLocales,
     prixGaz:H.hpg, prixMazout:H.hpo, price:I.price, market:I.market, hausseFossile:H.hgf, growth:I.growth, disc:I.disc,
   }, SERIE, BAR, G);
   const S=X.sc, A=S.A, M=pv?S.D:S.C, Y=X.horizon, cols=pv?['A','B','C','D']:['A','C'];
@@ -1491,6 +1520,7 @@ function writeUrl(){
   history.replaceState(null,'',(s?'?'+s:location.pathname)+location.hash);
 }
 (function init(){
+  if(CFG.accent) document.documentElement.style.setProperty('--accent', CFG.accent);
   [...ids,...hids].forEach(k=>{ DEF[k]=$(k).value; });
   const q=new URLSearchParams(location.search);
   [...ids,...hids].forEach(k=>{

@@ -16,6 +16,14 @@ Marque blanche : pour une autre série ou un autre site, seules les données cha
 (`SERIES`, `CURRENT`, les libellés), pas la structure.
 """
 
+import hashlib
+import re
+from pathlib import Path
+
+# compteur anonyme /ev.js : servi avec max-age=86400 (_headers), donc versionné par l'empreinte de son
+# contenu (comme sim-engine.js) pour qu'une correction arrive sans attendre l'expiration du cache
+EV_SRC = "/ev.js?v=" + hashlib.sha256((Path(__file__).resolve().parent.parent / "ev.js").read_bytes()).hexdigest()[:10]
+
 # Les huit sites de la série open-data (ordre de la série). Sujet = résumé du titre de chaque site,
 # en français ; ses traductions sont des clés des dictionnaires (title des liens et tableau A).
 SERIES = (
@@ -62,7 +70,7 @@ def lang_nav(paths, lang, flags, pt_fallback=None):
             extra = ("", f'<span class="vh"> {NATIVE[code]}</span>')
         out.append(f'<li><a href="{path}" lang="{LANG_ATTR.get(code, code)}" hreflang="{code}"{cur}{extra[0]}>'
                    f'{flags[code]}{CODE[code]}{extra[1]}</a></li>')
-    return f'<ul class="langs" aria-label="{ARIA_LANG[lang]}">' + "".join(out) + "</ul>"
+    return f'<nav class="langs-nav" aria-label="{ARIA_LANG[lang]}"><ul class="langs">' + "".join(out) + "</ul></nav>"
 
 
 def crumbs(items, lang):
@@ -73,7 +81,8 @@ def crumbs(items, lang):
 
 
 def _series_items():
-    cur, ext = ' aria-current="page"', ' target="_blank" rel="noopener"'
+    # aria-current="true" (site courant de la série) : le lien mène à l'accueil, pas à la page en cours
+    cur, ext = ' aria-current="true"', ' target="_blank" rel="noopener"'
     return "".join(
         f'<li><a{cur if name == CURRENT else ""} href="{url}"{"" if name == CURRENT else ext} title="{subject}">{name}</a></li>'
         for name, url, subject in SERIES)
@@ -83,7 +92,7 @@ def _series_rows():
     rows = []
     for i, (name, url, subject) in enumerate(SERIES, 1):
         cur = name == CURRENT
-        link = (f'<a href="{url}" aria-current="page">{name}</a>' if cur
+        link = (f'<a href="{url}" aria-current="true">{name}</a>' if cur
                 else f'<a href="{url}" target="_blank" rel="noopener">{name}</a>')
         tr = '<tr class="cur">' if cur else "<tr>"
         rows.append(f'{tr}<td class="n">{i}</td><th scope="row">{link}</th>'
@@ -94,22 +103,23 @@ def _series_rows():
 # Bandeau de la série : libellé et liste en bureau ; liste repliée dans un <details> sur mobile
 # (une seule des deux copies est affichée ; display:none la retire aussi des lecteurs d'écran).
 MASTHEAD = (
-    '<!--MASTHEAD-->\n<div class="masthead">\n  <div class="mh-row">\n'
+    '<!--MASTHEAD-->\n<header class="masthead">\n  <div class="mh-row">\n'
     '    <p class="mh-label" id="mh-l">Série open-data · Luxembourg</p>\n'
     '    <details class="mh-series">\n'
-    f'      <summary aria-label="Série open-data ({len(SERIES)})"><span class="mh-long" aria-hidden="true">Série open-data</span>'
-    f'<span class="mh-short" aria-hidden="true">Série</span> <span class="count" aria-hidden="true">({len(SERIES)})</span></summary>\n'
+    f'      <summary><span class="mh-long">Série open-data</span>'
+    f'<span class="mh-short">Série</span> <span class="count">({len(SERIES)})</span></summary>\n'
     f'      <nav aria-label="Série open-data · Luxembourg"><ul class="series">{_series_items()}</ul></nav>\n'
     '    </details>\n    <!--LANGTOGGLE-->\n  </div>\n'
     f'  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series">{_series_items()}</ul></nav>\n'
-    '</div>\n<!--/MASTHEAD-->')
+    '</header>\n<!--/MASTHEAD-->')
 
 # Bloc commun du colophon (colonne « auteur » et tableau A), identique sur tous les types de pages.
 # La colonne « données et licences » est propre à chaque type de page (gabarit ou communes.py).
 COLOPHON_COMMON = (
     '<!--COLOPHON_COMMON-->\n<div class="co-b">\n'
     '  <p><a href="__FORPATH__">Pour les communes</a> : une page par commune, avec ses données.</p>\n'
-    '  <p>Contact : <a href="https://sitraka.lu/fr/contact/?from=solaire">écrire à l\'auteur</a></p>\n'
+    '  <p>Contact : <a href="https://sitraka.lu/fr/contact/?from=solaire">écrire à l\'auteur</a> · '
+    '<a href="https://sitraka.lu/fr/privacy/">politique de confidentialité</a></p>\n'
     '  <p>Analyse et visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · '
     'pandas + SVG natif, sans bibliothèque · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" '
     'rel="noopener">code source</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" '
@@ -119,11 +129,16 @@ COLOPHON_COMMON = (
     '(65 villes, un trajet du jour).</p>\n'
     '</div>\n<div class="co-series">\n'
     '  <p>Ce site fait partie d\'une série de réutilisations des données publiques luxembourgeoises.</p>\n'
+    # tableau A replié dans un <details> : ouvert d'emblée à partir de 768 px (script ci-dessous),
+    # replié sur téléphone (8 lignes de 3 lignes chacune) ; sans JavaScript, replié partout
+    f'  <details class="co-series-d"><summary>Série open-data · Luxembourg ({len(SERIES)})</summary>\n'
     '  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap">'
     '<table class="series-t"><caption id="series-cap"><b>Tableau A.</b> La série open-data · Sitraka Forler</caption>'
     '<thead><tr><th scope="col"><span class="vh">N°</span></th><th scope="col">Site</th>'
     '<th scope="col">Sujet</th><th scope="col">Adresse</th></tr></thead>'
-    f'<tbody>{_series_rows()}</tbody></table></div>\n'
+    f'<tbody>{_series_rows()}</tbody></table></div>\n  </details>'
+    "<script>(function(d){if(d&&matchMedia('(min-width:768px)').matches)d.open=true})"
+    "(document.currentScript.previousElementSibling)</script>\n"
     '</div>\n<!--/COLOPHON_COMMON-->')
 
 CSS = r"""
@@ -133,6 +148,7 @@ CSS = r"""
   @media(max-width:480px){.wrap{padding:12px 16px 56px}}
   html{scroll-padding-top:56px}
   :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .nt{text-transform:none}   /* unité dans un en-tête en capitales (unit_case) */
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   /* bandeau de la série */
   .masthead{border-top:3px solid var(--amber);border-bottom:1px solid var(--line);padding:5px 0 6px;margin:0 0 24px;font-size:13px}
@@ -146,6 +162,7 @@ CSS = r"""
   .series a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
   .series a[aria-current]{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:4px}
   .mh-desk{margin-top:2px}
+  .langs-nav{display:flex}
   .langs{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font:600 11.5px var(--mono);letter-spacing:.04em}
   .langs li{display:flex}
   .langs a{display:inline-flex;align-items:center;gap:5px;min-height:28px;min-width:24px;padding:0 4px;color:var(--ink-3);text-decoration:none}
@@ -166,7 +183,7 @@ CSS = r"""
     .mh-label,.mh-desk{display:none}
     .mh-row{display:grid;grid-template-columns:1fr auto;align-items:start;column-gap:8px}
     .mh-series{display:block;grid-column:1/-1;grid-row:1}
-    .mh-row>.langs{grid-column:2;grid-row:1}
+    .mh-row>.langs-nav{grid-column:2;grid-row:1}
     .mh-series .series{padding:2px 0 6px 16px}
     .mh-series .series a{min-height:32px}
     .langs a{min-height:32px;padding:0 3px}
@@ -178,8 +195,8 @@ CSS = r"""
   .crumbs ol{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-wrap:wrap;font:11.5px/1.5 var(--mono);color:var(--ink-3)}
   .crumbs li{display:flex;align-items:center}
   .crumbs li:not(:last-child)::after{content:"›"/"";margin:0 8px}
-  .crumbs a{color:var(--amber-text);text-decoration:none;display:inline-block;padding:4px 0}
-  .crumbs a:hover{text-decoration:underline}
+  .crumbs a{color:var(--ink-3);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;display:inline-block;padding:4px 0}
+  .crumbs a:hover{color:var(--amber-text);text-decoration-color:currentColor}
   .crumbs li[aria-current]{padding:4px 0}
   /* téléphone : fil d'Ariane sur une ligne ; le premier libellé, long, est tronqué à l'écran (texte complet dans le DOM) */
   @media(max-width:767px){
@@ -187,6 +204,10 @@ CSS = r"""
     .crumbs li{flex:none;min-width:0}
     .crumbs li:first-child{flex:0 1 auto}
     .crumbs li:first-child a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .crumbs ol{margin-bottom:0}
+    .crumbs a,.crumbs li[aria-current]{padding:2px 0}
+    .wrap h1{margin-top:6px}
+    .eb-tail{display:none}   /* surtitre réduit à son 1er mot sous 768 px (texte complet à partir de 768 px) */
   }
   header>.eyebrow{margin:0}
   h1{max-width:20ch;margin-top:10px}
@@ -201,12 +222,16 @@ CSS = r"""
   #tbl{min-width:900px}
   table.bigtab th,table.bigtab td{white-space:normal}
   table.bigtab td:first-child,table.bigtab td:last-child{white-space:nowrap}
-  table.bigtab small{white-space:normal;overflow-wrap:anywhere}
+  table.bigtab small{white-space:normal;overflow-wrap:normal;hyphens:auto}
   td.num,th.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
   caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-2);padding:0 0 8px}
   caption b,figcaption b{font:650 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
   figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
   .src{font:11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+  .src a,.dl a{color:var(--amber-text)}
+  /* sous-titre d'une légende (mono gris), séparé du constat par un point médian : il commence par une minuscule */
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption .u::before,caption .u::before{content:"· "/""}
   table.booktabs{border-collapse:collapse;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.booktabs thead th{border-bottom:1px solid var(--ink)}
   table.booktabs td,table.booktabs th{border-left:0;border-right:0}
@@ -215,7 +240,7 @@ CSS = r"""
   .pn a{display:inline-flex;align-items:center;min-height:32px}
   /* section Méthode (sortie du pied de page) */
   .method{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
-  .method h2{margin:0 0 10px}
+  .method h2{margin:0 0 10px;color:var(--ink)}
   .method p,.method ol{max-width:75ch;margin:0 0 10px}
   .method a{color:var(--amber-text)}
   /* colophon commun */
@@ -224,6 +249,8 @@ CSS = r"""
   .colophon p{margin:0 0 8px;max-width:75ch}
   .colophon a{color:var(--amber-text)}
   .colophon .co-series{grid-column:1/-1;margin-top:10px}
+  .co-series-d>summary{cursor:pointer;font:600 13px var(--body);color:var(--amber-text);min-height:32px;display:flex;align-items:center}
+  .co-series-d[open]>summary{margin-bottom:2px}
   .colophon .tblscroll{--sc-bg:var(--paper)}
   table.series-t{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:13px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.series-t th,table.series-t td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal}
@@ -255,6 +282,50 @@ CSS = r"""
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 """
+
+
+# segments à ne jamais retoucher : scripts, styles, texte préformaté, commentaires et balises (attributs, URL)
+_RAW = re.compile(r"(<script\b.*?</script>|<style\b.*?</style>|<pre\b.*?</pre>|<textarea\b.*?</textarea>|<!--.*?-->|<[^>]+>)", re.S)
+
+
+def _text_only(html, fn):
+    """Applique `fn` au seul texte du document (hors balises, scripts, styles, <pre>, commentaires)."""
+    parts = _RAW.split(html)
+    return "".join(fn(p) if i % 2 == 0 else p for i, p in enumerate(parts))
+
+
+def fr_typo(html):
+    """Typographie française du texte rendu : espace insécable (U+00A0) avant « : », fine (U+202F) avant « ; ! ? » et à
+    l'intérieur des guillemets « », à la place d'une espace normale ou insécable (la ponctuation ne
+    commence plus une ligne). Attributs, URL, scripts et styles ne sont pas touchés."""
+    sp = r"(?:[   ]|&nbsp;)"
+
+    def f(t):
+        t = re.sub(sp + r"+:", "\u00a0:", t)            # deux-points : espace insécable pleine
+        t = re.sub(sp + r"+([;!?])", "\u202f\\1", t)   # ; ! ? : espace fine insécable
+        t = re.sub(r"«" + sp + "*", "« ", t)
+        return re.sub(sp + r"*»", " »", t)
+    return _text_only(html, f)
+
+
+def pt_prose(html):
+    """Portugais : « em Luxembourg » (nom officiel de la commune, gardé dans les tableaux) se lit mal dans
+    une phrase ; la prose dit « na cidade do Luxemburgo »."""
+    return _text_only(html, lambda t: t.replace(" em Luxembourg", " na cidade do Luxemburgo"))
+
+
+def unit_case(html):
+    """Unités dans les en-têtes en capitales (text-transform) : « kW » ne doit pas devenir « KW ». Chaque kW,
+    kWh, kWc, kWp d'un <th> ou d'une étiquette .lbl est enveloppé dans <span class="nt"> (text-transform:none).
+    Les scripts ne sont pas touchés (le JS écrit lui-même ses cellules)."""
+    def fix(m):
+        return m.group(1) + re.sub(r"(?<![\w/])(kW[hcp]?)(?!\w)", r'<span class="nt">\1</span>', m.group(2)) + m.group(3)
+
+    def outside(seg):
+        seg = re.sub(r"(<th\b[^>]*>)(.*?)(</th>)", fix, seg, flags=re.S)
+        return re.sub(r'(<div class="lbl">)(.*?)(</div>)', fix, seg, flags=re.S)
+    parts = re.split(r"(<script\b.*?</script>)", html, flags=re.S)
+    return "".join(outside(p) if i % 2 == 0 else p for i, p in enumerate(parts))
 
 
 def expand(tpl):

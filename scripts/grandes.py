@@ -296,7 +296,8 @@ S = {
             f"comparado com o anterior, <strong>{a} "
             f"{'linha acima de 100 kW surgiu' if a == 1 else 'linhas acima de 100 kW surgiram'}</strong> e {d} "
             f"{'desapareceu' if d == 1 else 'desapareceram'}"
-            + (f" ({al} das linhas surgidas no último levantamento, o de {last})" if k > 2 else "") + "."),
+            + ((f" (nenhuma no último levantamento, de {last})" if al == 0 else
+                f" ({al} delas no último levantamento, de {last})") if k > 2 else "") + "."),
         "latest": "Últimas linhas surgidas",
         "cols": ("Levantamento", "Município", "Tecnologia", "Potência (kW)"),
         "ccols": ("Levantamento", "Movimento", "Tecnologia", "Potência (kW)"),
@@ -319,10 +320,10 @@ S = {
             "município, tecnologia e potência instalada, sem identificador, sem data de entrada em serviço e sem "
             "operador. Substitui esse ficheiro sem guardar histórico; o lux-solaire arquiva uma cópia em cada "
             "levantamento. Sem identificador, não é possível seguir uma instalação de um levantamento para o outro: "
-            "comparam-se, município a município e tecnologia a tecnologia, as linhas acima de 100 kW (100 kW "
-            "exatamente excluídos) de duas cópias consecutivas. Uma linha surgida pode ser uma instalação nova, mas "
+            "comparam-se, município a município e tecnologia a tecnologia, as linhas acima de 100 kW (excluindo "
+            "as de exatamente 100 kW) de duas cópias consecutivas. Uma linha surgida pode ser uma instalação nova, mas "
             "também uma instalação ampliada para lá de 100 kW, um valor corrigido ou uma linha atribuída a outro "
-            f"município; o ficheiro não permite decidir. Cópias comparadas: {lst}."),
+            f"município; o ficheiro não permite determinar. Cópias comparadas: {lst}."),
         "gap": lambda days: f"{days} dias depois da anterior",
         "csv": "Linhas surgidas e desaparecidas (CSV)", "nat": "Lista nacional",
         "list_aria": "Linhas acima de 100 kW surgidas",
@@ -387,9 +388,12 @@ def dashboard_section(b, lang, cpath, slug, caption=""):
     """Contenu de <section id="grandes-installations"> du tableau de bord (blob `b` traduit).
     `caption` : numéro du tableau (« <b>Tableau 5.</b> »), placé devant le titre de la liste."""
     L = S[lang]
-    head = (f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>')
+    # sous-titre (« plus de 100 kW, d'un relevé archivé au suivant ») : dans la légende du tableau
+    # quand il y en a un, sous le titre sinon
+    head = f'<div class="sec-head"><h2>{L["h"]}</h2></div>'
+    head_note = f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>'
     if not b:
-        return head
+        return head_note
     first, last = b["snaps"][0]["l"], b["snaps"][-1]["l"]
     ups = [x for x in b["ev"] if x["e"] == 1]
     downs = [x for x in b["ev"] if x["e"] == -1]
@@ -406,10 +410,10 @@ def dashboard_section(b, lang, cpath, slug, caption=""):
         more = f'<p class="bignote">{L["more"](len(ups))}</p>' if len(ups) > DASH_MAX or downs else ""
         body = (f'<div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-cap">'
                 f'<table class="bigtab booktabs"><caption id="bigtab-cap"><span class="capin">{caption} {L["latest"]}'
-                f'<span class="vh"> ({L["list_aria"]})</span></span></caption>'
+                f' <span class="u">{L["note"]}</span></span></caption>'
                 f'<thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>{more}')
     else:
-        body = f'<p class="bignone">{L["none_dash"](first, last)}</p>'
+        body, head = f'<p class="bignone">{L["none_dash"](first, last)}</p>', head_note
     return (f'{head}<p class="lede">{lede}</p><div class="card">{body}'
             f'<p class="kbnote">{L["method"](_copies(b, lang))} <a href="{CSV_PATH}" download>{L["csv"]}</a></p></div>')
 
@@ -418,8 +422,10 @@ def commune_section(b, lang, lau2, cname_html, home, caption=""):
     """<section id="grandes-installations"> d'une page communale (blob `b` traduit). `caption` : numéro du
     tableau (« <b>Tableau 4.</b> ») ; la note de méthode, identique sur les 100 pages, est repliée."""
     L = S[lang]
-    head = f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>'
+    head = f'<div class="sec-head"><h2>{L["h"]}</h2></div>'
+    head_note = f'<div class="sec-head"><h2>{L["h"]}</h2><span class="sec-note">{L["note"]}</span></div>'
     if not b:
+        head = head_note
         return f'<section id="{DASH_ANCHOR}">{head}</section>'
     first, last = b["snaps"][0]["l"], b["snaps"][-1]["l"]
     n, n0 = b["n"].get(str(lau2), [0, 0])
@@ -434,10 +440,10 @@ def commune_section(b, lang, lau2, cname_html, home, caption=""):
             + f'</td><td>{TYPE_NAMES[lang].get(x["t"], _esc(x["t"]))}</td><td>{fmt_kw(x["kw"], lang)}</td></tr>'
             for x in mine)
         body = (f'<div class="tblscroll" role="region" tabindex="0" aria-labelledby="bigtab-h">'
-                f'<table class="bigtab booktabs"><caption id="bigtab-h"><span class="capin">{caption} {c_cap}.</span></caption>'
+                f'<table class="bigtab booktabs"><caption id="bigtab-h"><span class="capin">{caption} {c_cap}. <span class="u">{L["note"]}</span></span></caption>'
                 f'<thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>')
     else:
-        body = f'<p class="bignone">{L["c_none"](first, last)}</p>'
+        body, head = f'<p class="bignone">{L["c_none"](first, last)}</p>', head_note
     return (f'<section id="{DASH_ANCHOR}">{head}<p class="lede">{lede}</p><div class="card">{body}'
             f'<details class="note"><summary>{M_SUM[lang]}</summary><p class="kbnote2">{L["method"](_copies(b, lang))}</p></details>'
             f'<p class="kbnote2"><a href="{home}#{DASH_ANCHOR}">{L["nat"]}</a> · '

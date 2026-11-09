@@ -20,8 +20,9 @@
     var h = a.getAttribute('href') || '';
     if (/\/data\/.+\.(csv|json)$/.test(h)) send('dl', h.split('/').pop());
     else if (h.indexOf('mailto:') === 0) send('contact', h.slice(7).split('?')[0]);
-    else if (/\/(simulateur|simulator|rechner)\//.test(h)) send('sim');
-    else if (/\/(commune|municipality|gemeinde|gemeng)\/[^/]+\/$/.test(h)) send('page', h.split('/').slice(-2)[0]);
+    else if (/^https:\/\/sitraka\.lu\/(?:[a-z]{2}\/)?contact\//.test(h)) send('contact', 'sitraka.lu/contact');
+    else if (/\/(simulateur|simulator|rechner|simulador)\//.test(h)) send('sim');
+    else if (/\/(commune|municipality|gemeinde|gemeng|municipio)\/[^/]+\/$/.test(h)) send('page', h.split('/').slice(-2)[0]);
     else if (a.id === 'rt-copy' || a.id === 'rt-copy-txt' || a.id === 'rt-copy-bib') send('copy', a.id);
   }, true);
 })();

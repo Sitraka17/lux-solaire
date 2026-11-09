@@ -31,6 +31,7 @@
 <style>
   :root{
     --paper:#F4F5F1; --card:#FFFFFF; --ink:#1D2734; --ink-2:#5A6472; --ink-3:#5F6773;
+    --cap:#3A434F;   /* barres « part de la capacité » : --ink à 82 % sur blanc, opaque (l'étiquette garde 5,2:1) */
     --line:#DCDDD5; --amber:#EE9B05; --amber-deep:#C77F00; --amber-soft:#FBEED3;
     /* ambre lisible : #C77F00 ne passe pas le contraste AA en texte (2,97:1 sur --paper) ;
        #8A5600 (5,6:1) pour le texte courant, #A86A00 (4,1:1) pour le grand titre */
@@ -134,6 +135,7 @@
   .hbars .fl{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
   .hbars .vv{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
   .hbars .vv b{color:var(--ink);font-weight:600}
+  .nw{white-space:nowrap}
 
   /* ---------- mix bar ---------- */
   .mixbar{display:flex;height:34px;border-radius:3px;overflow:hidden;margin-top:14px}
@@ -152,7 +154,7 @@
   .pair .b.in i{left:auto;right:8px;color:var(--ink)}
   .pair .b.cap.in i{color:#fff}
   .pair .b.cnt{background:var(--amber);box-shadow:inset 0 0 0 1px var(--amber-text)}
-  .pair .b.cap{background:var(--ink);opacity:.82}
+  .pair .b.cap{background:var(--cap)}
   .pkey{display:flex;gap:16px;margin:2px 0 14px;font-size:12.5px;color:var(--ink-2)}
 
   /* ---------- callouts ---------- */
@@ -212,10 +214,11 @@
     .hbars .fl,.pair .b{transition:width .6s ease}
   }
   /* ---------- boîte à outils du lecteur (rt.js, commune à la série) ---------- */
-  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  :root{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono)}
+  .rt{margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
-  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
+  .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 26px;align-items:start}
+  .rt h3.rt-h3b{margin-top:18px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
   .rt-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
   .rt a,.rt button{font:600 13px/1.3 var(--rt-font);color:var(--rt-accent)}
@@ -229,7 +232,7 @@
   .rt-dl small{color:var(--rt-muted);font-weight:400}
   .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
   .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.8;vertical-align:middle}
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
@@ -254,10 +257,8 @@
   figure{margin:0}
   .grid-2{align-items:start}
   figure.card>figcaption{margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
-  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
   figcaption+.src{margin-top:2px}
   .src{margin-bottom:0}
-  .src a,.dl a{color:var(--amber-text)}
   .card.refs .src{margin-top:-6px}
   .refs2{margin-top:20px}
   .refs2 .card.refs p:last-child{margin-bottom:0}
@@ -281,8 +282,11 @@
   }
   .tblscroll.on-paper caption{padding-left:0;padding-right:0}
   .tblscroll.on-paper caption .capin{left:0}
-  #classements .grid-2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
-  @media(max-width:800px){#classements .grid-2{grid-template-columns:minmax(0,1fr)}}
+  #classements .grid-2{align-items:stretch}
+  #classements .grid-2>div,#par-habitant .grid-2>div{display:flex;flex-direction:column}
+  #classements .grid-2>div>figure.card{flex:1;display:flex;flex-direction:column}
+  #classements figure.card>figcaption{margin-top:auto}
+  #classements figure.card>.hbars{margin-bottom:16px}
   table.cantons{min-width:0}
   table.cantons thead th{padding:8px 8px;vertical-align:bottom;line-height:1.3}
   table.cantons tbody td{padding:5px 8px}
@@ -306,6 +310,21 @@
     .pick select{flex:1 1 180px}
   }
   @media print{.pick,.dl{display:none}}
+  /* ==== relecture du 9/11 ==== */
+  /* sous-titre d'une légende : séparé du constat par un point médian (il commence par une minuscule) */
+  /* graphique des tailles sur téléphone : classe au-dessus de ses deux barres, toute la largeur pour les
+     barres et leurs étiquettes (plus de défilement horizontal à 320 px) */
+  @media(max-width:520px){
+    .pair{grid-template-columns:minmax(0,1fr);gap:0;overflow:visible}
+    .pair .bin{text-align:left;padding-top:6px}
+  }
+  /* tableau des 100 communes : ombre en haut et en bas tant qu'il reste des lignes à faire défiler */
+  #communes .tblwrap{background:linear-gradient(var(--card) 30%,rgba(255,255,255,0)) top/100% 28px no-repeat local,
+    linear-gradient(rgba(255,255,255,0),var(--card) 70%) bottom/100% 28px no-repeat local,
+    linear-gradient(rgba(29,39,52,.14),transparent) top/100% 10px no-repeat scroll,
+    linear-gradient(transparent,rgba(29,39,52,.14)) bottom/100% 10px no-repeat scroll,var(--card)}
+  #communes .tblwrap tbody td{background:none}
+  .tblwrap+.src{margin-top:8px}
 </style>
 
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -365,7 +384,7 @@
   </div>
 </div>
 <p class="kpi-note">Rappel : capacité installée ne veut pas dire énergie produite ; le repère PNEC est l'objectif inscrit au plan national, pas une projection de ce tableau de bord.</p>
-<p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Vous voulez ça pour votre commune ? Parlons-en <span aria-hidden="true">→</span></a></p>
+<p class="contact-cta"><a href="__FORPATH__">Vous voulez ça pour votre commune ? Voir « Pour les communes » <span aria-hidden="true">→</span></a></p>
 
 <section id="trajectoire">
   <div class="sec-head">
@@ -467,7 +486,7 @@
     <div>
       <div class="sec-head"><h3 class="h2like">Top 10 : W par habitant</h3></div>
       <figure class="card"><div class="hbars" id="top-wpc"><!--PRE_TOP_WPC--></div>
-        <figcaption><b>Figure 6.</b> Les 10 communes au plus fort ratio de photovoltaïque par habitant. <span class="u">toitures (≤ 30 kW) pour 1 000 hab. en second</span></figcaption>
+        <figcaption><b>Figure 6.</b> Les 10 communes au plus fort ratio de photovoltaïque par habitant. <span class="u">second chiffre : toitures (≤ 30 kW) pour 1 000 hab.</span></figcaption>
         <p class="src">Sources : Leneda (data.public.lu), relevé du __DATE__ ; population RNPP au __POPDATE__ ; traitement : Sitraka Forler.<!--DL:solaire_communes:F:6--></p>
       </figure>
     </div>
@@ -500,7 +519,7 @@
     </div>
     <div class="pkey">
       <span><span class="sw am" style="background:var(--amber);display:inline-block;vertical-align:-1px"></span> part des installations</span>
-      <span><span class="sw" style="background:var(--ink);opacity:.82;display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
+      <span><span class="sw" style="background:var(--cap);display:inline-block;vertical-align:-1px"></span> part de la capacité</span>
     </div>
     <div class="pair" id="paradox"><!--PRE_PARADOX--></div>
     <p class="kbnote" id="kb-note" hidden>Aides aux communes pour une centrale sur bâtiment (<a href="https://gouvernement.lu/dam-assets/images-documents/actualites/2025/09/16-wilmes-climat/guide-pratique-klimabonus-gemengen.pdf" rel="noopener">Klimabonus Gemengen</a>, barème 2025 révisé chaque année) : 50 % des coûts entre 30 et 200 kWc (plafond 675 €/kWc), 45 % entre 200 et 500 kWc (505 €/kWc), 40 % entre 0,5 et 5 MWc (425 €/kWc) ; ombrière de parking : 45 % (990 €/kWc). En dessous de 30 kWc, pas d'aide Klimabonus Gemengen : le Klimabonus des particuliers ne vaut que pour des logements, y compris les logements communaux. Les données Leneda ne disent pas si une installation est communale ou privée.</p>
@@ -527,7 +546,6 @@
 <section id="communes">
   <div class="sec-head">
     <h2>Les __NCOMMUNES__ communes</h2>
-    <span class="sec-note">cliquer sur un en-tête pour trier</span>
   </div>
   <p class="lede">Chaque commune a sa page : cliquez sur son nom dans le tableau. <a href="__FORPATH__">Vous travaillez pour une commune ?</a></p>
   <div class="toolbar">
@@ -537,7 +555,7 @@
   </div>
   <div class="tblwrap" role="region" tabindex="0" aria-labelledby="tbl-cap">
     <table id="tbl">
-      <caption id="tbl-cap"><span class="capin"><b>Tableau 6.</b> Capacité, croissance et ratios par habitant des __NCOMMUNES__ communes.</span></caption>
+      <caption id="tbl-cap"><span class="capin"><b>Tableau 6.</b> Capacité, croissance et ratios par habitant des __NCOMMUNES__ communes. <span class="u">cliquer sur un en-tête pour trier</span></span></caption>
       <thead><tr>
         <th data-k="c" data-s="str" aria-sort="none"><button type="button">Commune</button></th>
         <th data-k="k" data-s="str" aria-sort="none"><button type="button">Canton</button></th>
@@ -589,13 +607,16 @@
         <button type="button" id="rt-copy">Copier le lien</button>
         <button type="button" id="rt-native" hidden>Partager…</button>
       </p>
+      <h3 class="rt-h3b">Contact</h3>
+      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20__CANONICAL_ENC__">Signaler une erreur</a></p>
+      <p class="rt-note">Auteur : <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
     </div>
     <div>
       <h3>Citer cette page</h3>
-      <pre class="rt-cite" id="rt-cite-txt">__CANONICAL__</pre>
+      <pre class="rt-cite" id="rt-cite-txt" tabindex="0" role="region" aria-label="Citation">__CANONICAL__</pre>
       <p class="rt-row"><button type="button" id="rt-copy-txt">Copier la citation</button></p>
       <details class="rt-bib"><summary>BibTeX</summary>
-        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <pre class="rt-cite" id="rt-cite-bib" tabindex="0" role="region" aria-label="BibTeX"></pre>
         <p class="rt-row"><button type="button" id="rt-copy-bib">Copier le BibTeX</button></p>
       </details>
     </div>
@@ -603,11 +624,6 @@
       <h3>Télécharger les données</h3>
       <ul class="rt-dl"><!--RT_DOWNLOADS--></ul>
       <p class="rt-note">Licence et sources : voir la <a href="#methode">méthode</a>.</p>
-    </div>
-    <div>
-      <h3>Contact</h3>
-      <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20__CANONICAL_ENC__">Signaler une erreur</a></p>
-      <p class="rt-note">Auteur : <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
     </div>
   </div>
   <p class="rt-sr" id="rt-live" aria-live="polite"></p>
@@ -650,10 +666,13 @@ const S = D.series, last = S[S.length-1], first = S[0];
 document.getElementById('k-pv').textContent = fmt1(last.pv)+' MW';
 document.getElementById('k-growth').textContent = '+'+Math.round((last.pv/first.pv-1)*100)+' %';
 document.getElementById('k-n').textContent = fmt(D.meta.pv_n);
-const totLast = TECHS.reduce((a,t)=>a+last[t.k],0);
+/* sommes arrondies au millionième : les valeurs ont 2 décimales, la somme flottante 1277,4999… vaut 1277,5
+   (même total, quel que soit l'ordre d'addition, pour l'indicateur et l'étiquette de la figure 1) */
+const sum6 = (o,ks)=>+ks.reduce((a,k)=>a+o[k],0).toFixed(6);
+const totLast = sum6(last, TECHS.map(t=>t.k));
 document.getElementById('k-share').textContent = fmt1(last.pv/totLast*100)+' %';
 document.getElementById('k-tot').textContent = fmt(Math.round(totLast));
-const totFirst = TECHS.reduce((a,t)=>a+first[t.k],0);
+const totFirst = sum6(first, TECHS.map(t=>t.k));
 document.getElementById('growth-total').textContent = Math.round(totLast-totFirst);
 
 /* ---- stacked area (SVG) ---- */
@@ -664,14 +683,14 @@ function drawArea(){
   const W=nar?Math.max(280,Math.round(cw)):960, H=nar?260:380, mL=nar?40:52, mR=nar?6:16, mT=14, mB=34;
   const iw=W-mL-mR, ih=H-mT-mB;
   const order=['biogas','hydro','chp','biomass','wind','pv']; // stack bottom->top, pv on top
-  const stacks = S.map(s=>{let acc=0; const o={label:s.label,vals:{}}; order.forEach(k=>{o.vals[k]=[acc,acc+s[k]]; acc+=s[k];}); o.total=acc; return o;});
+  const stacks = S.map(s=>{let acc=0; const o={label:s.label,vals:{}}; order.forEach(k=>{o.vals[k]=[acc,acc+s[k]]; acc+=s[k];}); o.total=+acc.toFixed(6); return o;});
   const maxY = Math.ceil(Math.max(...stacks.map(s=>s.total))/200)*200;
   const x=i=>mL+iw*i/(S.length-1), y=v=>mT+ih*(1-v/maxY);
   let g='';
   // gridlines
   for(let v=0;v<=maxY;v+=200){
     g+=`<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?'#B9BCB2':'#E7E8E1'}" stroke-width="1"/>`;
-    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${v}</text>`;
+    g+=`<text x="${mL-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#5F6773" font-family="ui-monospace,Menlo,monospace">${fmt(v)}</text>`;
   }
   order.forEach(k=>{
     const t=TECHS.find(t=>t.k===k);
@@ -728,7 +747,7 @@ hbars('top-growth', topG, topG[0].g, r=>r.g, r=>`<b>+${fmt(Math.round(r.g))}</b>
 
 /* ---- par habitant (RNPP) ---- */
 const topW=[...D.communes].sort((a,b)=>b.wpc-a.wpc).slice(0,10);
-hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<b>${fmt(r.wpc)}</b>${' W/hab.'} · ${fmt1(r.rpk)}${' toitures/1 000'}`);
+hbars('top-wpc', topW, topW[0].wpc, r=>r.wpc, r=>`<span class="nw"><b>${fmt(r.wpc)}</b>${' W/hab.'}</span> · <span class="nw">${fmt1(r.rpk)}${' toitures/1 000'}</span>`);
 document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
   `<tr><td>${escH(k.k)}</td><td>${fmt(Math.round(k.pv))}</td><td>${fmt(k.n)}</td><td>${fmt(k.pop)}</td><td>${fmt(k.wpc)}</td><td>${fmt1(k.ipk)}</td></tr>`).join('');
 
@@ -791,7 +810,7 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 /* ---- « Votre commune » (en-tête) : la page de la commune choisie ; sans JS, le formulaire mène au tableau ---- */
 (function(){
   const f=document.querySelector('form.pick'), s=document.getElementById('pick-c');
-  if(f&&s) f.addEventListener('submit',e=>{ if(s.value){ e.preventDefault(); location.href=s.value; } });
+  if(f&&s) f.addEventListener('submit',e=>{ if(s.value){ e.preventDefault(); window.solEv&&solEv('page', s.value.split('/').slice(-2)[0]); location.href=s.value; } });
 })();
 
 /* ---- table ---- */
@@ -838,4 +857,4 @@ document.querySelector('#cantons tbody').innerHTML=D.cantons.map(k=>
 })();
 </script>
 <script defer src="/rt.js"></script>
-<script defer src="/ev.js"></script>
+<script defer src="__EV_SRC__"></script>

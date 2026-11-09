@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>Simulateur panneaux solaires Luxembourg : production, Klimabonus, rentabilité (2026)</title>
+<title>Simulateur panneaux solaires Luxembourg : production, Klimabonus, rentabilité (2026)</title>
 <meta name="description" content="Est-ce rentable d'installer des panneaux solaires chez vous au Luxembourg ? Production estimée (PVGIS), Klimabonus 2026, tarif d'injection garanti, retour sur investissement. Gratuit, sans inscription.">
 <link rel="canonical" href="https://solaire.sitraka.lu/fr/simulateur/">
 <meta property="og:url" content="https://solaire.sitraka.lu/fr/simulateur/">
@@ -155,7 +155,7 @@
   .kpi .val.ab{display:flex;flex-wrap:wrap;gap:0 14px;font-size:22px}
   .kpi .val.ab span{white-space:nowrap}
   .kpi .val.ab i{font:650 11.5px var(--mono);font-style:normal;color:var(--ink-3);margin-left:5px;letter-spacing:.04em}
-  .fig{margin-top:18px}
+  .fig{margin:18px 0 16px}
   .fig figcaption{font-size:13px;color:var(--ink-2);text-align:left;margin:8px 0 0;line-height:1.45}
   /* L3.7 : « Tableau n. » dans un <caption> au-dessus (style commun L1.11), lisible au bord gauche du conteneur défilant */
   .tab{margin-top:18px}
@@ -173,7 +173,6 @@
   table.mini th[scope=row],table.mini td:first-child,table.mini th:first-child{text-align:left}
   table.mini td.best{color:var(--green);font-weight:650}
   table.mini td{white-space:nowrap}   /* un montant ne se coupe pas ; le tableau défile dans son conteneur */
-  @media(max-width:560px){#tab-detail td{white-space:normal}}
   table.mini td.hi{background:var(--amber-soft)}
   .verdict{border-left:4px solid var(--amber);padding:14px 18px;background:var(--amber-soft);border-radius:0;margin-top:0}
   .verdict.good{border-color:var(--green);background:var(--green-soft)}
@@ -235,8 +234,8 @@
   .method details[open]>summary::after{content:"−"/""}
   .method details>p,.method details>ol{margin-top:4px}
   .method details>ol{margin-bottom:16px}
-  .rt{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono);
-    margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
+  :root{--rt-accent:var(--amber-text);--rt-line:var(--line);--rt-card:var(--card);--rt-ink:var(--ink);--rt-muted:var(--ink-3);--rt-font:var(--body);--rt-mono:var(--mono)}
+  .rt{margin:48px 0 0;padding:20px 22px;border:1px solid var(--rt-line);border-radius:3px;background:var(--rt-card);color:var(--rt-ink);font-family:var(--rt-font)}
   .rt h2{font-size:18px;margin:0 0 14px}
   .rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 26px}
   .rt h3{font:650 11px/1.2 var(--rt-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--rt-muted);margin:0 0 8px}
@@ -252,7 +251,7 @@
   .rt-dl small{color:var(--rt-muted);font-weight:400}
   .rt-note{font-size:12.5px;color:var(--rt-muted);margin:6px 0 0}
   .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.45;vertical-align:middle}
+  .rt-a{margin-left:.35em;min-width:28px;min-height:28px;font:600 .7em var(--rt-mono);color:var(--rt-muted);background:none;border:0;cursor:pointer;opacity:.8;vertical-align:middle}
   h2:hover .rt-a,.rt-a:focus-visible{opacity:1}.rt-a.rt-done{color:var(--rt-accent);opacity:1}
   @media (hover:none){.rt-a{opacity:.8}}
   section[id]{scroll-margin-top:72px}
@@ -280,6 +279,7 @@
   @media(max-width:480px){.wrap{padding:12px 16px 56px}}
   html{scroll-padding-top:56px}
   :focus-visible{outline:2px solid var(--amber-text);outline-offset:2px}
+  .nt{text-transform:none}   /* unité dans un en-tête en capitales (unit_case) */
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   /* bandeau de la série */
   .masthead{border-top:3px solid var(--amber);border-bottom:1px solid var(--line);padding:5px 0 6px;margin:0 0 24px;font-size:13px}
@@ -293,6 +293,7 @@
   .series a:hover{color:var(--amber-text);text-decoration:underline;text-underline-offset:3px}
   .series a[aria-current]{color:var(--ink);font-weight:650;text-decoration:underline;text-decoration-color:var(--amber);text-decoration-thickness:2px;text-underline-offset:4px}
   .mh-desk{margin-top:2px}
+  .langs-nav{display:flex}
   .langs{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font:600 11.5px var(--mono);letter-spacing:.04em}
   .langs li{display:flex}
   .langs a{display:inline-flex;align-items:center;gap:5px;min-height:28px;min-width:24px;padding:0 4px;color:var(--ink-3);text-decoration:none}
@@ -313,7 +314,7 @@
     .mh-label,.mh-desk{display:none}
     .mh-row{display:grid;grid-template-columns:1fr auto;align-items:start;column-gap:8px}
     .mh-series{display:block;grid-column:1/-1;grid-row:1}
-    .mh-row>.langs{grid-column:2;grid-row:1}
+    .mh-row>.langs-nav{grid-column:2;grid-row:1}
     .mh-series .series{padding:2px 0 6px 16px}
     .mh-series .series a{min-height:32px}
     .langs a{min-height:32px;padding:0 3px}
@@ -325,8 +326,8 @@
   .crumbs ol{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-wrap:wrap;font:11.5px/1.5 var(--mono);color:var(--ink-3)}
   .crumbs li{display:flex;align-items:center}
   .crumbs li:not(:last-child)::after{content:"›"/"";margin:0 8px}
-  .crumbs a{color:var(--amber-text);text-decoration:none;display:inline-block;padding:4px 0}
-  .crumbs a:hover{text-decoration:underline}
+  .crumbs a{color:var(--ink-3);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;display:inline-block;padding:4px 0}
+  .crumbs a:hover{color:var(--amber-text);text-decoration-color:currentColor}
   .crumbs li[aria-current]{padding:4px 0}
   /* téléphone : fil d'Ariane sur une ligne ; le premier libellé, long, est tronqué à l'écran (texte complet dans le DOM) */
   @media(max-width:767px){
@@ -334,6 +335,10 @@
     .crumbs li{flex:none;min-width:0}
     .crumbs li:first-child{flex:0 1 auto}
     .crumbs li:first-child a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .crumbs ol{margin-bottom:0}
+    .crumbs a,.crumbs li[aria-current]{padding:2px 0}
+    .wrap h1{margin-top:6px}
+    .eb-tail{display:none}   /* surtitre réduit à son 1er mot sous 768 px (texte complet à partir de 768 px) */
   }
   header>.eyebrow{margin:0}
   h1{max-width:20ch;margin-top:10px}
@@ -348,12 +353,16 @@
   #tbl{min-width:900px}
   table.bigtab th,table.bigtab td{white-space:normal}
   table.bigtab td:first-child,table.bigtab td:last-child{white-space:nowrap}
-  table.bigtab small{white-space:normal;overflow-wrap:anywhere}
+  table.bigtab small{white-space:normal;overflow-wrap:normal;hyphens:auto}
   td.num,th.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
   caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-2);padding:0 0 8px}
   caption b,figcaption b{font:650 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
   figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
   .src{font:11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+  .src a,.dl a{color:var(--amber-text)}
+  /* sous-titre d'une légende (mono gris), séparé du constat par un point médian : il commence par une minuscule */
+  figcaption .u,caption .u{font:12px/1.5 var(--mono);color:var(--ink-3);white-space:normal}
+  figcaption .u::before,caption .u::before{content:"· "/""}
   table.booktabs{border-collapse:collapse;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.booktabs thead th{border-bottom:1px solid var(--ink)}
   table.booktabs td,table.booktabs th{border-left:0;border-right:0}
@@ -362,7 +371,7 @@
   .pn a{display:inline-flex;align-items:center;min-height:32px}
   /* section Méthode (sortie du pied de page) */
   .method{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
-  .method h2{margin:0 0 10px}
+  .method h2{margin:0 0 10px;color:var(--ink)}
   .method p,.method ol{max-width:75ch;margin:0 0 10px}
   .method a{color:var(--amber-text)}
   /* colophon commun */
@@ -371,6 +380,8 @@
   .colophon p{margin:0 0 8px;max-width:75ch}
   .colophon a{color:var(--amber-text)}
   .colophon .co-series{grid-column:1/-1;margin-top:10px}
+  .co-series-d>summary{cursor:pointer;font:600 13px var(--body);color:var(--amber-text);min-height:32px;display:flex;align-items:center}
+  .co-series-d[open]>summary{margin-bottom:2px}
   .colophon .tblscroll{--sc-bg:var(--paper)}
   table.series-t{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:13px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
   table.series-t th,table.series-t td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal}
@@ -402,29 +413,33 @@
   @media(min-width:1600px){html{font-size:clamp(16px,.6vw + 8px,20px)}}
   @media print{.masthead,.rt,.rt-a,.cta,.contact-cta,.skip{display:none}body,html{background:#fff}a{color:inherit}.tblscroll{background:none}}
 
+  :root{--accent:var(--amber)}
+  .masthead{border-top-color:var(--accent)}
+  .eyebrow::before{background:var(--accent)}
+  .contact-cta a{border-left-color:var(--accent)}
 </style>
 
 <a class="skip" href="#contenu">Aller au contenu</a>
 <div class="wrap">
 <!--MASTHEAD-->
-<div class="masthead">
+<header class="masthead">
   <div class="mh-row">
     <p class="mh-label" id="mh-l">Série open-data · Luxembourg</p>
     <details class="mh-series">
-      <summary aria-label="Série open-data (8)"><span class="mh-long" aria-hidden="true">Série open-data</span><span class="mh-short" aria-hidden="true">Série</span> <span class="count" aria-hidden="true">(8)</span></summary>
-      <nav aria-label="Série open-data · Luxembourg"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaïque : capacité raccordée par commune">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Créations, survie et faillites d'entreprises">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Fonder une ESN : étude de marché chiffrée">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Prochaine tranche indiciaire des salaires">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Dette publique et finances de l'État">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="La chaleur, commune par commune">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Carte sanitaire : lits, personnel, attentes">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="L'Inde et le Luxembourg en chiffres">lux-india</a></li></ul></nav>
+      <summary><span class="mh-long">Série open-data</span><span class="mh-short">Série</span> <span class="count">(8)</span></summary>
+      <nav aria-label="Série open-data · Luxembourg"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaïque : capacité raccordée par commune">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Créations, survie et faillites d'entreprises">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Fonder une ESN : étude de marché chiffrée">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Prochaine tranche indiciaire des salaires">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Dette publique et finances de l'État">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="La chaleur, commune par commune">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Carte sanitaire : lits, personnel, attentes">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="L'Inde et le Luxembourg en chiffres">lux-india</a></li></ul></nav>
     </details>
-    <ul class="langs" aria-label="Langue de la page"><li><a href="/simulator/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/simulateur/" lang="fr" hreflang="fr" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/rechner/" lang="de" hreflang="de"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/rechner/" lang="lb" hreflang="lb"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/simulador/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul>
+    <nav class="langs-nav" aria-label="Langue de la page"><ul class="langs"><li><a href="/simulator/" lang="en" hreflang="en"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="44" fill="#012169"/><path d="M0 0 60 44M60 0 0 44" stroke="#fff" stroke-width="9"/><path d="M0 0 60 44M60 0 0 44" stroke="#C8102E" stroke-width="4"/><path d="M30 0V44M0 22H60" stroke="#fff" stroke-width="15"/><path d="M30 0V44M0 22H60" stroke="#C8102E" stroke-width="8"/></svg>EN<span class="vh"> English</span></a></li><li><a href="/fr/simulateur/" lang="fr" hreflang="fr" aria-current="page"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="20" height="44" fill="#0055A4"/><rect x="20" width="20" height="44" fill="#fff"/><rect x="40" width="20" height="44" fill="#EF4135"/></svg>FR<span class="vh"> Français</span></a></li><li><a href="/de/rechner/" lang="de" hreflang="de"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#000"/><rect y="15" width="60" height="14" fill="#DD0000"/><rect y="29" width="60" height="15" fill="#FFCE00"/></svg>DE<span class="vh"> Deutsch</span></a></li><li><a href="/lb/rechner/" lang="lb" hreflang="lb"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="60" height="15" fill="#EF3340"/><rect y="15" width="60" height="14" fill="#fff"/><rect y="29" width="60" height="15" fill="#00A2E1"/></svg>LB<span class="vh"> Lëtzebuergesch</span></a></li><li><a href="/pt/simulador/" lang="pt-PT" hreflang="pt"><svg width="16" height="11" viewBox="0 0 60 44" aria-hidden="true" focusable="false"><rect width="24" height="44" fill="#046A38"/><rect x="24" width="36" height="44" fill="#DA291C"/><circle cx="24" cy="22" r="9" fill="#FFE900"/><circle cx="24" cy="22" r="5" fill="#DA291C" stroke="#fff" stroke-width="1.5"/></svg>PT<span class="vh"> Português</span></a></li></ul></nav>
   </div>
-  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="page" href="https://solaire.sitraka.lu" title="Photovoltaïque : capacité raccordée par commune">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Créations, survie et faillites d'entreprises">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Fonder une ESN : étude de marché chiffrée">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Prochaine tranche indiciaire des salaires">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Dette publique et finances de l'État">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="La chaleur, commune par commune">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Carte sanitaire : lits, personnel, attentes">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="L'Inde et le Luxembourg en chiffres">lux-india</a></li></ul></nav>
-</div>
+  <nav class="mh-desk" aria-labelledby="mh-l"><ul class="series"><li><a aria-current="true" href="https://solaire.sitraka.lu" title="Photovoltaïque : capacité raccordée par commune">lux-solaire</a></li><li><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener" title="Créations, survie et faillites d'entreprises">lux-entreprendre</a></li><li><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener" title="Fonder une ESN : étude de marché chiffrée">lux-conseil</a></li><li><a href="https://index.sitraka.lu" target="_blank" rel="noopener" title="Prochaine tranche indiciaire des salaires">index-lu</a></li><li><a href="https://budget.sitraka.lu" target="_blank" rel="noopener" title="Dette publique et finances de l'État">budget-lu</a></li><li><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener" title="La chaleur, commune par commune">lux-canicule</a></li><li><a href="https://sante.sitraka.lu" target="_blank" rel="noopener" title="Carte sanitaire : lits, personnel, attentes">lux-santé</a></li><li><a href="https://india.sitraka.lu" target="_blank" rel="noopener" title="L'Inde et le Luxembourg en chiffres">lux-india</a></li></ul></nav>
+</header>
 <!--/MASTHEAD-->
 <main id="contenu" tabindex="-1">
 <header>
   <nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="/fr/">Le photovoltaïque au Luxembourg, commune par commune</a></li><li aria-current="page">Simulateur</li></ol></nav>
-  <p class="eyebrow">Simulateur · trois outils gratuits, sans inscription</p>
-  <h1>Panneaux solaires au Luxembourg : <span class="sun">est-ce rentable chez vous ?</span></h1>
-  <p class="standfirst"><strong>Outil 1</strong> : combien votre toit produirait et rapporterait chaque année. <strong>Outil 2</strong> : en combien d'années l'installation est remboursée, avec le <strong>Klimabonus 2026</strong> ou avec le <strong>tarif d'injection garanti 15 ans</strong>, et lequel des deux vous convient. <strong>Outil 3</strong> : ce que coûte et rapporte une pompe à chaleur à la place de votre chauffage actuel, avec ou sans ces panneaux. Tout est calculé dans votre navigateur à partir de sources officielles : productible <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS</a>, aides <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">guichet.lu</a>, tarifs réseau ILR, règlement grand-ducal des tarifs d'injection. Repère : <strong>38 332 installations</strong> sont déjà raccordées au Luxembourg (9 novembre 2026).</p>
+  <p class="eyebrow">Simulateur<span class="eb-tail"> · trois outils gratuits, sans inscription</span></p>
+  <h1>Panneaux solaires au Luxembourg : <span class="sun">est-ce rentable chez vous ?</span></h1>
+  <p class="standfirst"><strong>Outil 1</strong> : combien votre toit produirait et rapporterait chaque année. <strong>Outil 2</strong> : en combien d'années l'installation est remboursée, avec le <strong>Klimabonus 2026</strong> ou avec le <strong>tarif d'injection garanti 15 ans</strong>, et lequel des deux vous convient. <strong>Outil 3</strong> : ce que coûte et rapporte une pompe à chaleur à la place de votre chauffage actuel, avec ou sans ces panneaux. Tout est calculé dans votre navigateur à partir de sources officielles : productible <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS</a>, aides <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">guichet.lu</a>, tarifs réseau ILR, règlement grand-ducal des tarifs d'injection. Repère : <strong>38 332 installations</strong> sont déjà raccordées au Luxembourg (9 novembre 2026).</p>
   <div class="badges">
     <span class="badge">Productible <b>PVGIS SARAH3</b> · 2005-2023</span>
     <span class="badge">Aides <b>Klimabonus régime 2026</b></span>
@@ -436,28 +451,29 @@
 
 <section id="production">
   <div class="sec-head">
-    <h2><span class="num">Outil 1</span>Combien allez-vous produire et gagner chaque année ?</h2>
-    <span class="sec-note">kWh/an · €/an</span>
+    <h2><span class="num">Outil 1</span>Combien allez-vous produire et gagner chaque année ?</h2>
   </div>
-  <p class="lede">Décrivez votre toit et votre consommation : le productible vient de la base <strong>PVGIS</strong> du Centre commun de recherche de la Commission européenne (irradiation SARAH3, 2005-2023, pertes système 14 %), calculé pour Luxembourg-Ville puis corrigé par canton. La part autoconsommée est estimée à partir du rapport production/consommation ; vous pouvez la forcer.</p>
+  <p class="lede">Décrivez votre toit et votre consommation : le productible vient de la base <strong>PVGIS</strong> du Centre commun de recherche de la Commission européenne (irradiation SARAH3, 2005-2023, pertes système 14 %), calculé pour Luxembourg-Ville puis corrigé par canton. La part autoconsommée est estimée à partir du rapport production/consommation ; vous pouvez la forcer.</p>
   <div class="grid-tool">
     <div class="res">
       <div class="kpis">
         <div class="kpi hero"><div class="lbl">Production annuelle</div><div class="val" id="r-prod">6 402 kWh</div><div class="sub" id="r-prod-sub">1 067 kWh par kWc, soit 1,6 fois la consommation d'un ménage moyen (3 900 kWh)</div></div>
         <div class="kpi"><div class="lbl">Autoconsommé</div><div class="val" id="r-self">1 427 kWh</div><div class="sub" id="r-self-sub">22 % de votre production · couvre 37 % de votre consommation</div></div>
         <div class="kpi"><div class="lbl">Injecté au réseau</div><div class="val" id="r-inj">4 975 kWh</div><div class="sub" id="r-inj-sub">78 % de la production</div></div>
-        <div class="kpi"><div class="lbl">Gain la première année</div><div class="val ab" id="r-gain"><span>534 €<i>A</i></span><span>929 €<i>B</i></span></div><div class="sub" id="r-gain-sub">par an · A : Klimabonus · B : tarif garanti</div></div>
+        <div class="kpi"><div class="lbl">Gain la première année</div><div class="val ab" id="r-gain"><span>534 €<i>A</i></span><span>929 €<i>B</i></span></div><div class="sub" id="r-gain-sub">par an · A : Klimabonus · B : tarif garanti</div></div>
       </div>
-      <p class="hint" id="r-cover">Votre installation produit l'équivalent de 164 % de votre consommation annuelle, mais le soleil et vos usages ne coïncident pas : seule la part autoconsommée vous évite d'acheter des kWh.</p>
+      <p class="hint" id="r-cover">Votre installation produit l'équivalent de 164 % de votre consommation annuelle, mais le soleil et vos usages ne coïncident pas : seule la part autoconsommée vous évite d'acheter des kWh.</p>
       <figure class="fig">
         <div class="svgwrap bar" id="fig-months"></div>
         <div class="legend"><span><span class="sw" style="background:#1D2734;opacity:.82"></span>Production injectée au réseau</span><span><span class="sw am" style="background:var(--amber)"></span>Part autoconsommée</span></div>
-        <figcaption><b>Figure 1.</b> Production mensuelle estimée (kWh) et part autoconsommée. Profil PVGIS de Luxembourg-Ville mis à l'échelle de votre installation ; la part autoconsommée est répartie au prorata de la production.</figcaption>
+        <figcaption><b>Figure 1.</b> Production mensuelle estimée (kWh) et part autoconsommée. Profil PVGIS de Luxembourg-Ville mis à l'échelle de votre installation ; la part autoconsommée est répartie au prorata de la production.</figcaption>
+        <p class="src">Source : productible PVGIS SARAH3, voir la <a href="#src-1">source 1</a> de la méthode ; calcul : simulateur lux-solaire.</p>
       </figure>
       <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-detail">
-        <table class="mini" id="tab-detail"><caption id="cap-detail"><span class="capin"><b>Tableau 1.</b> Détail de la première année selon le mode de valorisation. Option A : Klimabonus et surplus vendu au prix de marché. Option B : tarif d'injection garanti 15 ans, sans Klimabonus. Les prix sont ceux de l'outil 2.</span></caption><thead><tr><th scope="col">Poste</th><th scope="col">Option A · Klimabonus</th><th scope="col">Option B · tarif garanti</th></tr></thead><tbody><tr><th scope="row">kWh autoconsommés × valeur du kWh évité</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row">kWh injectés × prix de vente</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gain la première année</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus déduit de la facture</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Reste à payer</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
+        <table class="mini" id="tab-detail"><caption id="cap-detail"><span class="capin"><b>Tableau 1.</b> Détail de la première année selon le mode de valorisation. Option A : Klimabonus et surplus vendu au prix de marché. Option B : tarif d'injection garanti 15 ans, sans Klimabonus. Les prix sont ceux de l'outil 2. <span class="u">kWh/an · €/an</span></span></caption><thead><tr><th scope="col">Poste</th><th scope="col">Option A · Klimabonus</th><th scope="col">Option B · tarif garanti</th></tr></thead><tbody><tr><th scope="row"><span class="nt">kWh</span> autoconsommés × valeur du <span class="nt">kWh</span> évité</th><td>1 427 × 20,0 c€ = 285 €</td><td>1 427 × 20,0 c€ = 285 €</td></tr><tr><th scope="row"><span class="nt">kWh</span> injectés × prix de vente</th><td>4 975 × 5,0 c€ = 249 €</td><td>4 975 × 12,9 c€ = 643 €</td></tr><tr><th scope="row"><strong>Gain la première année</strong></th><td class=""><strong>534 €</strong></td><td class="best"><strong>929 €</strong></td></tr><tr><th scope="row">Klimabonus déduit de la facture</th><td>5 742 €</td><td>0 €</td></tr><tr><th scope="row">Reste à payer</th><td>5 058 €</td><td>10 800 €</td></tr></tbody></table>
       </div>
-      <p class="hint" id="r-canton">Dans le canton de Luxembourg : 6 943 installations PV raccordées, 514 W de photovoltaïque par habitant, 32,1 installations pour 1 000 habitants (Leneda, 9 novembre 2026).</p>
+      <p class="src">Sources : productible PVGIS, Klimabonus, tarif d'injection garanti, prix du kWh et coûts indicatifs, voir les <a href="#m-src">sources 1 à 7</a> de la méthode ; calcul : simulateur lux-solaire.</p>
+      <p class="hint" id="r-canton">Dans le canton de Luxembourg : 6 943 installations PV raccordées, 514 W de photovoltaïque par habitant, 32,1 installations pour 1 000 habitants (Leneda, 9 novembre 2026).</p>
       <p class="to-form"><a href="#f1">Modifier les hypothèses <span aria-hidden="true">↓</span></a></p>
     </div>
     <form class="card form" id="f1" autocomplete="off">
@@ -467,7 +483,7 @@
           <label for="p">Puissance crête <output id="p-out">6 kWc</output></label>
           <input type="range" id="p" min="2" max="30" step="0.5" value="6" aria-describedby="p-h">
           <small id="p-h">1 kWc ≈ 2 à 3 panneaux ≈ 5 m² de toit.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Une maison compte le plus souvent 3 à 10 kWc ; le Klimabonus demande au moins 2 kWc et une installation posée sur la toiture ou la façade, ou intégrée à l'enveloppe du bâtiment.</p></details>
+          <details class="more"><summary>En savoir plus</summary><p>Une maison compte le plus souvent 3 à 10 kWc ; le Klimabonus demande au moins 2 kWc et une installation posée sur la toiture ou la façade, ou intégrée à l'enveloppe du bâtiment.</p></details>
         </div>
         <div class="fld">
           <label for="az">Orientation</label>
@@ -496,7 +512,7 @@
         <div class="fld">
           <label for="canton">Canton</label>
           <select id="canton" aria-describedby="canton-h"></select>
-          <small id="canton-h">Écart maximal entre cantons : environ 5 % (Clervaux, Wiltz au nord ; Esch, Capellen au sud).</small>
+          <small id="canton-h">Écart maximal entre cantons : environ 5 % (Clervaux, Wiltz au nord ; Esch, Capellen au sud).</small>
         </div>
       </fieldset>
       <fieldset>
@@ -505,7 +521,7 @@
           <label for="cons">Consommation annuelle du ménage <output id="cons-out">3 900 kWh</output></label>
           <div class="row"><input type="range" id="cons" min="1500" max="15000" step="100" value="3900" aria-describedby="cons-h"><span class="num"><input type="text" inputmode="decimal" id="cons-in" value="3900" aria-label="Consommation annuelle du ménage, en kWh par an" aria-describedby="cons-h cons-in-err" spellcheck="false">kWh/an</span></div>
           <p class="err" id="cons-in-err" aria-live="polite" hidden></p>
-          <small id="cons-h">3 900 kWh : ménage moyen retenu par le ministère de l'Économie ; environ 13 000 kWh avec pompe à chaleur et voiture électrique.</small>
+          <small id="cons-h">3 900 kWh : ménage moyen retenu par le ministère de l'Économie ; environ 13 000 kWh avec pompe à chaleur et voiture électrique.</small>
         </div>
         <div class="fld">
           <label for="batt">Batterie <output id="batt-out">sans</output></label>
@@ -516,7 +532,7 @@
           <label for="sc">Part autoconsommée <output id="sc-out">30 %</output></label>
           <input type="range" id="sc" min="10" max="90" step="1" value="30" aria-describedby="sc-h">
           <label class="chk"><input type="checkbox" id="sc-auto" checked> Estimer automatiquement</label>
-          <small id="sc-h">Sans batterie, un ménage autoconsomme typiquement 30 % quand la production égale la consommation ; la part baisse quand l'installation grandit, monte avec une batterie.</small>
+          <small id="sc-h">Sans batterie, un ménage autoconsomme typiquement 30 % quand la production égale la consommation ; la part baisse quand l'installation grandit, monte avec une batterie.</small>
           <details class="more"><summary>En savoir plus</summary><p>Estimation par une formule simplifiée propre à ce simulateur (voir la méthode), non tirée d'une étude publiée.</p></details>
         </div>
       </fieldset>
@@ -526,10 +542,9 @@
 
 <section id="rentabilite">
   <div class="sec-head">
-    <h2><span class="num">Outil 2</span>Est-ce rentable pour vous ?</h2>
-    <span class="sec-note">retour sur investissement · gain net sur 25 ans, non actualisé par défaut</span>
+    <h2><span class="num">Outil 2</span>Est-ce rentable pour vous ?</h2>
   </div>
-  <p class="lede">L'outil reprend la production de l'outil 1 et compare les deux régimes ouverts aux particuliers en 2026 : <strong>option A</strong>, Klimabonus (déduit de la facture ou demandé ensuite) avec autoconsommation et surplus vendu au prix de marché ; <strong>option B</strong>, pas d'aide mais surplus payé au tarif d'injection garanti pendant 15 ans. Les deux ne se cumulent pas : demander le Klimabonus, c'est renoncer au tarif garanti. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire combine le tarif garanti et une aide de 20 % (500 €/kWc au plus), facture finale au plus tard le 31 décembre 2026 : il n'est pas simulé ici.</p>
+  <p class="lede">L'outil reprend la production de l'outil 1 et compare les deux régimes ouverts aux particuliers en 2026 : <strong>option A</strong>, Klimabonus (déduit de la facture ou demandé ensuite) avec autoconsommation et surplus vendu au prix de marché ; <strong>option B</strong>, pas d'aide mais surplus payé au tarif d'injection garanti pendant 15 ans. Les deux ne se cumulent pas : demander le Klimabonus, c'est renoncer au tarif garanti. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire combine le tarif garanti et une aide de 20 % (500 €/kWc au plus), facture finale au plus tard le 31 décembre 2026 : il n'est pas simulé ici.</p>
   <div class="grid-tool">
     <div class="res">
       <div class="verdict good" id="verdict"><div class="big">Rentable</div><p>L'option A (Klimabonus) rembourse l'installation en <strong>9,5 ans</strong> et laisse un gain net de <strong>+6 975 €</strong> sur 25 ans (non actualisé). Les deux options se valent à 25 ans. L'option A demande un apport initial de <strong>5 058 €</strong>, l'option B de <strong>10 800 €</strong>.</p></div>
@@ -560,15 +575,17 @@
       <figure class="fig">
         <div class="svgwrap" id="fig-cash"></div>
         <div class="legend"><span><span class="sw am" style="background:var(--amber)"></span>Option A · Klimabonus</span><span><span class="sw" style="background:var(--ink)"></span>Option B · tarif garanti</span></div>
-        <figcaption><b>Figure 2.</b> Trésorerie cumulée sur 25 ans, en euros courants : investissement net au départ, puis gains annuels (électricité non achetée + surplus vendu), remplacement de l'onduleur à l'année 13. Le point où la courbe franchit zéro est le retour sur investissement.</figcaption>
+        <figcaption><b>Figure 2.</b> Trésorerie cumulée sur 25 ans, en euros courants : investissement net au départ, puis gains annuels (électricité non achetée + surplus vendu), remplacement de l'onduleur à l'année 13. Le point où la courbe franchit zéro est le retour sur investissement. <span class="u">retour sur investissement · gain net sur 25 ans, non actualisé par défaut</span></figcaption>
+        <p class="src">Sources : productible PVGIS, Klimabonus, tarif d'injection garanti, prix du kWh et coûts indicatifs, voir les <a href="#m-src">sources 1 à 7</a> de la méthode ; calcul : simulateur lux-solaire.</p>
       </figure>
       <details class="alt">
         <summary>Trésorerie année par année</summary>
         <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-cash">
-          <table class="mini" id="tab-cash"><caption id="cap-cash"><span class="capin"><b>Tableau 2.</b> Trésorerie des options A et B en euros courants : gain de l'année et cumul, années 0, 1, 5, 10, 13 (onduleur), 15, 16 (après le tarif garanti), 20 et 25.</span></caption></table>
+          <table class="mini" id="tab-cash"><caption id="cap-cash"><span class="capin"><b>Tableau 2.</b> Trésorerie des options A et B en euros courants : gain de l'année et cumul, années 0, 1, 5, 10, 13 (onduleur), 15, 16 (après le tarif garanti), 20 et 25.</span></caption></table>
         </div>
+        <p class="src">Sources : productible PVGIS, Klimabonus, tarif d'injection garanti, prix du kWh et coûts indicatifs, voir les <a href="#m-src">sources 1 à 7</a> de la méthode ; calcul : simulateur lux-solaire.</p>
       </details>
-      <p class="hint" id="r-lcoe">Coût moyen du kWh produit sur 25 ans (investissement net et onduleur, sans actualisation) : 4,3 c€/kWh avec le Klimabonus, 8,1 c€/kWh sans. À comparer aux 20,0 c€/kWh d'un kWh acheté.</p>
+      <p class="hint" id="r-lcoe">Coût moyen du kWh produit sur 25 ans (investissement net et onduleur, sans actualisation) : 4,3 c€/kWh avec le Klimabonus, 8,1 c€/kWh sans. À comparer aux 20,0 c€/kWh d'un kWh acheté.</p>
       <p class="to-form"><a href="#f2">Modifier les hypothèses <span aria-hidden="true">↓</span></a></p>
     </div>
     <form class="card form" id="f2" autocomplete="off">
@@ -577,7 +594,7 @@
         <div class="fld">
           <label for="cost">Coût de l'installation photovoltaïque, TVA 3 % comprise</label>
           <div class="row"><input type="range" id="cost-r" aria-describedby="cost-hint" aria-label="Coût par kWc de l'installation photovoltaïque" min="1000" max="3000" step="50" value="1800"><span class="num"><input type="number" id="cost" min="500" max="100000" step="50" value="10800">€</span></div>
-          <small id="cost-hint">soit 1 800 €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.</small>
+          <small id="cost-hint">soit 1 800 €/kWc. Devis 2026 observés : 1 600 à 2 200 €/kWc pour 6 à 15 kWc, pose comprise.</small>
         </div>
         <div class="fld" id="fld-bcost" hidden>
           <label for="bcost">Coût de la batterie, posée</label>
@@ -590,18 +607,18 @@
             <div class="row"><label for="hcost">Coût du HEMS, posé</label><span class="num"><input type="number" id="hcost" min="0" max="20000" step="50" value="1000">€</span></div>
             <div class="row"><label for="haid">Aide Klimabonus HEMS (option A)</label><span class="num"><input type="number" id="haid" min="0" max="500" step="50" value="500">€</span></div>
           </div>
-          <small>Klimabonus de 500 € pour un système qui pilote au moins deux équipements parmi : panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable ; factures du 1er octobre 2026 au 31 décembre 2030, hors préfinancement.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Coût par défaut (1 000 €) : hypothèse sans source, à remplacer par votre devis. L'aide n'est comptée qu'en option A, le cumul avec le tarif garanti n'étant pas précisé ; le gain d'autoconsommation du HEMS n'est pas modélisé.</p></details>
+          <small>Klimabonus de 500 € pour un système qui pilote au moins deux équipements parmi : panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable ; factures du 1er octobre 2026 au 31 décembre 2030, hors préfinancement.</small>
+          <details class="more"><summary>En savoir plus</summary><p>Coût par défaut (1 000 €) : hypothèse sans source, à remplacer par votre devis. L'aide n'est comptée qu'en option A, le cumul avec le tarif garanti n'étant pas précisé ; le gain d'autoconsommation du HEMS n'est pas modélisé.</p></details>
         </div>
         <div class="fld">
           <label for="inv">Remplacement de l'onduleur (année 13)</label>
           <div class="row"><input type="range" id="inv-r" aria-describedby="inv-h" aria-label="Coût du remplacement de l'onduleur" min="0" max="4000" step="100" value="1400"><span class="num"><input type="number" id="inv" min="0" max="20000" step="50" value="1400">€</span></div>
-          <small id="inv-h">Un onduleur dure 10 à 15 ans ; 800 à 2 000 € selon la puissance.</small>
+          <small id="inv-h">Un onduleur dure 10 à 15 ans ; 800 à 2 000 € selon la puissance.</small>
         </div>
         <div class="fld">
           <label for="year">Année de première injection</label>
           <select id="year" aria-describedby="year-h"><option value="2026">2026</option><option value="2027" selected>2027</option><option value="2028">2028</option><option value="2029">2029</option></select>
-          <small id="year-h">Fixe le tarif garanti de l'option B (il baisse de 3 % par an) ; le Klimabonus vaut pour les factures du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation est commandée au plus tard le 31 décembre 2029 (demande d'aide au plus tard le 31 décembre 2031).</small>
+          <small id="year-h">Fixe le tarif garanti de l'option B (il baisse de 3 % par an) ; le Klimabonus vaut pour les factures du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation est commandée au plus tard le 31 décembre 2029 (demande d'aide au plus tard le 31 décembre 2031).</small>
         </div>
       </fieldset>
       <fieldset>
@@ -613,11 +630,11 @@
             <button type="button" data-price="0.16">0,16 € · août à décembre 2026, avec l'aide de l'État</button>
             <button type="button" data-price="0.20" aria-pressed="true">0,20 € · tarif de janvier à juillet 2026</button>
           </div>
-          <small id="price-h">Part variable de la facture (énergie, réseau, taxes, TVA 8 %) : tableau 7.</small>
-          <details class="more"><summary>En savoir plus</summary><p>0,16 € ne vaut que d'août à décembre 2026 (aide temporaire de l'État) ; 0,20 € reprend le tarif de janvier à juillet 2026, qui comprend encore une contribution de l'État. Le tarif de 2027 n'est pas encore publié. Les redevances fixes restent dues avec ou sans panneaux.</p></details>
+          <small id="price-h">Part variable de la facture (énergie, réseau, taxes, TVA 8 %) : tableau 7.</small>
+          <details class="more"><summary>En savoir plus</summary><p>0,16 € ne vaut que d'août à décembre 2026 (aide temporaire de l'État) ; 0,20 € reprend le tarif de janvier à juillet 2026, qui comprend encore une contribution de l'État. Le tarif de 2027 n'est pas encore publié. Les redevances fixes restent dues avec ou sans panneaux.</p></details>
         </div>
         <details class="adv">
-        <summary>Hypothèses avancées : hausse des prix, prix du surplus, vieillissement, actualisation</summary>
+        <summary>Hypothèses avancées : hausse des prix, prix du surplus, vieillissement, actualisation</summary>
         <div class="adv-in">
         <div class="fld">
           <label for="growth">Hausse annuelle du prix de l'électricité <output id="growth-out">1 %</output></label>
@@ -627,18 +644,18 @@
         <div class="fld">
           <label for="market">Prix de vente du surplus (option A) <output id="market-out">0,05 €</output></label>
           <input type="range" id="market" min="0.01" max="0.12" step="0.005" value="0.05" aria-describedby="market-h">
-          <small id="market-h">Prix variable fixé par contrat avec le fournisseur, indexé sur le marché ; 0,04 à 0,10 €/kWh observés en 2026.</small>
+          <small id="market-h">Prix variable fixé par contrat avec le fournisseur, indexé sur le marché ; 0,04 à 0,10 €/kWh observés en 2026.</small>
         </div>
         <div class="fld">
           <label for="deg">Vieillissement des panneaux <output id="deg-out">0,5 %/an</output></label>
           <input type="range" id="deg" min="0" max="1.5" step="0.1" value="0.5" aria-describedby="deg-h">
-          <small id="deg-h">Perte de rendement annuelle ; les garanties fabricants promettent le plus souvent 0,4 à 0,6 %.</small>
+          <small id="deg-h">Perte de rendement annuelle ; les garanties fabricants promettent le plus souvent 0,4 à 0,6 %.</small>
         </div>
         <div class="fld">
           <label for="disc">Taux d'actualisation <output id="disc-out">0 %</output></label>
           <input type="range" id="disc" min="0" max="8" step="0.5" value="0" aria-describedby="disc-h">
-          <small id="disc-h">0 % : gain net en euros courants, non actualisé, comme la figure 2.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Au-dessus de 0 %, seul le gain net sur 25 ans est actualisé ; le retour sur investissement et la figure 2 restent non actualisés.</p></details>
+          <small id="disc-h">0 % : gain net en euros courants, non actualisé, comme la figure 2.</small>
+          <details class="more"><summary>En savoir plus</summary><p>Au-dessus de 0 %, seul le gain net sur 25 ans est actualisé ; le retour sur investissement et la figure 2 restent non actualisés.</p></details>
         </div>
         </div>
         </details>
@@ -649,10 +666,9 @@
 
 <section id="chauffage">
   <div class="sec-head">
-    <h2><span class="num">Outil 3</span>Chauffage : pompe à chaleur et ballon tampon</h2>
-    <span class="sec-note">€/an · CO₂ · retour sur investissement sur 20 ans</span>
+    <h2><span class="num">Outil 3</span>Chauffage : pompe à chaleur et ballon tampon</h2>
   </div>
-  <p class="lede">Vous chauffez au gaz, au mazout ou à l'électricité directe : l'outil compare votre chauffage actuel à une <strong>pompe à chaleur air-eau</strong>, seule ou avec les panneaux des outils 1 et 2, heure par heure sur une année météo type (PVGIS, Luxembourg-Ville, année 2017, proche de la moyenne 2005-2023). Un <strong>ballon tampon</strong> chauffé avec le surplus solaire de la journée garde cette chaleur pour le soir. Seules les aides de l'État (Klimabonus) sont comptées.</p>
+  <p class="lede">Vous chauffez au gaz, au mazout ou à l'électricité directe : l'outil compare votre chauffage actuel à une <strong>pompe à chaleur air-eau</strong>, seule ou avec les panneaux des outils 1 et 2, heure par heure sur une année météo type (PVGIS, Luxembourg-Ville, année 2017, proche de la moyenne 2005-2023). Un <strong>ballon tampon</strong> chauffé avec le surplus solaire de la journée garde cette chaleur pour le soir. Seules les aides de l'État (Klimabonus) sont comptées.</p>
   <div class="grid-tool">
     <div class="res">
       <p class="hint" id="h-status" role="status">Chargement de l'année météo type…</p>
@@ -665,19 +681,22 @@
           <div class="kpi"><div class="lbl">CO₂ par an</div><div class="val" id="h-co2">–</div><div class="sub" id="h-co2-sub">–</div></div>
         </div>
         <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat">
-          <table class="mini" id="tab-heat"><caption id="cap-heat"><span class="capin"><b>Tableau 3.</b> Les scénarios comparés à votre chauffage actuel. Facture de la 1re année = combustible + électricité achetée (maison et chauffage) − surplus vendu + entretien. Retour sur investissement et gain net : écart de dépense avec le chauffage actuel, en euros courants.</span></caption></table>
+          <table class="mini" id="tab-heat"><caption id="cap-heat"><span class="capin"><b>Tableau 3.</b> Les scénarios comparés à votre chauffage actuel. Facture de la 1re année = combustible + électricité achetée (maison et chauffage) − surplus vendu + entretien. Retour sur investissement et gain net : écart de dépense avec le chauffage actuel, en euros courants. <span class="u">€/an · CO₂ · retour sur investissement sur 20 ans</span></span></caption></table>
         </div>
+        <p class="src">Sources : année météo type PVGIS, Klimabonus, prix des combustibles, émissions et COP, voir les <a href="#m-src">sources 1 et 9 à 12</a> de la méthode ; calcul : simulateur lux-solaire.</p>
         <figure class="fig">
           <div class="svgwrap" id="fig-heat"></div>
           <div class="legend" id="leg-heat"></div>
-          <figcaption><b>Figure 3.</b> Dépense cumulée sur 20 ans, en euros courants : reste à payer au départ, puis factures annuelles (énergie, entretien, onduleur à l'année 13 avec des panneaux). La courbe la plus basse à droite est la moins chère sur la période.</figcaption>
+          <figcaption><b>Figure 3.</b> Dépense cumulée sur 20 ans, en euros courants : reste à payer au départ, puis factures annuelles (énergie, entretien, onduleur à l'année 13 avec des panneaux). La courbe la plus basse à droite est la moins chère sur la période.</figcaption>
+          <p class="src">Sources : année météo type PVGIS, Klimabonus, prix des combustibles, émissions et COP, voir les <a href="#m-src">sources 1 et 9 à 12</a> de la méthode ; calcul : simulateur lux-solaire.</p>
         </figure>
         <div class="tab tblscroll" role="region" tabindex="0" aria-labelledby="cap-heat-aid">
           <table class="mini" id="tab-heat-aid"><caption id="cap-heat-aid"><span class="capin"><b>Tableau 4.</b> Aides de l'État comptées (Klimabonus, guichet.lu, page mise à jour le 11 août 2026), maison unifamiliale existante.</span></caption></table>
         </div>
-        <p class="hint">Certaines communes ajoutent leur propre prime à celle de l'État : renseignez-vous auprès de la vôtre ; elle n'est pas comptée ici.</p>
+        <p class="src">Sources : aides Klimabonus, guichet.lu, voir les <a href="#m-src">sources 2 et 9</a> de la méthode.</p>
+        <p class="hint">Certaines communes ajoutent leur propre prime à celle de l'État : renseignez-vous auprès de la vôtre ; elle n'est pas comptée ici.</p>
         <details class="alt">
-          <summary>Ballon tampon et besoin de chaleur : le détail</summary>
+          <summary>Ballon tampon et besoin de chaleur : le détail</summary>
           <p class="hint" id="h-buffer">–</p>
           <p class="hint" id="h-demand">–</p>
         </details>
@@ -708,7 +727,7 @@
           <label for="hconso">Consommation annuelle <output id="hconso-out">–</output></label>
           <div class="row"><input type="range" id="hconso-r" min="300" max="6000" step="50" value="2000" aria-describedby="hconso-h" aria-label="Consommation annuelle"><span class="num"><input type="text" inputmode="decimal" id="hconso" value="2000" aria-describedby="hconso-h hconso-err" spellcheck="false"><span id="hconso-u"></span></span></div>
           <p class="err" id="hconso-err" aria-live="polite" hidden></p>
-          <small id="hconso-h">Chauffage et eau chaude, d'après vos factures : m³ de gaz, litres de mazout ou kWh d'électricité de chauffage (hors autres usages).</small>
+          <small id="hconso-h">Chauffage et eau chaude, d'après vos factures : m³ de gaz, litres de mazout ou kWh d'électricité de chauffage (hors autres usages).</small>
         </div>
         <div class="fld" id="fld-hsurf" hidden>
           <label for="hsurf">Surface chauffée <output id="hsurf-out">140 m²</output></label>
@@ -725,17 +744,17 @@
             <option value="5">2009 à 2016</option>
             <option value="6">après 2016</option>
           </select>
-          <small id="hep-h">Besoin de chauffage par m² selon l'époque : ordres de grandeur arrondis de la typologie allemande TABULA (IWU, 2015), hypothèse de l'outil. Une facture réelle est plus fiable.</small>
+          <small id="hep-h">Besoin de chauffage par m² selon l'époque : ordres de grandeur arrondis de la typologie allemande TABULA (IWU, 2015), hypothèse de l'outil. Une facture réelle est plus fiable.</small>
         </div>
         <div class="fld">
           <label for="heta">Rendement de l'installation actuelle <output id="heta-out">85 %</output></label>
           <input type="range" id="heta" min="50" max="100" step="1" value="85" aria-describedby="heta-h">
-          <small id="heta-h">Rendement saisonnier, hypothèse de l'outil : 85 % pour une chaudière au gaz (par kWh facturé), 80 % au mazout, 100 % en électrique direct. Une vieille chaudière fait moins.</small>
+          <small id="heta-h">Rendement saisonnier, hypothèse de l'outil : 85 % pour une chaudière au gaz (par kWh facturé), 80 % au mazout, 100 % en électrique direct. Une vieille chaudière fait moins.</small>
         </div>
         <div class="fld">
           <label for="hocc">Personnes dans le logement <output id="hocc-out">4</output></label>
           <input type="range" id="hocc" min="1" max="8" step="1" value="4" aria-describedby="hocc-h">
-          <small id="hocc-h">Eau chaude : 800 kWh de chaleur par personne et par an (hypothèse de l'outil).</small>
+          <small id="hocc-h">Eau chaude : 800 kWh de chaleur par personne et par an (hypothèse de l'outil).</small>
         </div>
         <div class="fld">
           <label for="hemit">Émetteurs de chaleur</label>
@@ -743,12 +762,12 @@
             <option value="radiateurs">Radiateurs</option>
             <option value="plancher">Plancher chauffant</option>
           </select>
-          <small id="hemit-h">Un plancher chauffant demande une eau moins chaude : la pompe à chaleur y est plus efficace.</small>
+          <small id="hemit-h">Un plancher chauffant demande une eau moins chaude : la pompe à chaleur y est plus efficace.</small>
         </div>
         <div class="fld">
           <label for="hbase">Électricité de la maison, hors chauffage</label>
           <div class="row"><span></span><span class="num"><input type="number" id="hbase" min="0" max="30000" step="100" value="3900" aria-describedby="hbase-h">kWh/an</span></div>
-          <small id="hbase-h">Éclairage, cuisine, appareils : 3 900 kWh pour un ménage moyen (outil 1). Elle compte pour la part autoconsommée des panneaux.</small>
+          <small id="hbase-h">Éclairage, cuisine, appareils : 3 900 kWh pour un ménage moyen (outil 1). Elle compte pour la part autoconsommée des panneaux.</small>
         </div>
       </fieldset>
       <fieldset>
@@ -757,13 +776,13 @@
           <label for="hpac">Puissance thermique <output id="hpac-out">9 kW</output></label>
           <input type="range" id="hpac" min="4" max="20" step="1" value="9" aria-describedby="hpac-h">
           <small id="hpac-h">Dimensionnée par l'installateur selon les déperditions.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Hypothèse de l'outil : puissance pleine à 7 °C, réduite d'un quart pour 14 °C de moins ; un appoint électrique direct couvre le reste par grand froid.</p></details>
+          <details class="more"><summary>En savoir plus</summary><p>Hypothèse de l'outil : puissance pleine à 7 °C, réduite d'un quart pour 14 °C de moins ; un appoint électrique direct couvre le reste par grand froid.</p></details>
         </div>
         <div class="fld">
           <label for="hpcost">Coût de la pompe à chaleur, posée, TVA 3 % comprise</label>
           <div class="row"><input type="range" id="hpcost-r" min="10000" max="45000" step="500" value="22000" aria-describedby="hpcost-h" aria-label="Coût de la pompe à chaleur"><span class="num"><input type="number" id="hpcost" min="0" max="100000" step="100" value="22000" aria-describedby="hpcost-h">€</span></div>
-          <small id="hpcost-h">Devis observés pour une pompe à chaleur air-eau de 9 kW : 18 000 à 28 000 € (Renov.lu, octobre 2026) ; coût moyen des dossiers subventionnés de 10 à 14 kW : 32 300 € (ministère de l'Environnement, cité par L'essentiel le 9 juin 2026).</small>
-          <details class="more"><summary>En savoir plus</summary><p>22 000 € par défaut : hypothèse de l'outil, à remplacer par votre devis.</p></details>
+          <small id="hpcost-h">Devis observés pour une pompe à chaleur air-eau de 9 kW : 18 000 à 28 000 € (Renov.lu, octobre 2026) ; coût moyen des dossiers subventionnés de 10 à 14 kW : 32 300 € (ministère de l'Environnement, cité par L'essentiel le 9 juin 2026).</small>
+          <details class="more"><summary>En savoir plus</summary><p>22 000 € par défaut : hypothèse de l'outil, à remplacer par votre devis.</p></details>
         </div>
         <div class="fld">
           <label class="chk"><input type="checkbox" id="hmod" checked aria-describedby="hmod-h"> Pompe à chaleur à modulation de puissance (inverter)</label>
@@ -775,11 +794,11 @@
             <div class="row"><label for="hbuf">Volume du ballon</label><span class="num"><input type="number" id="hbuf" min="50" max="2000" step="50" value="300">L</span></div>
             <div class="row"><label for="hbufc">Coût du ballon, posé</label><span class="num"><input type="number" id="hbufc" min="0" max="20000" step="50" value="1800">€</span></div>
           </div>
-          <small id="hbufon-h">Quand les panneaux produisent plus que la maison ne consomme, la pompe à chaleur chauffe le ballon 15 °C au-dessus de sa température de départ ; la chaleur sert ensuite le soir.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Prix posé : 1 000 à 3 500 € (repère allemand, Reduco, 2026) ; 1 800 € par défaut, hypothèse de l'outil.</p></details>
+          <small id="hbufon-h">Quand les panneaux produisent plus que la maison ne consomme, la pompe à chaleur chauffe le ballon 15 °C au-dessus de sa température de départ ; la chaleur sert ensuite le soir.</small>
+          <details class="more"><summary>En savoir plus</summary><p>Prix posé : 1 000 à 3 500 € (repère allemand, Reduco, 2026) ; 1 800 € par défaut, hypothèse de l'outil.</p></details>
         </div>
         <details class="adv">
-        <summary>Aides et coûts annexes : date de commande, cuve à mazout, distribution, chaudière évitée</summary>
+        <summary>Aides et coûts annexes : date de commande, cuve à mazout, distribution, chaudière évitée</summary>
         <div class="adv-in">
         <div class="fld">
           <label for="hmaj">Date de commande</label>
@@ -793,7 +812,7 @@
           <label for="hcuve">Enlèvement de la cuve à mazout</label>
           <div class="row"><span></span><span class="num"><input type="number" id="hcuve" min="0" max="20000" step="50" value="1500" aria-describedby="hcuve-h">€</span></div>
           <label class="chk"><input type="checkbox" id="hzone"> Maison en zone de protection d'eau</label>
-          <small id="hcuve-h">Coût par défaut : hypothèse de l'outil.</small>
+          <small id="hcuve-h">Coût par défaut : hypothèse de l'outil.</small>
           <details class="more"><summary>En savoir plus</summary><p>Le Klimabonus ajoute 1 500 € quand une chaudière au mazout est remplacée, et 2 000 € en zone de protection d'eau.</p></details>
         </div>
         <div class="fld">
@@ -804,7 +823,7 @@
         <div class="fld">
           <label for="hevit">Chaudière neuve que vous n'achèterez pas</label>
           <div class="row"><span></span><span class="num"><input type="number" id="hevit" min="0" max="50000" step="100" value="0" aria-describedby="hevit-h">€</span></div>
-          <small id="hevit-h">Si votre chaudière est en fin de vie, indiquez le prix d'une chaudière neuve : il est déduit de l'investissement de la pompe à chaleur.</small>
+          <small id="hevit-h">Si votre chaudière est en fin de vie, indiquez le prix d'une chaudière neuve : il est déduit de l'investissement de la pompe à chaleur.</small>
         </div>
         </div>
         </details>
@@ -819,18 +838,18 @@
           <label for="hpg">Prix du gaz <output id="hpg-out">–</output></label>
           <input type="range" id="hpg" min="0.05" max="0.20" step="0.005" value="0.095" aria-describedby="hpg-h">
           <small id="hpg-h">Par kWh facturé, réseau et taxes compris.</small>
-          <details class="more"><summary>En savoir plus</summary><p>ILR : 9,14 c€/kWh en moyenne pour un ménage en 2025 ; 9,5 c€ par défaut, hypothèse de l'outil.</p></details>
+          <details class="more"><summary>En savoir plus</summary><p>ILR : 9,14 c€/kWh en moyenne pour un ménage en 2025 ; 9,5 c€ par défaut, hypothèse de l'outil.</p></details>
         </div>
         <div class="fld" id="fld-hpo" hidden>
           <label for="hpo">Prix du mazout <output id="hpo-out">–</output></label>
           <input type="range" id="hpo" min="0.80" max="2.50" step="0.001" value="1.601" aria-describedby="hpo-h">
-          <small id="hpo-h">Prix maximum officiel du gasoil de chauffage, TVA comprise : 1,601 €/L depuis le 27 octobre 2026 (petrol.lu, consulté le 2 novembre 2026), pour une livraison d'au moins 1 500 L. Prix très variable.</small>
+          <small id="hpo-h">Prix maximum officiel du gasoil de chauffage, TVA comprise : 1,601 €/L depuis le 27 octobre 2026 (petrol.lu, consulté le 2 novembre 2026), pour une livraison d'au moins 1 500 L. Prix très variable.</small>
         </div>
         <div class="fld" id="fld-hgf">
           <label for="hgf">Hausse annuelle du gaz ou du mazout <output id="hgf-out">3 %</output></label>
           <input type="range" id="hgf" min="0" max="8" step="0.5" value="3" aria-describedby="hgf-h">
           <small id="hgf-h">Hypothèse de l'outil.</small>
-          <details class="more"><summary>En savoir plus</summary><p>Prix de l'électricité achetée et vendue, hausse de l'électricité et taux d'actualisation : ceux de l'outil 2.</p></details>
+          <details class="more"><summary>En savoir plus</summary><p>Prix de l'électricité achetée et vendue, hausse de l'électricité et taux d'actualisation : ceux de l'outil 2.</p></details>
         </div>
       </fieldset>
     </form>
@@ -839,21 +858,21 @@
 
 <section id="profils">
   <div class="sec-head">
-    <h2><span class="num">Trois profils types</span>Combien rapportent 3, 6 et 10 kWc au Luxembourg ?</h2>
+    <h2><span class="num">Trois profils types</span>Combien rapportent 3, 6 et 10 kWc au Luxembourg ?</h2>
     <span class="sec-note">hypothèses par défaut de l'outil 2</span>
   </div>
   <p class="lede">Trois ménages types, calculés avec les hypothèses par défaut (plein sud à 35°, canton de Luxembourg, 1 800 €/kWc posé, kWh évité à 0,20 €, surplus vendu 0,05 €, première injection en 2027). Cliquez sur un profil pour le charger dans le simulateur et l'adapter à votre cas.</p>
   <div class="card"><div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-profils">
       <table class="mini" id="tab-profils">
-      <caption id="cap-profils"><span class="capin"><b>Tableau 5.</b> Trois profils calculés par le moteur du simulateur avec les hypothèses par défaut de l'outil 2 ; option A = Klimabonus et surplus au prix de marché, option B = tarif d'injection garanti 15 ans sans aide ; gain net sur 25 ans non actualisé. Vos chiffres dépendent de votre toit, de votre consommation et de votre devis.</span></caption>
+      <caption id="cap-profils"><span class="capin"><b>Tableau 5.</b> Trois profils calculés par le moteur du simulateur avec les hypothèses par défaut de l'outil 2 ; option A = Klimabonus et surplus au prix de marché, option B = tarif d'injection garanti 15 ans sans aide ; gain net sur 25 ans non actualisé. Vos chiffres dépendent de votre toit, de votre consommation et de votre devis.</span></caption>
       <thead><tr><th scope="col">Profil</th><th scope="col">Production</th><th scope="col">Autoconsommé</th><th scope="col">Klimabonus</th><th scope="col">Reste à payer (A)</th><th scope="col">Retour (A)</th><th scope="col">Retour (B)</th><th scope="col">Gain net 25 ans (A)</th><th scope="col">Gain net 25 ans (B)</th></tr></thead>
       <tbody>
-        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Petit toit : 3 kWc sud-est, 2 500 kWh/an</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 ans</td><td>15,5 ans</td><td>+3 263 €</td><td>+2 634 €</td></tr>
-        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Maison : 6 kWc plein sud, 4 500 kWh/an</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 ans</td><td>11,6 ans</td><td>+7 503 €</td><td>+7 331 €</td></tr>
-        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Maison avec pompe à chaleur et voiture électrique : 10 kWc, batterie de 7 kWh, 10 000 kWh/an</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 ans</td><td>15,1 ans</td><td>+16 146 €</td><td>+12 763 €</td></tr>
+        <tr><th scope="row"><a href="?p=3&amp;az=45&amp;cons=2500">Petit toit : 3 <span class="nt">kWc</span> sud-est, 2 500 <span class="nt">kWh</span>/an</a></th><td>3 018 kWh</td><td>27 %</td><td>3 168 €</td><td>2 232 €</td><td>8,2 ans</td><td>15,5 ans</td><td>+3 263 €</td><td>+2 634 €</td></tr>
+        <tr><th scope="row"><a href="?p=6&amp;cons=4500">Maison : 6 <span class="nt">kWc</span> plein sud, 4 500 <span class="nt">kWh</span>/an</a></th><td>6 402 kWh</td><td>24 %</td><td>5 742 €</td><td>5 058 €</td><td>9,1 ans</td><td>11,6 ans</td><td>+7 503 €</td><td>+7 331 €</td></tr>
+        <tr><th scope="row"><a href="?p=10&amp;cons=10000&amp;batt=7">Maison avec pompe à chaleur et voiture électrique : 10 <span class="nt">kWc</span>, batterie de 7 <span class="nt">kWh</span>, 10 000 <span class="nt">kWh</span>/an</a></th><td>10 670 kWh</td><td>43 %</td><td>10 389 €</td><td>13 911 €</td><td>11,3 ans</td><td>15,1 ans</td><td>+16 146 €</td><td>+12 763 €</td></tr>
       </tbody>
       </table>
-  </div></div>
+  </div><p class="src">Sources : moteur du simulateur avec les hypothèses par défaut, voir les <a href="#m-src">sources 1 à 7</a> de la méthode.</p></div>
 </section>
 
 <section id="reperes">
@@ -863,11 +882,12 @@
   </div>
   <div class="grid-2">
     <div class="card refs">
-      <p>kWh par kWc et par an à Luxembourg-Ville, PVGIS SARAH3 2005-2023, pertes système 14 %. L'optimum est plein sud à 35° ; un toit est-ouest produit environ 20 % de moins, une façade verticale 30 à 50 % de moins.</p>
+      <p>kWh par kWc et par an à Luxembourg-Ville, PVGIS SARAH3 2005-2023, pertes système 14 %. L'optimum est plein sud à 35° ; un toit est-ouest produit environ 20 % de moins, une façade verticale 30 à 50 % de moins.</p>
       <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-grid">
         <table class="mini" id="tab-grid"><caption id="cap-grid"><span class="capin"><b>Tableau 6.</b> Productible selon l'orientation et l'inclinaison</span></caption></table>
       </div>
-      <p style="margin-top:12px">Facteurs par canton (plan sud 35°) : <span id="cantons-line"></span>.</p>
+      <p class="src">Source : PVGIS 5.3, Centre commun de recherche (JRC) de la Commission européenne, voir la <a href="#src-1">source 1</a> de la méthode.</p>
+      <p style="margin-top:12px">Facteurs par canton (plan sud 35°) : <span id="cantons-line"></span>.</p>
     </div>
     <div>
       <div class="card refs">
@@ -881,23 +901,25 @@
             <tr><th scope="row">Mécanisme de compensation, cat. A</th><td>−3,71 c€</td><td>−0,10 c€</td></tr>
             <tr><th scope="row">Taxe électricité, cat. A</th><td>0,10 c€</td><td>0,10 c€</td></tr>
             <tr><th scope="row">TVA 8 %</th><td>1,18 c€</td><td>1,46 c€</td></tr>
-            <tr><th scope="row"><strong>Total par kWh</strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
+            <tr><th scope="row"><strong>Total par <span class="nt">kWh</span></strong></th><td class="hi"><strong>15,9 c€</strong></td><td class="hi"><strong>19,8 c€</strong></td></tr>
           </tbody>
         </table>
         </div>
+        <p class="src">Sources : tarifs réseau et taxes (ILR), loi du 22 juillet 2026, voir les <a href="#m-src">sources 5 et 6</a> de la méthode.</p>
         <details class="alt">
           <summary>Composantes, taux et dates</summary>
-          <p>Composantes variables de la facture d'un ménage (catégorie A, moins de 25 000 kWh/an), tarifs en vigueur au 1er août 2026. Le mécanisme de compensation vaut −3,71 c€/kWh du 1er août au 31 décembre 2026 : c'est l'aide temporaire de l'ordre de 4 c€/kWh prévue avec la loi du 22 juillet 2026 sur la contribution de l'État pour 2026. De janvier à juillet 2026, il valait −0,10 c€/kWh, taux qui comprenait déjà une contribution de l'État. Le taux de 2027 n'est pas publié au 2 novembre 2026.</p>
+          <p>Composantes variables de la facture d'un ménage (catégorie A, moins de 25 000 kWh/an), tarifs en vigueur au 1er août 2026. Le mécanisme de compensation vaut −3,71 c€/kWh du 1er août au 31 décembre 2026 : c'est l'aide temporaire de l'ordre de 4 c€/kWh prévue avec la loi du 22 juillet 2026 sur la contribution de l'État pour 2026. De janvier à juillet 2026, il valait −0,10 c€/kWh, taux qui comprenait déjà une contribution de l'État. Le taux de 2027 n'est pas publié au 2 novembre 2026.</p>
         </details>
       </div>
       <div class="card refs" style="margin-top:20px">
         <div class="tblscroll" role="region" tabindex="0" aria-labelledby="cap-aid">
           <table class="mini" id="tab-aid" aria-describedby="aid-note"><caption id="cap-aid"><span class="capin"><b>Tableau 8.</b> Klimabonus 2026 et tarif d'injection garanti</span></caption></table>
         </div>
+        <p class="src">Sources : guichet.lu, règlement grand-ducal modifié du 1er août 2014, voir les <a href="#m-src">sources 2 à 4</a> de la méthode.</p>
         <p class="hint" id="aid-note"></p>
         <details class="alt">
           <summary>Conditions et formules</summary>
-          <p>Klimabonus (guichet.lu, page mise à jour le 11 août 2026) : installation d'au moins 2 kWc en autoconsommation, posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment ; P × (1 155 − 33 × P) € pour une puissance P inférieure à 15 kWc, 10 000 € à partir de 15 kWc ; batterie Q × (500 − 500/18 × Q) €, 2 250 € à partir de 9 kWh ; factures du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 pour une commande passée au plus tard le 31 décembre 2029. Système de gestion de l'énergie (HEMS) relié à au moins deux équipements : 500 €, factures du 1er octobre 2026 au 31 décembre 2030. Tarif garanti (règlement grand-ducal modifié du 1er août 2014, art. 17ter) : 165 × 0,97<sup>n−2019</sup> €/MWh jusqu'à 10 kW, 155 × 0,97<sup>n−2019</sup> au-delà et jusqu'à 30 kW, n étant l'année de première injection.</p>
+          <p>Klimabonus (guichet.lu, page mise à jour le 11 août 2026) : installation d'au moins 2 kWc en autoconsommation, posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment ; P × (1 155 − 33 × P) € pour une puissance P inférieure à 15 kWc, 10 000 € à partir de 15 kWc ; batterie Q × (500 − 500/18 × Q) €, 2 250 € à partir de 9 kWh ; factures du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 pour une commande passée au plus tard le 31 décembre 2029. Système de gestion de l'énergie (HEMS) relié à au moins deux équipements : 500 €, factures du 1er octobre 2026 au 31 décembre 2030. Tarif garanti (règlement grand-ducal modifié du 1er août 2014, art. 17ter) : 165 × 0,97<sup>n−2019</sup> €/MWh jusqu'à 10 kW, 155 × 0,97<sup>n−2019</sup> au-delà et jusqu'à 30 kW, n étant l'année de première injection.</p>
         </details>
       </div>
     </div>
@@ -909,78 +931,78 @@
     <h2><span class="num">Questions fréquentes</span>Ce que les Luxembourgeois demandent avant d'installer</h2>
   </div>
   <details>
-    <summary>Combien produit 1 kWc de panneaux solaires au Luxembourg ?</summary>
+    <summary>Combien produit 1 kWc de panneaux solaires au Luxembourg ?</summary>
     <p>Environ 1 070 kWh par an pour un toit plein sud incliné à 35° à Luxembourg-Ville (PVGIS, moyenne 2005-2023, pertes système 14 %), 1 010 kWh pour un toit sud-est ou sud-ouest, 860 kWh pour un toit est ou ouest. Le nord du pays (Clervaux, Wiltz) produit 3 % de moins, le sud (Esch, Capellen) 2 % de plus. Une installation de 6 kWc produit donc 5 500 à 6 400 kWh par an, soit 1,4 à 1,6 fois la consommation d'un ménage moyen (3 900 kWh).</p>
   </details>
   <details>
-    <summary>Quel est le montant du Klimabonus pour le photovoltaïque en 2026 ?</summary>
-    <p>Pour une installation en autoconsommation de puissance P (en kWc, au moins 2), posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment, l'aide vaut P × (1 155 − 33 × P) euros sous 15 kWc et 10 000 euros à partir de 15 kWc : 3 168 € pour 3 kWc, 5 742 € pour 6 kWc, 8 250 € pour 10 kWc. Une batterie de capacité Q (kWh) ajoute Q × (500 − 500/18 × Q) euros, 2 250 € à partir de 9 kWh. L'aide peut être déduite de la facture par un installateur inscrit au registre des demandeurs intermédiaires (préfinancement, optionnel) ou demandée ensuite selon la procédure classique. Factures éligibles : du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation a été commandée au plus tard le 31 décembre 2029. Condition : renoncer à toute rémunération garantie de l'électricité injectée. Depuis le 1er octobre 2026 (date de facture), un système de gestion de l'énergie (HEMS) qui pilote au moins deux équipements (panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable) reçoit en outre 500 €.</p>
+    <summary>Quel est le montant du Klimabonus pour le photovoltaïque en 2026 ?</summary>
+    <p>Pour une installation en autoconsommation de puissance P (en kWc, au moins 2), posée sur la toiture ou la façade ou intégrée à l'enveloppe du bâtiment, l'aide vaut P × (1 155 − 33 × P) euros sous 15 kWc et 10 000 euros à partir de 15 kWc : 3 168 € pour 3 kWc, 5 742 € pour 6 kWc, 8 250 € pour 10 kWc. Une batterie de capacité Q (kWh) ajoute Q × (500 − 500/18 × Q) euros, 2 250 € à partir de 9 kWh. L'aide peut être déduite de la facture par un installateur inscrit au registre des demandeurs intermédiaires (préfinancement, optionnel) ou demandée ensuite selon la procédure classique. Factures éligibles : du 4 janvier 2026 au 31 décembre 2029, ou jusqu'au 31 décembre 2031 si l'installation a été commandée au plus tard le 31 décembre 2029. Condition : renoncer à toute rémunération garantie de l'électricité injectée. Depuis le 1er octobre 2026 (date de facture), un système de gestion de l'énergie (HEMS) qui pilote au moins deux équipements (panneaux, batterie, pompe à chaleur, borne de recharge, thermoplongeur pilotable) reçoit en outre 500 €.</p>
   </details>
   <details>
-    <summary>Klimabonus ou tarif d'injection garanti : lequel choisir ?</summary>
-    <p>Les deux ne se cumulent pas. Le Klimabonus réduit l'investissement de départ et convient aux installations petites ou moyennes qui autoconsomment une bonne part de leur production. Le tarif garanti (13,3 c€/kWh pour une première injection en 2026, 12,9 c€ en 2027, pendant 15 ans, jusqu'à 10 kW) rémunère mieux le surplus et devient compétitif quand l'installation est grande par rapport à la consommation. L'outil 2 calcule les deux pour votre cas ; en règle générale, plus vous injectez, plus l'option B se rapproche de l'option A. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire permet de combiner le tarif garanti et une aide de 20 % plafonnée à 500 €/kWc, si la facture finale est établie au plus tard le 31 décembre 2026 (Klima-Agence, 17 décembre 2025) ; ce régime n'est pas simulé ici.</p>
+    <summary>Klimabonus ou tarif d'injection garanti : lequel choisir ?</summary>
+    <p>Les deux ne se cumulent pas. Le Klimabonus réduit l'investissement de départ et convient aux installations petites ou moyennes qui autoconsomment une bonne part de leur production. Le tarif garanti (13,3 c€/kWh pour une première injection en 2026, 12,9 c€ en 2027, pendant 15 ans, jusqu'à 10 kW) rémunère mieux le surplus et devient compétitif quand l'installation est grande par rapport à la consommation. L'outil 2 calcule les deux pour votre cas ; en règle générale, plus vous injectez, plus l'option B se rapproche de l'option A. Pour une offre signée entre le 1er octobre 2024 et le 4 mars 2026, un régime transitoire permet de combiner le tarif garanti et une aide de 20 % plafonnée à 500 €/kWc, si la facture finale est établie au plus tard le 31 décembre 2026 (Klima-Agence, 17 décembre 2025) ; ce régime n'est pas simulé ici.</p>
   </details>
   <details>
-    <summary>Combien coûte une installation photovoltaïque au Luxembourg ?</summary>
+    <summary>Combien coûte une installation photovoltaïque au Luxembourg ?</summary>
     <p>Les devis 2026 relevés chez les installateurs se situent entre 1 600 et 2 200 € par kWc posé pour 6 à 15 kWc, soit 9 600 à 13 200 € pour 6 kWc, TVA comprise. La fourniture avec pose d'une installation sur un logement bénéficie du taux de TVA super-réduit de 3 %. Après Klimabonus, une installation de 6 kWc revient à environ 3 900 à 7 500 €.</p>
   </details>
   <details>
-    <summary>Quelle est la valeur d'un kWh autoconsommé ?</summary>
-    <p>Seules les composantes variables de la facture sont évitées : énergie (environ 13 c€/kWh en 2026), redevance volumétrique du réseau (5,10 c€), mécanisme de compensation (−3,71 c€ d'août à décembre 2026 grâce à une aide temporaire de l'État, −0,10 c€ de janvier à juillet), taxe électricité (0,10 c€), le tout soumis à 8 % de TVA : environ 16 c€/kWh d'août à décembre 2026, et près de 20 c€ au tarif de janvier à juillet 2026, qui comprend encore une contribution de l'État ; le tarif de 2027 n'est pas publié au 2 novembre 2026. Les redevances fixes (comptage, puissance de référence) restent dues. Compter 25 c€ parce que « ma facture divisée par mes kWh donne 25 centimes » surestime le gain.</p>
+    <summary>Quelle est la valeur d'un kWh autoconsommé ?</summary>
+    <p>Seules les composantes variables de la facture sont évitées : énergie (environ 13 c€/kWh en 2026), redevance volumétrique du réseau (5,10 c€), mécanisme de compensation (−3,71 c€ d'août à décembre 2026 grâce à une aide temporaire de l'État, −0,10 c€ de janvier à juillet), taxe électricité (0,10 c€), le tout soumis à 8 % de TVA : environ 16 c€/kWh d'août à décembre 2026, et près de 20 c€ au tarif de janvier à juillet 2026, qui comprend encore une contribution de l'État ; le tarif de 2027 n'est pas publié au 2 novembre 2026. Les redevances fixes (comptage, puissance de référence) restent dues. Compter 25 c€ parce que « ma facture divisée par mes kWh donne 25 centimes » surestime le gain.</p>
   </details>
   <details>
-    <summary>Faut-il une batterie ?</summary>
-    <p>Une batterie fait passer la part autoconsommée d'environ 30 % à 50-60 % pour une maison type, mais coûte 700 à 1 100 € par kWh posé (fourchette indicative retenue par l'outil, sans source publiée ; 900 € par défaut), dont le Klimabonus rembourse une partie (jusqu'à 2 250 €). Avec un surplus vendu 5 c€ et un kWh évité à 20 c€, chaque kWh stocké rapporte 15 c€ : une batterie de 7 kWh cyclée 250 fois par an rapporte environ 260 € par an pour 2 800 à 5 600 € d'investissement net après Klimabonus. Elle allonge donc généralement le retour sur investissement ; l'outil 2 le montre pour votre cas.</p>
+    <summary>Faut-il une batterie ?</summary>
+    <p>Une batterie fait passer la part autoconsommée d'environ 30 % à 50-60 % pour une maison type, mais coûte 700 à 1 100 € par kWh posé (fourchette indicative retenue par l'outil, sans source publiée ; 900 € par défaut), dont le Klimabonus rembourse une partie (jusqu'à 2 250 €). Avec un surplus vendu 5 c€ et un kWh évité à 20 c€, chaque kWh stocké rapporte 15 c€ : une batterie de 7 kWh cyclée 250 fois par an rapporte environ 260 € par an pour 2 800 à 5 600 € d'investissement net après Klimabonus. Elle allonge donc généralement le retour sur investissement ; l'outil 2 le montre pour votre cas.</p>
   </details>
   <details>
-    <summary>Les revenus d'une installation photovoltaïque sont-ils imposables ?</summary>
+    <summary>Les revenus d'une installation photovoltaïque sont-ils imposables ?</summary>
     <p>Pour une personne physique exploitant une installation de 1 à 30 kWc, l'Administration des contributions directes admet par tolérance qu'il s'agit d'une activité d'amateur non prise en compte dans le revenu imposable (circulaire L.I.R. n° 14/2 du 5 juin 2023, résumée par Klima-Agence). En autoconsommation pure, il n'y a pas d'activité commerciale du tout.</p>
   </details>
   <details>
-    <summary>Comment vérifier le potentiel de mon toit ?</summary>
-    <p>Le cadastre solaire national (<a href="https://energie.geoportail.lu" target="_blank" rel="noopener">energie.geoportail.lu</a>) classe chaque toiture du pays selon son potentiel ; <a href="https://www.klima-agence.lu" target="_blank" rel="noopener">Klima-Agence</a> offre un conseil gratuit et neutre. Pour une estimation fine, <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS</a> accepte l'adresse exacte, l'ombrage et l'orientation réelle.</p>
+    <summary>Comment vérifier le potentiel de mon toit ?</summary>
+    <p>Le cadastre solaire national (<a href="https://energie.geoportail.lu" target="_blank" rel="noopener">energie.geoportail.lu</a>) classe chaque toiture du pays selon son potentiel ; <a href="https://www.klima-agence.lu" target="_blank" rel="noopener">Klima-Agence</a> offre un conseil gratuit et neutre. Pour une estimation fine, <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS</a> accepte l'adresse exacte, l'ombrage et l'orientation réelle.</p>
   </details>
   <details>
-    <summary>Quel est le montant du Klimabonus pour une pompe à chaleur en 2026 ?</summary>
-    <p>Pour une pompe à chaleur air-eau dans une maison unifamiliale existante, l'État verse 10 000 € (12 000 € pour une commande passée du 1er janvier 2026 au 30 juin 2027 et facturée au plus tard le 31 décembre 2028) quand elle remplace une chaudière au gaz ou au mazout ou un chauffage électrique direct, et sinon 6 000 € (8 000 € pour une commande passée dans la même période). S'y ajoutent 1 500 € pour l'enlèvement de la cuve quand une chaudière au mazout est remplacée, 2 000 € si elle se trouve en zone de protection d'eau, et 50 % du coût de l'adaptation de la distribution de chaleur, au plus 2 000 €. Conditions techniques : un COP d'au moins 3,1 (air à 7 °C, eau à 35 °C) et, pour une pompe à chaleur sans modulation de vitesse ou de puissance, un ballon tampon d'au moins 30 L par kW thermique (guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026). Certaines communes ajoutent leur propre prime ; l'outil 3 ne la compte pas.</p>
+    <summary>Quel est le montant du Klimabonus pour une pompe à chaleur en 2026 ?</summary>
+    <p>Pour une pompe à chaleur air-eau dans une maison unifamiliale existante, l'État verse 10 000 € (12 000 € pour une commande passée du 1er janvier 2026 au 30 juin 2027 et facturée au plus tard le 31 décembre 2028) quand elle remplace une chaudière au gaz ou au mazout ou un chauffage électrique direct, et sinon 6 000 € (8 000 € pour une commande passée dans la même période). S'y ajoutent 1 500 € pour l'enlèvement de la cuve quand une chaudière au mazout est remplacée, 2 000 € si elle se trouve en zone de protection d'eau, et 50 % du coût de l'adaptation de la distribution de chaleur, au plus 2 000 €. Conditions techniques : un COP d'au moins 3,1 (air à 7 °C, eau à 35 °C) et, pour une pompe à chaleur sans modulation de vitesse ou de puissance, un ballon tampon d'au moins 30 L par kW thermique (guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026). Certaines communes ajoutent leur propre prime ; l'outil 3 ne la compte pas.</p>
   </details>
   <details>
-    <summary>Une pompe à chaleur est-elle rentable au Luxembourg ?</summary>
-    <p>Cela dépend surtout de votre consommation actuelle et du prix de l'énergie remplacée. Valeurs par défaut de l'outil 3 : mazout à 1,601 €/L (prix maximum officiel en vigueur depuis le 27 octobre 2026), gaz à 9,5 c€/kWh (hypothèse de l'outil ; ILR : 9,14 c€/kWh en moyenne pour un ménage en 2025), électricité achetée à 0,20 € le kWh et surplus solaire vendu au prix de l'outil 2. Une pompe à chaleur air-eau fournit plusieurs kWh de chaleur par kWh d'électricité, d'autant plus que l'eau de chauffage est moins chaude (plancher chauffant) et l'hiver doux : l'outil le calcule heure par heure avec la formule publiée par Ruhnau et al. (2019). Des panneaux qui alimentent la pompe à chaleur en journée réduisent encore la facture. Le Klimabonus et le prix du devis pèsent autant que l'énergie : l'outil 3 fait le calcul pour votre maison.</p>
+    <summary>Une pompe à chaleur est-elle rentable au Luxembourg ?</summary>
+    <p>Cela dépend surtout de votre consommation actuelle et du prix de l'énergie remplacée. Valeurs par défaut de l'outil 3 : mazout à 1,601 €/L (prix maximum officiel en vigueur depuis le 27 octobre 2026), gaz à 9,5 c€/kWh (hypothèse de l'outil ; ILR : 9,14 c€/kWh en moyenne pour un ménage en 2025), électricité achetée à 0,20 € le kWh et surplus solaire vendu au prix de l'outil 2. Une pompe à chaleur air-eau fournit plusieurs kWh de chaleur par kWh d'électricité, d'autant plus que l'eau de chauffage est moins chaude (plancher chauffant) et l'hiver doux : l'outil le calcule heure par heure avec la formule publiée par Ruhnau et al. (2019). Des panneaux qui alimentent la pompe à chaleur en journée réduisent encore la facture. Le Klimabonus et le prix du devis pèsent autant que l'énergie : l'outil 3 fait le calcul pour votre maison.</p>
   </details>
   <details>
-    <summary>Faut-il un ballon tampon avec une pompe à chaleur ?</summary>
-    <p>Le Klimabonus ne l'exige que pour une pompe à chaleur sans modulation de vitesse ou de puissance : au moins 30 L par kW thermique (guichet.lu). Avec des panneaux, un ballon chauffé à midi avec le surplus solaire augmente la part autoconsommée de quelques points, mais chaque kWh ainsi gardé ne rapporte que l'écart entre le prix d'achat de l'électricité et le prix de vente du surplus. Dans le cas par défaut de l'outil (300 L, 1 800 € posé, hypothèses de l'outil), le ballon ne se rembourse pas seul ; l'outil 3 affiche ce qu'il apporte dans votre cas.</p>
+    <summary>Faut-il un ballon tampon avec une pompe à chaleur ?</summary>
+    <p>Le Klimabonus ne l'exige que pour une pompe à chaleur sans modulation de vitesse ou de puissance : au moins 30 L par kW thermique (guichet.lu). Avec des panneaux, un ballon chauffé à midi avec le surplus solaire augmente la part autoconsommée de quelques points, mais chaque kWh ainsi gardé ne rapporte que l'écart entre le prix d'achat de l'électricité et le prix de vente du surplus. Dans le cas par défaut de l'outil (300 L, 1 800 € posé, hypothèses de l'outil), le ballon ne se rembourse pas seul ; l'outil 3 affiche ce qu'il apporte dans votre cas.</p>
   </details>
-  <p class="hint" style="margin-top:14px">Les 38 332 installations déjà raccordées, commune par commune : <a href="/fr/">le tableau de bord lux-solaire</a>.</p>
+  <p class="hint" style="margin-top:14px">Les 38 332 installations déjà raccordées, commune par commune : <a href="/fr/">le tableau de bord lux-solaire</a>.</p>
 </section>
 
-<p class="contact-cta"><a href="https://sitraka.lu/fr/contact/?from=solaire">Vous voulez ça pour votre commune ? Parlons-en <span aria-hidden="true">→</span></a></p>
+<p class="contact-cta"><a href="/fr/pour-les-communes/">Vous voulez ça pour votre commune ? Voir « Pour les communes » <span aria-hidden="true">→</span></a></p>
 
 <section id="methode" class="method" aria-labelledby="methode-h">
   <h2 id="methode-h">Méthode et sources</h2>
-  <p>Ce simulateur est une aide à la décision, pas un devis : il ne connaît ni l'ombrage de votre toit, ni votre profil horaire de consommation, ni votre contrat. Il ne vend rien et ne transmet aucune donnée : tout est calculé dans votre navigateur. Les hypothèses sont affichées, modifiables et datées ; signalez-nous toute évolution réglementaire.</p>
+  <p>Ce simulateur est une aide à la décision, pas un devis : il ne connaît ni l'ombrage de votre toit, ni votre profil horaire de consommation, ni votre contrat. Il ne vend rien et ne transmet aucune donnée : tout est calculé dans votre navigateur. Les hypothèses sont affichées, modifiables et datées ; signalez-nous toute évolution réglementaire.</p>
   <details id="m-calc">
-  <summary>Comment les résultats sont-ils calculés ?</summary>
-  <p><strong>Calcul.</strong> Production = puissance × productible PVGIS (orientation, inclinaison) × facteur du canton, répartie par mois selon le profil PVGIS de Luxembourg-Ville. Part autoconsommée sans batterie = 30 % × (production ÷ consommation)<sup>−0,6</sup>, bornée entre 10 et 90 % ; une batterie de Q kWh ajoute 35 % × (1 − e<sup>−Q ÷ (0,5 × consommation journalière)</sup>). Gain annuel = kWh autoconsommés × valeur du kWh évité (indexée de la hausse choisie) + kWh injectés × prix du surplus (option A) ou tarif garanti pendant 15 ans puis prix du surplus (option B). La production baisse du taux de vieillissement choisi ; l'onduleur est remplacé à l'année 13. Retour sur investissement = première année où la trésorerie cumulée redevient positive (interpolée) ; gain net = trésorerie cumulée à 25 ans en euros courants, non actualisée par défaut (avec un taux d'actualisation : somme des flux actualisés ; le retour sur investissement et la figure 2 restent non actualisés) ; TRI = taux qui annule la valeur actuelle des flux. Aucun coût d'entretien ni d'assurance n'est compté. La formule de la part autoconsommée est une heuristique propre à ce simulateur, calée sur l'ordre de grandeur de 30 % sans batterie, sans référence publiée. La batterie n'est ni remplacée ni dégradée sur 25 ans : avec une batterie, le résultat est optimiste. Le HEMS optionnel est compté comme un coût et, en option A seulement, avec son aide ; son effet sur la part autoconsommée n'est pas modélisé.</p>
-  <p><strong>Calcul de l'outil 3 (chauffage).</strong> Hypothèses de l'outil, sauf mention contraire. Besoin de chaleur utile = consommation × rendement de l'installation actuelle (gaz : 10,6 kWh par m³ facturé ; mazout : 10 kWh par litre), ou surface × besoin par m² selon l'époque de construction ; eau chaude : 800 kWh par personne et par an, au plus 40 % du total. Le chauffage est réparti heure par heure au prorata des degrés-heures sous 15 °C de l'année météo type, l'eau chaude et les autres usages selon des profils journaliers fixes. COP horaire de la pompe à chaleur = 0,85 × (6,08 − 0,09 ΔT + 0,0005 ΔT²), au moins 1, ΔT étant l'écart entre la température de départ et la température extérieure T, d'au moins 10 °C (seuil : hypothèse de l'outil, Ruhnau et al. retiennent 15 °C ; formule de Ruhnau et al., 2019, facteur de correction compris) ; départ à 40 − T °C (radiateurs) ou 30 − 0,5 × T °C (plancher chauffant), eau chaude à 50 °C ; un appoint électrique direct couvre ce que la puissance disponible ne couvre pas. Le ballon tampon est chauffé 15 °C au-dessus du départ avec le surplus solaire (1,163 Wh par litre et par °C, pertes de 1 % par heure) et rend sa chaleur quand les panneaux ne suffisent plus. Batterie : 90 % de rendement aller-retour, 0,5 kW par kWh, 5 kW au plus. Facture = combustible + électricité achetée − surplus vendu + entretien (chaudière 200 €/an, pompe à chaleur 150 €/an) ; le combustible augmente selon la hausse choisie, l'électricité selon l'outil 2 ; avec des panneaux, l'onduleur est remplacé à l'année 13. Retour sur investissement et gain net = écart de dépense avec le chauffage actuel sur 20 ans. Limites : une seule année météo, pas de vieillissement des panneaux ni de remplacement de la batterie dans cet outil, maison unifamiliale seulement, abonnement au gaz supprimé non compté, primes communales non comptées.</p>
+  <summary>Comment les résultats sont-ils calculés ?</summary>
+  <p><strong>Calcul.</strong> Production = puissance × productible PVGIS (orientation, inclinaison) × facteur du canton, répartie par mois selon le profil PVGIS de Luxembourg-Ville. Part autoconsommée sans batterie = 30 % × (production ÷ consommation)<sup>−0,6</sup>, bornée entre 10 et 90 % ; une batterie de Q kWh ajoute 35 % × (1 − e<sup>−Q ÷ (0,5 × consommation journalière)</sup>). Gain annuel = kWh autoconsommés × valeur du kWh évité (indexée de la hausse choisie) + kWh injectés × prix du surplus (option A) ou tarif garanti pendant 15 ans puis prix du surplus (option B). La production baisse du taux de vieillissement choisi ; l'onduleur est remplacé à l'année 13. Retour sur investissement = première année où la trésorerie cumulée redevient positive (interpolée) ; gain net = trésorerie cumulée à 25 ans en euros courants, non actualisée par défaut (avec un taux d'actualisation : somme des flux actualisés ; le retour sur investissement et la figure 2 restent non actualisés) ; TRI = taux qui annule la valeur actuelle des flux. Aucun coût d'entretien ni d'assurance n'est compté. La formule de la part autoconsommée est une heuristique propre à ce simulateur, calée sur l'ordre de grandeur de 30 % sans batterie, sans référence publiée. La batterie n'est ni remplacée ni dégradée sur 25 ans : avec une batterie, le résultat est optimiste. Le HEMS optionnel est compté comme un coût et, en option A seulement, avec son aide ; son effet sur la part autoconsommée n'est pas modélisé.</p>
+  <p><strong>Calcul de l'outil 3 (chauffage).</strong> Hypothèses de l'outil, sauf mention contraire. Besoin de chaleur utile = consommation × rendement de l'installation actuelle (gaz : 10,6 kWh par m³ facturé ; mazout : 10 kWh par litre), ou surface × besoin par m² selon l'époque de construction ; eau chaude : 800 kWh par personne et par an, au plus 40 % du total. Le chauffage est réparti heure par heure au prorata des degrés-heures sous 15 °C de l'année météo type, l'eau chaude et les autres usages selon des profils journaliers fixes. COP horaire de la pompe à chaleur = 0,85 × (6,08 − 0,09 ΔT + 0,0005 ΔT²), au moins 1, ΔT étant l'écart entre la température de départ et la température extérieure T, d'au moins 10 °C (seuil : hypothèse de l'outil, Ruhnau et al. retiennent 15 °C ; formule de Ruhnau et al., 2019, facteur de correction compris) ; départ à 40 − T °C (radiateurs) ou 30 − 0,5 × T °C (plancher chauffant), eau chaude à 50 °C ; un appoint électrique direct couvre ce que la puissance disponible ne couvre pas. Le ballon tampon est chauffé 15 °C au-dessus du départ avec le surplus solaire (1,163 Wh par litre et par °C, pertes de 1 % par heure) et rend sa chaleur quand les panneaux ne suffisent plus. Batterie : 90 % de rendement aller-retour, 0,5 kW par kWh, 5 kW au plus. Facture = combustible + électricité achetée − surplus vendu + entretien (chaudière 200 €/an, pompe à chaleur 150 €/an) ; le combustible augmente selon la hausse choisie, l'électricité selon l'outil 2 ; avec des panneaux, l'onduleur est remplacé à l'année 13. Retour sur investissement et gain net = écart de dépense avec le chauffage actuel sur 20 ans. Limites : une seule année météo, pas de vieillissement des panneaux ni de remplacement de la batterie dans cet outil, maison unifamiliale seulement, abonnement au gaz supprimé non compté, primes communales non comptées.</p>
   </details>
   <details id="m-src">
-  <summary>D'où viennent les chiffres ? Les 13 sources datées</summary>
+  <summary>D'où viennent les chiffres ? Les 13 sources datées</summary>
   <ol>
-    <li id="src-1">Productible : <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centre commun de recherche (JRC), Commission européenne, base d'irradiation SARAH3 (2005-2023), système fixe, pertes 14 %, horizon calculé ; requêtes du 23 octobre 2026 pour Luxembourg-Ville (49,61 N ; 6,13 E) et le centre de chaque canton (<a href="/data/pvgis.json">données</a>).</li>
-    <li id="src-2">Klimabonus : <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">Aide financière pour les installations techniques qui valorisent les sources d'énergies renouvelables (Klimabonus régime 2026)</a>, guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026 ; loi du 24 juillet 2026 relative au régime d'aides pour la promotion de la durabilité, de l'utilisation rationnelle de l'énergie et des énergies renouvelables dans le domaine du logement.</li>
-    <li id="src-3">Aide HEMS : montant (500 €) et condition (au moins deux équipements pilotés) d'après la <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">page Klimabonus de guichet.lu</a> (mise à jour le 11 août 2026) ; date d'effet (factures à partir du 1er octobre 2026) d'après la <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">présentation du « Klimabonus Wunnen » 2026-2030</a>, gouvernement.lu, 16 juillet 2026 ; consultées le 2 novembre 2026. Régime transitoire de l'option B (offres signées du 1er octobre 2024 au 4 mars 2026) : <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">période de transition du Klimabonus photovoltaïque</a>, Klima-Agence, 17 décembre 2025, consultée le 2 novembre 2026.</li>
-    <li id="src-4">Tarif d'injection garanti : règlement grand-ducal modifié du 1er août 2014 relatif à la production d'électricité basée sur les sources d'énergie renouvelables, art. 17ter (version du règlement du 12 avril 2019), <a href="https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo" target="_blank" rel="noopener">Legilux</a> ; facteurs de réduction X = 1 à défaut de fixation ministérielle.</li>
-    <li id="src-5">Tarifs réseau et taxes : <a href="https://www.ilr.lu/wp-content/uploads/ilr-elc-dec-2025-12-22-E25-41-44-Tariff-sheet-GRD-elec-2026.pdf" target="_blank" rel="noopener">Tarifs d'utilisation du réseau 2026</a> (ILR, Creos, version du 26 novembre 2025) ; grille « Tarifs réseau et taxes réglementées » d'Enovos valable à partir du 1er août 2026 (mécanisme de compensation −3,71 c€/kWh, taxe 0,10 c€/kWh) ; prix de l'énergie : offres résidentielles d'octobre 2026, 10,9 à 13,8 c€/kWh, offre courante Enovos 13,2 c€/kWh hors TVA depuis le 1er janvier 2026.</li>
-    <li id="src-6">Prix de l'électricité 2026 : <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">loi du 22 juillet 2026 relative à la contribution de l'État dans le cadre du mécanisme de compensation pour l'année 2026</a> (ILR ; texte issu du projet de loi n° 8707, voir l'<a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">exposé de l'amendement gouvernemental</a> pour l'aide de l'ordre de 4 c€/kWh de la catégorie A du 1er août au 31 décembre 2026), consultés le 2 novembre 2026. Facture type (3 900 kWh/an) : présentation du ministre de l'Économie du 2 décembre 2025, rapportée par Le Quotidien du 3 décembre 2025.</li>
-    <li id="src-7">Coûts d'installation, de batterie et d'onduleur, prix du surplus : fourchettes relevées sur les sites d'installateurs et comparateurs luxembourgeois en octobre 2026 ; valeurs indicatives, à remplacer par votre devis.</li>
-    <li id="src-8">Fiscalité : <a href="https://www.klima-agence.lu/sites/default/files/2025-09/Traitement%20fiscal%20PV_FR_Sep25_VF.pdf" target="_blank" rel="noopener">Traitement fiscal d'une personne physique exploitant une installation photovoltaïque</a>, Klima-Agence, septembre 2025.</li>
-    <li id="src-9">Pompe à chaleur (outil 3) : montants du Klimabonus, majoration, cuve à mazout, zone de protection d'eau, distribution, ballon tampon et COP minimal d'après la <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">page Klimabonus de guichet.lu</a> (mise à jour le 11 août 2026, consultée le 2 novembre 2026). Prix d'une pompe à chaleur posée : <a href="https://renov.lu/en/heating/heat-pump/simulator/" target="_blank" rel="noopener">Renov.lu</a>, octobre 2026 (18 000 à 28 000 € TTC) ; coût moyen de 32 300 € des dossiers subventionnés de 10 à 14 kW, chiffre du ministère de l'Environnement publié par <a href="https://www.lessentiel.lu/de/story/luxemburg-waermepumpen-foerderung-was-sich-fuer-eigentuemer-aendert-103579077" target="_blank" rel="noopener">L'essentiel</a> le 9 juin 2026 ; ballon tampon posé : 1 000 à 3 500 € (repère allemand, Reduco, 2026). Valeurs par défaut (22 000 €, 1 800 €, enlèvement de la cuve 1 500 €) : hypothèses de l'outil.</li>
-    <li id="src-10">Prix des combustibles : mazout, <a href="https://www.petrol.lu/en/official-prices/" target="_blank" rel="noopener">prix maxima officiels</a> relevés par petrol.lu, 1,601 €/L TTC depuis le 27 octobre 2026, consultés le 2 novembre 2026 ; gaz naturel, <a href="https://www.ilr.lu/wp-content/uploads/publication/ILR_-Statistiques_-COMMUNIQUE-DE-PRESSE_20260630_Chiffres-cles-Gaz-naturel.pdf" target="_blank" rel="noopener">chiffres clés du gaz naturel 2025</a>, ILR, 30 juin 2026 : 9,14 c€/kWh en moyenne pour un ménage ; 9,5 c€ retenus pour 2026, hypothèse de l'outil.</li>
-    <li id="src-11">Émissions : gaz naturel 215,4 g CO₂e par kWh facturé (pouvoir calorifique supérieur), mazout 324,7 g CO₂e par kWh (pouvoir calorifique inférieur), ADEME Base Carbone v23.9, cités par la <a href="https://www.banque-france.fr/system/files/2026-07/Methodologie_energie.pdf" target="_blank" rel="noopener">Banque de France</a> (méthodologie du 2 juillet 2026) ; électricité consommée au Luxembourg en 2025, importations comprises : 212,2 g CO₂e par kWh, <a href="https://www.electricitymaps.com/grid-in-review-2025/luxembourg" target="_blank" rel="noopener">Electricity Maps</a> ; consultés le 2 novembre 2026.</li>
-    <li id="src-12">COP : Ruhnau, Hirth et Praktiknjo, « Time series of heat demand and heat pump efficiency for energy system modeling », Scientific Data 6, 189 (2019), <a href="https://doi.org/10.1038/s41597-019-0199-y" target="_blank" rel="noopener">doi:10.1038/s41597-019-0199-y</a>. Besoin par époque : ordres de grandeur arrondis de la typologie TABULA pour l'Allemagne (IWU, 2015). Année météo type : PVGIS 5.3 (série horaire SARAH3 et ERA5, Luxembourg-Ville), année 2017, la plus proche de la moyenne 2005-2023 à la fois en production solaire et en degrés-jours (<a href="/data/annee_type.json">données</a>).</li>
-    <li id="src-13">Installations raccordées : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> (Leneda, CC0), relevé du 9 novembre 2026.</li>
+    <li id="src-1">Productible : <a href="https://re.jrc.ec.europa.eu/pvg_tools/fr/" target="_blank" rel="noopener">PVGIS 5.3</a>, Centre commun de recherche (JRC), Commission européenne, base d'irradiation SARAH3 (2005-2023), système fixe, pertes 14 %, horizon calculé ; requêtes du 23 octobre 2026 pour Luxembourg-Ville (49,61 N ; 6,13 E) et le centre de chaque canton (<a href="/data/pvgis.json">données</a>).</li>
+    <li id="src-2">Klimabonus : <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">Aide financière pour les installations techniques qui valorisent les sources d'énergies renouvelables (Klimabonus régime 2026)</a>, guichet.lu, page mise à jour le 11 août 2026, consultée le 2 novembre 2026 ; loi du 24 juillet 2026 relative au régime d'aides pour la promotion de la durabilité, de l'utilisation rationnelle de l'énergie et des énergies renouvelables dans le domaine du logement.</li>
+    <li id="src-3">Aide HEMS : montant (500 €) et condition (au moins deux équipements pilotés) d'après la <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">page Klimabonus de guichet.lu</a> (mise à jour le 11 août 2026) ; date d'effet (factures à partir du 1er octobre 2026) d'après la <a href="https://gouvernement.lu/fr/actualites/toutes_actualites/communiques/2026/07-juillet/16-wilmes-klimabonus-wunnen.html" target="_blank" rel="noopener">présentation du « Klimabonus Wunnen » 2026-2030</a>, gouvernement.lu, 16 juillet 2026 ; consultées le 2 novembre 2026. Régime transitoire de l'option B (offres signées du 1er octobre 2024 au 4 mars 2026) : <a href="https://www.klima-agence.lu/en/understanding-transition-period-klimabonus-financial-subsidy-scheme-your-photovoltaic-installation" target="_blank" rel="noopener">période de transition du Klimabonus photovoltaïque</a>, Klima-Agence, 17 décembre 2025, consultée le 2 novembre 2026.</li>
+    <li id="src-4">Tarif d'injection garanti : règlement grand-ducal modifié du 1er août 2014 relatif à la production d'électricité basée sur les sources d'énergie renouvelables, art. 17ter (version du règlement du 12 avril 2019), <a href="https://legilux.public.lu/eli/etat/leg/rgd/2014/08/01/n1/jo" target="_blank" rel="noopener">Legilux</a> ; facteurs de réduction X = 1 à défaut de fixation ministérielle.</li>
+    <li id="src-5">Tarifs réseau et taxes : <a href="https://www.ilr.lu/wp-content/uploads/ilr-elc-dec-2025-12-22-E25-41-44-Tariff-sheet-GRD-elec-2026.pdf" target="_blank" rel="noopener">Tarifs d'utilisation du réseau 2026</a> (ILR, Creos, version du 26 novembre 2025) ; grille « Tarifs réseau et taxes réglementées » d'Enovos valable à partir du 1er août 2026 (mécanisme de compensation −3,71 c€/kWh, taxe 0,10 c€/kWh) ; prix de l'énergie : offres résidentielles d'octobre 2026, 10,9 à 13,8 c€/kWh, offre courante Enovos 13,2 c€/kWh hors TVA depuis le 1er janvier 2026.</li>
+    <li id="src-6">Prix de l'électricité 2026 : <a href="https://www.ilr.lu/cadre-legal/loi-du-22-juillet-2026-relative-a-la-contribution-de-letat-dans-le-cadre-du-mecanisme-de-compensation-pour-lannee-2026/" target="_blank" rel="noopener">loi du 22 juillet 2026 relative à la contribution de l'État dans le cadre du mécanisme de compensation pour l'année 2026</a> (ILR ; texte issu du projet de loi n° 8707, voir l'<a href="https://wdocs-pub.chd.lu/docs/Dossiers_parlementaires/8707/20260721_AmendementGouvernemental.pdf" target="_blank" rel="noopener">exposé de l'amendement gouvernemental</a> pour l'aide de l'ordre de 4 c€/kWh de la catégorie A du 1er août au 31 décembre 2026), consultés le 2 novembre 2026. Facture type (3 900 kWh/an) : présentation du ministre de l'Économie du 2 décembre 2025, rapportée par Le Quotidien du 3 décembre 2025.</li>
+    <li id="src-7">Coûts d'installation, de batterie et d'onduleur, prix du surplus : fourchettes relevées sur les sites d'installateurs et comparateurs luxembourgeois en octobre 2026 ; valeurs indicatives, à remplacer par votre devis.</li>
+    <li id="src-8">Fiscalité : <a href="https://www.klima-agence.lu/sites/default/files/2025-09/Traitement%20fiscal%20PV_FR_Sep25_VF.pdf" target="_blank" rel="noopener">Traitement fiscal d'une personne physique exploitant une installation photovoltaïque</a>, Klima-Agence, septembre 2025.</li>
+    <li id="src-9">Pompe à chaleur (outil 3) : montants du Klimabonus, majoration, cuve à mazout, zone de protection d'eau, distribution, ballon tampon et COP minimal d'après la <a href="https://guichet.public.lu/fr/citoyens/aides/logement-construction/klimabonus-2026/aide-installations-techniques.html" target="_blank" rel="noopener">page Klimabonus de guichet.lu</a> (mise à jour le 11 août 2026, consultée le 2 novembre 2026). Prix d'une pompe à chaleur posée : <a href="https://renov.lu/en/heating/heat-pump/simulator/" target="_blank" rel="noopener">Renov.lu</a>, octobre 2026 (18 000 à 28 000 € TTC) ; coût moyen de 32 300 € des dossiers subventionnés de 10 à 14 kW, chiffre du ministère de l'Environnement publié par <a href="https://www.lessentiel.lu/de/story/luxemburg-waermepumpen-foerderung-was-sich-fuer-eigentuemer-aendert-103579077" target="_blank" rel="noopener">L'essentiel</a> le 9 juin 2026 ; ballon tampon posé : 1 000 à 3 500 € (repère allemand, Reduco, 2026). Valeurs par défaut (22 000 €, 1 800 €, enlèvement de la cuve 1 500 €) : hypothèses de l'outil.</li>
+    <li id="src-10">Prix des combustibles : mazout, <a href="https://www.petrol.lu/en/official-prices/" target="_blank" rel="noopener">prix maxima officiels</a> relevés par petrol.lu, 1,601 €/L TTC depuis le 27 octobre 2026, consultés le 2 novembre 2026 ; gaz naturel, <a href="https://www.ilr.lu/wp-content/uploads/publication/ILR_-Statistiques_-COMMUNIQUE-DE-PRESSE_20260630_Chiffres-cles-Gaz-naturel.pdf" target="_blank" rel="noopener">chiffres clés du gaz naturel 2025</a>, ILR, 30 juin 2026 : 9,14 c€/kWh en moyenne pour un ménage ; 9,5 c€ retenus pour 2026, hypothèse de l'outil.</li>
+    <li id="src-11">Émissions : gaz naturel 215,4 g CO₂e par kWh facturé (pouvoir calorifique supérieur), mazout 324,7 g CO₂e par kWh (pouvoir calorifique inférieur), ADEME Base Carbone v23.9, cités par la <a href="https://www.banque-france.fr/system/files/2026-07/Methodologie_energie.pdf" target="_blank" rel="noopener">Banque de France</a> (méthodologie du 2 juillet 2026) ; électricité consommée au Luxembourg en 2025, importations comprises : 212,2 g CO₂e par kWh, <a href="https://www.electricitymaps.com/grid-in-review-2025/luxembourg" target="_blank" rel="noopener">Electricity Maps</a> ; consultés le 2 novembre 2026.</li>
+    <li id="src-12">COP : Ruhnau, Hirth et Praktiknjo, « Time series of heat demand and heat pump efficiency for energy system modeling », Scientific Data 6, 189 (2019), <a href="https://doi.org/10.1038/s41597-019-0199-y" target="_blank" rel="noopener">doi:10.1038/s41597-019-0199-y</a>. Besoin par époque : ordres de grandeur arrondis de la typologie TABULA pour l'Allemagne (IWU, 2015). Année météo type : PVGIS 5.3 (série horaire SARAH3 et ERA5, Luxembourg-Ville), année 2017, la plus proche de la moyenne 2005-2023 à la fois en production solaire et en degrés-jours (<a href="/data/annee_type.json">données</a>).</li>
+    <li id="src-13">Installations raccordées : jeu <a href="https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/" target="_blank" rel="noopener">« La production d'énergie électrique au Luxembourg »</a> (Leneda, CC0), relevé du 9 novembre 2026.</li>
   </ol>
   </details>
 </section>
@@ -1009,26 +1031,26 @@
         <button type="button" id="rt-copy">Copier le lien</button>
         <button type="button" id="rt-native" hidden>Partager…</button>
       </p>
-      <p class="rt-note" id="rt-share-note">Le lien copié contient vos réglages : vos interlocuteurs retrouvent la même simulation.</p>
+      <p class="rt-note" id="rt-share-note">Le lien copié contient vos réglages : vos interlocuteurs retrouvent la même simulation.</p>
     </div>
     <div>
       <h3>Citer cette page</h3>
-      <pre class="rt-cite" id="rt-cite-txt">https://solaire.sitraka.lu/fr/simulateur/</pre>
+      <pre class="rt-cite" id="rt-cite-txt" tabindex="0" role="region" aria-label="Citation">https://solaire.sitraka.lu/fr/simulateur/</pre>
       <p class="rt-row"><button type="button" id="rt-copy-txt">Copier la citation</button></p>
       <details class="rt-bib"><summary>BibTeX</summary>
-        <pre class="rt-cite" id="rt-cite-bib"></pre>
+        <pre class="rt-cite" id="rt-cite-bib" tabindex="0" role="region" aria-label="BibTeX"></pre>
         <p class="rt-row"><button type="button" id="rt-copy-bib">Copier le BibTeX</button></p>
       </details>
     </div>
     <div>
       <h3>Télécharger les données</h3>
       <ul class="rt-dl"><li><a href="/data/pvgis.json" download>Productible PVGIS par orientation, inclinaison et canton</a> <small>JSON</small></li><li><a href="/data/annee_type.json" download>Année météo type heure par heure (PVGIS, outil 3)</a> <small>JSON</small></li><li><a href="/data/csv/solaire_communes.csv" download>Capacité PV par commune (100 communes)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_cantons.csv" download>Capacité PV par canton (12 cantons)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_filieres.csv" download>Capacité installée par filière et par relevé</a> <small>CSV</small></li><li><a href="/data/csv/solaire_tailles.csv" download>Installations PV par classe de taille</a> <small>CSV</small></li><li><a href="/data/csv/solaire_communes_tailles.csv" download>Installations PV par commune et par classe de taille</a> <small>CSV</small></li><li><a href="/data/csv/solaire_communes_tranches_aides.csv" download>Installations PV par commune, tranches des aides communales (Klimabonus Gemengen)</a> <small>CSV</small></li><li><a href="/data/csv/solaire_grandes_installations.csv" download>Lignes de plus de 100 kW apparues ou disparues entre deux relevés (21 lignes)</a> <small>CSV</small></li><li><a href="/data/data.json" download>Toutes les données de la page (JSON)</a> <small>JSON</small></li></ul>
-      <p class="rt-note">Licence et sources : voir la <a href="#methode">méthode</a>.</p>
+      <p class="rt-note">Licence et sources : voir la <a href="#methode">méthode</a>.</p>
     </div>
     <div>
       <h3>Contact</h3>
       <p class="rt-row"><a id="rt-err" href="mailto:hello@sitraka.lu?subject=lux-solaire%20https%3A%2F%2Fsolaire.sitraka.lu%2Ffr%2Fsimulateur%2F">Signaler une erreur</a></p>
-      <p class="rt-note">Auteur : <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
+      <p class="rt-note">Auteur : <a href="https://sitraka.lu/" target="_blank" rel="noopener">Sitraka Forler · sitraka.lu</a></p>
     </div>
   </div>
   <p class="rt-sr" id="rt-live" aria-live="polite"></p>
@@ -1038,19 +1060,21 @@
 <footer class="colophon" aria-labelledby="colophon-h">
   <h2 id="colophon-h">Colophon</h2>
 <div class="co-a">
-  <p>Les données dérivées de cette page (tableaux et JSON) sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a> ; les données PVGIS restent sous la licence du JRC, les fichiers Leneda sous CC0.</p>
+  <p>Les données dérivées de cette page (tableaux et JSON) sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener">CC BY 4.0</a> ; les données PVGIS restent sous la licence du JRC, les fichiers Leneda sous CC0.</p>
 </div>
 <!--COLOPHON_COMMON-->
 <div class="co-b">
   <p><a href="/fr/pour-les-communes/">Pour les communes</a> : une page par commune, avec ses données.</p>
-  <p>Contact : <a href="https://sitraka.lu/fr/contact/?from=solaire">écrire à l'auteur</a></p>
-  <p>Analyse et visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + SVG natif, sans bibliothèque · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
-  <p>Agenda, newsletter et autres travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
-  <p>Du même auteur, pour la pause : <a href="https://ratrace.sitraka.lu/">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).</p>
+  <p>Contact : <a href="https://sitraka.lu/fr/contact/?from=solaire">écrire à l'auteur</a> · <a href="https://sitraka.lu/fr/privacy/">politique de confidentialité</a></p>
+  <p>Analyse et visualisation : <a href="https://sitraka.lu" target="_blank" rel="noopener">Sitraka Forler</a> · pandas + SVG natif, sans bibliothèque · <a href="https://github.com/Sitraka17/lux-solaire" target="_blank" rel="noopener">code source</a> · <a href="https://www.linkedin.com/in/sitraka-matthieu-forler" target="_blank" rel="noopener">LinkedIn</a>.</p>
+  <p>Agenda, newsletter et autres travaux : <a href="https://sitraka.lu" target="_blank" rel="noopener">sitraka.lu</a></p>
+  <p>Du même auteur, pour la pause : <a href="https://ratrace.sitraka.lu/">Rat Race</a>, le jeu du frontalier (65 villes, un trajet du jour).</p>
 </div>
 <div class="co-series">
   <p>Ce site fait partie d'une série de réutilisations des données publiques luxembourgeoises.</p>
-  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tableau A.</b> La série open-data · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">N°</span></th><th scope="col">Site</th><th scope="col">Sujet</th><th scope="col">Adresse</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="page">lux-solaire</a></th><td>Photovoltaïque : capacité raccordée par commune</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Créations, survie et faillites d'entreprises</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Fonder une ESN : étude de marché chiffrée</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Prochaine tranche indiciaire des salaires</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Dette publique et finances de l'État</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>La chaleur, commune par commune</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Carte sanitaire : lits, personnel, attentes</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>L'Inde et le Luxembourg en chiffres</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  <details class="co-series-d"><summary>Série open-data · Luxembourg (8)</summary>
+  <div class="tblscroll" role="region" tabindex="0" aria-labelledby="series-cap"><table class="series-t"><caption id="series-cap"><b>Tableau A.</b> La série open-data · Sitraka Forler</caption><thead><tr><th scope="col"><span class="vh">N°</span></th><th scope="col">Site</th><th scope="col">Sujet</th><th scope="col">Adresse</th></tr></thead><tbody><tr class="cur"><td class="n">1</td><th scope="row"><a href="https://solaire.sitraka.lu" aria-current="true">lux-solaire</a></th><td>Photovoltaïque : capacité raccordée par commune</td><td class="url">solaire.sitraka.lu</td></tr><tr><td class="n">2</td><th scope="row"><a href="https://entreprendre.sitraka.lu" target="_blank" rel="noopener">lux-entreprendre</a></th><td>Créations, survie et faillites d'entreprises</td><td class="url">entreprendre.sitraka.lu</td></tr><tr><td class="n">3</td><th scope="row"><a href="https://luxconseil.sitraka.lu" target="_blank" rel="noopener">lux-conseil</a></th><td>Fonder une ESN : étude de marché chiffrée</td><td class="url">luxconseil.sitraka.lu</td></tr><tr><td class="n">4</td><th scope="row"><a href="https://index.sitraka.lu" target="_blank" rel="noopener">index-lu</a></th><td>Prochaine tranche indiciaire des salaires</td><td class="url">index.sitraka.lu</td></tr><tr><td class="n">5</td><th scope="row"><a href="https://budget.sitraka.lu" target="_blank" rel="noopener">budget-lu</a></th><td>Dette publique et finances de l'État</td><td class="url">budget.sitraka.lu</td></tr><tr><td class="n">6</td><th scope="row"><a href="https://canicule.sitraka.lu" target="_blank" rel="noopener">lux-canicule</a></th><td>La chaleur, commune par commune</td><td class="url">canicule.sitraka.lu</td></tr><tr><td class="n">7</td><th scope="row"><a href="https://sante.sitraka.lu" target="_blank" rel="noopener">lux-santé</a></th><td>Carte sanitaire : lits, personnel, attentes</td><td class="url">sante.sitraka.lu</td></tr><tr><td class="n">8</td><th scope="row"><a href="https://india.sitraka.lu" target="_blank" rel="noopener">lux-india</a></th><td>L'Inde et le Luxembourg en chiffres</td><td class="url">india.sitraka.lu</td></tr></tbody></table></div>
+  </details><script>(function(d){if(d&&matchMedia('(min-width:768px)').matches)d.open=true})(document.currentScript.previousElementSibling)</script>
 </div>
 <!--/COLOPHON_COMMON-->
 </footer>
@@ -1059,6 +1083,11 @@
 <script src="/sim-engine.js?v=350753f233"></script>
 <script>
 const G = {"source": "PVGIS 5.3, JRC (Commission européenne)", "url": "https://re.jrc.ec.europa.eu/pvg_tools/fr/", "radiation_db": "PVGIS-SARAH3", "years": [2005, 2023], "system_loss_pct": 14, "center": {"name": "Luxembourg-Ville", "lat": 49.61, "lon": 6.13}, "azimuths": [-90, -60, -45, -30, 0, 30, 45, 60, 90], "tilts": [0, 10, 20, 30, 35, 40, 50, 60, 90], "grid": {"-90:10": 908, "-90:20": 897, "-90:30": 880, "-90:35": 868, "-90:40": 853, "-90:50": 815, "-90:60": 765, "-90:90": 549, "-60:10": 946, "-60:20": 968, "-60:30": 976, "-60:35": 974, "-60:40": 967, "-60:50": 941, "-60:60": 897, "-60:90": 665, "-45:10": 962, "-45:20": 996, "-45:30": 1013, "-45:35": 1014, "-45:40": 1010, "-45:50": 988, "-45:60": 944, "-45:90": 707, "-30:10": 974, "-30:20": 1017, "-30:30": 1040, "-30:35": 1044, "-30:40": 1042, "-30:50": 1022, "-30:60": 980, "-30:90": 730, "0:0": 912, "0:10": 983, "0:20": 1033, "0:30": 1061, "0:35": 1067, "0:40": 1066, "0:50": 1047, "0:60": 1004, "0:90": 741, "30:10": 972, "30:20": 1014, "30:30": 1036, "30:35": 1039, "30:40": 1036, "30:50": 1014, "30:60": 971, "30:90": 721, "45:10": 960, "45:20": 992, "45:30": 1006, "45:35": 1006, "45:40": 1001, "45:50": 977, "45:60": 933, "45:90": 696, "60:10": 944, "60:20": 963, "60:30": 968, "60:35": 964, "60:40": 957, "60:50": 928, "60:60": 884, "60:90": 655, "90:10": 905, "90:20": 890, "90:30": 869, "90:35": 856, "90:40": 840, "90:50": 801, "90:60": 751, "90:90": 540}, "monthly_ref": [35, 55, 96, 122, 129, 130, 132, 120, 107, 71, 37, 32], "cantons": {"Capellen": {"E_y": 1084, "factor": 1.016}, "Clervaux": {"E_y": 1034, "factor": 0.969}, "Diekirch": {"E_y": 1066, "factor": 0.999}, "Echternach": {"E_y": 1065, "factor": 0.998}, "Esch": {"E_y": 1086, "factor": 1.018}, "Grevenmacher": {"E_y": 1072, "factor": 1.005}, "Luxembourg": {"E_y": 1067, "factor": 1.0}, "Mersch": {"E_y": 1061, "factor": 0.994}, "Redange": {"E_y": 1073, "factor": 1.006}, "Remich": {"E_y": 1078, "factor": 1.01}, "Vianden": {"E_y": 1050, "factor": 0.984}, "Wiltz": {"E_y": 1036, "factor": 0.971}}};
+/* Marque blanche (version communale) : SEUL point d'entrée, lu à l'initialisation. Une page communale définit
+   window.SIM_CONFIG avant ce script : {accent:'#…' (filets et soulignements), nom:'…' (réservé), logo:'…' (réservé),
+   aidesLocales:[{nom, base, taux, plafond, …}] (format de SimEngine.localAid)}. Valeurs par défaut = page publique :
+   accent de la série, aucune aide locale comptée. */
+const CFG = Object.assign({accent:null, nom:null, logo:null, aidesLocales:[]}, window.SIM_CONFIG||{});
 const D = {"meta": {"pv_mw": 827.5, "total_mw": 1277.5, "pv_n": 38332, "growth12_mw": 175.5, "since_year_end": {"base": "2025 T4", "pv_mw": 82.1, "pv_n": 5082}, "date": "9 novembre 2026", "date_iso": "2026-11-09", "median_share": 93.2, "full_pv_communes": 23, "top_records": [{"c": "Junglinster", "kw": 4999.7}, {"c": "Differdange", "kw": 4999.2}, {"c": "Käerjeng", "kw": 4998.0}, {"c": "Sanem", "kw": 4996.5}]}, "cantons": [{"k": "Clervaux", "pv": 85477.0, "n": 2514, "pop": 22423, "tot": 189964.9, "wpc": 3812, "ipk": 112.1, "share": 45.0}, {"k": "Vianden", "pv": 16681.6, "n": 488, "pop": 5856, "tot": 24119.6, "wpc": 2849, "ipk": 83.3, "share": 69.2}, {"k": "Redange", "pv": 59812.0, "n": 2819, "pop": 21812, "tot": 89177.4, "wpc": 2742, "ipk": 129.2, "share": 67.1}, {"k": "Grevenmacher", "pv": 77924.8, "n": 2973, "pop": 34461, "tot": 93169.3, "wpc": 2261, "ipk": 86.3, "share": 83.6}, {"k": "Mersch", "pv": 82935.7, "n": 2952, "pop": 37424, "tot": 101741.4, "wpc": 2216, "ipk": 78.9, "share": 81.5}, {"k": "Wiltz", "pv": 35818.9, "n": 1729, "pop": 20623, "tot": 66073.7, "wpc": 1737, "ipk": 83.8, "share": 54.2}, {"k": "Echternach", "pv": 34822.0, "n": 1705, "pop": 20736, "tot": 44024.0, "wpc": 1679, "ipk": 82.2, "share": 79.1}, {"k": "Remich", "pv": 37244.9, "n": 1894, "pop": 24844, "tot": 65742.9, "wpc": 1499, "ipk": 76.2, "share": 56.7}, {"k": "Capellen", "pv": 84397.3, "n": 4665, "pop": 57336, "tot": 99606.1, "wpc": 1472, "ipk": 81.4, "share": 84.7}, {"k": "Diekirch", "pv": 41851.9, "n": 2119, "pop": 36670, "tot": 90773.3, "wpc": 1141, "ipk": 57.8, "share": 46.1}, {"k": "Esch", "pv": 159546.8, "n": 7531, "pop": 198114, "tot": 261817.0, "wpc": 805, "ipk": 38.0, "share": 60.9}, {"k": "Luxembourg", "pv": 110967.3, "n": 6943, "pop": 215968, "tot": 151293.9, "wpc": 514, "ipk": 32.1, "share": 73.3}]};
 
 /* Libellés construits en JS (traduits par i18n_sim_js.json / i18n_sim_lb_js.json). */
@@ -1320,7 +1349,7 @@ const LH = {
   scA:'Chauffage actuel', scB:'Panneaux seuls', scC:'Pompe à chaleur seule', scD:'Pompe à chaleur et panneaux',
   rowInv:'Investissement', rowAid:'Klimabonus (État)', rowEvit:'Chaudière neuve évitée', rowNet:'Reste à payer',
   rowBill:'Facture de la 1re année', rowSave:'Économie la 1re année', rowPb:'Retour sur investissement', rowGain:'Gain net sur ',
-  rowCO2:'CO₂ par an', rowCO2b:'Baisse du CO₂', rowSelf:'Production solaire autoconsommée', rowScop:'Rendement annuel de la pompe à chaleur (SCOP)', thScen:'Scénario',
+  rowCO2:'CO₂ par an', rowCO2b:'Variation du CO₂', rowSelf:'Production solaire autoconsommée', rowScop:'Rendement annuel de la pompe à chaleur (SCOP)', thScen:'Scénario',
   aidPac:'Pompe à chaleur air-eau, remplacement du chauffage actuel', aidMaj:' (aide majorée)', aidCuve:'Enlèvement de la cuve à mazout', aidZone:'Zone de protection d\'eau',
   aidDist:'Adaptation de la distribution (', aidDistMax:' % du coût, au plus ', aidPv:'Panneaux photovoltaïques', aidBatt:'Batterie', aidHems:'Système de gestion de l\'énergie (HEMS)', aidTot:'Total des aides de l\'État', thAid:'Poste', thAmt:'Montant',
   perYear:' par an', today1:'énergie, entretien et électricité de la maison', after1:'économie de ', after2:' la 1re année', afterNo:'pas d\'économie la 1re année',
@@ -1375,7 +1404,7 @@ function renderHeat(R, npvq){
     p:pv?I.p:0, cost:pv?I.cost:0, batt:pv?I.batt:0, bcost:pv?I.bcost:0, hems:pv&&I.hems, hcost:I.hcost, haid:I.haid, inv:pv?I.inv:0,
     az:I.az, tilt:I.tilt, canton:I.canton,
     pac:H.hpac, pacCost:H.hpcost, ballon:buf?H.hbuf:0, ballonCost:H.hbufc, coutCuve:H.hcuve, coutDistribution:H.hdist, chaudiereEvitee:H.hevit,
-    commande:H.hmaj===1?K.majoreCommandeA:null, remplacement:true, zoneEau:oil&&$('hzone').checked, aidesLocales:[],
+    commande:H.hmaj===1?K.majoreCommandeA:null, remplacement:true, zoneEau:oil&&$('hzone').checked, aidesLocales:CFG.aidesLocales,
     prixGaz:H.hpg, prixMazout:H.hpo, price:I.price, market:I.market, hausseFossile:H.hgf, growth:I.growth, disc:I.disc,
   }, SERIE, BAR, G);
   const S=X.sc, A=S.A, M=pv?S.D:S.C, Y=X.horizon, cols=pv?['A','B','C','D']:['A','C'];
@@ -1491,6 +1520,7 @@ function writeUrl(){
   history.replaceState(null,'',(s?'?'+s:location.pathname)+location.hash);
 }
 (function init(){
+  if(CFG.accent) document.documentElement.style.setProperty('--accent', CFG.accent);
   [...ids,...hids].forEach(k=>{ DEF[k]=$(k).value; });
   const q=new URLSearchParams(location.search);
   [...ids,...hids].forEach(k=>{
