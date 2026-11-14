@@ -372,3 +372,14 @@ test('options A/B de l\'outil 2 : non touchées par la comparaison (compute inch
   const c = CASES[0];
   assert.deepEqual(json(E.compute(c.inputs, G, E.BAREMES)), REF[c.name]);
 });
+
+test('e-community : durée du tarif limitée (marketDuree), puis tarif habituel ; sans durée, rien ne change', () => {
+  const a = heat({ market: 0.075 }), b = heat({ market: 0.075, marketDuree: 20, marketApres: 0.02 });
+  assert.deepEqual(json(a), json(b));                                   // durée = horizon : identique
+  const c = heat({ market: 0.075, marketDuree: 5, marketApres: 0.02 }), lo = heat({ market: 0.02 });
+  const d = c.sc.D, exp = d.energie.exp;
+  near(d.bills[0], a.sc.D.bills[0], 1e-9);                              // années 1 à 5 : 7,5 c€
+  near(d.bills[5], lo.sc.D.bills[5], 1e-9);                             // année 6 : tarif habituel
+  near(d.bills[5] - a.sc.D.bills[5], exp * 0.055, 1e-6);
+  assert.ok(c.sc.D.gain < a.sc.D.gain && c.sc.D.gain > lo.sc.D.gain);
+});

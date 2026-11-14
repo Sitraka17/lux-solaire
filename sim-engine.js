@@ -401,6 +401,7 @@
    *              donc dans A et B seulement) [0] ;
    *   prix : prixGaz (€/kWh PCS) [bar.energie.gaz], prixMazout (€/L) [bar.energie.mazoutL],
    *          price (électricité €/kWh) [bar.energie.achat], market (surplus €/kWh) [bar.energie.surplus],
+   *          marketDuree (années à ce prix, facultatif) puis marketApres (€/kWh) [market],
    *          hausseFossile, growth (%/an) [bar.energie.hausseFossile, hausseElec], horizon (ans) [bar.chaleur.horizon],
    *          disc (%, actualisation du seul gain net, 0 par défaut) ;
    *   co2 : facteurs facultatifs co2Gaz, co2Mazout, co2Elec (kg/kWh) [bar.co2].
@@ -464,7 +465,10 @@
       s.bills = [];
       s.cum = [s.net];
       for (var y = 1; y <= Y; y++) {
-        var b = s.fuelCost * Math.pow(1 + gf / 100, y - 1) + s.elCost * Math.pow(1 + ge / 100, y - 1) - s.sale + s.maint;
+        // prix du surplus limité dans le temps (ex. tarif d'une communauté énergétique) : marketDuree années à
+        // pinj, puis marketApres (€/kWh) ; sans marketDuree, pinj sur tout l'horizon (comportement inchangé)
+        var saleY = (I.marketDuree != null && y > I.marketDuree) ? s.r.exp * def(I.marketApres, pinj) : s.sale;
+        var b = s.fuelCost * Math.pow(1 + gf / 100, y - 1) + s.elCost * Math.pow(1 + ge / 100, y - 1) - saleY + s.maint;
         if (s.pvOn && y === bar.anneeOnduleur + 1) b += (I.inv || 0);
         s.bills.push(b);
         s.cum.push(s.cum[y - 1] + b);
