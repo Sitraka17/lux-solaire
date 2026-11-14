@@ -295,11 +295,36 @@
              heatY: heatY, ecsY: ecsY, eta: eta, estimated: estimated };
   }
 
+  // Mois (0 = janvier) de l'heure i d'une année type de 365 jours (8 760 h, année 2017 de PVGIS).
+  var DEBUT_MOIS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+  function monthOfHour(i) {
+    var d = Math.floor(i / 24) % 365, m = 0;
+    while (d >= DEBUT_MOIS[m + 1]) m++;
+    return m;
+  }
+
+  // Somme des kWh mensuels (12 valeurs) sur les mois demandés (indices 0 à 11), ex. [5, 6, 7] = juin à août.
+  function sumMonths(monthly, months) {
+    var t = 0;
+    for (var k = 0; k < months.length; k++) t += monthly[months[k]] || 0;
+    return t;
+  }
+
+  /* Même surplus injecté, deux prix de valorisation (communauté énergétique ou non) : seul le tarif change.
+   * kWh : surplus injecté sur la période (jamais les kWh autoconsommés) ; tarifSans, tarifAvec en €/kWh.
+   * Un surplus négatif ou absent compte pour 0. → { kWh, sans, avec, diff } (€) ; diff = avec − sans,
+   * négatif quand le tarif habituel dépasse celui de la communauté. */
+  function surplusComparison(kWh, tarifSans, tarifAvec) {
+    var q = (typeof kWh === 'number' && kWh > 0) ? kWh : 0;
+    var sans = q * (tarifSans || 0), avec = q * (tarifAvec || 0);
+    return { kWh: q, sans: sans, avec: avec, diff: avec - sans };
+  }
+
   /* Simulation heure par heure d'un scénario.
    * o : { pv, hp, buffer, battery (booléens), direct (chauffage électrique direct existant) }
    * I : pac (kW nominal), emetteurs ('radiateurs' | 'plancher'), ballon (L), surchauffe (K), batt (kWh),
    *     copF (facteur f, facultatif).
-   * → { imp, exp, pv, self, hpEl, backupEl, scop, hpH[] (si keep), Emax } (kWh/an) */
+   * → { imp, exp, expM[12] (surplus injecté par mois), pv, self, hpEl, backupEl, scop, hpH[] (si keep), Emax } (kWh/an) */
   function simulateHourly(S, I, o, bar, keep) {
     var c = bar.chaleur, N = S.N, imp = 0, exp = 0, pvTot = 0, hpEl = 0, backupEl = 0, E = 0;
     var dT = (I.surchauffe !== undefined && I.surchauffe !== null) ? I.surchauffe : c.ballon.surchauffe;
@@ -308,6 +333,7 @@
     var Pb = Math.min(Bmax * c.batterie.puissanceParKwh, c.batterie.puissanceMax), ec = Math.sqrt(c.batterie.rendement);
     var dep = c.depart[I.emetteurs === 'plancher' ? 'plancher' : 'radiateurs'], pw = c.puissance, f = I.copF;
     var hpH = keep ? new Array(N) : null;
+    var expM = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     for (var i = 0; i < N; i++) {
       var T = S.T[i], pv = o.pv ? S.pv[i] : 0, base = S.base[i], el = 0;
       pvTot += pv;
@@ -352,9 +378,9 @@
         if (bal > 0) { var ch = Math.min(bal, Pb, (Bmax - B) / ec); B += ch * ec; bal -= ch; }
         else if (bal < 0) { var dch = Math.min(-bal, Pb, B * ec); B -= dch / ec; bal += dch; }
       }
-      if (bal >= 0) exp += bal; else imp -= bal;
+      if (bal >= 0) { exp += bal; expM[monthOfHour(i)] += bal; } else imp -= bal;
     }
-    return { imp: imp, exp: exp, pv: pvTot, self: pvTot - exp, hpEl: hpEl, backupEl: backupEl,
+    return { imp: imp, exp: exp, expM: expM, pv: pvTot, self: pvTot - exp, hpEl: hpEl, backupEl: backupEl,
              scop: o.hp ? S.useful / (hpEl + backupEl) : null, hpH: hpH, Emax: Emax };
   }
 
@@ -490,5 +516,6 @@
     heatPumpCOP: heatPumpCOP, klimabonusPAC: klimabonusPAC, minBufferLitres: minBufferLitres, localAid: localAid,
     gasPrice: gasPrice, gasFixed: gasFixed,
     heatDemand: heatDemand, simulateHourly: simulateHourly, computeHeat: computeHeat,
+    monthOfHour: monthOfHour, sumMonths: sumMonths, surplusComparison: surplusComparison,
   });
 });

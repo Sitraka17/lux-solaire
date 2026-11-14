@@ -314,3 +314,61 @@ test('chauffage : frais fixes du gaz payés tant que le gaz reste raccordé (A, 
   assert.equal(heat({ energie: 'mazout', unite: 'L', fixeGaz: 190 }).fixeGaz, 0);   // mazout : pas de frais fixes du gaz
   assert.deepEqual([BAR.primeFournisseurPAC.min, BAR.primeFournisseurPAC.max, BAR.tvaTravaux.normal, BAR.tvaTravaux.reduit], [1700, 2500, 0.17, 0.03]);
 });
+
+/* ============ e-community de Differdange : même surplus, deux tarifs (14/11/2026) ============ */
+const near = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} ≠ ${b}`);
+
+test('e-community : 1 000 kWh à 2 c€ = 20 €, à 7,5 c€ = 75 €, écart +55 €', () => {
+  const c = E.surplusComparison(1000, 0.02, 0.075);
+  near(c.sans, 20); near(c.avec, 75); near(c.diff, 55); assert.equal(c.kWh, 1000);
+});
+
+test('e-community : surplus nul ou négatif = revenu nul dans les deux scénarios', () => {
+  for (const q of [0, -50, undefined, NaN]) {
+    const c = E.surplusComparison(q, 0.02, 0.075);
+    assert.equal(c.kWh, 0); assert.equal(c.sans, 0); assert.equal(c.avec, 0); assert.equal(c.diff, 0);
+  }
+});
+
+test('e-community : tarif habituel supérieur à 7,5 c€ = écart négatif, affiché tel quel', () => {
+  const c = E.surplusComparison(1000, 0.09, 0.075);
+  near(c.diff, -15); assert.ok(c.avec < c.sans);
+});
+
+test('mois de l\'année type : 8 760 heures, 1er juin = heure 3 624, juin à août = 92 jours', () => {
+  assert.equal(E.monthOfHour(0), 0); assert.equal(E.monthOfHour(8759), 11);
+  assert.equal(E.monthOfHour(151 * 24 - 1), 4); assert.equal(E.monthOfHour(151 * 24), 5);
+  let h = 0; for (let i = 0; i < 8760; i++) if ([5, 6, 7].includes(E.monthOfHour(i))) h++;
+  assert.equal(h, 92 * 24);
+  assert.equal(E.sumMonths([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], [5, 6, 7]), 6 + 7 + 8);
+});
+
+test('surplus mensuel : somme des 12 mois = surplus annuel, autoconsommation exclue (pas de double comptage)', () => {
+  const R = heat({ p: 8, pac: 9, ballon: 300 });
+  for (const k of ['B', 'D']) {
+    const r = R.sc[k].energie;
+    assert.equal(r.expM.length, 12);
+    near(r.expM.reduce((a, b) => a + b, 0), r.exp, 1e-6);
+    near(r.self + r.exp, r.pv, 1e-6);                 // chaque kWh produit est soit consommé, soit injecté
+    const ete = E.sumMonths(r.expM, [5, 6, 7]);
+    assert.ok(ete > 0 && ete < r.exp);
+    assert.ok(ete <= E.sumMonths(r.expM, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+  }
+});
+
+test('e-community : seul le tarif du surplus change, le scénario sans adhésion est inchangé', () => {
+  const sans = heat({ p: 8, pac: 9, market: 0.02 }), avec = heat({ p: 8, pac: 9, market: 0.075 });
+  const ref = heat({ p: 8, pac: 9, market: 0.02 });
+  for (const k of ['B', 'D']) {
+    assert.deepEqual(sans.sc[k].energie, avec.sc[k].energie);           // mêmes volumes
+    near(avec.sc[k].sale - sans.sc[k].sale, sans.sc[k].energie.exp * 0.055, 1e-6);
+    assert.deepEqual(json(sans.sc[k]), json(ref.sc[k]));                // déterministe, rien d'autre ne bouge
+  }
+  assert.equal(sans.sc.A.bill, avec.sc.A.bill);                         // pas de panneaux : A inchangé
+  assert.equal(sans.sc.C.bill, avec.sc.C.bill);
+});
+
+test('options A/B de l\'outil 2 : non touchées par la comparaison (compute inchangé)', () => {
+  const c = CASES[0];
+  assert.deepEqual(json(E.compute(c.inputs, G, E.BAREMES)), REF[c.name]);
+});
