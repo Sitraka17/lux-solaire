@@ -96,4 +96,10 @@ def test_page_d_offre_maquettes_et_editeur():
 
 def test_total_national_identique_kpi_et_figure():
     h = _read("/fr/")
-    assert "sum6" in h and 'id="k-tot">1 278<' in h
+    # le total suit le relevé hebdomadaire : on recalcule la valeur attendue au lieu de la figer
+    import json, re
+    last = json.loads((ROOT / "data" / "data.json").read_text())["series"][-1]
+    tot = round(sum(last[k] for k in ("pv", "wind", "hydro", "chp", "biomass", "biogas")), 6)
+    attendu = f"{int(tot + 0.5):,}".replace(",", " ")
+    m = re.search(r'id="k-tot">([^<]*)<', h)
+    assert "sum6" in h and m and re.sub(r"\s", " ", m.group(1)) == attendu, (m and m.group(1), attendu)

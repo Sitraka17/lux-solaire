@@ -1,4 +1,6 @@
 ﻿reading_date,previous_reading_date,change,lau2,commune,canton,technology,technology_leneda,capacity_kw,threshold_kw_excl,note,other_commune,source_url
+2026-11-16,2026-11-09,appeared,806,Lac de la Haute-Sûre,Wiltz,pv,Installation photovoltaïque,241.8,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
+2026-11-16,2026-11-09,appeared,211,Roeser,Esch,pv,Installation photovoltaïque,199.75,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
 2026-11-02,2026-10-26,appeared,405,Heffingen,Mersch,pv,Installation photovoltaïque,4623.84,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
 2026-11-02,2026-10-26,appeared,101,Dippach,Capellen,wind,Eolienne,4260.0,100,,,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/
 2026-10-26,2026-09-14,appeared,704,Rambrouch,Redange,wind,Eolienne,12600.0,100,same_value_other_municipality,Ell,https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/

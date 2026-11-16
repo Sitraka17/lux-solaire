@@ -1,6 +1,6 @@
 {
  "site": "lux-solaire",
- "content_date": "2026-11-09",
+ "content_date": "2026-11-16",
  "license": "https://creativecommons.org/licenses/by/4.0/",
  "sources": [
   "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
@@ -130,13 +130,13 @@
   {
    "path": "/data/csv/solaire_grandes_installations.csv",
    "format": "text/csv",
-   "rows": 21,
+   "rows": 23,
    "title": {
-    "fr": "Lignes de plus de 100 kW apparues ou disparues entre deux relevés (21 lignes)",
-    "en": "Rows over 100 kW that appeared or disappeared between two readings (21 rows)",
-    "lb": "Zeilen iwwer 100 kW, déi tëscht zwee Relevéen dobäikomm oder ewechgefall sinn (21 Zeilen)",
-    "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind (21 Zeilen)",
-    "pt": "Linhas acima de 100 kW que surgiram ou desapareceram entre dois levantamentos (21 linhas)"
+    "fr": "Lignes de plus de 100 kW apparues ou disparues entre deux relevés (23 lignes)",
+    "en": "Rows over 100 kW that appeared or disappeared between two readings (23 rows)",
+    "lb": "Zeilen iwwer 100 kW, déi tëscht zwee Relevéen dobäikomm oder ewechgefall sinn (23 Zeilen)",
+    "de": "Zeilen über 100 kW, die zwischen zwei Erhebungen hinzugekommen oder weggefallen sind (23 Zeilen)",
+    "pt": "Linhas acima de 100 kW que surgiram ou desapareceram entre dois levantamentos (23 linhas)"
    },
    "source": "https://data.public.lu/fr/datasets/la-production-denergie-electrique-au-luxembourg/",
    "notes": {
