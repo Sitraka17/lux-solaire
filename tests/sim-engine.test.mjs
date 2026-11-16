@@ -383,3 +383,30 @@ test('e-community : durée du tarif limitée (marketDuree), puis tarif habituel 
   near(d.bills[5] - a.sc.D.bills[5], exp * 0.055, 1e-6);
   assert.ok(c.sc.D.gain < a.sc.D.gain && c.sc.D.gain > lo.sc.D.gain);
 });
+
+/* ===== e-community : frais de plateforme du producteur (mail de la Ville du 16/11/2026) ===== */
+test('e-community : frais de 5 €/mois hors TVA 8 % = 64,80 €/an ; seuil de rentabilité face à 2 c€ ≈ 1 178 kWh/an', () => {
+  const F = 5 * 1.08 * 12;
+  near(F, 64.8);
+  const c = E.surplusComparison(1000, 0.02, 0.075, F);
+  near(c.brut, 75); near(c.avec, 10.2); near(c.diff, -9.8); near(c.seuil, 64.8 / 0.055);
+  const d = E.surplusComparison(5000, 0.02, 0.075, F);
+  near(d.diff, 5000 * 0.055 - 64.8); assert.ok(d.diff > 0);
+  const z = E.surplusComparison(0, 0.02, 0.075, F);
+  near(z.avec, -64.8); near(z.sans, 0);                               // frais dus même sans surplus
+  assert.equal(E.surplusComparison(1000, 0.09, 0.075, F).seuil, null); // tarif habituel plus haut : jamais
+  const o = E.surplusComparison(1000, 0.02, 0.075);                    // sans frais : comme avant
+  near(o.avec, 75); near(o.diff, 55); assert.equal(o.frais, 0);
+});
+
+test('chauffage : marketFixe ajouté aux seuls scénarios avec panneaux, tant que le tarif s\'applique', () => {
+  const a = heat({ market: 0.075 }), b = heat({ market: 0.075, marketFixe: 64.8 });
+  near(b.sc.B.bill - a.sc.B.bill, 64.8); near(b.sc.D.bill - a.sc.D.bill, 64.8);
+  assert.equal(b.sc.A.bill, a.sc.A.bill); assert.equal(b.sc.C.bill, a.sc.C.bill);
+  near(b.sc.D.sale, a.sc.D.sale);                                      // la vente brute ne change pas
+  near(a.sc.D.gain - b.sc.D.gain, 64.8 * 20, 1e-6);
+  const c = heat({ market: 0.075, marketFixe: 64.8, marketDuree: 5, marketApres: 0.02 }), lo = heat({ market: 0.02 });
+  near(c.sc.D.bills[4] - a.sc.D.bills[4], 64.8, 1e-9);                 // année 5 : frais dus
+  near(c.sc.D.bills[5], lo.sc.D.bills[5], 1e-9);                       // année 6 : ni tarif ni frais
+  assert.equal(a.sc.D.fraisSurplus, 0);
+});

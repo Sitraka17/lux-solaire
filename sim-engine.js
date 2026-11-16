@@ -312,12 +312,15 @@
 
   /* Même surplus injecté, deux prix de valorisation (communauté énergétique ou non) : seul le tarif change.
    * kWh : surplus injecté sur la période (jamais les kWh autoconsommés) ; tarifSans, tarifAvec en €/kWh.
-   * Un surplus négatif ou absent compte pour 0. → { kWh, sans, avec, diff } (€) ; diff = avec − sans,
-   * négatif quand le tarif habituel dépasse celui de la communauté. */
-  function surplusComparison(kWh, tarifSans, tarifAvec) {
-    var q = (typeof kWh === 'number' && kWh > 0) ? kWh : 0;
-    var sans = q * (tarifSans || 0), avec = q * (tarifAvec || 0);
-    return { kWh: q, sans: sans, avec: avec, diff: avec - sans };
+   * fraisAvec (facultatif) : frais fixes TTC de la communauté sur la même période, dus même sans surplus.
+   * Un surplus négatif ou absent compte pour 0. → { kWh, sans, brut, frais, avec (= brut − frais), diff, seuil } ;
+   * diff = avec − sans, négatif quand le tarif habituel ou les frais l'emportent. */
+  function surplusComparison(kWh, tarifSans, tarifAvec, fraisAvec) {
+    var q = (typeof kWh === 'number' && kWh > 0) ? kWh : 0, f = fraisAvec > 0 ? fraisAvec : 0;
+    var sans = q * (tarifSans || 0), brut = q * (tarifAvec || 0), avec = brut - f;
+    // seuil : surplus à partir duquel le tarif « avec » rapporte plus, frais déduits (null s'il ne rattrape jamais)
+    var dt = (tarifAvec || 0) - (tarifSans || 0);
+    return { kWh: q, sans: sans, brut: brut, frais: f, avec: avec, diff: avec - sans, seuil: dt > 0 ? f / dt : (f > 0 ? null : 0) };
   }
 
   /* Simulation heure par heure d'un scénario.
@@ -402,6 +405,7 @@
    *   prix : prixGaz (€/kWh PCS) [bar.energie.gaz], prixMazout (€/L) [bar.energie.mazoutL],
    *          price (électricité €/kWh) [bar.energie.achat], market (surplus €/kWh) [bar.energie.surplus],
    *          marketDuree (années à ce prix, facultatif) puis marketApres (€/kWh) [market],
+   *          marketFixe (€/an TTC de frais fixes liés à ce prix, dus tant qu'il s'applique) [0],
    *          hausseFossile, growth (%/an) [bar.energie.hausseFossile, hausseElec], horizon (ans) [bar.chaleur.horizon],
    *          disc (%, actualisation du seul gain net, 0 par défaut) ;
    *   co2 : facteurs facultatifs co2Gaz, co2Mazout, co2Elec (kg/kWh) [bar.co2].
@@ -460,14 +464,17 @@
       s.fuelCost = s.fuelKWh * fuelPrice;
       s.elCost = s.r.imp * pel;
       s.sale = s.r.exp * pinj;
-      s.bill = s.fuelCost + s.elCost - s.sale + s.maint;
+      // frais fixes annuels liés à la vente du surplus (ex. plateforme d'une communauté énergétique), TTC,
+      // seulement pour les scénarios avec panneaux ; 0 par défaut (comportement inchangé)
+      s.fraisSurplus = s.pvOn ? def(I.marketFixe, 0) : 0;
+      s.bill = s.fuelCost + s.elCost - s.sale + s.fraisSurplus + s.maint;
       s.co2 = (s.fuelKWh * fCO2 + s.r.imp * fEl) / 1000;
       s.bills = [];
       s.cum = [s.net];
       for (var y = 1; y <= Y; y++) {
         // prix du surplus limité dans le temps (ex. tarif d'une communauté énergétique) : marketDuree années à
         // pinj, puis marketApres (€/kWh) ; sans marketDuree, pinj sur tout l'horizon (comportement inchangé)
-        var saleY = (I.marketDuree != null && y > I.marketDuree) ? s.r.exp * def(I.marketApres, pinj) : s.sale;
+        var saleY = (I.marketDuree != null && y > I.marketDuree) ? s.r.exp * def(I.marketApres, pinj) : s.sale - s.fraisSurplus;
         var b = s.fuelCost * Math.pow(1 + gf / 100, y - 1) + s.elCost * Math.pow(1 + ge / 100, y - 1) - saleY + s.maint;
         if (s.pvOn && y === bar.anneeOnduleur + 1) b += (I.inv || 0);
         s.bills.push(b);
