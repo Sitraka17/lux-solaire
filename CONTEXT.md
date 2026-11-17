@@ -362,6 +362,9 @@ Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, apr�
   pour Python 3.12 / Linux avec `uv pip compile` (commande en tête du fichier). Avant, numpy n'était pas
   figé et le workflow prenait la dernière version. Pour monter une version : les deux fichiers + build
   + tests en local (`tests/test_veille.py` vérifie qu'ils ne divergent pas).
+- 17/11/2026 : six 1.15.0 → 1.17.0. Le 1.15.0 du poste local (Python 3.9) ne fournit pas `six.moves`
+  sous Python 3.12 (importeur sans `find_spec`) : `import pandas` échouait via python-dateutil, rebuilds
+  du 9/11 et du 16/11 en échec. 1.17.0 marche en 3.9 et en 3.12.
 - Actions épinglées par SHA de commit, tag en commentaire, SHA vérifiés avec
   `gh api repos/actions/<nom>/git/matching-refs/tags/<tag>` : checkout v4.4.0
   `11d5960a326750d5838078e36cf38b85af677262`, setup-python v5.6.0
