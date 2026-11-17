@@ -352,8 +352,8 @@ build → `pytest tests/` → `node --test tests/sim-engine.test.mjs` → dist p
 commit + push si `data/data.json` a changé → déploiement. Donc rien n'est commité ni redéployé si
 le build ou un test échoue. Bloc `concurrency` (pas deux rebuilds simultanés), `timeout-minutes: 30`.
 Versions figées sur celles du poste local au 2/11/2026 : pandas 2.3.3, requests 2.32.5,
-pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.12 et Node 22 dans le workflow,
-Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, après un build local.
+pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.9 et Node 22 dans le workflow,
+Python 3.9 en local ; 3.12 dans le workflow jusqu'au 17/11/2026, voir plus bas). Pour les monter : changer le workflow ET cette ligne, après un build local.
 
 **Versions figées, complément du 2/11/2026 (chantier B)** :
 - pip : `pip install -r scripts/requirements.txt -c scripts/constraints.txt`. `requirements.txt` =
@@ -365,6 +365,9 @@ Python 3.9 en local). Pour les monter : changer le workflow ET cette ligne, apr�
 - 17/11/2026 : six 1.15.0 → 1.17.0. Le 1.15.0 du poste local (Python 3.9) ne fournit pas `six.moves`
   sous Python 3.12 (importeur sans `find_spec`) : `import pandas` échouait via python-dateutil, rebuilds
   du 9/11 et du 16/11 en échec. 1.17.0 marche en 3.9 et en 3.12.
+- 17/11/2026 : workflow passé de Python 3.12 à 3.9. Sur les mêmes téléchargements (LUX_SOLAIRE_CACHE=1),
+  le build 3.12 change 518 fichiers de ±0,1 (sum() compensé depuis 3.12, arrondis à la limite) ;
+  un venv 3.9 propre avec constraints.txt redonne les fichiers commités à l'octet près.
 - Actions épinglées par SHA de commit, tag en commentaire, SHA vérifiés avec
   `gh api repos/actions/<nom>/git/matching-refs/tags/<tag>` : checkout v4.4.0
   `11d5960a326750d5838078e36cf38b85af677262`, setup-python v5.6.0
