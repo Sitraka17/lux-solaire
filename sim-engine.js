@@ -323,6 +323,28 @@
     return { kWh: q, sans: sans, brut: brut, frais: f, avec: avec, diff: avec - sans, seuil: dt > 0 ? f / dt : (f > 0 ? null : 0) };
   }
 
+  /* Achat d'électricité par une communauté d'énergie, comparé au contrat habituel, pour un mois.
+   * Seule la part « énergie » est comparée : les frais de réseau et les taxes restent dus au fournisseur
+   * habituel dans les deux cas. kWhMois : énergie achetée par la plateforme ; prixHabituel : prix de
+   * l'énergie du contrat (€/kWh hors TVA) ; o : { prix (€/kWh HT), forfait (€/mois HT), seuilKwh,
+   * varHaut (€/kWh HT au-dessus du seuil), varBas (€/kWh HT jusqu'au seuil), tva }.
+   * → montants TVA comprise : { kWh, sans, energie, variable, forfait, avec, diff (économie, > 0 si la
+   *   plateforme coûte moins), tarifVar (€/kWh HT appliqué), seuil (kWh/mois à partir duquel la plateforme
+   *   coûte moins, null si jamais) } */
+  function achatComparison(kWhMois, prixHabituel, o) {
+    o = o || {};
+    var q = (typeof kWhMois === 'number' && kWhMois > 0) ? kWhMois : 0, ph = prixHabituel > 0 ? prixHabituel : 0;
+    var px = o.prix || 0, ff = o.forfait > 0 ? o.forfait : 0, lim = o.seuilKwh || 0;
+    var vH = o.varHaut || 0, vB = o.varBas || 0, k = 1 + (o.tva || 0);
+    var v = q > lim ? vH : vB;
+    var sans = q * ph * k, energie = q * px * k, variable = q * v * k, forfait = ff * k, avec = energie + variable + forfait;
+    var seuil = null, mB = ph - px - vB, mH = ph - px - vH;
+    if (ff === 0) seuil = mB > 0 ? 0 : (mH > 0 ? lim : null);
+    else if (mB > 0 && ff / mB <= lim) seuil = ff / mB;
+    else if (mH > 0) seuil = Math.max(lim, ff / mH);
+    return { kWh: q, sans: sans, energie: energie, variable: variable, forfait: forfait, avec: avec, diff: sans - avec, tarifVar: v, seuil: seuil };
+  }
+
   /* Simulation heure par heure d'un scénario.
    * o : { pv, hp, buffer, battery (booléens), direct (chauffage électrique direct existant) }
    * I : pac (kW nominal), emetteurs ('radiateurs' | 'plancher'), ballon (L), surchauffe (K), batt (kWh),
@@ -527,6 +549,6 @@
     heatPumpCOP: heatPumpCOP, klimabonusPAC: klimabonusPAC, minBufferLitres: minBufferLitres, localAid: localAid,
     gasPrice: gasPrice, gasFixed: gasFixed,
     heatDemand: heatDemand, simulateHourly: simulateHourly, computeHeat: computeHeat,
-    monthOfHour: monthOfHour, sumMonths: sumMonths, surplusComparison: surplusComparison,
+    monthOfHour: monthOfHour, sumMonths: sumMonths, surplusComparison: surplusComparison, achatComparison: achatComparison,
   });
 });

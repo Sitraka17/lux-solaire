@@ -410,3 +410,25 @@ test('chauffage : marketFixe ajouté aux seuls scénarios avec panneaux, tant qu
   near(c.sc.D.bills[5], lo.sc.D.bills[5], 1e-9);                       // année 6 : ni tarif ni frais
   assert.equal(a.sc.D.fraisSurplus, 0);
 });
+
+test('e-community, côté consommateur : 7,5 c€ + 1 ou 2,5 c€ selon 333 kWh/mois + 5 €/mois, TVA 8 %', () => {
+  const T = { prix: 0.075, forfait: 5, seuilKwh: 333, varHaut: 0.01, varBas: 0.025, tva: 0.08 };
+  const a = E.achatComparison(200, 0.13, T);                           // jusqu'à 333 kWh : 2,5 c€
+  near(a.tarifVar, 0.025); near(a.sans, 200 * 0.13 * 1.08); near(a.energie, 16.2); near(a.variable, 5.4); near(a.forfait, 5.4);
+  near(a.avec, 27); near(a.diff, 28.08 - 27); near(a.seuil, 5 / 0.03);
+  const b = E.achatComparison(400, 0.13, T);                           // au-dessus de 333 kWh : 1 c€
+  near(b.tarifVar, 0.01); near(b.avec, (400 * 0.085 + 5) * 1.08); near(b.diff, (52 - 39) * 1.08);
+  near(E.achatComparison(333, 0.13, T).tarifVar, 0.025);               // 333 kWh pile : pas « supérieur »
+  near(E.achatComparison(334, 0.13, T).tarifVar, 0.01);
+  const z = E.achatComparison(0, 0.13, T);
+  near(z.avec, 5.4); near(z.diff, -5.4);                               // forfait dû même sans achat
+  assert.equal(E.achatComparison(200, 0.08, T).seuil, null);           // contrat à 8 c€ : jamais rentable
+  near(E.achatComparison(200, 0.095, T).seuil, 500);                   // rentable seulement au-dessus du palier : 5 / 0,01
+  near(E.achatComparison(200, 0.11, T).seuil, 333);                    // 5 / 0,01 = 500 > 333, mais 5 / 0,025 = 200 au palier haut
+  // le seuil est bien le point de bascule
+  for (const ph of [0.105, 0.11, 0.13, 0.2]) {
+    const s = E.achatComparison(1, ph, T).seuil;
+    assert.ok(E.achatComparison(s + 1, ph, T).diff > 0, 'au-dessus du seuil ' + ph);
+    if (s > 1) assert.ok(E.achatComparison(s - 1, ph, T).diff < 0, 'en dessous du seuil ' + ph);
+  }
+});
