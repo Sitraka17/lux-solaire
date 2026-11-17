@@ -352,7 +352,7 @@ build → `pytest tests/` → `node --test tests/sim-engine.test.mjs` → dist p
 commit + push si `data/data.json` a changé → déploiement. Donc rien n'est commité ni redéployé si
 le build ou un test échoue. Bloc `concurrency` (pas deux rebuilds simultanés), `timeout-minutes: 30`.
 Versions figées sur celles du poste local au 2/11/2026 : pandas 2.3.3, requests 2.32.5,
-pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.9 et Node 22 dans le workflow,
+pillow 11.3.0, pytest 8.4.2, wrangler 3.114.17 (Python 3.9 et Node 25.8.1 dans le workflow,
 Python 3.9 en local ; 3.12 dans le workflow jusqu'au 17/11/2026, voir plus bas). Pour les monter : changer le workflow ET cette ligne, après un build local.
 
 **Versions figées, complément du 2/11/2026 (chantier B)** :
@@ -368,6 +368,9 @@ Python 3.9 en local ; 3.12 dans le workflow jusqu'au 17/11/2026, voir plus bas).
 - 17/11/2026 : workflow passé de Python 3.12 à 3.9. Sur les mêmes téléchargements (LUX_SOLAIRE_CACHE=1),
   le build 3.12 change 518 fichiers de ±0,1 (sum() compensé depuis 3.12, arrondis à la limite) ;
   un venv 3.9 propre avec constraints.txt redonne les fichiers commités à l'octet près.
+- 17/11/2026 : workflow passé de Node 22 à 25.8.1 (version du poste). Les références du test
+  `sim-engine.test.mjs` (2/11, calculées en Node 25) ratent 11 cas sur 47 en Node 22, au dernier chiffre
+  (Math.pow de V8). Pour monter Node : workflow + cette ligne, après `node --test` en local.
 - Actions épinglées par SHA de commit, tag en commentaire, SHA vérifiés avec
   `gh api repos/actions/<nom>/git/matching-refs/tags/<tag>` : checkout v4.4.0
   `11d5960a326750d5838078e36cf38b85af677262`, setup-python v5.6.0
@@ -709,7 +712,7 @@ ILR (loi du 22/07/2026), projet de loi 8707 devenu la loi du 22/07/2026 (exposé
 - Pages communales : le lien vers le simulateur passe `?canton=<canton>` (présélection).
 - `baremes.check_page` : le motif « aide HEMS » ignore `HEMS)` immédiatement suivi d'un chiffre
   (libellé « Klimabonus (panneaux, batterie, HEMS) » + montant pré-rendu de l'option A).
-- Le build dépend désormais de node pour le pré-rendu (le workflow installe déjà Node 22).
+- Le build dépend désormais de node pour le pré-rendu (le workflow installe Node 25.8.1, version du poste).
 
 ## Moteur du simulateur (`/sim-engine.js`, 2/11/2026)
 

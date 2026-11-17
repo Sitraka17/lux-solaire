@@ -18,6 +18,9 @@ name: rebuild-weekly
 # scripts/constraints.txt). Python 3.9 ici comme en local depuis le 17/11/2026 : en 3.12,
 # sum() compense les erreurs d'arrondi et 518 fichiers sortaient avec des valeurs à ±0,1
 # de celles du build local, sur les mêmes données.
+# Node 25.8.1 comme en local depuis le 17/11/2026 : tests/fixtures/sim-reference.json est calculé
+# en Node 25, et Node 22 (Math.pow de V8) diffère au dernier chiffre (11 tests sur 47 en échec) ;
+# le pré-rendu du build passe aussi par node.
 # Actions épinglées par SHA de commit (tag en commentaire, vérifié avec `gh api
 # repos/actions/<nom>/git/matching-refs/tags/<tag>`) : un tag peut être déplacé, un SHA non.
 
@@ -62,7 +65,7 @@ jobs:
           python-version: "3.9"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "25.8.1"
       - name: Police DejaVu des images og (version de Ubuntu 24.04 « noble », Launchpad)
         run: |
           sudo apt-get update -q
